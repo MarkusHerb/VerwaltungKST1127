@@ -212,15 +212,22 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
         // Funktion, dass die Daten in der Serienlinsen Tabelle gespeichert werden
         private void SpeichereDatenInDatenbank(string artikelnummer, string bezeichnung, string status, string gruppenname, string zukauf, string flaeche
-            , string gNummer)
+            , string gNummer, string glassorte, string durchmesser, string durchmesserWaschen, string freibereich, string dicke, string seite, string brechwert
+            , string radiusVerguetung, string radiusRueckseite, string belagVerguetung, string prozess, string belagRueckseite, string ring, string stkSegment
+            , string stkGesamt, string zeitProzess, string eingabedatum, string bemerkungArtikel, string vorreinigen, string ucm, string aceton, string bemerkungWaschen
+            , string revoNummer, string pfadZeichnungAuflegen, string pfadZusatzinfo, string textZusatzinfo)
         {
             try
             {
                 sqlConnectionVerwaltung.Open();
                 // SQL-Befehl zum Einfügen der Daten
                 string query = @"
-                INSERT INTO Serienlinsen (ARTNR, BEZ, Status, GruppenName, Zukauf, Innen-Aussen, G_Nummer)
-                VALUES (@ARTNR, @BEZ, @Status, @GruppenName, @Zukauf, @Innen-Aussen, @G_Numer)";
+                INSERT INTO Serienlinsen (ARTNR, BEZ, Status, GruppenName, Zukauf, Innen-Aussen, G_Nummer, GLASSORTE, DM, Waschen_DM, FREI, DICKE, SEITE
+                    , ND, Radius1, Radius2, Belag1, VERGBELAG, MATERIAL, Belag2, RING, STK_SEGM, STK_CHARGE, CHARGENZEIT, Anmerkungsdatum, BEMERKUNG
+                    , Vorreinigung, HFE_Anlage, Aceton, Waschanmerkungen, refo_avonr,  Zeichnungspfad, InfoZeichnung, InfoZeichnung_Bemerkungen)
+                VALUES (@ARTNR, @BEZ, @Status, @GruppenName, @Zukauf, @Innen-Aussen, @G_Numer, @GLASSORTE, @DM, @Waschen_DM, @FREI, @DICKE, @SEITE
+                    , @ND, @Radius1, @Radius2, @Belag1, @VERGBELAG, @MATERIAL, @Belag2, @RING, @STK_SEGM, @STK_CHARGE, @CHARGENZEIT, @Anmerkungsdatum, @BEMERKUNG
+                    , @Vorreinigung, @HFE_Anlage, @Aceton, @Waschanmerkungen, @revo_avonr, @Zeichnungspfad, @InfoZeichnung, @InfoZeichnung_Bemerkungen)";
 
                 using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
@@ -232,6 +239,33 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                     sqlCommand.Parameters.AddWithValue("@Zukauf", zukauf);
                     sqlCommand.Parameters.AddWithValue("@Innen-Aussen", flaeche);
                     sqlCommand.Parameters.AddWithValue("@G_Nummer", gNummer);
+                    sqlCommand.Parameters.AddWithValue("@GLASSORTE", glassorte);
+                    sqlCommand.Parameters.AddWithValue("@DM", durchmesser);
+                    sqlCommand.Parameters.AddWithValue("@Waschen_DM", durchmesserWaschen);
+                    sqlCommand.Parameters.AddWithValue("@FREI", freibereich);
+                    sqlCommand.Parameters.AddWithValue("@DICKE", dicke);
+                    sqlCommand.Parameters.AddWithValue("@SEITE", seite);
+                    sqlCommand.Parameters.AddWithValue("@ND", brechwert);
+                    sqlCommand.Parameters.AddWithValue("@Radius1", radiusVerguetung);
+                    sqlCommand.Parameters.AddWithValue("@Radius2", radiusRueckseite);
+                    sqlCommand.Parameters.AddWithValue("@Belag1", belagVerguetung);
+                    sqlCommand.Parameters.AddWithValue("@VERGBELAG", belagVerguetung);
+                    sqlCommand.Parameters.AddWithValue("@MATERIAL", prozess);
+                    sqlCommand.Parameters.AddWithValue("@Belag2", belagRueckseite);
+                    sqlCommand.Parameters.AddWithValue("@RING", ring);
+                    sqlCommand.Parameters.AddWithValue("@STK_SEGM", stkSegment);
+                    sqlCommand.Parameters.AddWithValue("@STK_CHARGE", stkGesamt);
+                    sqlCommand.Parameters.AddWithValue("@CHARGENZEIT", zeitProzess);
+                    sqlCommand.Parameters.AddWithValue("@Anmerkungsdatum", eingabedatum); // kontrolle was stimmt
+                    sqlCommand.Parameters.AddWithValue("@BEMERKUNG", bemerkungArtikel);
+                    sqlCommand.Parameters.AddWithValue("@Vorreinigung", vorreinigen);
+                    sqlCommand.Parameters.AddWithValue("@HFE_Anlage", ucm);
+                    sqlCommand.Parameters.AddWithValue("@Aceton", aceton);
+                    sqlCommand.Parameters.AddWithValue("@Waschanmerkungen", bemerkungWaschen);
+                    sqlCommand.Parameters.AddWithValue("@revo_avonr", revoNummer);
+                    sqlCommand.Parameters.AddWithValue("@Zeichnungspfad", pfadZeichnungAuflegen); // pfade kontrollieren
+                    sqlCommand.Parameters.AddWithValue("@InfoZeichnung", pfadZusatzinfo);
+                    sqlCommand.Parameters.AddWithValue("@InfoZeichnung_Bemerkungen", textZusatzinfo);
 
                     // SQL-Befehl ausführen
                     sqlCommand.ExecuteNonQuery();
@@ -357,12 +391,16 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             string ucm = ComboboxUCM497.Text;
             string aceton = ComboboxAceton.Text;   
             string bemerkungWaschen = RichtxtboxBemerkungWaschen.Text;
+            string revoNummer = txtBoxRevoNr.Text;
             string pfadZeichnungAuflegen = LblPfadAuflegenLinsenPrismen.Text;
             string pfadZusatzinfo = LblPfadZusatzinfo.Text;
             string textZusatzinfo = RichtxtboxZusatzinfo.Text;
 
             // Funktion zum Speichern der Daten aufrufen
-            SpeichereDatenInDatenbank(artikelnummer, bezeichnung, status, gruppenname, zukauf, flaeche, gNummer);
+            SpeichereDatenInDatenbank(artikelnummer, bezeichnung, status, gruppenname, zukauf, flaeche, gNummer, glassorte, durchmesser
+                , durchmesserWaschen, freibereich, dicke, seite, brechwert, radiusVerguetung, radiusRueckseite, belagVerguetung, prozess
+                , belagRueckseite, ring, stkSegment, stkGesamt, zeitProzess, eingabedatum, bemerkungArtikel, vorreinigen, ucm, aceton
+                , bemerkungWaschen, revoNummer, pfadZeichnungAuflegen, pfadZusatzinfo, textZusatzinfo);
         }
     }
 }

@@ -176,6 +176,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.Designer.cs">
+      <DependentUpon>Form_ArtikelPrototypAendern.cs</DependentUpon>
+    </Compile>
     <Compile Include="EingabeSerienartikelPrototyp\Form_EingabeSeriePrototyp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -190,6 +196,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.resx">
+      <DependentUpon>Form_ArtikelPrototypAendern.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_EingabeSeriePrototyp.resx">
       <DependentUpon>Form_EingabeSeriePrototyp.cs</DependentUpon>
     </EmbeddedResource>

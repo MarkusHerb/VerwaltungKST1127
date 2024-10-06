@@ -37,6 +37,7 @@
             this.BtnSerienartikelPrototyp = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.BtnArtikelAendern = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,10 +77,10 @@
             // 
             // BtnSerienartikelPrototyp
             // 
-            this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.LightSkyBlue;
+            this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.Orange;
             this.BtnSerienartikelPrototyp.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(687, 573);
+            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(687, 164);
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
             this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(213, 66);
             this.BtnSerienartikelPrototyp.TabIndex = 5;
@@ -103,12 +104,26 @@
             this.panel2.Size = new System.Drawing.Size(10, 482);
             this.panel2.TabIndex = 7;
             // 
-            // From_Einstieg
+            // BtnArtikelAendern
+            // 
+            this.BtnArtikelAendern.BackColor = System.Drawing.Color.Orange;
+            this.BtnArtikelAendern.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnArtikelAendern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnArtikelAendern.Location = new System.Drawing.Point(687, 236);
+            this.BtnArtikelAendern.Name = "BtnArtikelAendern";
+            this.BtnArtikelAendern.Size = new System.Drawing.Size(213, 66);
+            this.BtnArtikelAendern.TabIndex = 8;
+            this.BtnArtikelAendern.Text = "Artikel/Prototyp Ändern";
+            this.BtnArtikelAendern.UseVisualStyleBackColor = false;
+            this.BtnArtikelAendern.Click += new System.EventHandler(this.BtnArtikelAendern_Click);
+            // 
+            // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.BtnArtikelAendern);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.BtnSerienartikelPrototyp);
@@ -117,7 +132,7 @@
             this.Controls.Add(this.pictureBoxLinsenPrismen);
             this.MaximumSize = new System.Drawing.Size(1084, 690);
             this.MinimumSize = new System.Drawing.Size(1084, 690);
-            this.Name = "From_Einstieg";
+            this.Name = "Form_Start";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Hauptmenü";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).EndInit();
@@ -135,6 +150,7 @@
         private System.Windows.Forms.Button BtnSerienartikelPrototyp;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button BtnArtikelAendern;
     }
 }
 

@@ -37,5 +37,13 @@ namespace VerwaltungKST1127
             Form_EingabeSeriePrototyp form_EingabeSeriePrototyp = new Form_EingabeSeriePrototyp();
             form_EingabeSeriePrototyp.ShowDialog();
         }
+
+        // Button Event, wenn man darauf klickt
+        private void BtnArtikelAendern_Click(object sender, EventArgs e)
+        {
+            // Formular ArtikelPrototypAendern öffnen
+            Form_ArtikelPrototypAendern form_ArtikelAender = new Form_ArtikelPrototypAendern();
+            form_ArtikelAender.ShowDialog();
+        }
     }
 }

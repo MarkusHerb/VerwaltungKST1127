@@ -97,6 +97,10 @@
             this.label31 = new System.Windows.Forms.Label();
             this.RichtxtboxBemerkungWaschen = new System.Windows.Forms.RichTextBox();
             this.BtnArtikelSpeichern = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label32 = new System.Windows.Forms.Label();
+            this.txtBoxRevoNr = new System.Windows.Forms.TextBox();
+            this.panel3 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxAuflegenLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxZusatzinfo)).BeginInit();
             this.SuspendLayout();
@@ -797,14 +801,51 @@
             // BtnArtikelSpeichern
             // 
             this.BtnArtikelSpeichern.BackColor = System.Drawing.Color.Lime;
-            this.BtnArtikelSpeichern.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnArtikelSpeichern.Location = new System.Drawing.Point(264, 692);
+            this.BtnArtikelSpeichern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnArtikelSpeichern.Location = new System.Drawing.Point(329, 682);
             this.BtnArtikelSpeichern.Name = "BtnArtikelSpeichern";
-            this.BtnArtikelSpeichern.Size = new System.Drawing.Size(171, 39);
+            this.BtnArtikelSpeichern.Size = new System.Drawing.Size(334, 49);
             this.BtnArtikelSpeichern.TabIndex = 85;
-            this.BtnArtikelSpeichern.Text = "Artikel speichern";
+            this.BtnArtikelSpeichern.Text = "Artikel in Serienlinsentabelle aufnehmen";
             this.BtnArtikelSpeichern.UseVisualStyleBackColor = false;
             this.BtnArtikelSpeichern.Click += new System.EventHandler(this.BtnArtikelSpeichern_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(362, 488);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(52, 20);
+            this.label3.TabIndex = 86;
+            this.label3.Text = "Infor ";
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label32.Location = new System.Drawing.Point(362, 522);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(116, 20);
+            this.label32.TabIndex = 88;
+            this.label32.Text = "refo_AVO Nr.";
+            // 
+            // txtBoxRevoNr
+            // 
+            this.txtBoxRevoNr.BackColor = System.Drawing.Color.White;
+            this.txtBoxRevoNr.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtBoxRevoNr.Location = new System.Drawing.Point(503, 516);
+            this.txtBoxRevoNr.Name = "txtBoxRevoNr";
+            this.txtBoxRevoNr.Size = new System.Drawing.Size(160, 26);
+            this.txtBoxRevoNr.TabIndex = 87;
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.panel3.Location = new System.Drawing.Point(343, 474);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1, 74);
+            this.panel3.TabIndex = 89;
             // 
             // Form_EingabeSeriePrototyp
             // 
@@ -812,6 +853,10 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1090, 743);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.label32);
+            this.Controls.Add(this.txtBoxRevoNr);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.BtnArtikelSpeichern);
             this.Controls.Add(this.label31);
             this.Controls.Add(this.RichtxtboxBemerkungWaschen);
@@ -960,5 +1005,9 @@
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.RichTextBox RichtxtboxBemerkungWaschen;
         private System.Windows.Forms.Button BtnArtikelSpeichern;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.TextBox txtBoxRevoNr;
+        private System.Windows.Forms.Panel panel3;
     }
 }
