@@ -45,7 +45,7 @@
             this.label26 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
-            this.DateTimePickerAufgenommenLinsePrisma = new System.Windows.Forms.DateTimePicker();
+            this.DateTimePickerGeaendertLinsePrisma = new System.Windows.Forms.DateTimePicker();
             this.label24 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -287,16 +287,16 @@
             this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label25.Location = new System.Drawing.Point(16, 434);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(105, 20);
+            this.label25.Size = new System.Drawing.Size(85, 20);
             this.label25.TabIndex = 145;
-            this.label25.Text = "Eingegeben";
+            this.label25.Text = "Geändert";
             // 
-            // DateTimePickerAufgenommenLinsePrisma
+            // DateTimePickerGeaendertLinsePrisma
             // 
-            this.DateTimePickerAufgenommenLinsePrisma.Location = new System.Drawing.Point(157, 429);
-            this.DateTimePickerAufgenommenLinsePrisma.Name = "DateTimePickerAufgenommenLinsePrisma";
-            this.DateTimePickerAufgenommenLinsePrisma.Size = new System.Drawing.Size(198, 20);
-            this.DateTimePickerAufgenommenLinsePrisma.TabIndex = 144;
+            this.DateTimePickerGeaendertLinsePrisma.Location = new System.Drawing.Point(157, 429);
+            this.DateTimePickerGeaendertLinsePrisma.Name = "DateTimePickerGeaendertLinsePrisma";
+            this.DateTimePickerGeaendertLinsePrisma.Size = new System.Drawing.Size(198, 20);
+            this.DateTimePickerGeaendertLinsePrisma.TabIndex = 144;
             // 
             // label24
             // 
@@ -877,7 +877,7 @@
             this.Controls.Add(this.label26);
             this.Controls.Add(this.label28);
             this.Controls.Add(this.label25);
-            this.Controls.Add(this.DateTimePickerAufgenommenLinsePrisma);
+            this.Controls.Add(this.DateTimePickerGeaendertLinsePrisma);
             this.Controls.Add(this.label24);
             this.Controls.Add(this.label23);
             this.Controls.Add(this.panel2);
@@ -960,7 +960,7 @@
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.DateTimePicker DateTimePickerAufgenommenLinsePrisma;
+        private System.Windows.Forms.DateTimePicker DateTimePickerGeaendertLinsePrisma;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Panel panel2;

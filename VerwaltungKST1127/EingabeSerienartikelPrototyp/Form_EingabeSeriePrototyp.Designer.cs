@@ -101,6 +101,7 @@
             this.label32 = new System.Windows.Forms.Label();
             this.txtBoxRevoNr = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.BtnArtikelAendern = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxAuflegenLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxZusatzinfo)).BeginInit();
             this.SuspendLayout();
@@ -602,18 +603,18 @@
             this.LblPfadAuflegenLinsenPrismen.AutoSize = true;
             this.LblPfadAuflegenLinsenPrismen.Location = new System.Drawing.Point(679, 277);
             this.LblPfadAuflegenLinsenPrismen.Name = "LblPfadAuflegenLinsenPrismen";
-            this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(190, 13);
+            this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(373, 13);
             this.LblPfadAuflegenLinsenPrismen.TabIndex = 67;
-            this.LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen";
+            this.LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen; Wenn kein bild -> Leerbild auswählen";
             // 
             // LblPfadZusatzinfo
             // 
             this.LblPfadZusatzinfo.AutoSize = true;
             this.LblPfadZusatzinfo.Location = new System.Drawing.Point(678, 567);
             this.LblPfadZusatzinfo.Name = "LblPfadZusatzinfo";
-            this.LblPfadZusatzinfo.Size = new System.Drawing.Size(190, 13);
+            this.LblPfadZusatzinfo.Size = new System.Drawing.Size(373, 13);
             this.LblPfadZusatzinfo.TabIndex = 68;
-            this.LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen";
+            this.LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen; Wenn kein bild -> Leerbild auswählen";
             // 
             // panel2
             // 
@@ -802,9 +803,9 @@
             // 
             this.BtnArtikelSpeichern.BackColor = System.Drawing.Color.Lime;
             this.BtnArtikelSpeichern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnArtikelSpeichern.Location = new System.Drawing.Point(329, 682);
+            this.BtnArtikelSpeichern.Location = new System.Drawing.Point(350, 682);
             this.BtnArtikelSpeichern.Name = "BtnArtikelSpeichern";
-            this.BtnArtikelSpeichern.Size = new System.Drawing.Size(334, 49);
+            this.BtnArtikelSpeichern.Size = new System.Drawing.Size(313, 49);
             this.BtnArtikelSpeichern.TabIndex = 85;
             this.BtnArtikelSpeichern.Text = "Artikel in Serienlinsentabelle aufnehmen";
             this.BtnArtikelSpeichern.UseVisualStyleBackColor = false;
@@ -847,12 +848,25 @@
             this.panel3.Size = new System.Drawing.Size(1, 74);
             this.panel3.TabIndex = 89;
             // 
+            // BtnArtikelAendern
+            // 
+            this.BtnArtikelAendern.BackColor = System.Drawing.Color.LightSeaGreen;
+            this.BtnArtikelAendern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnArtikelAendern.Location = new System.Drawing.Point(14, 682);
+            this.BtnArtikelAendern.Name = "BtnArtikelAendern";
+            this.BtnArtikelAendern.Size = new System.Drawing.Size(330, 49);
+            this.BtnArtikelAendern.TabIndex = 90;
+            this.BtnArtikelAendern.Text = "Einen Artikel ändern";
+            this.BtnArtikelAendern.UseVisualStyleBackColor = false;
+            this.BtnArtikelAendern.Click += new System.EventHandler(this.BtnArtikelAendern_Click);
+            // 
             // Form_EingabeSeriePrototyp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1090, 743);
+            this.Controls.Add(this.BtnArtikelAendern);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.label32);
             this.Controls.Add(this.txtBoxRevoNr);
@@ -1009,5 +1023,6 @@
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.TextBox txtBoxRevoNr;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Button BtnArtikelAendern;
     }
 }

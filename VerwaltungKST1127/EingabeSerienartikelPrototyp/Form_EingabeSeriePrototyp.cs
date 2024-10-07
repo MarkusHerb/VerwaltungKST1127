@@ -1,15 +1,8 @@
-﻿using Microsoft.Office.Interop.Excel; // Importieren der Excel-Interop-Bibliothek für die Automatisierung und Interaktion mit Microsoft Excel (z.B. zum Erstellen, Lesen und Bearbeiten von Excel-Dateien)
-using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
-using System.Collections.Generic; // Importieren des System.Collections.Generic-Namespace für generische Sammlungen (z.B. List<T>, Dictionary<TKey, TValue>)
-using System.ComponentModel; // Importieren des System.ComponentModel-Namespace für Komponentenmodelle und Datenbindung (z.B. zum Arbeiten mit Events und benachrichtigungsfähigen Eigenschaften)
+﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
 using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
 using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
-using System.Diagnostics; // Importieren des System.Diagnostics-Namespace für die Diagnose und Protokollierung (z.B. zum Starten von Prozessen, Debuggen und Ereignisprotokollierung)
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
 using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
-using System.Runtime.InteropServices; // Importieren des System.Runtime.InteropServices-Namespace für den Zugriff auf nicht verwalteten Code und Interoperabilität mit COM-Objekten (z.B. für die Interaktion mit Windows-APIs oder älteren Systemen)
-using System.Security.Cryptography;
-using System.Threading.Tasks; // Importieren des System.Threading.Tasks-Namespace für die Arbeit mit asynchronen Tasks und paralleler Programmierung (z.B. zur Ausführung von Aufgaben im Hintergrund)
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
 
 
@@ -33,6 +26,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             FillComboboxGlassorte(null);
             // Befülle die GNummer-ComboBox beim Initialisieren des Formulars
             FillComboboxRing();
+            SetPlaceholders();
         }
 
         // ############## Selbst erstellte Funktionen ################
@@ -130,24 +124,18 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                             // Füge die Glassorte der ComboBox hinzu
                             ComboboxGlassorte.Items.Add(glassValue);
                         }
+                        sqlConnectionVerwaltung.Close();
                     }
                 }
 
                 // Sortiere die Einträge in der ComboBox alphabetisch
                 ComboboxGlassorte.Sorted = true;
+                
             }
             catch (Exception ex)
             {
                 // Zeige eine Fehlermeldung an, wenn etwas schiefgeht
                 MessageBox.Show("Fehler beim Laden der Glassorten: " + ex.Message);
-            }
-            finally
-            {
-                // Stelle sicher, dass die Verbindung nach der Abfrage geschlossen wird
-                if (sqlConnectionVerwaltung.State == System.Data.ConnectionState.Open)
-                {
-                    sqlConnectionVerwaltung.Close();
-                }
             }
         }
 
@@ -212,22 +200,23 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
         // Funktion, dass die Daten in der Serienlinsen Tabelle gespeichert werden
         private void SpeichereDatenInDatenbank(string artikelnummer, string bezeichnung, string status, string gruppenname, string zukauf, string flaeche
-            , string gNummer, string glassorte, string durchmesser, string durchmesserWaschen, string freibereich, string dicke, string seite, string brechwert
-            , string radiusVerguetung, string radiusRueckseite, string belagVerguetung, string prozess, string belagRueckseite, string ring, string stkSegment
-            , string stkGesamt, string zeitProzess, string eingabedatum, string bemerkungArtikel, string vorreinigen, string ucm, string aceton, string bemerkungWaschen
-            , string revoNummer, string pfadZeichnungAuflegen, string pfadZusatzinfo, string textZusatzinfo)
+     , string gNummer, string glassorte, decimal durchmesser, string durchmesserWaschen, decimal freibereich, decimal dicke, string seite, decimal brechwert
+     , string radiusVerguetung, string radiusRueckseite, string belagVerguetung, string prozess, string belagRueckseite, string ring, string stkSegment
+     , string stkGesamt, decimal zeitProzess, DateTime eingabedatum, string bemerkungArtikel, string vorreinigen, string ucm, string aceton, string bemerkungWaschen
+     , string revoNummer, string pfadZeichnungAuflegen, string pfadZusatzinfo, string textZusatzinfo)
         {
             try
             {
                 sqlConnectionVerwaltung.Open();
                 // SQL-Befehl zum Einfügen der Daten
                 string query = @"
-                INSERT INTO Serienlinsen (ARTNR, BEZ, Status, GruppenName, Zukauf, Innen-Aussen, G_Nummer, GLASSORTE, DM, Waschen_DM, FREI, DICKE, SEITE
-                    , ND, Radius1, Radius2, Belag1, VERGBELAG, MATERIAL, Belag2, RING, STK_SEGM, STK_CHARGE, CHARGENZEIT, Anmerkungsdatum, BEMERKUNG
-                    , Vorreinigung, HFE_Anlage, Aceton, Waschanmerkungen, refo_avonr,  Zeichnungspfad, InfoZeichnung, InfoZeichnung_Bemerkungen)
-                VALUES (@ARTNR, @BEZ, @Status, @GruppenName, @Zukauf, @Innen-Aussen, @G_Numer, @GLASSORTE, @DM, @Waschen_DM, @FREI, @DICKE, @SEITE
-                    , @ND, @Radius1, @Radius2, @Belag1, @VERGBELAG, @MATERIAL, @Belag2, @RING, @STK_SEGM, @STK_CHARGE, @CHARGENZEIT, @Anmerkungsdatum, @BEMERKUNG
-                    , @Vorreinigung, @HFE_Anlage, @Aceton, @Waschanmerkungen, @revo_avonr, @Zeichnungspfad, @InfoZeichnung, @InfoZeichnung_Bemerkungen)";
+        INSERT INTO Serienlinsen ([ARTNR], [BEZ], [Status], [GruppenName], [Zukauf], [Innen-Aussen], [G_Nummer], [GLASSORTE], [DM], [Waschen_DM], [FREI], [DICKE], [SEITE],
+            [ND], [Radius1], [Radius2], [Belag1], [VERGBELAG], [MATERIAL], [Belag2], [RING], [STK_SEGM], [STK_CHARGE], [CHARGENZEIT], [Anmerkungsdatum], [BEMERKUNG],
+            [Vorreinigung], [HFE_Anlage], [Aceton], [Waschanmerkungen], [refo_avonr], [Zeichnungspfad], [InfoZeichnung], [InfoZeichnung_Bemerkungen])
+        VALUES (@ARTNR, @BEZ, @Status, @GruppenName, @Zukauf, @InnenAussen, @G_Nummer, @GLASSORTE, @DM, @Waschen_DM, @FREI, @DICKE, @SEITE,
+            @ND, @Radius1, @Radius2, @Belag1, @VERGBELAG, @MATERIAL, @Belag2, @RING, @STK_SEGM, @STK_CHARGE, @CHARGENZEIT, @Anmerkungsdatum, @BEMERKUNG,
+            @Vorreinigung, @HFE_Anlage, @Aceton, @Waschanmerkungen, @refo_avonr, @Zeichnungspfad, @InfoZeichnung, @InfoZeichnung_Bemerkungen)";
+
 
                 using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
@@ -237,7 +226,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                     sqlCommand.Parameters.AddWithValue("@Status", status);
                     sqlCommand.Parameters.AddWithValue("@GruppenName", gruppenname);
                     sqlCommand.Parameters.AddWithValue("@Zukauf", zukauf);
-                    sqlCommand.Parameters.AddWithValue("@Innen-Aussen", flaeche);
+                    sqlCommand.Parameters.AddWithValue("@InnenAussen", flaeche);
                     sqlCommand.Parameters.AddWithValue("@G_Nummer", gNummer);
                     sqlCommand.Parameters.AddWithValue("@GLASSORTE", glassorte);
                     sqlCommand.Parameters.AddWithValue("@DM", durchmesser);
@@ -256,14 +245,14 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                     sqlCommand.Parameters.AddWithValue("@STK_SEGM", stkSegment);
                     sqlCommand.Parameters.AddWithValue("@STK_CHARGE", stkGesamt);
                     sqlCommand.Parameters.AddWithValue("@CHARGENZEIT", zeitProzess);
-                    sqlCommand.Parameters.AddWithValue("@Anmerkungsdatum", eingabedatum); // kontrolle was stimmt
+                    sqlCommand.Parameters.AddWithValue("@Anmerkungsdatum", eingabedatum);
                     sqlCommand.Parameters.AddWithValue("@BEMERKUNG", bemerkungArtikel);
                     sqlCommand.Parameters.AddWithValue("@Vorreinigung", vorreinigen);
                     sqlCommand.Parameters.AddWithValue("@HFE_Anlage", ucm);
                     sqlCommand.Parameters.AddWithValue("@Aceton", aceton);
                     sqlCommand.Parameters.AddWithValue("@Waschanmerkungen", bemerkungWaschen);
-                    sqlCommand.Parameters.AddWithValue("@revo_avonr", revoNummer);
-                    sqlCommand.Parameters.AddWithValue("@Zeichnungspfad", pfadZeichnungAuflegen); // pfade kontrollieren
+                    sqlCommand.Parameters.AddWithValue("@refo_avonr", revoNummer);
+                    sqlCommand.Parameters.AddWithValue("@Zeichnungspfad", pfadZeichnungAuflegen);
                     sqlCommand.Parameters.AddWithValue("@InfoZeichnung", pfadZusatzinfo);
                     sqlCommand.Parameters.AddWithValue("@InfoZeichnung_Bemerkungen", textZusatzinfo);
 
@@ -281,9 +270,86 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             {
                 MessageBox.Show("Fehler: " + ex.Message);
             }
-            sqlConnectionVerwaltung.Close();
+            finally
+            {              
+                sqlConnectionVerwaltung.Close();
+            }
+            ClearAllFields();
         }
 
+        // Funktion um die felder zu leeren
+        private void ClearAllFields()
+        {
+            // Setze alle TextBoxen auf String.Empty
+            TxtboxArtikelnummer.Text = string.Empty;
+            TxtboxBezeichnung.Text = string.Empty;
+            TxtboxDurchmesser.Text = string.Empty;
+            TxtboxDmWaschen.Text = string.Empty;
+            TxtboxFreibereich.Text = string.Empty;
+            TxtboxDicke.Text = string.Empty;
+            TxtboxBrechwert.Text = string.Empty;
+            TxtboxZeitProzess.Text = string.Empty;
+            TxtboxStkSegment.Text = string.Empty;
+            TxtboxStkCharge.Text = string.Empty;
+            txtBoxRevoNr.Text = string.Empty;
+
+            // Setze alle ComboBoxen auf String.Empty
+            ComboboxStatus.Text = string.Empty;
+            ComboBoxZukauf.Text = string.Empty;
+            ComboBoxFlaeche.Text = string.Empty;
+            ComboboxGNummer.Text = string.Empty;
+            ComboboxGlassorte.Text = string.Empty;
+            ComboboxSeite.Text = string.Empty;
+            ComboboxRing.Text = string.Empty;
+            ComboboxVorreinigen.Text = string.Empty;
+            ComboboxUCM497.Text = string.Empty;
+            ComboboxAceton.Text = string.Empty;
+
+            // Setze alle RichTextBoxen auf String.Empty
+            RichtxtboxBemerkung.Text = string.Empty;
+            RichtxtboxBemerkungWaschen.Text = string.Empty;
+            RichtxtboxZusatzinfo.Text = string.Empty;
+
+            // Setze alle Labels auf String.Empty
+            LblPfadAuflegenLinsenPrismen.Text = string.Empty;
+            LblPfadZusatzinfo.Text = string.Empty;
+
+            // Setze den DateTimePicker auf das heutige Datum
+            DateTimePickerAufgenommenLinsePrisma.Value = DateTime.Now;
+        }
+
+        private void SetPlaceholders()
+        {
+            SetPlaceholder(TxtboxDurchmesser, "xx,xx");
+            SetPlaceholder(TxtboxDmWaschen, "00xx");
+            SetPlaceholder(TxtboxFreibereich, "xx,xx");
+            SetPlaceholder(TxtboxDicke, "x,xx bzw xx,xx");
+            SetPlaceholder(TxtboxZeitProzess, "x,xx");
+        }
+
+        private void SetPlaceholder(TextBox textBox, string placeholderText)
+        {
+            textBox.ForeColor = Color.Gray;
+            textBox.Text = placeholderText;
+
+            textBox.GotFocus += (sender, e) =>
+            {
+                if (textBox.Text == placeholderText)
+                {
+                    textBox.Text = "";
+                    textBox.ForeColor = SystemColors.WindowText;
+                }
+            };
+
+            textBox.LostFocus += (sender, e) =>
+            {
+                if (string.IsNullOrEmpty(textBox.Text))
+                {
+                    textBox.Text = placeholderText;
+                    textBox.ForeColor = Color.Gray;
+                }
+            };
+        }
 
         // ############## Event-Handler  ################
 
@@ -370,26 +436,67 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             string flaeche = ComboBoxFlaeche.Text;
             string gNummer = ComboboxGNummer.Text;
             string glassorte = ComboboxGlassorte.Text;
-            string durchmesser = TxtboxDurchmesser.Text;
+
+            // Konvertiere Strings zu Decimals und runde auf zwei Nachkommastellen
+            if (!decimal.TryParse(TxtboxDurchmesser.Text, out decimal durchmesser))
+            {
+                MessageBox.Show("Ungültiger Wert für Durchmesser. Bitte überprüfen Sie das Format oder eine 0 eingebenoder eine 0 eingeben.");
+                return;
+            }
+            durchmesser = Math.Round(durchmesser, 2);
+
+            if (!decimal.TryParse(TxtboxFreibereich.Text, out decimal freibereich))
+            {
+                MessageBox.Show("Ungültiger Wert für Freibereich. Bitte überprüfen Sie das Format oder eine 0 eingeben.");
+                return;
+            }
+            freibereich = Math.Round(freibereich, 2);
+
+            if (!decimal.TryParse(TxtboxDicke.Text, out decimal dicke))
+            {
+                MessageBox.Show("Ungültiger Wert für Dicke. Bitte überprüfen Sie das Format oder eine 0 eingeben.");
+                return;
+            }
+            dicke = Math.Round(dicke, 2);
+
+            if (!decimal.TryParse(TxtboxBrechwert.Text, out decimal brechwert))
+            {
+                MessageBox.Show("Ungültiger Wert für Brechwert. Bitte überprüfen Sie das Format oder eine 0 eingeben.");
+                return;
+            }
+            brechwert = Math.Round(brechwert, 2);
+
+            if (!decimal.TryParse(TxtboxZeitProzess.Text, out decimal zeitProzess))
+            {
+                MessageBox.Show("Ungültiger Wert für Zeit Prozess. Bitte überprüfen Sie das Format oder eine 0 eingeben.");
+                return;
+            }
+            zeitProzess = Math.Round(zeitProzess, 2);
+
             string durchmesserWaschen = TxtboxDmWaschen.Text;
-            string freibereich = TxtboxFreibereich.Text;
-            string dicke = TxtboxDicke.Text;
             string seite = ComboboxSeite.Text;
-            string brechwert = TxtboxBrechwert.Text;
             string radiusVerguetung = TxtboxRadiusVerguetung.Text;
             string radiusRueckseite = TxtboxRadiusRueckseite.Text;
             string belagVerguetung = TxtboxBelagVerguetung.Text;
             string prozess = TxtboxBelagProzess.Text;
             string belagRueckseite = TxtboxBelagRueckseite.Text;
-            string ring = ComboboxRing.Text;
+            string ringeingabe = ComboboxRing.Text;
+            string[] ringnameArray = ringeingabe.Split('-').Select(x => x.Trim()).ToArray();
+            string ring = ringnameArray[0];
             string stkSegment = TxtboxStkSegment.Text;
             string stkGesamt = TxtboxStkCharge.Text;
-            string zeitProzess = TxtboxZeitProzess.Text;
-            string eingabedatum = DateTimePickerAufgenommenLinsePrisma.Text.ToString();
+
+            // Datum vom DateTimePicker
+            DateTime eingabedatum;
+            if (!DateTime.TryParse(DateTimePickerAufgenommenLinsePrisma.Text, out eingabedatum))
+            {
+                MessageBox.Show("Ungültiges Datum. Bitte überprüfen Sie das Format.");
+                return; // Beende die Methode, wenn das Datum ungültig ist
+            }
             string bemerkungArtikel = RichtxtboxBemerkung.Text;
             string vorreinigen = ComboboxVorreinigen.Text;
             string ucm = ComboboxUCM497.Text;
-            string aceton = ComboboxAceton.Text;   
+            string aceton = ComboboxAceton.Text;
             string bemerkungWaschen = RichtxtboxBemerkungWaschen.Text;
             string revoNummer = txtBoxRevoNr.Text;
             string pfadZeichnungAuflegen = LblPfadAuflegenLinsenPrismen.Text;
@@ -401,6 +508,15 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 , durchmesserWaschen, freibereich, dicke, seite, brechwert, radiusVerguetung, radiusRueckseite, belagVerguetung, prozess
                 , belagRueckseite, ring, stkSegment, stkGesamt, zeitProzess, eingabedatum, bemerkungArtikel, vorreinigen, ucm, aceton
                 , bemerkungWaschen, revoNummer, pfadZeichnungAuflegen, pfadZusatzinfo, textZusatzinfo);
+        }
+
+        // Event-Handler wenn auf den Button geklickt wird
+        private void BtnArtikelAendern_Click(object sender, EventArgs e)
+        {
+            Form_ArtikelPrototypAendern form_ArtikelPrototypAendern = new Form_ArtikelPrototypAendern();
+            form_ArtikelPrototypAendern.Show(); // Zeigt das neue Formular an
+            form_ArtikelPrototypAendern.BringToFront(); // Bringt das neue Formular in den Vordergrund
+
         }
     }
 }
