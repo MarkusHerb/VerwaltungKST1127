@@ -20,16 +20,130 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             InitializeComponent();
             // Befülle die GNummer-ComboBox beim Initialisieren des Formulars
             FillComboBoxGNummer();
+            // Event-Handler für die ComboBoxBelagVerguetung verbinden
+            ComboboxBelagVerguetung.SelectedIndexChanged += ComboboxBelagVerguetung_SelectedIndexChanged;
             // Eventhandler für die ComboBoxGNummer hinzufügen, um auf Änderungen zu reagieren
             ComboboxGNummer.SelectedIndexChanged += ComboboxGNummer_SelectedIndexChanged;
             // Initialisiere die Glassorten-ComboBox mit allen Glassorten (keine GNummer-Auswahl)
             FillComboboxGlassorte(null);
             // Befülle die GNummer-ComboBox beim Initialisieren des Formulars
             FillComboboxRing();
+            FillComboBoxBelagVerguetungRueckseite();
             SetPlaceholders();
         }
 
         // ############## Selbst erstellte Funktionen ################
+        // Funktion um die ComboboxBelagVerguetung/Rueckseite mit eindeutigen GNummer-Werten zu befüllen
+        // Methode zum Füllen der ComboBox mit eindeutigen Werten aus der Datenbank
+        private void FillComboBoxBelagVerguetungRueckseite()
+        {
+            // SQL-Abfrage, um alle eindeutigen Werte aus der Spalte 'Belag' zu erhalten
+            string query = "SELECT DISTINCT Belag FROM Maximalwerte_Farbauswertung";
+
+            try
+            {
+                // Öffne die SQL-Verbindung
+                sqlConnectionVerwaltung.Open();
+
+                // Erstelle einen SqlCommand für die Abfrage
+                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
+                {
+                    // Führe die Abfrage aus und erhalte einen SqlDataReader
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        // Leere die ComboBox, bevor neue Einträge hinzugefügt werden
+                        ComboboxBelagVerguetung.Items.Clear();
+                        ComboboxBelagRueckseite.Items.Clear();
+
+                        // Überprüfe, ob es Daten gibt
+                        while (reader.Read())
+                        {
+                            // Hole den Wert der Spalte 'Belag'
+                            string belagValue = reader["Belag"].ToString();
+
+                            // Füge den Wert der ComboBox hinzu
+                            ComboboxBelagVerguetung.Items.Add(belagValue);
+                            ComboboxBelagRueckseite.Items.Add(belagValue);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Zeige eine Fehlermeldung an, wenn etwas schiefgeht
+                MessageBox.Show("Fehler beim Laden der Belagvergütungen: " + ex.Message);
+            }
+            finally
+            {
+                // Stelle sicher, dass die Verbindung nach der Abfrage geschlossen wird
+                if (sqlConnectionVerwaltung.State == ConnectionState.Open)
+                {
+                    sqlConnectionVerwaltung.Close();
+                }
+            }
+        }
+
+        // Funktion um die ComboboxProzess basierend auf der ausgewählten Belagvergütung zu befüllen
+        private void FillComboboxProzess(string belagVerguetung)
+        {
+            // SQL-Abfrage, um die zugehörigen Prozesse und Brechwerte für die ausgewählte Belagvergütung abzurufen
+            string query = @"
+        SELECT DISTINCT Prozess, Brechwert
+        FROM Maximalwerte_Farbauswertung
+        WHERE Belag = @Belag
+        ORDER BY Prozess ASC"; // Sortierung nach Prozess in aufsteigender Reihenfolge
+
+            try
+            {
+                // Öffne die SQL-Verbindung
+                sqlConnectionVerwaltung.Open();
+
+                // SQL-Befehl mit der Abfrage erstellen
+                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
+                {
+                    // Parameter für die Abfrage setzen
+                    sqlCommand.Parameters.AddWithValue("@Belag", belagVerguetung);
+
+                    // Führe die Abfrage aus und erhalte die Daten
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        // Leere die ComboBox bevor neue Einträge hinzugefügt werden
+                        ComboboxProzess.Items.Clear();
+
+                        // Überprüfe, ob es Daten gibt
+                        while (reader.Read())
+                        {
+                            // Hole den Prozess und den Brechwert aus der aktuellen Zeile
+                            string prozessValue = reader["Prozess"].ToString();
+                            string brechwertValue = reader["Brechwert"].ToString();
+
+                            // Kombiniere Prozess und Brechwert für die Anzeige in der ComboBox
+                            string displayValue = $"{prozessValue} {brechwertValue}";
+
+                            // Füge den kombinierten Wert der ComboBox hinzu
+                            ComboboxProzess.Items.Add(displayValue);
+                        }
+                    }
+                }
+
+                // Deaktiviere die automatische Sortierung der ComboBox
+                ComboboxProzess.Sorted = false; // Setzen auf false, um die Einträge in der Reihenfolge zu lassen, in der sie hinzugefügt wurden
+            }
+            catch (Exception ex)
+            {
+                // Zeige eine Fehlermeldung an, wenn etwas schiefgeht
+                MessageBox.Show("Fehler beim Laden der Prozesse: " + ex.Message);
+            }
+            finally
+            {
+                // Stelle sicher, dass die Verbindung nach der Abfrage geschlossen wird
+                if (sqlConnectionVerwaltung.State == System.Data.ConnectionState.Open)
+                {
+                    sqlConnectionVerwaltung.Close();
+                }
+            }
+        }
+
 
         // Funktion um die ComboboxGNummer mit eindeutigen GNummer-Werten zu befüllen
         private void FillComboBoxGNummer()
@@ -198,69 +312,79 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-        // Funktion, dass die Daten in der Serienlinsen Tabelle gespeichert werden
         private void SpeichereDatenInDatenbank(string artikelnummer, string bezeichnung, string status, string gruppenname, string zukauf, string flaeche
-     , string gNummer, string glassorte, decimal durchmesser, string durchmesserWaschen, decimal freibereich, decimal dicke, string seite, decimal brechwert
-     , string radiusVerguetung, string radiusRueckseite, string belagVerguetung, string prozess, string belagRueckseite, string ring, string stkSegment
-     , string stkGesamt, decimal zeitProzess, DateTime eingabedatum, string bemerkungArtikel, string vorreinigen, string ucm, string aceton, string bemerkungWaschen
-     , string revoNummer, string pfadZeichnungAuflegen, string pfadZusatzinfo, string textZusatzinfo)
+            , string gNummer, string glassorte, decimal durchmesser, string durchmesserWaschen, decimal freibereich, decimal dicke, string seite, decimal brechwert
+            , string radiusVerguetung, string radiusRueckseite, string belagVerguetung, string prozess, string belagRueckseite, string ring, string stkSegment
+            , string stkGesamt, decimal zeitProzess, DateTime eingabedatum, string bemerkungArtikel, string vorreinigen, string ucm, string aceton, string bemerkungWaschen
+            , string revoNummer, string pfadZeichnungAuflegen, string pfadZusatzinfo, string textZusatzinfo)
         {
             try
             {
-                sqlConnectionVerwaltung.Open();
-                // SQL-Befehl zum Einfügen der Daten
-                string query = @"
-        INSERT INTO Serienlinsen ([ARTNR], [BEZ], [Status], [GruppenName], [Zukauf], [Innen-Aussen], [G_Nummer], [GLASSORTE], [DM], [Waschen_DM], [FREI], [DICKE], [SEITE],
-            [ND], [Radius1], [Radius2], [Belag1], [VERGBELAG], [MATERIAL], [Belag2], [RING], [STK_SEGM], [STK_CHARGE], [CHARGENZEIT], [Anmerkungsdatum], [BEMERKUNG],
-            [Vorreinigung], [HFE_Anlage], [Aceton], [Waschanmerkungen], [refo_avonr], [Zeichnungspfad], [InfoZeichnung], [InfoZeichnung_Bemerkungen])
-        VALUES (@ARTNR, @BEZ, @Status, @GruppenName, @Zukauf, @InnenAussen, @G_Nummer, @GLASSORTE, @DM, @Waschen_DM, @FREI, @DICKE, @SEITE,
-            @ND, @Radius1, @Radius2, @Belag1, @VERGBELAG, @MATERIAL, @Belag2, @RING, @STK_SEGM, @STK_CHARGE, @CHARGENZEIT, @Anmerkungsdatum, @BEMERKUNG,
-            @Vorreinigung, @HFE_Anlage, @Aceton, @Waschanmerkungen, @refo_avonr, @Zeichnungspfad, @InfoZeichnung, @InfoZeichnung_Bemerkungen)";
-
-
-                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
+                using (SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False"))
                 {
-                    // Werte als Parameter hinzufügen
-                    sqlCommand.Parameters.AddWithValue("@ARTNR", artikelnummer);
-                    sqlCommand.Parameters.AddWithValue("@BEZ", bezeichnung);
-                    sqlCommand.Parameters.AddWithValue("@Status", status);
-                    sqlCommand.Parameters.AddWithValue("@GruppenName", gruppenname);
-                    sqlCommand.Parameters.AddWithValue("@Zukauf", zukauf);
-                    sqlCommand.Parameters.AddWithValue("@InnenAussen", flaeche);
-                    sqlCommand.Parameters.AddWithValue("@G_Nummer", gNummer);
-                    sqlCommand.Parameters.AddWithValue("@GLASSORTE", glassorte);
-                    sqlCommand.Parameters.AddWithValue("@DM", durchmesser);
-                    sqlCommand.Parameters.AddWithValue("@Waschen_DM", durchmesserWaschen);
-                    sqlCommand.Parameters.AddWithValue("@FREI", freibereich);
-                    sqlCommand.Parameters.AddWithValue("@DICKE", dicke);
-                    sqlCommand.Parameters.AddWithValue("@SEITE", seite);
-                    sqlCommand.Parameters.AddWithValue("@ND", brechwert);
-                    sqlCommand.Parameters.AddWithValue("@Radius1", radiusVerguetung);
-                    sqlCommand.Parameters.AddWithValue("@Radius2", radiusRueckseite);
-                    sqlCommand.Parameters.AddWithValue("@Belag1", belagVerguetung);
-                    sqlCommand.Parameters.AddWithValue("@VERGBELAG", belagVerguetung);
-                    sqlCommand.Parameters.AddWithValue("@MATERIAL", prozess);
-                    sqlCommand.Parameters.AddWithValue("@Belag2", belagRueckseite);
-                    sqlCommand.Parameters.AddWithValue("@RING", ring);
-                    sqlCommand.Parameters.AddWithValue("@STK_SEGM", stkSegment);
-                    sqlCommand.Parameters.AddWithValue("@STK_CHARGE", stkGesamt);
-                    sqlCommand.Parameters.AddWithValue("@CHARGENZEIT", zeitProzess);
-                    sqlCommand.Parameters.AddWithValue("@Anmerkungsdatum", eingabedatum);
-                    sqlCommand.Parameters.AddWithValue("@BEMERKUNG", bemerkungArtikel);
-                    sqlCommand.Parameters.AddWithValue("@Vorreinigung", vorreinigen);
-                    sqlCommand.Parameters.AddWithValue("@HFE_Anlage", ucm);
-                    sqlCommand.Parameters.AddWithValue("@Aceton", aceton);
-                    sqlCommand.Parameters.AddWithValue("@Waschanmerkungen", bemerkungWaschen);
-                    sqlCommand.Parameters.AddWithValue("@refo_avonr", revoNummer);
-                    sqlCommand.Parameters.AddWithValue("@Zeichnungspfad", pfadZeichnungAuflegen);
-                    sqlCommand.Parameters.AddWithValue("@InfoZeichnung", pfadZusatzinfo);
-                    sqlCommand.Parameters.AddWithValue("@InfoZeichnung_Bemerkungen", textZusatzinfo);
+                    sqlConnectionVerwaltung.Open();
 
-                    // SQL-Befehl ausführen
-                    sqlCommand.ExecuteNonQuery();
+                    string query = @"
+                INSERT INTO Serienlinsen ([ARTNR], [BEZ], [Status], [GruppenName], [Zukauf], [Innen-Aussen], [G_Nummer], [GLASSORTE], [DM], [Waschen_DM], [FREI], [DICKE], [SEITE],
+                    [ND], [Radius1], [Radius2], [Belag1], [VERGBELAG], [MATERIAL], [Belag2], [RING], [STK_SEGM], [STK_CHARGE], [CHARGENZEIT], [Anmerkungsdatum], [BEMERKUNG],
+                    [Vorreinigung], [HFE_Anlage], [Aceton], [Waschanmerkungen], [refo_avonr], [Zeichnungspfad], [InfoZeichnung], [InfoZeichnung_Bemerkungen])
+                VALUES (@ARTNR, @BEZ, @Status, @GruppenName, @Zukauf, @InnenAussen, @G_Nummer, @GLASSORTE, @DM, @Waschen_DM, @FREI, @DICKE, @SEITE,
+                    @ND, @Radius1, @Radius2, @Belag1, @VERGBELAG, @MATERIAL, @Belag2, @RING, @STK_SEGM, @STK_CHARGE, @CHARGENZEIT, @Anmerkungsdatum, @BEMERKUNG,
+                    @Vorreinigung, @HFE_Anlage, @Aceton, @Waschanmerkungen, @refo_avonr, @Zeichnungspfad, @InfoZeichnung, @InfoZeichnung_Bemerkungen)";
+
+                    using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
+                    {
+                        // Parameter hinzufügen
+                        sqlCommand.Parameters.AddWithValue("@ARTNR", artikelnummer);
+                        sqlCommand.Parameters.AddWithValue("@BEZ", bezeichnung);
+                        sqlCommand.Parameters.AddWithValue("@Status", status);
+                        sqlCommand.Parameters.AddWithValue("@GruppenName", gruppenname);
+                        sqlCommand.Parameters.AddWithValue("@Zukauf", zukauf);
+                        sqlCommand.Parameters.AddWithValue("@InnenAussen", flaeche);
+                        sqlCommand.Parameters.AddWithValue("@G_Nummer", gNummer);
+                        sqlCommand.Parameters.AddWithValue("@GLASSORTE", glassorte);
+                        sqlCommand.Parameters.AddWithValue("@DM", durchmesser);
+                        sqlCommand.Parameters.AddWithValue("@Waschen_DM", durchmesserWaschen);
+                        sqlCommand.Parameters.AddWithValue("@FREI", freibereich);
+                        sqlCommand.Parameters.AddWithValue("@DICKE", dicke);
+                        sqlCommand.Parameters.AddWithValue("@SEITE", seite);
+                        sqlCommand.Parameters.AddWithValue("@ND", brechwert);
+                        sqlCommand.Parameters.AddWithValue("@Radius1", radiusVerguetung);
+                        sqlCommand.Parameters.AddWithValue("@Radius2", radiusRueckseite);
+                        sqlCommand.Parameters.AddWithValue("@Belag1", belagVerguetung);
+                        sqlCommand.Parameters.AddWithValue("@VERGBELAG", belagVerguetung);
+                        sqlCommand.Parameters.AddWithValue("@MATERIAL", prozess);
+                        sqlCommand.Parameters.AddWithValue("@Belag2", belagRueckseite);
+                        sqlCommand.Parameters.AddWithValue("@RING", ring);
+                        sqlCommand.Parameters.AddWithValue("@STK_SEGM", stkSegment);
+                        sqlCommand.Parameters.AddWithValue("@STK_CHARGE", stkGesamt);
+                        sqlCommand.Parameters.AddWithValue("@CHARGENZEIT", zeitProzess);
+                        sqlCommand.Parameters.AddWithValue("@Anmerkungsdatum", eingabedatum);
+                        sqlCommand.Parameters.AddWithValue("@BEMERKUNG", bemerkungArtikel);
+                        sqlCommand.Parameters.AddWithValue("@Vorreinigung", vorreinigen);
+                        sqlCommand.Parameters.AddWithValue("@HFE_Anlage", ucm);
+                        sqlCommand.Parameters.AddWithValue("@Aceton", aceton);
+                        sqlCommand.Parameters.AddWithValue("@Waschanmerkungen", bemerkungWaschen);
+                        sqlCommand.Parameters.AddWithValue("@refo_avonr", revoNummer);
+                        sqlCommand.Parameters.AddWithValue("@Zeichnungspfad", pfadZeichnungAuflegen);
+                        sqlCommand.Parameters.AddWithValue("@InfoZeichnung", pfadZusatzinfo);
+                        sqlCommand.Parameters.AddWithValue("@InfoZeichnung_Bemerkungen", textZusatzinfo);
+
+                        sqlCommand.ExecuteNonQuery();
+                    }
                 }
 
                 MessageBox.Show("Daten erfolgreich gespeichert!");
+
+                DialogResult result = MessageBox.Show("Noch eine weitere Seite eingeben?", "Frage", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    ClearFildsForSecoundThird();
+                }
+                else
+                {
+                    ClearAllFields();
+                }
             }
             catch (SqlException sqlEx)
             {
@@ -270,11 +394,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             {
                 MessageBox.Show("Fehler: " + ex.Message);
             }
-            finally
-            {              
-                sqlConnectionVerwaltung.Close();
-            }
-            ClearAllFields();
         }
 
         // Funktion um die felder zu leeren
@@ -289,35 +408,78 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             TxtboxDicke.Text = string.Empty;
             TxtboxBrechwert.Text = string.Empty;
             TxtboxZeitProzess.Text = string.Empty;
+            TxtboxRadiusVerguetung.Text = string.Empty;
+            TxtboxRadiusRueckseite.Text = string.Empty;          
             TxtboxStkSegment.Text = string.Empty;
             TxtboxStkCharge.Text = string.Empty;
             txtBoxRevoNr.Text = string.Empty;
-
-            // Setze alle ComboBoxen auf String.Empty
-            ComboboxStatus.Text = string.Empty;
-            ComboBoxZukauf.Text = string.Empty;
-            ComboBoxFlaeche.Text = string.Empty;
-            ComboboxGNummer.Text = string.Empty;
-            ComboboxGlassorte.Text = string.Empty;
-            ComboboxSeite.Text = string.Empty;
-            ComboboxRing.Text = string.Empty;
-            ComboboxVorreinigen.Text = string.Empty;
-            ComboboxUCM497.Text = string.Empty;
-            ComboboxAceton.Text = string.Empty;
-
+            // Setze alle ComboBoxen auf ihre Standardwerte zurück
+            ComboboxBelagVerguetung.SelectedIndex = -1;
+            ComboboxBelagRueckseite.SelectedIndex = -1;
+            ComboboxProzess.SelectedIndex = -1;
+            ComboboxStatus.SelectedIndex = -1;
+            ComboBoxZukauf.SelectedIndex = -1;
+            ComboBoxFlaeche.SelectedIndex = -1;
+            ComboboxGlassorte.SelectedIndex = -1;
+            ComboboxGNummer.SelectedIndex = -1;           
+            ComboboxSeite.SelectedIndex = -1;
+            ComboboxRing.SelectedIndex = -1;
+            ComboboxVorreinigen.SelectedIndex = -1;
+            ComboboxUCM497.SelectedIndex = -1;
+            ComboboxAceton.SelectedIndex = -1;
             // Setze alle RichTextBoxen auf String.Empty
             RichtxtboxBemerkung.Text = string.Empty;
             RichtxtboxBemerkungWaschen.Text = string.Empty;
             RichtxtboxZusatzinfo.Text = string.Empty;
+            // Setze alle Labels + Picturrboxen auf Ausgangszustand
+            PictureboxAuflegenLinsenPrismen.Image = null;
+            PictureboxZusatzinfo.Image = null;
+            // Setze eine Hintergrundfarbe für die PictureBoxen, damit sie sichtbar bleiben
+            PictureboxAuflegenLinsenPrismen.BackColor = Color.White; // Oder eine andere Farbe, die sich vom Formularhintergrund abhebt
+            PictureboxZusatzinfo.BackColor = Color.White;
+            LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen";
+            LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen";
+            // Setze den DateTimePicker auf das heutige Datum
+            DateTimePickerAufgenommenLinsePrisma.Value = DateTime.Now;           
+        }
 
-            // Setze alle Labels auf String.Empty
-            LblPfadAuflegenLinsenPrismen.Text = string.Empty;
-            LblPfadZusatzinfo.Text = string.Empty;
-
+        private void ClearFildsForSecoundThird()
+        {
+            // Setze alle TextBoxen auf String.Empty
+            TxtboxFreibereich.Text = string.Empty;
+            TxtboxZeitProzess.Text = string.Empty;
+            TxtboxRadiusVerguetung.Text = string.Empty;
+            TxtboxRadiusRueckseite.Text = string.Empty;           
+            TxtboxRadiusVerguetung.Text = string.Empty;
+            TxtboxStkSegment.Text = string.Empty;
+            TxtboxStkCharge.Text = string.Empty;
+            txtBoxRevoNr.Text = string.Empty;
+            // Setze alle ComboBoxen auf ihre Standardwerte zurück
+            ComboBoxFlaeche.SelectedIndex = -1;
+            ComboboxSeite.SelectedIndex = -1;
+            ComboboxVorreinigen.SelectedIndex = -1;
+            ComboboxUCM497.SelectedIndex = -1;
+            ComboboxAceton.SelectedIndex = -1;
+            ComboboxBelagVerguetung.SelectedIndex = -1;
+            ComboboxBelagRueckseite.SelectedIndex = -1;
+            ComboboxProzess.SelectedIndex = -1;
+            ComboboxSeite.SelectedIndex = -1;
+            // Setze alle RichTextBoxen auf String.Empty
+            RichtxtboxBemerkung.Text = string.Empty;
+            RichtxtboxBemerkungWaschen.Text = string.Empty;
+            RichtxtboxZusatzinfo.Text = string.Empty;
+            // Setze alle Labels + Picturrboxen auf Ausgangszustand
+            PictureboxAuflegenLinsenPrismen.Image = null;
+            PictureboxZusatzinfo.Image = null;
+            // Setze eine Hintergrundfarbe für die PictureBoxen, damit sie sichtbar bleiben
+            PictureboxAuflegenLinsenPrismen.BackColor = Color.White; // Oder eine andere Farbe, die sich vom Formularhintergrund abhebt
+            PictureboxZusatzinfo.BackColor = Color.White;
+            LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen";
+            LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen";
             // Setze den DateTimePicker auf das heutige Datum
             DateTimePickerAufgenommenLinsePrisma.Value = DateTime.Now;
         }
-
+        // Funktion um die felder zu leeren wenn eine weiter seite eingegeben werden soll
         private void SetPlaceholders()
         {
             SetPlaceholder(TxtboxDurchmesser, "xx,xx");
@@ -325,6 +487,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             SetPlaceholder(TxtboxFreibereich, "xx,xx");
             SetPlaceholder(TxtboxDicke, "x,xx bzw xx,xx");
             SetPlaceholder(TxtboxZeitProzess, "x,xx");
+            SetPlaceholder(TxtboxBrechwert, "x,xx");
         }
 
         private void SetPlaceholder(TextBox textBox, string placeholderText)
@@ -352,7 +515,19 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         }
 
         // ############## Event-Handler  ################
+        // Eventhandler für die Änderung der Auswahl in der ComboboxBelagVerguetung
+        private void ComboboxBelagVerguetung_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboboxBelagVerguetung.SelectedItem != null)
+            {
+                // Hole die ausgewählte Belagvergütung
+                string selectedBelagVerguetung = ComboboxBelagVerguetung.SelectedItem.ToString();
 
+                // Rufe die Methode auf, um die ComboboxProzess zu befüllen
+                FillComboboxProzess(selectedBelagVerguetung);
+            }
+            
+        }
         // Eventhandler für die Änderung der Auswahl in der ComboboxGNummer
         private void ComboboxGNummer_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -440,7 +615,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             // Konvertiere Strings zu Decimals und runde auf zwei Nachkommastellen
             if (!decimal.TryParse(TxtboxDurchmesser.Text, out decimal durchmesser))
             {
-                MessageBox.Show("Ungültiger Wert für Durchmesser. Bitte überprüfen Sie das Format oder eine 0 eingebenoder eine 0 eingeben.");
+                MessageBox.Show("Ungültiger Wert für Durchmesser. Bitte überprüfen Sie das Format oder eine 0 eingebenoder.");
                 return;
             }
             durchmesser = Math.Round(durchmesser, 2);
@@ -477,9 +652,10 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             string seite = ComboboxSeite.Text;
             string radiusVerguetung = TxtboxRadiusVerguetung.Text;
             string radiusRueckseite = TxtboxRadiusRueckseite.Text;
-            string belagVerguetung = TxtboxBelagVerguetung.Text;
-            string prozess = TxtboxBelagProzess.Text;
-            string belagRueckseite = TxtboxBelagRueckseite.Text;
+            string belagVerguetung = ComboboxBelagVerguetung.Text;
+            string belagRueckseite = ComboboxBelagRueckseite.Text;
+            string[] prozessArray = belagVerguetung.Split(' ').Select(s => s.Trim()).ToArray();
+            string prozess = prozessArray[0];
             string ringeingabe = ComboboxRing.Text;
             string[] ringnameArray = ringeingabe.Split('-').Select(x => x.Trim()).ToArray();
             string ring = ringnameArray[0];
@@ -516,7 +692,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             Form_ArtikelPrototypAendern form_ArtikelPrototypAendern = new Form_ArtikelPrototypAendern();
             form_ArtikelPrototypAendern.Show(); // Zeigt das neue Formular an
             form_ArtikelPrototypAendern.BringToFront(); // Bringt das neue Formular in den Vordergrund
-
         }
     }
 }

@@ -60,11 +60,8 @@
             this.label15 = new System.Windows.Forms.Label();
             this.TxtboxRadiusRueckseite = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
-            this.TxtboxBelagVerguetung = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
-            this.TxtboxBelagProzess = new System.Windows.Forms.TextBox();
             this.lbll = new System.Windows.Forms.Label();
-            this.TxtboxBelagRueckseite = new System.Windows.Forms.TextBox();
             this.ComboboxRing = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
@@ -102,6 +99,9 @@
             this.txtBoxRevoNr = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.BtnArtikelAendern = new System.Windows.Forms.Button();
+            this.ComboboxBelagVerguetung = new System.Windows.Forms.ComboBox();
+            this.ComboboxProzess = new System.Windows.Forms.ComboBox();
+            this.ComboboxBelagRueckseite = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxAuflegenLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxZusatzinfo)).BeginInit();
             this.SuspendLayout();
@@ -317,7 +317,7 @@
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(17, 348);
+            this.label12.Location = new System.Drawing.Point(17, 345);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(54, 20);
             this.label12.TabIndex = 36;
@@ -424,52 +424,25 @@
             this.label16.TabIndex = 46;
             this.label16.Text = "Belag Vergüt.";
             // 
-            // TxtboxBelagVerguetung
-            // 
-            this.TxtboxBelagVerguetung.BackColor = System.Drawing.Color.White;
-            this.TxtboxBelagVerguetung.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtboxBelagVerguetung.Location = new System.Drawing.Point(503, 142);
-            this.TxtboxBelagVerguetung.Name = "TxtboxBelagVerguetung";
-            this.TxtboxBelagVerguetung.Size = new System.Drawing.Size(160, 26);
-            this.TxtboxBelagVerguetung.TabIndex = 45;
-            // 
             // label17
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(362, 180);
+            this.label17.Location = new System.Drawing.Point(362, 184);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(73, 20);
             this.label17.TabIndex = 48;
             this.label17.Text = "Prozess";
             // 
-            // TxtboxBelagProzess
-            // 
-            this.TxtboxBelagProzess.BackColor = System.Drawing.Color.White;
-            this.TxtboxBelagProzess.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtboxBelagProzess.Location = new System.Drawing.Point(503, 174);
-            this.TxtboxBelagProzess.Name = "TxtboxBelagProzess";
-            this.TxtboxBelagProzess.Size = new System.Drawing.Size(160, 26);
-            this.TxtboxBelagProzess.TabIndex = 47;
-            // 
             // lbll
             // 
             this.lbll.AutoSize = true;
             this.lbll.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbll.Location = new System.Drawing.Point(362, 212);
+            this.lbll.Location = new System.Drawing.Point(362, 218);
             this.lbll.Name = "lbll";
             this.lbll.Size = new System.Drawing.Size(115, 20);
             this.lbll.TabIndex = 50;
             this.lbll.Text = "Belag Rücks.";
-            // 
-            // TxtboxBelagRueckseite
-            // 
-            this.TxtboxBelagRueckseite.BackColor = System.Drawing.Color.White;
-            this.TxtboxBelagRueckseite.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtboxBelagRueckseite.Location = new System.Drawing.Point(503, 206);
-            this.TxtboxBelagRueckseite.Name = "TxtboxBelagRueckseite";
-            this.TxtboxBelagRueckseite.Size = new System.Drawing.Size(160, 26);
-            this.TxtboxBelagRueckseite.TabIndex = 49;
             // 
             // ComboboxRing
             // 
@@ -477,7 +450,7 @@
             this.ComboboxRing.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ComboboxRing.FormattingEnabled = true;
             this.ComboboxRing.ItemHeight = 20;
-            this.ComboboxRing.Location = new System.Drawing.Point(503, 238);
+            this.ComboboxRing.Location = new System.Drawing.Point(503, 244);
             this.ComboboxRing.Name = "ComboboxRing";
             this.ComboboxRing.Size = new System.Drawing.Size(160, 28);
             this.ComboboxRing.TabIndex = 51;
@@ -486,7 +459,7 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(362, 244);
+            this.label18.Location = new System.Drawing.Point(362, 252);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(46, 20);
             this.label18.TabIndex = 52;
@@ -496,7 +469,7 @@
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(362, 278);
+            this.label19.Location = new System.Drawing.Point(362, 281);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(118, 20);
             this.label19.TabIndex = 54;
@@ -506,7 +479,7 @@
             // 
             this.TxtboxStkSegment.BackColor = System.Drawing.Color.White;
             this.TxtboxStkSegment.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtboxStkSegment.Location = new System.Drawing.Point(503, 272);
+            this.TxtboxStkSegment.Location = new System.Drawing.Point(503, 278);
             this.TxtboxStkSegment.Name = "TxtboxStkSegment";
             this.TxtboxStkSegment.Size = new System.Drawing.Size(160, 26);
             this.TxtboxStkSegment.TabIndex = 53;
@@ -515,7 +488,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(362, 310);
+            this.label20.Location = new System.Drawing.Point(362, 313);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(104, 20);
             this.label20.TabIndex = 56;
@@ -525,7 +498,7 @@
             // 
             this.TxtboxStkCharge.BackColor = System.Drawing.Color.White;
             this.TxtboxStkCharge.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtboxStkCharge.Location = new System.Drawing.Point(503, 304);
+            this.TxtboxStkCharge.Location = new System.Drawing.Point(503, 310);
             this.TxtboxStkCharge.Name = "TxtboxStkCharge";
             this.TxtboxStkCharge.Size = new System.Drawing.Size(160, 26);
             this.TxtboxStkCharge.TabIndex = 55;
@@ -534,7 +507,7 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(362, 342);
+            this.label21.Location = new System.Drawing.Point(362, 345);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(109, 20);
             this.label21.TabIndex = 58;
@@ -544,7 +517,7 @@
             // 
             this.TxtboxZeitProzess.BackColor = System.Drawing.Color.White;
             this.TxtboxZeitProzess.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtboxZeitProzess.Location = new System.Drawing.Point(503, 336);
+            this.TxtboxZeitProzess.Location = new System.Drawing.Point(504, 342);
             this.TxtboxZeitProzess.Name = "TxtboxZeitProzess";
             this.TxtboxZeitProzess.Size = new System.Drawing.Size(160, 26);
             this.TxtboxZeitProzess.TabIndex = 57;
@@ -578,22 +551,24 @@
             // 
             // PictureboxAuflegenLinsenPrismen
             // 
+            this.PictureboxAuflegenLinsenPrismen.BackColor = System.Drawing.Color.White;
             this.PictureboxAuflegenLinsenPrismen.Image = ((System.Drawing.Image)(resources.GetObject("PictureboxAuflegenLinsenPrismen.Image")));
             this.PictureboxAuflegenLinsenPrismen.Location = new System.Drawing.Point(681, 46);
             this.PictureboxAuflegenLinsenPrismen.Name = "PictureboxAuflegenLinsenPrismen";
             this.PictureboxAuflegenLinsenPrismen.Size = new System.Drawing.Size(399, 226);
-            this.PictureboxAuflegenLinsenPrismen.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PictureboxAuflegenLinsenPrismen.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PictureboxAuflegenLinsenPrismen.TabIndex = 65;
             this.PictureboxAuflegenLinsenPrismen.TabStop = false;
             this.PictureboxAuflegenLinsenPrismen.DoubleClick += new System.EventHandler(this.PictureboxAuflegenLinsenPrismen_DoubleClick);
             // 
             // PictureboxZusatzinfo
             // 
+            this.PictureboxZusatzinfo.BackColor = System.Drawing.Color.White;
             this.PictureboxZusatzinfo.Image = ((System.Drawing.Image)(resources.GetObject("PictureboxZusatzinfo.Image")));
             this.PictureboxZusatzinfo.Location = new System.Drawing.Point(680, 336);
             this.PictureboxZusatzinfo.Name = "PictureboxZusatzinfo";
             this.PictureboxZusatzinfo.Size = new System.Drawing.Size(399, 226);
-            this.PictureboxZusatzinfo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PictureboxZusatzinfo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PictureboxZusatzinfo.TabIndex = 66;
             this.PictureboxZusatzinfo.TabStop = false;
             this.PictureboxZusatzinfo.DoubleClick += new System.EventHandler(this.PictureboxZusatzinfo_DoubleClick);
@@ -601,18 +576,20 @@
             // LblPfadAuflegenLinsenPrismen
             // 
             this.LblPfadAuflegenLinsenPrismen.AutoSize = true;
+            this.LblPfadAuflegenLinsenPrismen.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblPfadAuflegenLinsenPrismen.Location = new System.Drawing.Point(679, 277);
             this.LblPfadAuflegenLinsenPrismen.Name = "LblPfadAuflegenLinsenPrismen";
-            this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(373, 13);
+            this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(367, 13);
             this.LblPfadAuflegenLinsenPrismen.TabIndex = 67;
             this.LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen; Wenn kein bild -> Leerbild auswählen";
             // 
             // LblPfadZusatzinfo
             // 
             this.LblPfadZusatzinfo.AutoSize = true;
+            this.LblPfadZusatzinfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblPfadZusatzinfo.Location = new System.Drawing.Point(678, 567);
             this.LblPfadZusatzinfo.Name = "LblPfadZusatzinfo";
-            this.LblPfadZusatzinfo.Size = new System.Drawing.Size(373, 13);
+            this.LblPfadZusatzinfo.Size = new System.Drawing.Size(367, 13);
             this.LblPfadZusatzinfo.TabIndex = 68;
             this.LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen; Wenn kein bild -> Leerbild auswählen";
             // 
@@ -860,12 +837,49 @@
             this.BtnArtikelAendern.UseVisualStyleBackColor = false;
             this.BtnArtikelAendern.Click += new System.EventHandler(this.BtnArtikelAendern_Click);
             // 
+            // ComboboxBelagVerguetung
+            // 
+            this.ComboboxBelagVerguetung.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboboxBelagVerguetung.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ComboboxBelagVerguetung.FormattingEnabled = true;
+            this.ComboboxBelagVerguetung.ItemHeight = 20;
+            this.ComboboxBelagVerguetung.Location = new System.Drawing.Point(504, 142);
+            this.ComboboxBelagVerguetung.Name = "ComboboxBelagVerguetung";
+            this.ComboboxBelagVerguetung.Size = new System.Drawing.Size(160, 28);
+            this.ComboboxBelagVerguetung.TabIndex = 91;
+            this.ComboboxBelagVerguetung.SelectedIndexChanged += new System.EventHandler(this.ComboboxBelagVerguetung_SelectedIndexChanged);
+            // 
+            // ComboboxProzess
+            // 
+            this.ComboboxProzess.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboboxProzess.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ComboboxProzess.FormattingEnabled = true;
+            this.ComboboxProzess.ItemHeight = 20;
+            this.ComboboxProzess.Location = new System.Drawing.Point(503, 176);
+            this.ComboboxProzess.Name = "ComboboxProzess";
+            this.ComboboxProzess.Size = new System.Drawing.Size(160, 28);
+            this.ComboboxProzess.TabIndex = 92;
+            // 
+            // ComboboxBelagRueckseite
+            // 
+            this.ComboboxBelagRueckseite.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboboxBelagRueckseite.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ComboboxBelagRueckseite.FormattingEnabled = true;
+            this.ComboboxBelagRueckseite.ItemHeight = 20;
+            this.ComboboxBelagRueckseite.Location = new System.Drawing.Point(503, 210);
+            this.ComboboxBelagRueckseite.Name = "ComboboxBelagRueckseite";
+            this.ComboboxBelagRueckseite.Size = new System.Drawing.Size(160, 28);
+            this.ComboboxBelagRueckseite.TabIndex = 93;
+            // 
             // Form_EingabeSeriePrototyp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1090, 743);
+            this.Controls.Add(this.ComboboxBelagRueckseite);
+            this.Controls.Add(this.ComboboxProzess);
+            this.Controls.Add(this.ComboboxBelagVerguetung);
             this.Controls.Add(this.BtnArtikelAendern);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.label32);
@@ -904,11 +918,8 @@
             this.Controls.Add(this.ComboboxRing);
             this.Controls.Add(this.label18);
             this.Controls.Add(this.lbll);
-            this.Controls.Add(this.TxtboxBelagRueckseite);
             this.Controls.Add(this.label17);
-            this.Controls.Add(this.TxtboxBelagProzess);
             this.Controls.Add(this.label16);
-            this.Controls.Add(this.TxtboxBelagVerguetung);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.TxtboxRadiusRueckseite);
             this.Controls.Add(this.label14);
@@ -982,11 +993,8 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox TxtboxRadiusRueckseite;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox TxtboxBelagVerguetung;
         private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox TxtboxBelagProzess;
         private System.Windows.Forms.Label lbll;
-        private System.Windows.Forms.TextBox TxtboxBelagRueckseite;
         private System.Windows.Forms.ComboBox ComboboxRing;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
@@ -1024,5 +1032,8 @@
         private System.Windows.Forms.TextBox txtBoxRevoNr;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Button BtnArtikelAendern;
+        private System.Windows.Forms.ComboBox ComboboxBelagVerguetung;
+        private System.Windows.Forms.ComboBox ComboboxProzess;
+        private System.Windows.Forms.ComboBox ComboboxBelagRueckseite;
     }
 }

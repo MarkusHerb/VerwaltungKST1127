@@ -39,11 +39,10 @@ namespace VerwaltungKST1127
         }
 
         // Button Event, wenn man darauf klickt
-        private void BtnArtikelAendern_Click(object sender, EventArgs e)
+        private void BtnPrototypenAuftragErstellen_Click(object sender, EventArgs e)
         {
-            // Formular ArtikelPrototypAendern öffnen
-            Form_ArtikelPrototypAendern form_ArtikelAender = new Form_ArtikelPrototypAendern();
-            form_ArtikelAender.ShowDialog();
+            Form_PrototypenauftragErstellen form_PrototypenauftragErstellen = new Form_PrototypenauftragErstellen();
+            form_PrototypenauftragErstellen.ShowDialog();
         }
     }
 }

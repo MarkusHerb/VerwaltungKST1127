@@ -188,6 +188,12 @@
     <Compile Include="EingabeSerienartikelPrototyp\Form_EingabeSeriePrototyp.Designer.cs">
       <DependentUpon>Form_EingabeSeriePrototyp.cs</DependentUpon>
     </Compile>
+    <Compile Include="EingabeSerienartikelPrototyp\Form_PrototypenauftragErstellen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EingabeSerienartikelPrototyp\Form_PrototypenauftragErstellen.Designer.cs">
+      <DependentUpon>Form_PrototypenauftragErstellen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Start.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -201,6 +207,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_EingabeSeriePrototyp.resx">
       <DependentUpon>Form_EingabeSeriePrototyp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_PrototypenauftragErstellen.resx">
+      <DependentUpon>Form_PrototypenauftragErstellen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Start.resx">
       <DependentUpon>Form_Start.cs</DependentUpon>

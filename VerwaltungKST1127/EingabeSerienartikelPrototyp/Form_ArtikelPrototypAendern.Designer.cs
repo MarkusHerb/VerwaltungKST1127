@@ -62,21 +62,18 @@
             this.TxtboxStkCharge = new System.Windows.Forms.TextBox();
             this.label19 = new System.Windows.Forms.Label();
             this.TxtboxStkSegment = new System.Windows.Forms.TextBox();
-            this.ComboboxRing = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
             this.lbll = new System.Windows.Forms.Label();
             this.TxtboxBelagRueckseite = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.TxtboxBelagProzess = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
-            this.TxtboxBelagVerguetung = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.TxtboxRadiusRueckseite = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.TxtboxRadiusVerguetung = new System.Windows.Forms.TextBox();
             this.lbl = new System.Windows.Forms.Label();
             this.TxtboxBrechwert = new System.Windows.Forms.TextBox();
-            this.ComboboxSeite = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.TxtboxDicke = new System.Windows.Forms.TextBox();
@@ -86,9 +83,7 @@
             this.TxtboxDmWaschen = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.TxtboxDurchmesser = new System.Windows.Forms.TextBox();
-            this.ComboboxGlassorte = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
-            this.ComboboxGNummer = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.ComboBoxFlaeche = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -102,6 +97,14 @@
             this.TxtboxArtikelnummer = new System.Windows.Forms.TextBox();
             this.label33 = new System.Windows.Forms.Label();
             this.ComboboxAuswahlArtikel = new System.Windows.Forms.ComboBox();
+            this.label34 = new System.Windows.Forms.Label();
+            this.DateTimePickerGeändert = new System.Windows.Forms.DateTimePicker();
+            this.TxtboxRing = new System.Windows.Forms.TextBox();
+            this.BtnArtikelUpdaten = new System.Windows.Forms.Button();
+            this.TxtboxBelagVerguetung = new System.Windows.Forms.TextBox();
+            this.TxtboxGNummer = new System.Windows.Forms.TextBox();
+            this.TxtboxGlassorte = new System.Windows.Forms.TextBox();
+            this.TxtboxSeite = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxZusatzinfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxAuflegenLinsenPrismen)).BeginInit();
             this.SuspendLayout();
@@ -287,9 +290,9 @@
             this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label25.Location = new System.Drawing.Point(16, 434);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(85, 20);
+            this.label25.Size = new System.Drawing.Size(125, 20);
             this.label25.TabIndex = 145;
-            this.label25.Text = "Geändert";
+            this.label25.Text = "Aufgenommen";
             // 
             // DateTimePickerGeaendertLinsePrisma
             // 
@@ -329,40 +332,45 @@
             // LblPfadZusatzinfo
             // 
             this.LblPfadZusatzinfo.AutoSize = true;
+            this.LblPfadZusatzinfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblPfadZusatzinfo.Location = new System.Drawing.Point(676, 567);
             this.LblPfadZusatzinfo.Name = "LblPfadZusatzinfo";
-            this.LblPfadZusatzinfo.Size = new System.Drawing.Size(190, 13);
+            this.LblPfadZusatzinfo.Size = new System.Drawing.Size(187, 13);
             this.LblPfadZusatzinfo.TabIndex = 140;
             this.LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen";
             // 
             // LblPfadAuflegenLinsenPrismen
             // 
             this.LblPfadAuflegenLinsenPrismen.AutoSize = true;
+            this.LblPfadAuflegenLinsenPrismen.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblPfadAuflegenLinsenPrismen.Location = new System.Drawing.Point(677, 277);
             this.LblPfadAuflegenLinsenPrismen.Name = "LblPfadAuflegenLinsenPrismen";
-            this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(190, 13);
+            this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(187, 13);
             this.LblPfadAuflegenLinsenPrismen.TabIndex = 139;
             this.LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen";
             // 
             // PictureboxZusatzinfo
             // 
+            this.PictureboxZusatzinfo.BackColor = System.Drawing.Color.White;
             this.PictureboxZusatzinfo.Image = ((System.Drawing.Image)(resources.GetObject("PictureboxZusatzinfo.Image")));
             this.PictureboxZusatzinfo.Location = new System.Drawing.Point(678, 336);
             this.PictureboxZusatzinfo.Name = "PictureboxZusatzinfo";
             this.PictureboxZusatzinfo.Size = new System.Drawing.Size(399, 226);
-            this.PictureboxZusatzinfo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PictureboxZusatzinfo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PictureboxZusatzinfo.TabIndex = 138;
             this.PictureboxZusatzinfo.TabStop = false;
+            this.PictureboxZusatzinfo.DoubleClick += new System.EventHandler(this.PictureboxZusatzinfo_DoubleClick_1);
             // 
             // PictureboxAuflegenLinsenPrismen
             // 
-            this.PictureboxAuflegenLinsenPrismen.Image = ((System.Drawing.Image)(resources.GetObject("PictureboxAuflegenLinsenPrismen.Image")));
+            this.PictureboxAuflegenLinsenPrismen.BackColor = System.Drawing.Color.White;
             this.PictureboxAuflegenLinsenPrismen.Location = new System.Drawing.Point(679, 46);
             this.PictureboxAuflegenLinsenPrismen.Name = "PictureboxAuflegenLinsenPrismen";
             this.PictureboxAuflegenLinsenPrismen.Size = new System.Drawing.Size(399, 226);
-            this.PictureboxAuflegenLinsenPrismen.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PictureboxAuflegenLinsenPrismen.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PictureboxAuflegenLinsenPrismen.TabIndex = 137;
             this.PictureboxAuflegenLinsenPrismen.TabStop = false;
+            this.PictureboxAuflegenLinsenPrismen.DoubleClick += new System.EventHandler(this.PictureboxAuflegenLinsenPrismen_DoubleClick_1);
             // 
             // label22
             // 
@@ -448,17 +456,6 @@
             this.TxtboxStkSegment.Size = new System.Drawing.Size(160, 26);
             this.TxtboxStkSegment.TabIndex = 128;
             // 
-            // ComboboxRing
-            // 
-            this.ComboboxRing.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboboxRing.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ComboboxRing.FormattingEnabled = true;
-            this.ComboboxRing.ItemHeight = 20;
-            this.ComboboxRing.Location = new System.Drawing.Point(502, 293);
-            this.ComboboxRing.Name = "ComboboxRing";
-            this.ComboboxRing.Size = new System.Drawing.Size(160, 28);
-            this.ComboboxRing.TabIndex = 126;
-            // 
             // label18
             // 
             this.label18.AutoSize = true;
@@ -517,15 +514,6 @@
             this.label16.TabIndex = 121;
             this.label16.Text = "Belag Vergüt.";
             // 
-            // TxtboxBelagVerguetung
-            // 
-            this.TxtboxBelagVerguetung.BackColor = System.Drawing.Color.White;
-            this.TxtboxBelagVerguetung.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtboxBelagVerguetung.Location = new System.Drawing.Point(502, 197);
-            this.TxtboxBelagVerguetung.Name = "TxtboxBelagVerguetung";
-            this.TxtboxBelagVerguetung.Size = new System.Drawing.Size(160, 26);
-            this.TxtboxBelagVerguetung.TabIndex = 120;
-            // 
             // label15
             // 
             this.label15.AutoSize = true;
@@ -582,21 +570,6 @@
             this.TxtboxBrechwert.Name = "TxtboxBrechwert";
             this.TxtboxBrechwert.Size = new System.Drawing.Size(160, 26);
             this.TxtboxBrechwert.TabIndex = 114;
-            // 
-            // ComboboxSeite
-            // 
-            this.ComboboxSeite.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ComboboxSeite.FormattingEnabled = true;
-            this.ComboboxSeite.ItemHeight = 20;
-            this.ComboboxSeite.Items.AddRange(new object[] {
-            "1",
-            "2",
-            "3",
-            "0"});
-            this.ComboboxSeite.Location = new System.Drawing.Point(502, 67);
-            this.ComboboxSeite.Name = "ComboboxSeite";
-            this.ComboboxSeite.Size = new System.Drawing.Size(160, 28);
-            this.ComboboxSeite.TabIndex = 112;
             // 
             // label13
             // 
@@ -669,7 +642,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(20, 307);
+            this.label9.Location = new System.Drawing.Point(16, 307);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(36, 20);
             this.label9.TabIndex = 105;
@@ -684,16 +657,6 @@
             this.TxtboxDurchmesser.Size = new System.Drawing.Size(160, 26);
             this.TxtboxDurchmesser.TabIndex = 104;
             // 
-            // ComboboxGlassorte
-            // 
-            this.ComboboxGlassorte.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ComboboxGlassorte.FormattingEnabled = true;
-            this.ComboboxGlassorte.ItemHeight = 20;
-            this.ComboboxGlassorte.Location = new System.Drawing.Point(157, 267);
-            this.ComboboxGlassorte.Name = "ComboboxGlassorte";
-            this.ComboboxGlassorte.Size = new System.Drawing.Size(160, 28);
-            this.ComboboxGlassorte.TabIndex = 103;
-            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -703,16 +666,6 @@
             this.label8.Size = new System.Drawing.Size(87, 20);
             this.label8.TabIndex = 102;
             this.label8.Text = "Glassorte";
-            // 
-            // ComboboxGNummer
-            // 
-            this.ComboboxGNummer.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ComboboxGNummer.FormattingEnabled = true;
-            this.ComboboxGNummer.ItemHeight = 20;
-            this.ComboboxGNummer.Location = new System.Drawing.Point(157, 233);
-            this.ComboboxGNummer.Name = "ComboboxGNummer";
-            this.ComboboxGNummer.Size = new System.Drawing.Size(160, 28);
-            this.ComboboxGNummer.TabIndex = 101;
             // 
             // label7
             // 
@@ -830,6 +783,7 @@
             this.TxtboxArtikelnummer.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TxtboxArtikelnummer.Location = new System.Drawing.Point(157, 67);
             this.TxtboxArtikelnummer.Name = "TxtboxArtikelnummer";
+            this.TxtboxArtikelnummer.ReadOnly = true;
             this.TxtboxArtikelnummer.Size = new System.Drawing.Size(160, 26);
             this.TxtboxArtikelnummer.TabIndex = 90;
             // 
@@ -845,6 +799,7 @@
             // 
             // ComboboxAuswahlArtikel
             // 
+            this.ComboboxAuswahlArtikel.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ComboboxAuswahlArtikel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ComboboxAuswahlArtikel.FormattingEnabled = true;
             this.ComboboxAuswahlArtikel.ItemHeight = 20;
@@ -852,6 +807,81 @@
             this.ComboboxAuswahlArtikel.Name = "ComboboxAuswahlArtikel";
             this.ComboboxAuswahlArtikel.Size = new System.Drawing.Size(198, 28);
             this.ComboboxAuswahlArtikel.TabIndex = 162;
+            this.ComboboxAuswahlArtikel.SelectedIndexChanged += new System.EventHandler(this.ComboboxAuswahlArtikel_SelectedIndexChanged);
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label34.Location = new System.Drawing.Point(364, 430);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(87, 20);
+            this.label34.TabIndex = 163;
+            this.label34.Text = "Änderung";
+            // 
+            // DateTimePickerGeändert
+            // 
+            this.DateTimePickerGeändert.Location = new System.Drawing.Point(464, 429);
+            this.DateTimePickerGeändert.Name = "DateTimePickerGeändert";
+            this.DateTimePickerGeändert.Size = new System.Drawing.Size(198, 20);
+            this.DateTimePickerGeändert.TabIndex = 164;
+            // 
+            // TxtboxRing
+            // 
+            this.TxtboxRing.BackColor = System.Drawing.Color.White;
+            this.TxtboxRing.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TxtboxRing.Location = new System.Drawing.Point(502, 293);
+            this.TxtboxRing.Name = "TxtboxRing";
+            this.TxtboxRing.Size = new System.Drawing.Size(160, 26);
+            this.TxtboxRing.TabIndex = 165;
+            // 
+            // BtnArtikelUpdaten
+            // 
+            this.BtnArtikelUpdaten.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.BtnArtikelUpdaten.Location = new System.Drawing.Point(765, 682);
+            this.BtnArtikelUpdaten.Name = "BtnArtikelUpdaten";
+            this.BtnArtikelUpdaten.Size = new System.Drawing.Size(236, 49);
+            this.BtnArtikelUpdaten.TabIndex = 166;
+            this.BtnArtikelUpdaten.Text = "Änderungen auf Artikel anwenden";
+            this.BtnArtikelUpdaten.UseVisualStyleBackColor = false;
+            this.BtnArtikelUpdaten.Click += new System.EventHandler(this.BtnArtikelUpdaten_Click);
+            // 
+            // TxtboxBelagVerguetung
+            // 
+            this.TxtboxBelagVerguetung.BackColor = System.Drawing.Color.White;
+            this.TxtboxBelagVerguetung.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TxtboxBelagVerguetung.Location = new System.Drawing.Point(502, 197);
+            this.TxtboxBelagVerguetung.Name = "TxtboxBelagVerguetung";
+            this.TxtboxBelagVerguetung.Size = new System.Drawing.Size(160, 26);
+            this.TxtboxBelagVerguetung.TabIndex = 120;
+            // 
+            // TxtboxGNummer
+            // 
+            this.TxtboxGNummer.BackColor = System.Drawing.Color.White;
+            this.TxtboxGNummer.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TxtboxGNummer.Location = new System.Drawing.Point(157, 233);
+            this.TxtboxGNummer.Name = "TxtboxGNummer";
+            this.TxtboxGNummer.Size = new System.Drawing.Size(160, 26);
+            this.TxtboxGNummer.TabIndex = 167;
+            // 
+            // TxtboxGlassorte
+            // 
+            this.TxtboxGlassorte.BackColor = System.Drawing.Color.White;
+            this.TxtboxGlassorte.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TxtboxGlassorte.Location = new System.Drawing.Point(157, 265);
+            this.TxtboxGlassorte.Name = "TxtboxGlassorte";
+            this.TxtboxGlassorte.Size = new System.Drawing.Size(160, 26);
+            this.TxtboxGlassorte.TabIndex = 168;
+            // 
+            // TxtboxSeite
+            // 
+            this.TxtboxSeite.BackColor = System.Drawing.Color.White;
+            this.TxtboxSeite.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TxtboxSeite.Location = new System.Drawing.Point(502, 69);
+            this.TxtboxSeite.Name = "TxtboxSeite";
+            this.TxtboxSeite.ReadOnly = true;
+            this.TxtboxSeite.Size = new System.Drawing.Size(160, 26);
+            this.TxtboxSeite.TabIndex = 169;
             // 
             // Form_ArtikelPrototypAendern
             // 
@@ -859,6 +889,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1090, 743);
+            this.Controls.Add(this.TxtboxSeite);
+            this.Controls.Add(this.TxtboxGlassorte);
+            this.Controls.Add(this.TxtboxGNummer);
+            this.Controls.Add(this.BtnArtikelUpdaten);
+            this.Controls.Add(this.TxtboxRing);
+            this.Controls.Add(this.DateTimePickerGeändert);
+            this.Controls.Add(this.label34);
             this.Controls.Add(this.ComboboxAuswahlArtikel);
             this.Controls.Add(this.label33);
             this.Controls.Add(this.panel3);
@@ -894,7 +931,6 @@
             this.Controls.Add(this.TxtboxStkCharge);
             this.Controls.Add(this.label19);
             this.Controls.Add(this.TxtboxStkSegment);
-            this.Controls.Add(this.ComboboxRing);
             this.Controls.Add(this.label18);
             this.Controls.Add(this.lbll);
             this.Controls.Add(this.TxtboxBelagRueckseite);
@@ -908,7 +944,6 @@
             this.Controls.Add(this.TxtboxRadiusVerguetung);
             this.Controls.Add(this.lbl);
             this.Controls.Add(this.TxtboxBrechwert);
-            this.Controls.Add(this.ComboboxSeite);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.TxtboxDicke);
@@ -918,9 +953,7 @@
             this.Controls.Add(this.TxtboxDmWaschen);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.TxtboxDurchmesser);
-            this.Controls.Add(this.ComboboxGlassorte);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.ComboboxGNummer);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.ComboBoxFlaeche);
             this.Controls.Add(this.label6);
@@ -977,21 +1010,18 @@
         private System.Windows.Forms.TextBox TxtboxStkCharge;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.TextBox TxtboxStkSegment;
-        private System.Windows.Forms.ComboBox ComboboxRing;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label lbll;
         private System.Windows.Forms.TextBox TxtboxBelagRueckseite;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox TxtboxBelagProzess;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox TxtboxBelagVerguetung;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox TxtboxRadiusRueckseite;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox TxtboxRadiusVerguetung;
         private System.Windows.Forms.Label lbl;
         private System.Windows.Forms.TextBox TxtboxBrechwert;
-        private System.Windows.Forms.ComboBox ComboboxSeite;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox TxtboxDicke;
@@ -1001,9 +1031,7 @@
         private System.Windows.Forms.TextBox TxtboxDmWaschen;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox TxtboxDurchmesser;
-        private System.Windows.Forms.ComboBox ComboboxGlassorte;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ComboBox ComboboxGNummer;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox ComboBoxFlaeche;
         private System.Windows.Forms.Label label6;
@@ -1017,5 +1045,13 @@
         private System.Windows.Forms.TextBox TxtboxArtikelnummer;
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.ComboBox ComboboxAuswahlArtikel;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.DateTimePicker DateTimePickerGeändert;
+        private System.Windows.Forms.TextBox TxtboxRing;
+        private System.Windows.Forms.Button BtnArtikelUpdaten;
+        private System.Windows.Forms.TextBox TxtboxBelagVerguetung;
+        private System.Windows.Forms.TextBox TxtboxGNummer;
+        private System.Windows.Forms.TextBox TxtboxGlassorte;
+        private System.Windows.Forms.TextBox TxtboxSeite;
     }
 }

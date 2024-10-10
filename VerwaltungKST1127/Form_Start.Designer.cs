@@ -37,7 +37,7 @@
             this.BtnSerienartikelPrototyp = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.BtnArtikelAendern = new System.Windows.Forms.Button();
+            this.BtnPrototypenAuftragErstellen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             this.SuspendLayout();
             // 
@@ -77,14 +77,14 @@
             // 
             // BtnSerienartikelPrototyp
             // 
-            this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.Orange;
+            this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.BtnSerienartikelPrototyp.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(687, 164);
+            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(661, 164);
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
-            this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(213, 66);
+            this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(239, 66);
             this.BtnSerienartikelPrototyp.TabIndex = 5;
-            this.BtnSerienartikelPrototyp.Text = "Neuer Serienartikel, Prototyp";
+            this.BtnSerienartikelPrototyp.Text = "Neuer Serienartikel/Prototyp\r\nArtikel Ändern";
             this.BtnSerienartikelPrototyp.UseVisualStyleBackColor = false;
             this.BtnSerienartikelPrototyp.Click += new System.EventHandler(this.BtnSerienartikelPrototyp_Click);
             // 
@@ -104,18 +104,18 @@
             this.panel2.Size = new System.Drawing.Size(10, 482);
             this.panel2.TabIndex = 7;
             // 
-            // BtnArtikelAendern
+            // BtnPrototypenAuftragErstellen
             // 
-            this.BtnArtikelAendern.BackColor = System.Drawing.Color.Orange;
-            this.BtnArtikelAendern.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.BtnArtikelAendern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnArtikelAendern.Location = new System.Drawing.Point(687, 236);
-            this.BtnArtikelAendern.Name = "BtnArtikelAendern";
-            this.BtnArtikelAendern.Size = new System.Drawing.Size(213, 66);
-            this.BtnArtikelAendern.TabIndex = 8;
-            this.BtnArtikelAendern.Text = "Artikel/Prototyp Ändern";
-            this.BtnArtikelAendern.UseVisualStyleBackColor = false;
-            this.BtnArtikelAendern.Click += new System.EventHandler(this.BtnArtikelAendern_Click);
+            this.BtnPrototypenAuftragErstellen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.BtnPrototypenAuftragErstellen.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnPrototypenAuftragErstellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(661, 236);
+            this.BtnPrototypenAuftragErstellen.Name = "BtnPrototypenAuftragErstellen";
+            this.BtnPrototypenAuftragErstellen.Size = new System.Drawing.Size(239, 66);
+            this.BtnPrototypenAuftragErstellen.TabIndex = 8;
+            this.BtnPrototypenAuftragErstellen.Text = "Prototypenauftrag erstellen";
+            this.BtnPrototypenAuftragErstellen.UseVisualStyleBackColor = false;
+            this.BtnPrototypenAuftragErstellen.Click += new System.EventHandler(this.BtnPrototypenAuftragErstellen_Click);
             // 
             // Form_Start
             // 
@@ -123,7 +123,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
-            this.Controls.Add(this.BtnArtikelAendern);
+            this.Controls.Add(this.BtnPrototypenAuftragErstellen);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.BtnSerienartikelPrototyp);
@@ -150,7 +150,7 @@
         private System.Windows.Forms.Button BtnSerienartikelPrototyp;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button BtnArtikelAendern;
+        private System.Windows.Forms.Button BtnPrototypenAuftragErstellen;
     }
 }
 
