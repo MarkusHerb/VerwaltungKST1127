@@ -201,7 +201,7 @@
             this.ComboboxArtikel.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.ComboboxArtikel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ComboboxArtikel.FormattingEnabled = true;
-            this.ComboboxArtikel.Location = new System.Drawing.Point(162, 91);
+            this.ComboboxArtikel.Location = new System.Drawing.Point(162, 67);
             this.ComboboxArtikel.Name = "ComboboxArtikel";
             this.ComboboxArtikel.Size = new System.Drawing.Size(308, 33);
             this.ComboboxArtikel.TabIndex = 19;
@@ -265,9 +265,9 @@
             this.lblNrProjekt.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblNrProjekt.Location = new System.Drawing.Point(19, 24);
             this.lblNrProjekt.Name = "lblNrProjekt";
-            this.lblNrProjekt.Size = new System.Drawing.Size(244, 25);
+            this.lblNrProjekt.Size = new System.Drawing.Size(251, 25);
             this.lblNrProjekt.TabIndex = 70;
-            this.lblNrProjekt.Text = "Projekt/Auftragsnummer";
+            this.lblNrProjekt.Text = "Projekt/Auftragsnummer:";
             // 
             // lblMenge
             // 
@@ -299,7 +299,7 @@
             // 
             this.lblArtikelnummer.AutoSize = true;
             this.lblArtikelnummer.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblArtikelnummer.Location = new System.Drawing.Point(19, 99);
+            this.lblArtikelnummer.Location = new System.Drawing.Point(19, 75);
             this.lblArtikelnummer.Name = "lblArtikelnummer";
             this.lblArtikelnummer.Size = new System.Drawing.Size(66, 25);
             this.lblArtikelnummer.TabIndex = 74;
@@ -353,7 +353,7 @@
             // 
             this.lblDatenArtikel.AutoSize = true;
             this.lblDatenArtikel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDatenArtikel.Location = new System.Drawing.Point(19, 260);
+            this.lblDatenArtikel.Location = new System.Drawing.Point(19, 266);
             this.lblDatenArtikel.Name = "lblDatenArtikel";
             this.lblDatenArtikel.Size = new System.Drawing.Size(186, 25);
             this.lblDatenArtikel.TabIndex = 81;
@@ -481,9 +481,9 @@
             this.lblBezeichnung.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBezeichnung.Location = new System.Drawing.Point(19, 135);
             this.lblBezeichnung.Name = "lblBezeichnung";
-            this.lblBezeichnung.Size = new System.Drawing.Size(128, 25);
+            this.lblBezeichnung.Size = new System.Drawing.Size(126, 25);
             this.lblBezeichnung.TabIndex = 94;
-            this.lblBezeichnung.Text = "Durchmesser";
+            this.lblBezeichnung.Text = "Bezeichnung";
             // 
             // richtxtboxInforamationAuflegen
             // 
@@ -572,7 +572,7 @@
             this.lblZuzerstAuswaehlen.AutoSize = true;
             this.lblZuzerstAuswaehlen.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblZuzerstAuswaehlen.ForeColor = System.Drawing.Color.Red;
-            this.lblZuzerstAuswaehlen.Location = new System.Drawing.Point(476, 94);
+            this.lblZuzerstAuswaehlen.Location = new System.Drawing.Point(476, 70);
             this.lblZuzerstAuswaehlen.Name = "lblZuzerstAuswaehlen";
             this.lblZuzerstAuswaehlen.Size = new System.Drawing.Size(197, 25);
             this.lblZuzerstAuswaehlen.TabIndex = 105;

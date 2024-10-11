@@ -84,7 +84,7 @@
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
             this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(239, 66);
             this.BtnSerienartikelPrototyp.TabIndex = 5;
-            this.BtnSerienartikelPrototyp.Text = "Neuer Serienartikel/Prototyp\r\nArtikel Ändern";
+            this.BtnSerienartikelPrototyp.Text = "Neuen Artikel anlegen/ändern";
             this.BtnSerienartikelPrototyp.UseVisualStyleBackColor = false;
             this.BtnSerienartikelPrototyp.Click += new System.EventHandler(this.BtnSerienartikelPrototyp_Click);
             // 

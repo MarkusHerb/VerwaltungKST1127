@@ -19,7 +19,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None; // Entfernt die Titelleiste und die Rahmen des Formulars
             UpdateZeitDatum();
-            FillComboBoxArtikel();
+            //FillComboBoxArtikel();
             ComboboxArtikel.SelectedIndexChanged += ComboboxArtikel_SelectedIndexChanged; // Event-Handler registrieren
             // Initialisieren des PrintDocument-Objekts und Registrieren des PrintPage-Event-Handlers
             printDocument = new PrintDocument();
@@ -88,6 +88,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
+            
+
             // Justierbare Ränder in Pixeln
             int marginLeft = 20;    // Linker Rand
             int marginRight = 40;   // Rechter Rand
@@ -139,6 +141,54 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 e.Graphics.DrawImage(printImage, posX, posY, newWidth, newHeight);
             }
 
+            //////////////////////////////////////////Test
+            // Schriftarten definieren
+            Font fontProjektNr = new Font("Arial", 17, FontStyle.Bold); // Dicke Schriftart für lblProjektNr
+            Font fontAuftragsnummer = new Font("Arial", 15); // Schriftart für txtboxAuftragsnummer
+            Font fontBezeichnungBold = new Font("Arial", 15, FontStyle.Bold); // Schriftart für mehrere elemente
+            Font fontBezeichnung = new Font("Arial", 15); // Schriftart für mehrere elemente
+
+            float xProjektNr = 39;
+            float yProjektNr = 85;
+            float xAuftragsnummer = 350;
+            float yAuftragsnummer = 90;
+            float xArtikelnummerLabel = 39;
+            float yArtikelnummerLabel = 125;
+            float xArtikelnummerBox = 185;
+            float yArtikelnummerBox = 125;
+            float xBezeichnungLabel = 39;
+            float yBezeichnungLabel = 175;
+            float xBezeichnungBox = 185;
+            float yBezeichnungerBox = 175;
+            float xMengeLabel = 39;
+            float yMengeLabel = 210;
+            float xMengeBox = 185;
+            float yMengeBox = 210;
+            float xBelagLabel = 39;
+            float yBelagLabel = 245;
+            float xBelagBox = 185;
+            float yBelagBox = 245;
+            float xProzessLabel = 350;
+            float yProzessLabel = 245;
+            float xProzessBox = 496;
+            float yProzessBox = 245;
+
+            // Texte zeichnen
+            e.Graphics.DrawString(lblNrProjekt.Text, fontProjektNr, Brushes.Black, xProjektNr, yProjektNr);
+            e.Graphics.DrawString(txtboxAuftragsnummer.Text, fontAuftragsnummer, Brushes.Black, xAuftragsnummer, yAuftragsnummer);
+            e.Graphics.DrawString(lblArtikelnummer.Text, fontProjektNr, Brushes.Black, xArtikelnummerLabel, yArtikelnummerLabel);
+            e.Graphics.DrawString(ComboboxArtikel.Text, fontBezeichnung, Brushes.Black, xArtikelnummerBox, yArtikelnummerBox);
+            e.Graphics.DrawString(lblBezeichnung.Text, fontBezeichnungBold, Brushes.Black, xBezeichnungLabel, yBezeichnungLabel);
+            e.Graphics.DrawString(txtboxBezeichnung.Text, fontBezeichnung, Brushes.Black, xBezeichnungBox, yBezeichnungerBox);
+            e.Graphics.DrawString(lblMenge.Text, fontBezeichnungBold, Brushes.Black, xMengeLabel, yMengeLabel);
+            e.Graphics.DrawString(TxtboxMenge.Text, fontBezeichnung, Brushes.Black, xMengeBox, yMengeBox);
+            e.Graphics.DrawString(lblBelag.Text, fontBezeichnungBold, Brushes.Black, xBelagLabel, yBelagLabel);
+            e.Graphics.DrawString(txtboxBelag.Text, fontBezeichnung, Brushes.Blue, xBelagBox, yBelagBox);
+            e.Graphics.DrawString(lblProzess.Text, fontBezeichnungBold, Brushes.Black, xProzessLabel, yProzessLabel);
+            e.Graphics.DrawString(txtboxProzess.Text, fontBezeichnung, Brushes.Red, xProzessBox, yProzessBox);
+
+            //////////////////////////////////////////Test
+
             // Aufräumen
             bmp.Dispose();
             sharpenedBmp.Dispose(); // Freigabe der scharfen Bitmap
@@ -149,14 +199,30 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         // Wenn auf den Button Drucken gedrückt wird
         private void BtnDrucken_Click_1(object sender, EventArgs e)
         {
-            string artikelnummer = ComboboxArtikel.Text.ToString();
-            ComboboxArtikel.Text = "PR " + artikelnummer;
-            string menge = TxtboxMenge.Text.ToString();
-            TxtboxMenge.Text = menge + " Stk.";
-            BtnClose.Visible = false;
-            BtnDrucken.Visible = false;
+            // ##########Alte Texte in Variablen speichern damit man eine zweite seite bei bedarf drucken kann
+            string projektNrText = lblNrProjekt.Text;
+            string auftragsnummerText = txtboxAuftragsnummer.Text;
+
+            // Setze die Texte für den Druck
+            ComboboxArtikel.Text = "PR " + ComboboxArtikel.Text;
+            TxtboxMenge.Text = TxtboxMenge.Text + " Stk.";
+
+            // Elemente unsichtbar machen
+            lblNrProjekt.Visible = false;
+            txtboxAuftragsnummer.Visible = false;
+            lblArtikelnummer.Visible = false;
+            ComboboxArtikel.Visible = false;
+            lblBezeichnung.Visible = false;
+            txtboxBezeichnung.Visible = false;
+            lblMenge.Visible = false;
+            TxtboxMenge.Visible = false;
+            lblBelag.Visible = false;
+            txtboxBelag.Visible = false;
+            lblProzess.Visible = false;
+            txtboxProzess.Visible = false;
+
             // Fokus auf ein anderes Steuerelement setzen
-            this.ActiveControl = null; // Entfernt den Fokus von allen Steuerelementen
+            this.ActiveControl = null;
 
             PrintDialog printDialog = new PrintDialog
             {
@@ -173,7 +239,22 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 BtnClose.Visible = true;
                 BtnDrucken.Visible = true;
             }
+
+            // Optional: Setze die Sichtbarkeit der Elemente zurück, wenn der Druck abgeschlossen ist
+            lblNrProjekt.Visible = true;
+            txtboxAuftragsnummer.Visible = true;
+            lblArtikelnummer.Visible = true;
+            ComboboxArtikel.Visible = true;
+            lblBezeichnung.Visible = true;
+            txtboxBezeichnung.Visible = true;
+            lblMenge.Visible = true;
+            TxtboxMenge.Visible=true;
+            lblBelag.Visible = true;
+            txtboxBelag.Visible = true;
+            lblProzess.Visible = true;
+            txtboxProzess.Visible = true;
         }
+
 
         // Druckformular beenden
         private void BtnClose_Click(object sender, EventArgs e)
@@ -321,9 +402,9 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             // Definieren eines milderen Schärfungsfilters
             float[,] kernel = new float[,]
             {
-        { 0, -0.2f, 0 },
-        { -0.2f, 1.8f, -0.2f },
-        { 0, -0.2f, 0 }
+                { 0, -0.2f, 0 },
+                { -0.2f, 1.8f, -0.2f },
+                { 0, -0.2f, 0 }
             };
 
             // Wenden des Schärfungsfilters auf das Bild an
