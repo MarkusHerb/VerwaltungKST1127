@@ -1,11 +1,9 @@
-﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
-using System.Collections.Generic;
-using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
-using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
-using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
+﻿using System;
+using System.Data.SqlClient;
+using System.Drawing;
 using System.Drawing.Printing;
-using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
-using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
+using System.IO;
+using System.Windows.Forms;
 
 namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 {
@@ -22,63 +20,49 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             this.FormBorderStyle = FormBorderStyle.None; // Entfernt die Titelleiste und die Rahmen des Formulars
             UpdateZeitDatum();
             FillComboBoxArtikel();
+            ComboboxArtikel.SelectedIndexChanged += ComboboxArtikel_SelectedIndexChanged; // Event-Handler registrieren
             // Initialisieren des PrintDocument-Objekts und Registrieren des PrintPage-Event-Handlers
             printDocument = new PrintDocument();
             printDocument.PrintPage += new PrintPageEventHandler(PrintDocument_PrintPage);  // Event-Handler für die Druckseite hinzufügen
-            // Querformat für das PrintDocument festlegen
             printDocument.DefaultPageSettings.Landscape = true;  // Querformat aktivieren
+            SetPlaceholders();
         }
 
         // Methode zum Füllen der ComboBox mit Artikelnummern und Seiteninformationen
         private void FillComboBoxArtikel()
         {
-            // Öffnen der Datenbankverbindung
             sqlConnectionVerwaltung.Open();
-
-            // SQL-Abfrage, um die eindeutigen Artikelnummern (ARTNR) und Seiteninformationen (SEITE) aus der Tabelle 'Serienlinsen' abzurufen
             string query = @"
                 SELECT DISTINCT ARTNR, SEITE
                 FROM Serienlinsen
-                ORDER BY ARTNR ASC"; // Sortiert die Ergebnisse aufsteigend nach ARTNR
+                ORDER BY ARTNR ASC";
 
             try
             {
-                // Erstellen des SqlCommand-Objekts mit der Abfrage und der geöffneten Verbindung
                 using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
-                    // Ausführen der Abfrage und Abrufen der Ergebnisse mit einem SqlDataReader
                     using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
-                        // Leeren der ComboBox, um sicherzustellen, dass keine doppelten Einträge vorhanden sind
                         ComboboxArtikel.Items.Clear();
 
-                        // Durchlaufen der Ergebnisse aus der Abfrage
                         while (reader.Read())
                         {
-                            // Abrufen der Werte für Artikelnummer und Seite aus dem aktuellen Datensatz
                             string artikelNummerValue = reader["ARTNR"].ToString();
                             string seiteValue = reader["SEITE"].ToString();
-
-                            // Zusammenfügen der Artikelnummer und der Seite zu einem Anzeigeformat, z.B. "12345 - links"
                             string displayValue = $"{artikelNummerValue} / Seite: {seiteValue}";
-
-                            // Hinzufügen des Anzeigeformats zur ComboBox
                             ComboboxArtikel.Items.Add(displayValue);
                         }
                     }
                 }
 
-                // Sicherstellen, dass die ComboBox nicht automatisch sortiert wird, da dies durch die SQL-Abfrage gesteuert wird
                 ComboboxArtikel.Sorted = false;
             }
             catch (Exception ex)
             {
-                // Fehlerbehandlung: Zeigt eine Meldung an, falls beim Laden der Artikel ein Fehler auftritt
                 MessageBox.Show("Fehler beim Laden der Artikel: " + ex.Message);
             }
             finally
             {
-                // Überprüfen, ob die Datenbankverbindung noch geöffnet ist, und sie bei Bedarf schließen
                 if (sqlConnectionVerwaltung.State == System.Data.ConnectionState.Open)
                 {
                     sqlConnectionVerwaltung.Close();
@@ -86,39 +70,80 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-
         // Uhrzeit und Datumsfunktion
         private void UpdateZeitDatum()
         {
-            DateTime aktuell = DateTime.Now; //Aktuelles Datum und Uhrzeit abrufen
-            LblErstelltAm.Text = aktuell.ToString("D"); // Datum und Uhrzeit im zugeweisenen Label anzeigen
+            DateTime aktuell = DateTime.Now;
+            LblErstelltAm.Text = aktuell.ToString("D");
+        }
+
+
+        // Hilfsmethode zum Clampen eines Wertes zwischen einem minimalen und maximalen Wert
+        private static int Clamp(int value, int min, int max)
+        {
+            if (value < min) return min;
+            if (value > max) return max;
+            return value;
         }
 
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-            // Erstellen eines Bitmaps, das nur den Clientbereich des Formulars widerspiegelt (ohne Rahmen und Titelleiste)
+            // Justierbare Ränder in Pixeln
+            int marginLeft = 20;    // Linker Rand
+            int marginRight = 40;   // Rechter Rand
+            int marginTop = 20;     // Oberer Rand
+            int marginBottom = 40;  // Unterer Rand
+
+            int dpi = 600; // DPI für die Druckqualität
+
+            // Erstellen eines Bitmaps basierend auf der Größe des Formulars mit dem angegebenen DPI
             Bitmap bmp = new Bitmap(this.ClientRectangle.Width, this.ClientRectangle.Height);
-            this.DrawToBitmap(bmp, new Rectangle(0, 0, this.ClientRectangle.Width, this.ClientRectangle.Height)); // Nur den Clientbereich auf das Bitmap rendern
+            bmp.SetResolution(dpi, dpi);
+            this.DrawToBitmap(bmp, new Rectangle(0, 0, this.ClientRectangle.Width, this.ClientRectangle.Height));
 
-            // Berechnung der Druckbreite und Druckhöhe ohne Rand
-            int printWidth = e.PageBounds.Width;
-            int printHeight = e.PageBounds.Height;
+            // Bild schärfen
+            Bitmap sharpenedBmp = SharpenImage(bmp);
 
-            // Bild proportional skalieren
-            float ratioX = (float)printWidth / (float)bmp.Width;
-            float ratioY = (float)printHeight / (float)bmp.Height;
-            float ratio = Math.Min(ratioX, ratioY);
+            // Temporären Speicherort für das PNG-Bild
+            string tempPngPath = Path.Combine(Path.GetTempPath(), "tempPrintImage.png");
 
-            // Neue Breite und Höhe für das skalierte Bild berechnen
-            int scaledWidth = (int)(bmp.Width * ratio);
-            int scaledHeight = (int)(bmp.Height * ratio);
+            // PNG-Bild speichern
+            sharpenedBmp.Save(tempPngPath, System.Drawing.Imaging.ImageFormat.Png);
 
-            // Zentrierung des Bildes auf der Druckseite
-            int posX = (printWidth - scaledWidth) / 2;   // Berechnung der X-Position für zentriertes Bild
-            int posY = (printHeight - scaledHeight) / 2; // Berechnung der Y-Position für zentriertes Bild
+            // Berechnung der verfügbaren Breite und Höhe basierend auf den Rändern
+            int printWidth = e.PageBounds.Width - marginLeft - marginRight;
+            int printHeight = e.PageBounds.Height - marginTop - marginBottom;
 
-            // Das Bild proportional und zentriert auf der Druckseite platzieren
-            e.Graphics.DrawImage(bmp, posX, posY, scaledWidth, scaledHeight);
+            // Berechnung der Verhältnisse zur Anpassung des Bildes an die Druckfläche
+            float scaleX = (float)printWidth / sharpenedBmp.Width;
+            float scaleY = (float)printHeight / sharpenedBmp.Height;
+            float scale = Math.Min(scaleX, scaleY); // Verwenden des kleineren Skalierungsfaktors, um das Bild proportional zu halten
+
+            // Berechnung der neuen Größe des Bildes basierend auf dem Skalierungsfaktor
+            int newWidth = (int)(sharpenedBmp.Width * scale);
+            int newHeight = (int)(sharpenedBmp.Height * scale);
+
+            // Berechnung der Startpositionen unter Berücksichtigung der Ränder
+            int posX = marginLeft + (printWidth - newWidth) / 2;
+            int posY = marginTop + (printHeight - newHeight) / 2;
+
+            // Anti-Aliasing und TextRenderingHint aktivieren für eine bessere Druckqualität
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+
+            // Das PNG-Bild laden und zeichnen
+            using (Image printImage = Image.FromFile(tempPngPath))
+            {
+                e.Graphics.DrawImage(printImage, posX, posY, newWidth, newHeight);
+            }
+
+            // Aufräumen
+            bmp.Dispose();
+            sharpenedBmp.Dispose(); // Freigabe der scharfen Bitmap
+                                    // Temporäre Datei löschen
+            File.Delete(tempPngPath);
         }
 
         // Wenn auf den Button Drucken gedrückt wird
@@ -126,19 +151,27 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         {
             string artikelnummer = ComboboxArtikel.Text.ToString();
             ComboboxArtikel.Text = "PR " + artikelnummer;
+            string menge = TxtboxMenge.Text.ToString();
+            TxtboxMenge.Text = menge + " Stk.";
             BtnClose.Visible = false;
             BtnDrucken.Visible = false;
-            // PrintDialog anzeigen, um den Benutzer einen Drucker auswählen zu lassen
+            // Fokus auf ein anderes Steuerelement setzen
+            this.ActiveControl = null; // Entfernt den Fokus von allen Steuerelementen
+
             PrintDialog printDialog = new PrintDialog
             {
-                Document = printDocument // Zuweisen des PrintDocuments zum PrintDialog
-            }; // Erstellen eines PrintDialogs
+                Document = printDocument
+            };
 
-            // Überprüfen, ob der Benutzer im PrintDialog auf "OK" klickt
             if (printDialog.ShowDialog() == DialogResult.OK)
             {
-                // Diagramm drucken
-                printDocument.Print(); // Starten des Druckprozesses
+                printDocument.Print();
+                BtnClose.Visible = true;
+            }
+            else
+            {
+                BtnClose.Visible = true;
+                BtnDrucken.Visible = true;
             }
         }
 
@@ -148,11 +181,182 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             this.Close();
         }
 
-        // Wenn aus der Combobox etwas ausgewählt wird
         private void ComboboxArtikel_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Artikelnummer und Seite extrahieren
+            string selectedValue = ComboboxArtikel.SelectedItem.ToString();
+            string[] parts = selectedValue.Split(new[] { " / Seite: " }, StringSplitOptions.None);
+
+            // Überprüfen, ob beide Teile extrahiert werden konnten
+            if (parts.Length == 2)
+            {
+                string artikelNummer = parts[0]; // Artikelnummer extrahieren
+                string seite = parts[1]; // Seite extrahieren
+
+                // Zusätzliche Informationen basierend auf Artikelnummer und Seite laden
+                LoadAdditionalInfo(artikelNummer, seite);
+                lblZuzerstAuswaehlen.Visible = false;
+            }
+            else
+            {
+                // Fehlerbehandlung oder Logik für den Fall, dass die Extraktion fehlschlägt
+                MessageBox.Show("Bitte wählen Sie einen gültigen Artikel.");
+            }
+        }
+
+
+
+        private void LoadAdditionalInfo(string artikelNummer, string seite)
+        {
+            sqlConnectionVerwaltung.Open();
+            string query = @"
+        SELECT * 
+        FROM Serienlinsen
+        WHERE ARTNR = @artikelNummer AND SEITE = @seite"; // Seite in die Abfrage einbeziehen
+
+            try
+            {
+                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
+                {
+                    sqlCommand.Parameters.AddWithValue("@artikelNummer", artikelNummer); // Parameter für die Artikelnummer
+                    sqlCommand.Parameters.AddWithValue("@seite", seite); // Parameter für die Seite
+
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            // Werte aus dem Reader lesen und in die entsprechenden TextBoxen/ComboBoxen setzen
+                            txtboxBezeichnung.Text = reader["BEZ"].ToString();
+                            txtboxBelag.Text = reader["VERGBELAG"].ToString(); // Beispiel für eine TextBox
+                            txtboxProzess.Text = reader["MATERIAL"].ToString(); // Beispiel für eine TextBox
+                            txtboxDurchmesser.Text = reader["DM"].ToString();
+                            txtboxBrechwert.Text = reader["ND"].ToString();
+                            txtboxRadiusVerguetung.Text = reader["Radius1"].ToString();
+                            txtboxRadiusRueckseite.Text = reader["Radius2"].ToString();
+                            txtboxGnummer.Text = reader["G_Nummer"].ToString();
+                            txtboxGlassorte.Text = reader["GLASSORTE"].ToString();
+                            richtxtboxInforamationAuflegen.Text = reader["BEMERKUNG"].ToString();
+                            richtxtboxZusatzinfo.Text = reader["InfoZeichnung_Bemerkungen"].ToString();
+                            txtboxVorreinigung.Text = reader["Vorreinigung"].ToString();
+                            txtboxHandreinigung.Text = reader["Handreinigung"].ToString();
+                            // Bildpfad aus der Datenbank abfragen
+                            string bildPfadInfoZeichnung = reader["Zeichnungspfad"].ToString();
+                            string bildPfadInfoZeichnungBemerkung = reader["InfoZeichnung"].ToString();
+                            // Überprüfen, ob der Pfad gültig ist und das Bild existiert
+                            if (!string.IsNullOrEmpty(bildPfadInfoZeichnung) && System.IO.File.Exists(bildPfadInfoZeichnung))
+                            {
+                                // Bild in der PictureBox anzeigen
+                                PictureboxAuflegenLinsenPrismen.Image = Image.FromFile(bildPfadInfoZeichnung);
+                            }
+                            else
+                            {
+                                // Fehlerbehandlung, wenn das Bild nicht gefunden wird
+                                MessageBox.Show("Das Bild konnte nicht gefunden werden.");
+                                PictureboxAuflegenLinsenPrismen.Image = null; // Bild zurücksetzen
+                            }
+                            if (!string.IsNullOrEmpty(bildPfadInfoZeichnungBemerkung) && System.IO.File.Exists(bildPfadInfoZeichnungBemerkung))
+                            {
+                                PictureboxZusatzinfo.Image = Image.FromFile(bildPfadInfoZeichnungBemerkung);
+                            }
+                            else
+                            {
+                                // Fehlerbehandlung, wenn das Bild nicht gefunden wird
+                                MessageBox.Show("Das Bild InfoZeichnungBemerkungen konnte nicht gefunden werden.");
+                                PictureboxAuflegenLinsenPrismen.Image = null; // Bild zurücksetzen
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler beim Laden der Informationen: " + ex.Message);
+            }
+            finally
+            {
+                if (sqlConnectionVerwaltung.State == System.Data.ConnectionState.Open)
+                {
+                    sqlConnectionVerwaltung.Close();
+                }
+            }
+        }
+
+        // Funktion um die felder zu leeren wenn eine weiter seite eingegeben werden soll
+        private void SetPlaceholders()
+        {
+            SetPlaceholder(txtboxAuftragsnummer, "XXXXXXXXXXX");
 
         }
+
+        private void SetPlaceholder(TextBox textBox, string placeholderText)
+        {
+            textBox.ForeColor = Color.Gray;
+            textBox.Text = placeholderText;
+
+            textBox.GotFocus += (sender, e) =>
+            {
+                if (textBox.Text == placeholderText)
+                {
+                    textBox.Text = "";
+                    textBox.ForeColor = SystemColors.WindowText;
+                }
+            };
+
+            textBox.LostFocus += (sender, e) =>
+            {
+                if (string.IsNullOrEmpty(textBox.Text))
+                {
+                    textBox.Text = placeholderText;
+                    textBox.ForeColor = Color.Gray;
+                }
+            };
+        }
+
+        private Bitmap SharpenImage(Bitmap image)
+        {
+            Bitmap sharpenedImage = new Bitmap(image.Width, image.Height);
+
+            // Definieren eines milderen Schärfungsfilters
+            float[,] kernel = new float[,]
+            {
+        { 0, -0.2f, 0 },
+        { -0.2f, 1.8f, -0.2f },
+        { 0, -0.2f, 0 }
+            };
+
+            // Wenden des Schärfungsfilters auf das Bild an
+            for (int x = 1; x < image.Width - 1; x++)
+            {
+                for (int y = 1; y < image.Height - 1; y++)
+                {
+                    float r = 0, g = 0, b = 0;
+
+                    for (int i = -1; i <= 1; i++)
+                    {
+                        for (int j = -1; j <= 1; j++)
+                        {
+                            Color pixel = image.GetPixel(x + i, y + j);
+                            r += pixel.R * kernel[i + 1, j + 1];
+                            g += pixel.G * kernel[i + 1, j + 1];
+                            b += pixel.B * kernel[i + 1, j + 1];
+                        }
+                    }
+
+                    // Normalisieren der RGB-Werte
+                    r = Math.Max(0, Math.Min(255, r));
+                    g = Math.Max(0, Math.Min(255, g));
+                    b = Math.Max(0, Math.Min(255, b));
+
+                    // Setze den neuen Farbwert in den scharfen Bitmap
+                    Color newColor = Color.FromArgb((int)r, (int)g, (int)b);
+                    sharpenedImage.SetPixel(x, y, newColor);
+                }
+            }
+
+            return sharpenedImage;
+        }
+
     }
-    
 }

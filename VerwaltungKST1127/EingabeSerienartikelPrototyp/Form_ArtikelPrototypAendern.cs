@@ -458,7 +458,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 , bemerkungWaschen, revoNummer, pfadZeichnungAuflegen, pfadZusatzinfo, textZusatzinfo);
         }
 
-
     }
 }
 

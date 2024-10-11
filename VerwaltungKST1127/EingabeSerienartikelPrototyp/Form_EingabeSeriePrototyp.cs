@@ -244,7 +244,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
                 // Sortiere die Einträge in der ComboBox alphabetisch
                 ComboboxGlassorte.Sorted = true;
-                
+
             }
             catch (Exception ex)
             {
@@ -409,7 +409,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             TxtboxBrechwert.Text = string.Empty;
             TxtboxZeitProzess.Text = string.Empty;
             TxtboxRadiusVerguetung.Text = string.Empty;
-            TxtboxRadiusRueckseite.Text = string.Empty;          
+            TxtboxRadiusRueckseite.Text = string.Empty;
             TxtboxStkSegment.Text = string.Empty;
             TxtboxStkCharge.Text = string.Empty;
             txtBoxRevoNr.Text = string.Empty;
@@ -421,7 +421,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             ComboBoxZukauf.SelectedIndex = -1;
             ComboBoxFlaeche.SelectedIndex = -1;
             ComboboxGlassorte.SelectedIndex = -1;
-            ComboboxGNummer.SelectedIndex = -1;           
+            ComboboxGNummer.SelectedIndex = -1;
             ComboboxSeite.SelectedIndex = -1;
             ComboboxRing.SelectedIndex = -1;
             ComboboxVorreinigen.SelectedIndex = -1;
@@ -440,7 +440,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen";
             LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen";
             // Setze den DateTimePicker auf das heutige Datum
-            DateTimePickerAufgenommenLinsePrisma.Value = DateTime.Now;           
+            DateTimePickerAufgenommenLinsePrisma.Value = DateTime.Now;
         }
 
         private void ClearFildsForSecoundThird()
@@ -449,7 +449,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             TxtboxFreibereich.Text = string.Empty;
             TxtboxZeitProzess.Text = string.Empty;
             TxtboxRadiusVerguetung.Text = string.Empty;
-            TxtboxRadiusRueckseite.Text = string.Empty;           
+            TxtboxRadiusRueckseite.Text = string.Empty;
             TxtboxRadiusVerguetung.Text = string.Empty;
             TxtboxStkSegment.Text = string.Empty;
             TxtboxStkCharge.Text = string.Empty;
@@ -526,7 +526,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 // Rufe die Methode auf, um die ComboboxProzess zu befüllen
                 FillComboboxProzess(selectedBelagVerguetung);
             }
-            
+
         }
         // Eventhandler für die Änderung der Auswahl in der ComboboxGNummer
         private void ComboboxGNummer_SelectedIndexChanged(object sender, EventArgs e)
