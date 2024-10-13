@@ -88,7 +88,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-            
+
 
             // Justierbare Ränder in Pixeln
             int marginLeft = 20;    // Linker Rand
@@ -148,33 +148,25 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             Font fontBezeichnungBold = new Font("Arial", 15, FontStyle.Bold); // Schriftart für mehrere elemente
             Font fontBezeichnung = new Font("Arial", 15); // Schriftart für mehrere elemente
 
-            float xProjektNr = 39;
-            float yProjektNr = 85;
-            float xAuftragsnummer = 350;
-            float yAuftragsnummer = 90;
-            float xArtikelnummerLabel = 39;
-            float yArtikelnummerLabel = 125;
-            float xArtikelnummerBox = 185;
-            float yArtikelnummerBox = 125;
-            float xBezeichnungLabel = 39;
-            float yBezeichnungLabel = 175;
-            float xBezeichnungBox = 185;
-            float yBezeichnungerBox = 175;
-            float xMengeLabel = 39;
-            float yMengeLabel = 210;
-            float xMengeBox = 185;
-            float yMengeBox = 210;
-            float xBelagLabel = 39;
-            float yBelagLabel = 245;
-            float xBelagBox = 185;
-            float yBelagBox = 245;
-            float xProzessLabel = 350;
-            float yProzessLabel = 245;
-            float xProzessBox = 496;
-            float yProzessBox = 245;
+            float xProjektNr = 39; float yProjektNr = 85; float xAuftragsnummer = 350; float yAuftragsnummer = 90;
+            float xArtikelnummerLabel = 39; float yArtikelnummerLabel = 125; float xArtikelnummerBox = 195; float yArtikelnummerBox = 125;
+            float xBezeichnungLabel = 39; float yBezeichnungLabel = 175; float xBezeichnungBox = 195; float yBezeichnungerBox = 175;
+            float xMengeLabel = 39; float yMengeLabel = 210; float xMengeBox = 195; float yMengeBox = 210;
+            float xBelagLabel = 39; float yBelagLabel = 245; float xBelagBox = 195; float yBelagBox = 245;
+            float xProzessLabel = 350; float yProzessLabel = 245; float xProzessBox = 495; float yProzessBox = 245;
+            float xInfoAuflegen = 678; float yInfoAulegen = 85; float xDatenArtikel = 39; float yDatenArtikel = 310;
+            float xDurchmesser = 39; float yDurchmesser = 355; float xDurchmesserBox = 195; float yDurchmesserBox = 355;
+            float xRadiusVerguetung = 39; float yRadiusVerguetung = 390; float xRadiusVerguetungBox = 195; float yRadiusVerguetungBox = 390;
+            float xGnummer = 39; float yGnummer = 425; float xGnummerBox = 195; float yGnummerBox = 425;
+            float xBrechwert = 350; float yBrechwert = 355; float xBrechwertBox = 495; float yBrechwertBox = 355;
+            float xRadiusRueckseite = 350; float yRadiusRueckseite = 390; float xRadiusRueckseiteBox = 495; float yRadiusRueckseiteBox = 390;
+            float xGlassorte = 350; float yGlassorte = 425; float xGlassorteBox = 495; float yGlassorteBox = 425;
+            float xZusatzInfo = 678; float yZusatzInfo = 425; float xVorbehandlung = 39; float yVorbehandlung = 470;
+            float xVorreinigen = 39; float yVorreinigen = 515; float xVorreinigenBox = 195; float yVorreinigenBox = 515;
+            float xHandreinigung = 350; float yHandreinigung = 515; float xHandreinigungBox = 495; float yHandreinigungBox = 515;
 
             // Texte zeichnen
-            e.Graphics.DrawString(lblNrProjekt.Text, fontProjektNr, Brushes.Black, xProjektNr, yProjektNr);
+            e.Graphics.DrawString(lblNrProjekt.Text, fontProjektNr, Brushes.DarkGreen, xProjektNr, yProjektNr);
             e.Graphics.DrawString(txtboxAuftragsnummer.Text, fontAuftragsnummer, Brushes.Black, xAuftragsnummer, yAuftragsnummer);
             e.Graphics.DrawString(lblArtikelnummer.Text, fontProjektNr, Brushes.Black, xArtikelnummerLabel, yArtikelnummerLabel);
             e.Graphics.DrawString(ComboboxArtikel.Text, fontBezeichnung, Brushes.Black, xArtikelnummerBox, yArtikelnummerBox);
@@ -186,6 +178,26 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             e.Graphics.DrawString(txtboxBelag.Text, fontBezeichnung, Brushes.Blue, xBelagBox, yBelagBox);
             e.Graphics.DrawString(lblProzess.Text, fontBezeichnungBold, Brushes.Black, xProzessLabel, yProzessLabel);
             e.Graphics.DrawString(txtboxProzess.Text, fontBezeichnung, Brushes.Red, xProzessBox, yProzessBox);
+            e.Graphics.DrawString(lblInfoAuflegen.Text, fontBezeichnungBold, Brushes.Black, xInfoAuflegen, yInfoAulegen);
+            e.Graphics.DrawString(lblDatenArtikel.Text, fontBezeichnungBold, Brushes.Black, xDatenArtikel, yDatenArtikel);
+            e.Graphics.DrawString(lblDurchmesser.Text, fontBezeichnungBold, Brushes.Black, xDurchmesser, yDurchmesser);
+            e.Graphics.DrawString(txtboxDurchmesser.Text, fontBezeichnung, Brushes.Black, xDurchmesserBox, yDurchmesserBox);
+            e.Graphics.DrawString(lblRadiusverguetung.Text, fontBezeichnungBold, Brushes.Black, xRadiusVerguetung, yRadiusVerguetung);
+            e.Graphics.DrawString(txtboxRadiusVerguetung.Text, fontBezeichnung, Brushes.Black, xRadiusVerguetungBox, yRadiusVerguetungBox);
+            e.Graphics.DrawString(lblGnummer.Text, fontBezeichnungBold, Brushes.Black, xGnummer, yGnummer);
+            e.Graphics.DrawString(txtboxGnummer.Text, fontBezeichnung, Brushes.Black, xGnummerBox, yGnummerBox);
+            e.Graphics.DrawString(lblBrechwert.Text, fontBezeichnungBold, Brushes.Black, xBrechwert, yBrechwert);
+            e.Graphics.DrawString(txtboxBrechwert.Text, fontBezeichnung, Brushes.Black, xBrechwertBox, yBrechwertBox);
+            e.Graphics.DrawString(lblRadiusRueckseite.Text, fontBezeichnungBold, Brushes.Black, xRadiusRueckseite, yRadiusRueckseite);
+            e.Graphics.DrawString(txtboxRadiusRueckseite.Text, fontBezeichnung, Brushes.Black, xRadiusRueckseiteBox, yRadiusRueckseiteBox);
+            e.Graphics.DrawString(lblGlassorte.Text, fontBezeichnungBold, Brushes.Black, xGlassorte, yGlassorte);
+            e.Graphics.DrawString(txtboxGlassorte.Text, fontBezeichnung, Brushes.Black, xGlassorteBox, yGlassorteBox);
+            e.Graphics.DrawString(lblVorbehandlung.Text, fontBezeichnungBold, Brushes.Black, xVorbehandlung, yVorbehandlung);
+            e.Graphics.DrawString(lblZusatzinfo.Text, fontBezeichnungBold, Brushes.Black, xZusatzInfo, yZusatzInfo);
+            e.Graphics.DrawString(lblVorreinigung.Text, fontBezeichnungBold, Brushes.Black, xVorreinigen, yVorreinigen);
+            e.Graphics.DrawString(txtboxVorreinigung.Text, fontBezeichnung, Brushes.Black, xVorreinigenBox, yVorreinigenBox);
+            e.Graphics.DrawString(lblHandreinigung.Text, fontBezeichnungBold, Brushes.Black, xHandreinigung, yHandreinigung);
+            e.Graphics.DrawString(txtboxHandreinigung.Text, fontBezeichnung, Brushes.Black, xHandreinigungBox, yHandreinigungBox);
 
             //////////////////////////////////////////Test
 
@@ -220,6 +232,26 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             txtboxBelag.Visible = false;
             lblProzess.Visible = false;
             txtboxProzess.Visible = false;
+            lblInfoAuflegen.Visible = false;
+            lblDatenArtikel.Visible = false;
+            lblDurchmesser.Visible = false;
+            txtboxDurchmesser.Visible = false;
+            lblRadiusverguetung.Visible = false;
+            txtboxRadiusVerguetung.Visible = false;
+            lblGnummer.Visible = false;
+            txtboxGnummer.Visible = false;
+            lblBrechwert.Visible = false;
+            txtboxBrechwert.Visible = false;
+            lblRadiusRueckseite.Visible = false;
+            txtboxRadiusRueckseite.Visible = false;
+            lblGlassorte.Visible = false;
+            txtboxGlassorte.Visible = false;
+            lblVorbehandlung.Visible = false;
+            lblZusatzinfo.Visible = false;
+            lblVorreinigung.Visible = false;
+            txtboxVorreinigung.Visible = false;
+            lblHandreinigung.Visible = false;
+            txtboxHandreinigung.Visible = false;
 
             // Fokus auf ein anderes Steuerelement setzen
             this.ActiveControl = null;
@@ -248,11 +280,31 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             lblBezeichnung.Visible = true;
             txtboxBezeichnung.Visible = true;
             lblMenge.Visible = true;
-            TxtboxMenge.Visible=true;
+            TxtboxMenge.Visible = true;
             lblBelag.Visible = true;
             txtboxBelag.Visible = true;
             lblProzess.Visible = true;
             txtboxProzess.Visible = true;
+            lblInfoAuflegen.Visible = true;
+            lblDatenArtikel.Visible = true;
+            lblDurchmesser.Visible = true;
+            txtboxDurchmesser.Visible = true;
+            lblRadiusverguetung.Visible = true;
+            lblRadiusverguetung.Visible = true;
+            lblGnummer.Visible = true;
+            txtboxGnummer.Visible = true;
+            lblBrechwert.Visible = true;
+            txtboxBrechwert.Visible = true;
+            lblRadiusRueckseite.Visible = true;
+            txtboxRadiusRueckseite.Visible = true;
+            lblGlassorte.Visible = true;
+            txtboxGlassorte.Visible = true;
+            lblVorbehandlung.Visible = true;
+            lblZusatzinfo.Visible = true;
+            lblVorreinigung.Visible = true;
+            txtboxVorreinigung.Visible = true;
+            lblHandreinigung.Visible = true;
+            txtboxHandreinigung.Visible = true;
         }
 
 

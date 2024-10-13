@@ -182,12 +182,6 @@
     <Compile Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.Designer.cs">
       <DependentUpon>Form_ArtikelPrototypAendern.cs</DependentUpon>
     </Compile>
-    <Compile Include="EingabeSerienartikelPrototyp\Form_AuftragEingebenPrototyp.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EingabeSerienartikelPrototyp\Form_AuftragEingebenPrototyp.Designer.cs">
-      <DependentUpon>Form_AuftragEingebenPrototyp.cs</DependentUpon>
-    </Compile>
     <Compile Include="EingabeSerienartikelPrototyp\Form_EingabeSeriePrototyp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -210,9 +204,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.resx">
       <DependentUpon>Form_ArtikelPrototypAendern.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_AuftragEingebenPrototyp.resx">
-      <DependentUpon>Form_AuftragEingebenPrototyp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_EingabeSeriePrototyp.resx">
       <DependentUpon>Form_EingabeSeriePrototyp.cs</DependentUpon>
