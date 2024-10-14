@@ -94,12 +94,14 @@
             this.panel19 = new System.Windows.Forms.Panel();
             this.panel20 = new System.Windows.Forms.Panel();
             this.panel21 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.lblDatum = new System.Windows.Forms.Label();
+            this.lblName = new System.Windows.Forms.Label();
+            this.lblStueck = new System.Windows.Forms.Label();
+            this.lblStueckGes = new System.Windows.Forms.Label();
+            this.lblZeit = new System.Windows.Forms.Label();
             this.panel22 = new System.Windows.Forms.Panel();
+            this.lblDicke = new System.Windows.Forms.Label();
+            this.txtboxDicke = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxAuflegenLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxZusatzinfo)).BeginInit();
             this.panel19.SuspendLayout();
@@ -138,7 +140,7 @@
             this.panel5.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.panel5.Location = new System.Drawing.Point(13, 742);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(1082, 1);
+            this.panel5.Size = new System.Drawing.Size(1082, 2);
             this.panel5.TabIndex = 13;
             // 
             // panel4
@@ -146,7 +148,7 @@
             this.panel4.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.panel4.Location = new System.Drawing.Point(13, 12);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1082, 1);
+            this.panel4.Size = new System.Drawing.Size(1082, 2);
             this.panel4.TabIndex = 12;
             // 
             // panel3
@@ -162,7 +164,7 @@
             this.panel2.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.panel2.Location = new System.Drawing.Point(12, 12);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1, 731);
+            this.panel2.Size = new System.Drawing.Size(2, 731);
             this.panel2.TabIndex = 10;
             // 
             // panel1
@@ -170,7 +172,7 @@
             this.panel1.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.panel1.Location = new System.Drawing.Point(1094, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1, 731);
+            this.panel1.Size = new System.Drawing.Size(2, 731);
             this.panel1.TabIndex = 9;
             // 
             // BtnDrucken
@@ -221,7 +223,7 @@
             this.PictureboxAuflegenLinsenPrismen.BackColor = System.Drawing.Color.White;
             this.PictureboxAuflegenLinsenPrismen.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.PictureboxAuflegenLinsenPrismen.Image = ((System.Drawing.Image)(resources.GetObject("PictureboxAuflegenLinsenPrismen.Image")));
-            this.PictureboxAuflegenLinsenPrismen.Location = new System.Drawing.Point(703, 57);
+            this.PictureboxAuflegenLinsenPrismen.Location = new System.Drawing.Point(703, 54);
             this.PictureboxAuflegenLinsenPrismen.Name = "PictureboxAuflegenLinsenPrismen";
             this.PictureboxAuflegenLinsenPrismen.Size = new System.Drawing.Size(380, 200);
             this.PictureboxAuflegenLinsenPrismen.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -345,7 +347,7 @@
             // panel7
             // 
             this.panel7.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.panel7.Location = new System.Drawing.Point(14, 253);
+            this.panel7.Location = new System.Drawing.Point(13, 253);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(678, 1);
             this.panel7.TabIndex = 80;
@@ -684,63 +686,81 @@
             this.panel21.Size = new System.Drawing.Size(1, 126);
             this.panel21.TabIndex = 117;
             // 
-            // label1
+            // lblDatum
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(96, 581);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(49, 17);
-            this.label1.TabIndex = 118;
-            this.label1.Text = "Datum";
+            this.lblDatum.AutoSize = true;
+            this.lblDatum.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDatum.Location = new System.Drawing.Point(96, 581);
+            this.lblDatum.Name = "lblDatum";
+            this.lblDatum.Size = new System.Drawing.Size(49, 17);
+            this.lblDatum.TabIndex = 118;
+            this.lblDatum.Text = "Datum";
             // 
-            // label2
+            // lblName
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(245, 581);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 17);
-            this.label2.TabIndex = 119;
-            this.label2.Text = "Name";
+            this.lblName.AutoSize = true;
+            this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblName.Location = new System.Drawing.Point(245, 581);
+            this.lblName.Name = "lblName";
+            this.lblName.Size = new System.Drawing.Size(45, 17);
+            this.lblName.TabIndex = 119;
+            this.lblName.Text = "Name";
             // 
-            // label3
+            // lblStueck
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(371, 581);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(43, 17);
-            this.label3.TabIndex = 120;
-            this.label3.Text = "Stück";
+            this.lblStueck.AutoSize = true;
+            this.lblStueck.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStueck.Location = new System.Drawing.Point(371, 581);
+            this.lblStueck.Name = "lblStueck";
+            this.lblStueck.Size = new System.Drawing.Size(43, 17);
+            this.lblStueck.TabIndex = 120;
+            this.lblStueck.Text = "Stück";
             // 
-            // label4
+            // lblStueckGes
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(459, 581);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(85, 17);
-            this.label4.TabIndex = 121;
-            this.label4.Text = "Gesamt Stk.";
+            this.lblStueckGes.AutoSize = true;
+            this.lblStueckGes.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStueckGes.Location = new System.Drawing.Point(459, 581);
+            this.lblStueckGes.Name = "lblStueckGes";
+            this.lblStueckGes.Size = new System.Drawing.Size(85, 17);
+            this.lblStueckGes.TabIndex = 121;
+            this.lblStueckGes.Text = "Gesamt Stk.";
             // 
-            // label5
+            // lblZeit
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(582, 581);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(32, 17);
-            this.label5.TabIndex = 122;
-            this.label5.Text = "Zeit";
+            this.lblZeit.AutoSize = true;
+            this.lblZeit.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblZeit.Location = new System.Drawing.Point(582, 581);
+            this.lblZeit.Name = "lblZeit";
+            this.lblZeit.Size = new System.Drawing.Size(32, 17);
+            this.lblZeit.TabIndex = 122;
+            this.lblZeit.Text = "Zeit";
             // 
             // panel22
             // 
             this.panel22.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.panel22.Location = new System.Drawing.Point(13, 426);
+            this.panel22.Location = new System.Drawing.Point(13, 423);
             this.panel22.Name = "panel22";
             this.panel22.Size = new System.Drawing.Size(678, 1);
             this.panel22.TabIndex = 123;
+            // 
+            // lblDicke
+            // 
+            this.lblDicke.AutoSize = true;
+            this.lblDicke.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDicke.Location = new System.Drawing.Point(321, 273);
+            this.lblDicke.Name = "lblDicke";
+            this.lblDicke.Size = new System.Drawing.Size(61, 25);
+            this.lblDicke.TabIndex = 124;
+            this.lblDicke.Text = "Dicke";
+            // 
+            // txtboxDicke
+            // 
+            this.txtboxDicke.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtboxDicke.Location = new System.Drawing.Point(464, 270);
+            this.txtboxDicke.Name = "txtboxDicke";
+            this.txtboxDicke.Size = new System.Drawing.Size(124, 30);
+            this.txtboxDicke.TabIndex = 125;
             // 
             // Form_PrototypenauftragErstellen
             // 
@@ -748,12 +768,14 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1107, 755);
+            this.Controls.Add(this.txtboxDicke);
+            this.Controls.Add(this.lblDicke);
             this.Controls.Add(this.panel22);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblZeit);
+            this.Controls.Add(this.lblStueckGes);
+            this.Controls.Add(this.lblStueck);
+            this.Controls.Add(this.lblName);
+            this.Controls.Add(this.lblDatum);
             this.Controls.Add(this.panel21);
             this.Controls.Add(this.panel19);
             this.Controls.Add(this.panel18);
@@ -817,6 +839,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "Form_PrototypenauftragErstellen";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Prototypen Auftrag";
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxAuflegenLinsenPrismen)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxZusatzinfo)).EndInit();
@@ -892,11 +915,13 @@
         private System.Windows.Forms.Panel panel19;
         private System.Windows.Forms.Panel panel20;
         private System.Windows.Forms.Panel panel21;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblDatum;
+        private System.Windows.Forms.Label lblName;
+        private System.Windows.Forms.Label lblStueck;
+        private System.Windows.Forms.Label lblStueckGes;
+        private System.Windows.Forms.Label lblZeit;
         private System.Windows.Forms.Panel panel22;
+        private System.Windows.Forms.Label lblDicke;
+        private System.Windows.Forms.TextBox txtboxDicke;
     }
 }

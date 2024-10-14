@@ -1,9 +1,9 @@
-﻿using System;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.IO;
-using System.Windows.Forms;
+﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
+using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
+using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften und Bildern in der GUI)
+using System.Drawing.Printing; // Importieren des System.Drawing.Printing-Namespace für Druckfunktionen (z.B. zum Drucken von Dokumenten und zur Verwaltung von Druckereinstellungen)
+using System.IO; // Importieren des System.IO-Namespace für die Ein- und Ausgabefunktionen (z.B. zum Lesen und Schreiben von Dateien und Datenströmen)
+using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
 
 namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 {
@@ -19,7 +19,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None; // Entfernt die Titelleiste und die Rahmen des Formulars
             UpdateZeitDatum();
-            //FillComboBoxArtikel();
+            FillComboBoxArtikel();
             ComboboxArtikel.SelectedIndexChanged += ComboboxArtikel_SelectedIndexChanged; // Event-Handler registrieren
             // Initialisieren des PrintDocument-Objekts und Registrieren des PrintPage-Event-Handlers
             printDocument = new PrintDocument();
@@ -31,7 +31,10 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         // Methode zum Füllen der ComboBox mit Artikelnummern und Seiteninformationen
         private void FillComboBoxArtikel()
         {
+            // Öffnet die Verbindung zur Datenbank
             sqlConnectionVerwaltung.Open();
+
+            // SQL-Abfrage, um eindeutige Artikelnummern (ARTNR) und Seiten (SEITE) aus der Tabelle 'Serienlinsen' zu erhalten
             string query = @"
                 SELECT DISTINCT ARTNR, SEITE
                 FROM Serienlinsen
@@ -39,30 +42,42 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
             try
             {
+                // Erstellt ein neues SqlCommand-Objekt, das die Abfrage und die Datenbankverbindung verwendet
                 using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
+                    // Führt die Abfrage aus und erhält einen SqlDataReader zum Lesen der Ergebnisse
                     using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
+                        // Löscht alle vorhandenen Einträge in der ComboBox, bevor sie mit neuen Daten befüllt wird
                         ComboboxArtikel.Items.Clear();
 
+                        // Iteriert durch die Ergebnisse der Abfrage
                         while (reader.Read())
                         {
+                            // Extrahiert die Werte für Artikelnummer (ARTNR) und Seite (SEITE) aus dem aktuellen Datensatz
                             string artikelNummerValue = reader["ARTNR"].ToString();
                             string seiteValue = reader["SEITE"].ToString();
+
+                            // Kombiniert die Werte zu einem anzeigbaren String im Format "ARTNR / Seite: SEITE"
                             string displayValue = $"{artikelNummerValue} / Seite: {seiteValue}";
+
+                            // Fügt den formatierten String zur ComboBox hinzu
                             ComboboxArtikel.Items.Add(displayValue);
                         }
                     }
                 }
 
+                // Deaktiviert die automatische Sortierung der ComboBox, da die Sortierung bereits durch die SQL-Abfrage erfolgt
                 ComboboxArtikel.Sorted = false;
             }
             catch (Exception ex)
             {
+                // Zeigt eine Fehlermeldung an, falls beim Laden der Artikel ein Fehler auftritt
                 MessageBox.Show("Fehler beim Laden der Artikel: " + ex.Message);
             }
             finally
             {
+                // Schließt die Datenbankverbindung, falls sie noch geöffnet ist, um Ressourcen freizugeben
                 if (sqlConnectionVerwaltung.State == System.Data.ConnectionState.Open)
                 {
                     sqlConnectionVerwaltung.Close();
@@ -70,11 +85,12 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
+
         // Uhrzeit und Datumsfunktion
         private void UpdateZeitDatum()
         {
             DateTime aktuell = DateTime.Now;
-            LblErstelltAm.Text = aktuell.ToString("D");
+            LblErstelltAm.Text = "Auftrag erstellt am: " + aktuell.ToString("D");
         }
 
 
@@ -92,9 +108,9 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
             // Justierbare Ränder in Pixeln
             int marginLeft = 20;    // Linker Rand
-            int marginRight = 40;   // Rechter Rand
+            int marginRight = 30;   // Rechter Rand
             int marginTop = 20;     // Oberer Rand
-            int marginBottom = 40;  // Unterer Rand
+            int marginBottom = 30;  // Unterer Rand
 
             int dpi = 600; // DPI für die Druckqualität
 
@@ -146,26 +162,34 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             Font fontProjektNr = new Font("Arial", 17, FontStyle.Bold); // Dicke Schriftart für lblProjektNr
             Font fontAuftragsnummer = new Font("Arial", 15); // Schriftart für txtboxAuftragsnummer
             Font fontBezeichnungBold = new Font("Arial", 15, FontStyle.Bold); // Schriftart für mehrere elemente
+            // Font fontBezeichnungBoldUnderlined = new Font("Arial", 15, FontStyle.Bold | FontStyle.Underline);
             Font fontBezeichnung = new Font("Arial", 15); // Schriftart für mehrere elemente
+            Font fonBezeichnungKlein = new Font("Arial", 10);
 
-            float xProjektNr = 39; float yProjektNr = 85; float xAuftragsnummer = 350; float yAuftragsnummer = 90;
-            float xArtikelnummerLabel = 39; float yArtikelnummerLabel = 125; float xArtikelnummerBox = 195; float yArtikelnummerBox = 125;
-            float xBezeichnungLabel = 39; float yBezeichnungLabel = 175; float xBezeichnungBox = 195; float yBezeichnungerBox = 175;
-            float xMengeLabel = 39; float yMengeLabel = 210; float xMengeBox = 195; float yMengeBox = 210;
-            float xBelagLabel = 39; float yBelagLabel = 245; float xBelagBox = 195; float yBelagBox = 245;
-            float xProzessLabel = 350; float yProzessLabel = 245; float xProzessBox = 495; float yProzessBox = 245;
-            float xInfoAuflegen = 678; float yInfoAulegen = 85; float xDatenArtikel = 39; float yDatenArtikel = 310;
-            float xDurchmesser = 39; float yDurchmesser = 355; float xDurchmesserBox = 195; float yDurchmesserBox = 355;
-            float xRadiusVerguetung = 39; float yRadiusVerguetung = 390; float xRadiusVerguetungBox = 195; float yRadiusVerguetungBox = 390;
-            float xGnummer = 39; float yGnummer = 425; float xGnummerBox = 195; float yGnummerBox = 425;
-            float xBrechwert = 350; float yBrechwert = 355; float xBrechwertBox = 495; float yBrechwertBox = 355;
-            float xRadiusRueckseite = 350; float yRadiusRueckseite = 390; float xRadiusRueckseiteBox = 495; float yRadiusRueckseiteBox = 390;
-            float xGlassorte = 350; float yGlassorte = 425; float xGlassorteBox = 495; float yGlassorteBox = 425;
-            float xZusatzInfo = 678; float yZusatzInfo = 425; float xVorbehandlung = 39; float yVorbehandlung = 470;
+            float xProjektNr = 39; float yProjektNr = 50; float xAuftragsnummer = 350; float yAuftragsnummer = 55;
+            float xArtikelnummerLabel = 39; float yArtikelnummerLabel = 90; float xArtikelnummerBox = 195; float yArtikelnummerBox = 90;
+            float xBezeichnungLabel = 39; float yBezeichnungLabel = 165; float xBezeichnungBox = 195; float yBezeichnungerBox = 165;
+            float xMengeLabel = 39; float yMengeLabel = 200; float xMengeBox = 195; float yMengeBox = 200;
+            float xBelagLabel = 39; float yBelagLabel = 235; float xBelagBox = 195; float yBelagBox = 235;
+            float xProzessLabel = 350; float yProzessLabel = 235; float xProzessBox = 495; float yProzessBox = 235;
+            float xInfoAuflegen = 730; float yInfoAulegen = 55; float xDatenArtikel = 39; float yDatenArtikel = 295;
+            float xDurchmesser = 39; float yDurchmesser = 340; float xDurchmesserBox = 195; float yDurchmesserBox = 340;
+            float xRadiusVerguetung = 39; float yRadiusVerguetung = 375; float xRadiusVerguetungBox = 195; float yRadiusVerguetungBox = 375;
+            float xGnummer = 39; float yGnummer = 410; float xGnummerBox = 195; float yGnummerBox = 410;
+            float xDicke = 350; float yDicke = 305; float xDickeBox = 495; float yDickeBox = 305;
+            float xBrechwert = 350; float yBrechwert = 340; float xBrechwertBox = 495; float yBrechwertBox = 340;
+            float xRadiusRueckseite = 350; float yRadiusRueckseite = 375; float xRadiusRueckseiteBox = 495; float yRadiusRueckseiteBox = 375;
+            float xGlassorte = 350; float yGlassorte = 410; float xGlassorteBox = 495; float yGlassorteBox = 410;
+            float xZusatzInfo = 730; float yZusatzInfo = 425; float xVorbehandlung = 39; float yVorbehandlung = 470;
             float xVorreinigen = 39; float yVorreinigen = 515; float xVorreinigenBox = 195; float yVorreinigenBox = 515;
             float xHandreinigung = 350; float yHandreinigung = 515; float xHandreinigungBox = 495; float yHandreinigungBox = 515;
+            float xBearbeitung = 39; float yBearbeitung = 570; float xDatum = 120; float yDatum = 615;
+            float xName = 270; float yName = 615; float xStueck = 398; float yStueck = 615;
+            float xStueckGes = 485; float yStueckGes = 615; float xZeit = 610; float yZeit = 615;
+            float xDatumAktuell = 39; float yDatumAktuell = 753; float xDokument = 730; float yDokument = 753;
 
             // Texte zeichnen
+
             e.Graphics.DrawString(lblNrProjekt.Text, fontProjektNr, Brushes.DarkGreen, xProjektNr, yProjektNr);
             e.Graphics.DrawString(txtboxAuftragsnummer.Text, fontAuftragsnummer, Brushes.Black, xAuftragsnummer, yAuftragsnummer);
             e.Graphics.DrawString(lblArtikelnummer.Text, fontProjektNr, Brushes.Black, xArtikelnummerLabel, yArtikelnummerLabel);
@@ -186,6 +210,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             e.Graphics.DrawString(txtboxRadiusVerguetung.Text, fontBezeichnung, Brushes.Black, xRadiusVerguetungBox, yRadiusVerguetungBox);
             e.Graphics.DrawString(lblGnummer.Text, fontBezeichnungBold, Brushes.Black, xGnummer, yGnummer);
             e.Graphics.DrawString(txtboxGnummer.Text, fontBezeichnung, Brushes.Black, xGnummerBox, yGnummerBox);
+            e.Graphics.DrawString(lblDicke.Text, fontBezeichnungBold, Brushes.Black, xDicke, yDicke);
+            e.Graphics.DrawString(txtboxDicke.Text, fontBezeichnung, Brushes.Black, xDickeBox, yDickeBox);
             e.Graphics.DrawString(lblBrechwert.Text, fontBezeichnungBold, Brushes.Black, xBrechwert, yBrechwert);
             e.Graphics.DrawString(txtboxBrechwert.Text, fontBezeichnung, Brushes.Black, xBrechwertBox, yBrechwertBox);
             e.Graphics.DrawString(lblRadiusRueckseite.Text, fontBezeichnungBold, Brushes.Black, xRadiusRueckseite, yRadiusRueckseite);
@@ -198,8 +224,14 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             e.Graphics.DrawString(txtboxVorreinigung.Text, fontBezeichnung, Brushes.Black, xVorreinigenBox, yVorreinigenBox);
             e.Graphics.DrawString(lblHandreinigung.Text, fontBezeichnungBold, Brushes.Black, xHandreinigung, yHandreinigung);
             e.Graphics.DrawString(txtboxHandreinigung.Text, fontBezeichnung, Brushes.Black, xHandreinigungBox, yHandreinigungBox);
-
-            //////////////////////////////////////////Test
+            e.Graphics.DrawString(lblWerAufgelegt.Text, fontBezeichnungBold, Brushes.Black, xBearbeitung, yBearbeitung);
+            e.Graphics.DrawString(lblDatum.Text, fonBezeichnungKlein, Brushes.Black, xDatum, yDatum);
+            e.Graphics.DrawString(lblName.Text, fonBezeichnungKlein, Brushes.Black, xName, yName);
+            e.Graphics.DrawString(lblStueck.Text, fonBezeichnungKlein, Brushes.Black, xStueck, yStueck);
+            e.Graphics.DrawString(lblStueckGes.Text, fonBezeichnungKlein, Brushes.Black, xStueckGes, yStueckGes);
+            e.Graphics.DrawString(lblZeit.Text, fonBezeichnungKlein, Brushes.Black, xZeit, yZeit);
+            e.Graphics.DrawString(LblErstelltAm.Text, fonBezeichnungKlein, Brushes.Black, xDatumAktuell, yDatumAktuell);
+            e.Graphics.DrawString(lblDokument.Text, fonBezeichnungKlein, Brushes.Black, xDokument, yDokument);
 
             // Aufräumen
             bmp.Dispose();
@@ -211,47 +243,16 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         // Wenn auf den Button Drucken gedrückt wird
         private void BtnDrucken_Click_1(object sender, EventArgs e)
         {
-            // ##########Alte Texte in Variablen speichern damit man eine zweite seite bei bedarf drucken kann
-            string projektNrText = lblNrProjekt.Text;
-            string auftragsnummerText = txtboxAuftragsnummer.Text;
 
             // Setze die Texte für den Druck
             ComboboxArtikel.Text = "PR " + ComboboxArtikel.Text;
             TxtboxMenge.Text = TxtboxMenge.Text + " Stk.";
+            txtboxDurchmesser.Text = txtboxDurchmesser.Text + " mm";
+            txtboxDicke.Text = txtboxDicke.Text + " mm";
 
             // Elemente unsichtbar machen
-            lblNrProjekt.Visible = false;
-            txtboxAuftragsnummer.Visible = false;
-            lblArtikelnummer.Visible = false;
-            ComboboxArtikel.Visible = false;
-            lblBezeichnung.Visible = false;
-            txtboxBezeichnung.Visible = false;
-            lblMenge.Visible = false;
-            TxtboxMenge.Visible = false;
-            lblBelag.Visible = false;
-            txtboxBelag.Visible = false;
-            lblProzess.Visible = false;
-            txtboxProzess.Visible = false;
-            lblInfoAuflegen.Visible = false;
-            lblDatenArtikel.Visible = false;
-            lblDurchmesser.Visible = false;
-            txtboxDurchmesser.Visible = false;
-            lblRadiusverguetung.Visible = false;
-            txtboxRadiusVerguetung.Visible = false;
-            lblGnummer.Visible = false;
-            txtboxGnummer.Visible = false;
-            lblBrechwert.Visible = false;
-            txtboxBrechwert.Visible = false;
-            lblRadiusRueckseite.Visible = false;
-            txtboxRadiusRueckseite.Visible = false;
-            lblGlassorte.Visible = false;
-            txtboxGlassorte.Visible = false;
-            lblVorbehandlung.Visible = false;
-            lblZusatzinfo.Visible = false;
-            lblVorreinigung.Visible = false;
-            txtboxVorreinigung.Visible = false;
-            lblHandreinigung.Visible = false;
-            txtboxHandreinigung.Visible = false;
+            VisibleFalse();
+
 
             // Fokus auf ein anderes Steuerelement setzen
             this.ActiveControl = null;
@@ -273,6 +274,58 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
 
             // Optional: Setze die Sichtbarkeit der Elemente zurück, wenn der Druck abgeschlossen ist
+            VisibleTrue();
+        }
+
+        private void VisibleFalse()
+        {
+            lblNrProjekt.Visible = false;
+            txtboxAuftragsnummer.Visible = false;
+            lblArtikelnummer.Visible = false;
+            ComboboxArtikel.Visible = false;
+            lblBezeichnung.Visible = false;
+            txtboxBezeichnung.Visible = false;
+            lblMenge.Visible = false;
+            TxtboxMenge.Visible = false;
+            lblBelag.Visible = false;
+            txtboxBelag.Visible = false;
+            lblProzess.Visible = false;
+            txtboxProzess.Visible = false;
+            lblInfoAuflegen.Visible = false;
+            lblDatenArtikel.Visible = false;
+            lblDurchmesser.Visible = false;
+            txtboxDurchmesser.Visible = false;
+            lblRadiusverguetung.Visible = false;
+            txtboxRadiusVerguetung.Visible = false;
+            lblGnummer.Visible = false;
+            txtboxGnummer.Visible = false;
+            lblDicke.Visible = false;
+            txtboxDicke.Visible = false;
+            lblBrechwert.Visible = false;
+            txtboxBrechwert.Visible = false;
+            lblRadiusRueckseite.Visible = false;
+            txtboxRadiusRueckseite.Visible = false;
+            lblGlassorte.Visible = false;
+            txtboxGlassorte.Visible = false;
+            lblVorbehandlung.Visible = false;
+            lblZusatzinfo.Visible = false;
+            lblVorreinigung.Visible = false;
+            txtboxVorreinigung.Visible = false;
+            lblHandreinigung.Visible = false;
+            txtboxHandreinigung.Visible = false;
+            lblWerAufgelegt.Visible = false;
+            lblDatum.Visible = false;
+            lblName.Visible = false;
+            lblStueck.Visible = false;
+            lblStueckGes.Visible = false;
+            lblZeit.Visible = false;
+            LblErstelltAm.Visible = false;
+            lblDokument.Visible = false;
+            BtnDrucken.Visible = false;
+            BtnClose.Visible = false;
+        }
+        private void VisibleTrue()
+        {
             lblNrProjekt.Visible = true;
             txtboxAuftragsnummer.Visible = true;
             lblArtikelnummer.Visible = true;
@@ -295,6 +348,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             txtboxGnummer.Visible = true;
             lblBrechwert.Visible = true;
             txtboxBrechwert.Visible = true;
+            lblDicke.Visible = true;
+            txtboxDicke.Visible = true;
             lblRadiusRueckseite.Visible = true;
             txtboxRadiusRueckseite.Visible = true;
             lblGlassorte.Visible = true;
@@ -305,8 +360,37 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             txtboxVorreinigung.Visible = true;
             lblHandreinigung.Visible = true;
             txtboxHandreinigung.Visible = true;
+            lblWerAufgelegt.Visible = true;
+            lblDatum.Visible = true;
+            lblName.Visible = true;
+            lblStueck.Visible = true;
+            lblStueckGes.Visible = true;
+            lblZeit.Visible = true;
+            LblErstelltAm.Visible = true;
+            lblDokument.Visible = true;
+            BtnDrucken.Visible = true;
+            BtnClose.Visible = true;
         }
 
+        private void UebergebeDatenChargenbegleitblatt()
+        {
+            Form_Chargenbegleitblatt form_Chargenbegleitblatt = new Form_Chargenbegleitblatt();
+            form_Chargenbegleitblatt.Projektnummer = txtboxAuftragsnummer.Text;
+            form_Chargenbegleitblatt.Bezeichnung = txtboxBezeichnung.Text;
+            form_Chargenbegleitblatt.Artikelnummer = ComboboxArtikel.Text;
+            form_Chargenbegleitblatt.Belag = txtboxBelag.Text;
+            form_Chargenbegleitblatt.Prozess = txtboxProzess.Text;
+            form_Chargenbegleitblatt.RadiusVerguetung = txtboxRadiusVerguetung.Text;
+            form_Chargenbegleitblatt.RadiusRueckseite = txtboxRadiusRueckseite.Text;
+            form_Chargenbegleitblatt.GNummer = txtboxGnummer.Text;
+            form_Chargenbegleitblatt.Glassorte = txtboxGlassorte.Text;
+            form_Chargenbegleitblatt.Durchmesser = txtboxDurchmesser.Text;
+            form_Chargenbegleitblatt.Mittendicke = txtboxDicke.Text;
+            form_Chargenbegleitblatt.Bemerkung =richtxtboxInforamationAuflegen.Text;
+            form_Chargenbegleitblatt.ErstelltAm = LblErstelltAm.Text;
+            // Fehlt noch was
+            form_Chargenbegleitblatt.PfadBild = bildPfadInfoZeichnung; 
+        }
 
         // Druckformular beenden
         private void BtnClose_Click(object sender, EventArgs e)
@@ -368,11 +452,13 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                             txtboxRadiusRueckseite.Text = reader["Radius2"].ToString();
                             txtboxGnummer.Text = reader["G_Nummer"].ToString();
                             txtboxGlassorte.Text = reader["GLASSORTE"].ToString();
+                            txtboxDicke.Text = reader["DICKE"].ToString();
                             richtxtboxInforamationAuflegen.Text = reader["BEMERKUNG"].ToString();
                             richtxtboxZusatzinfo.Text = reader["InfoZeichnung_Bemerkungen"].ToString();
                             txtboxVorreinigung.Text = reader["Vorreinigung"].ToString();
                             txtboxHandreinigung.Text = reader["Handreinigung"].ToString();
                             // Bildpfad aus der Datenbank abfragen
+                            
                             string bildPfadInfoZeichnung = reader["Zeichnungspfad"].ToString();
                             string bildPfadInfoZeichnungBemerkung = reader["InfoZeichnung"].ToString();
                             // Überprüfen, ob der Pfad gültig ist und das Bild existiert
@@ -402,7 +488,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 }
             }
 
-
             catch (Exception ex)
             {
                 MessageBox.Show("Fehler beim Laden der Informationen: " + ex.Message);
@@ -423,24 +508,32 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
         }
 
+        // Waserzeichen setzten
         private void SetPlaceholder(TextBox textBox, string placeholderText)
         {
+            // Setzt die Textfarbe auf Grau und zeigt den Platzhaltertext an
             textBox.ForeColor = Color.Gray;
             textBox.Text = placeholderText;
 
+            // Ereignis-Handler für den GotFocus (wenn das Textfeld den Fokus erhält)
             textBox.GotFocus += (sender, e) =>
             {
+                // Überprüft, ob der aktuelle Text der Platzhalter ist
                 if (textBox.Text == placeholderText)
                 {
+                    // Löscht den Platzhaltertext und setzt die Textfarbe auf die Standardfarbe
                     textBox.Text = "";
                     textBox.ForeColor = SystemColors.WindowText;
                 }
             };
 
+            // Ereignis-Handler für den LostFocus (wenn das Textfeld den Fokus verliert)
             textBox.LostFocus += (sender, e) =>
             {
+                // Überprüft, ob das Textfeld leer ist
                 if (string.IsNullOrEmpty(textBox.Text))
                 {
+                    // Setzt den Platzhaltertext zurück und die Textfarbe auf Grau
                     textBox.Text = placeholderText;
                     textBox.ForeColor = Color.Gray;
                 }
@@ -449,9 +542,10 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
         private Bitmap SharpenImage(Bitmap image)
         {
+            // Erstellt eine neue Bitmap mit der gleichen Größe wie das Originalbild
             Bitmap sharpenedImage = new Bitmap(image.Width, image.Height);
 
-            // Definieren eines milderen Schärfungsfilters
+            // Definiert einen milderen Schärfungsfilter mit einem 3x3-Kernel
             float[,] kernel = new float[,]
             {
                 { 0, -0.2f, 0 },
@@ -459,37 +553,43 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 { 0, -0.2f, 0 }
             };
 
-            // Wenden des Schärfungsfilters auf das Bild an
+            // Wendet den Schärfungsfilter auf jedes Pixel des Bildes an (ausgenommen Randpixel)
             for (int x = 1; x < image.Width - 1; x++)
             {
                 for (int y = 1; y < image.Height - 1; y++)
                 {
+                    // Initialisiert die Variablen für die RGB-Kanäle
                     float r = 0, g = 0, b = 0;
 
+                    // Schleife über die Nachbarpixel zur Anwendung des Schärfungsfilters
                     for (int i = -1; i <= 1; i++)
                     {
                         for (int j = -1; j <= 1; j++)
                         {
+                            // Holt den Farbwert des Nachbarpixels
                             Color pixel = image.GetPixel(x + i, y + j);
+                            // Wendet den Kernelwert auf die RGB-Kanäle an
                             r += pixel.R * kernel[i + 1, j + 1];
                             g += pixel.G * kernel[i + 1, j + 1];
                             b += pixel.B * kernel[i + 1, j + 1];
                         }
                     }
 
-                    // Normalisieren der RGB-Werte
+                    // Normalisiert die RGB-Werte, um sicherzustellen, dass sie im Bereich 0-255 liegen
                     r = Math.Max(0, Math.Min(255, r));
                     g = Math.Max(0, Math.Min(255, g));
                     b = Math.Max(0, Math.Min(255, b));
 
-                    // Setze den neuen Farbwert in den scharfen Bitmap
+                    // Setzt den neuen Farbwert in der geschärften Bitmap
                     Color newColor = Color.FromArgb((int)r, (int)g, (int)b);
                     sharpenedImage.SetPixel(x, y, newColor);
                 }
             }
 
+            // Gibt das geschärfte Bild zurück
             return sharpenedImage;
         }
+
 
     }
 }

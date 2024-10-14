@@ -426,8 +426,9 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             string radiusRueckseite = TxtboxRadiusRueckseite.Text;
             string belagVerguetung = TxtboxBelagVerguetung.Text;
             string belagRueckseite = TxtboxBelagRueckseite.Text;
-            string[] prozessArray = belagVerguetung.Split(' ').Select(s => s.Trim()).ToArray();
-            string prozess = prozessArray[0];
+            //string[] prozessArray = belagVerguetung.Split(' ').Select(s => s.Trim()).ToArray();
+            //string prozess = prozessArray[0];
+            string prozess = TxtboxBelagProzess.Text;
             string ringeingabe = TxtboxRing.Text;
             string[] ringnameArray = ringeingabe.Split('-').Select(x => x.Trim()).ToArray();
             string ring = ringnameArray[0];

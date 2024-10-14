@@ -654,7 +654,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             string radiusRueckseite = TxtboxRadiusRueckseite.Text;
             string belagVerguetung = ComboboxBelagVerguetung.Text;
             string belagRueckseite = ComboboxBelagRueckseite.Text;
-            string[] prozessArray = belagVerguetung.Split(' ').Select(s => s.Trim()).ToArray();
+            string prozesseingabe = ComboboxProzess.Text;
+            string[] prozessArray = prozesseingabe.Split(' ').Select(s => s.Trim()).ToArray();
             string prozess = prozessArray[0];
             string ringeingabe = ComboboxRing.Text;
             string[] ringnameArray = ringeingabe.Split('-').Select(x => x.Trim()).ToArray();
