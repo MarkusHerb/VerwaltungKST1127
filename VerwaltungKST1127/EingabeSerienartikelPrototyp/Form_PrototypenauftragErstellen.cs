@@ -3,16 +3,39 @@ using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace 
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften und Bildern in der GUI)
 using System.Drawing.Printing; // Importieren des System.Drawing.Printing-Namespace für Druckfunktionen (z.B. zum Drucken von Dokumenten und zur Verwaltung von Druckereinstellungen)
 using System.IO; // Importieren des System.IO-Namespace für die Ein- und Ausgabefunktionen (z.B. zum Lesen und Schreiben von Dateien und Datenströmen)
+using System.Runtime.InteropServices;
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 {
+
     public partial class Form_PrototypenauftragErstellen : Form
     {
+
         // Verbindungszeichenfolgen für die SQL Server-Datenbanken
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
 
         private PrintDocument printDocument;  // Deklarieren eines PrintDocument-Objekts für den Druckprozess
+                                              // Instanzvariablen
+        private string Auftragsnummer;
+        private string artikel;
+        private string seiteArtikel;
+        private string bezeichnung;
+        private string belag;
+        private string prozess;
+        private string durchmesser;
+        private string brechwert;
+        private string radiusVerguetung;
+        private string radiusRueckseite;
+        private string gNummer;
+        private string glassorte;
+        private string dicke;
+        private string bemerkung;
+        private string zusatzinfo;
+        private string vorreinigung;
+        private string handreinigung;
+        private string bildPfad;
 
         public Form_PrototypenauftragErstellen()
         {
@@ -250,6 +273,9 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             txtboxDurchmesser.Text = txtboxDurchmesser.Text + " mm";
             txtboxDicke.Text = txtboxDicke.Text + " mm";
 
+            //Variablen fürs Chargenbegleitblatt
+
+
             // Elemente unsichtbar machen
             VisibleFalse();
 
@@ -266,6 +292,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             {
                 printDocument.Print();
                 BtnClose.Visible = true;
+
             }
             else
             {
@@ -275,6 +302,9 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
             // Optional: Setze die Sichtbarkeit der Elemente zurück, wenn der Druck abgeschlossen ist
             VisibleTrue();
+            // Bild in die Zwischenablage kopieren
+            CopyImageToClipboard();
+            CopyDataToExcel(@"C:\Users\herburgerm\source\repos\Verwaltung\VerwaltungKST1127\VerwaltungKST1127\Chargenbegleitblatt.xlsx");
         }
 
         private void VisibleFalse()
@@ -343,7 +373,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             lblDurchmesser.Visible = true;
             txtboxDurchmesser.Visible = true;
             lblRadiusverguetung.Visible = true;
-            lblRadiusverguetung.Visible = true;
+            txtboxRadiusVerguetung.Visible = true;
             lblGnummer.Visible = true;
             txtboxGnummer.Visible = true;
             lblBrechwert.Visible = true;
@@ -370,26 +400,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             lblDokument.Visible = true;
             BtnDrucken.Visible = true;
             BtnClose.Visible = true;
-        }
-
-        private void UebergebeDatenChargenbegleitblatt()
-        {
-            Form_Chargenbegleitblatt form_Chargenbegleitblatt = new Form_Chargenbegleitblatt();
-            form_Chargenbegleitblatt.Projektnummer = txtboxAuftragsnummer.Text;
-            form_Chargenbegleitblatt.Bezeichnung = txtboxBezeichnung.Text;
-            form_Chargenbegleitblatt.Artikelnummer = ComboboxArtikel.Text;
-            form_Chargenbegleitblatt.Belag = txtboxBelag.Text;
-            form_Chargenbegleitblatt.Prozess = txtboxProzess.Text;
-            form_Chargenbegleitblatt.RadiusVerguetung = txtboxRadiusVerguetung.Text;
-            form_Chargenbegleitblatt.RadiusRueckseite = txtboxRadiusRueckseite.Text;
-            form_Chargenbegleitblatt.GNummer = txtboxGnummer.Text;
-            form_Chargenbegleitblatt.Glassorte = txtboxGlassorte.Text;
-            form_Chargenbegleitblatt.Durchmesser = txtboxDurchmesser.Text;
-            form_Chargenbegleitblatt.Mittendicke = txtboxDicke.Text;
-            form_Chargenbegleitblatt.Bemerkung =richtxtboxInforamationAuflegen.Text;
-            form_Chargenbegleitblatt.ErstelltAm = LblErstelltAm.Text;
-            // Fehlt noch was
-            form_Chargenbegleitblatt.PfadBild = bildPfadInfoZeichnung; 
         }
 
         // Druckformular beenden
@@ -427,9 +437,9 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         {
             sqlConnectionVerwaltung.Open();
             string query = @"
-        SELECT * 
-        FROM Serienlinsen
-        WHERE ARTNR = @artikelNummer AND SEITE = @seite"; // Seite in die Abfrage einbeziehen
+                SELECT * 
+                FROM Serienlinsen
+                WHERE ARTNR = @artikelNummer AND SEITE = @seite"; // Seite in die Abfrage einbeziehen
 
             try
             {
@@ -457,8 +467,28 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                             richtxtboxZusatzinfo.Text = reader["InfoZeichnung_Bemerkungen"].ToString();
                             txtboxVorreinigung.Text = reader["Vorreinigung"].ToString();
                             txtboxHandreinigung.Text = reader["Handreinigung"].ToString();
+
+                            //Öffentlich zugänglich machen
+                            Auftragsnummer = txtboxAuftragsnummer.Text.ToString();
+                            artikel = reader["ARTNR"].ToString();
+                            seiteArtikel = reader["SEITE"].ToString();
+                            bezeichnung = reader["BEZ"].ToString();
+                            belag = reader["VERGBELAG"].ToString();
+                            prozess = reader["MATERIAL"].ToString();
+                            durchmesser = reader["DM"].ToString();
+                            brechwert = reader["ND"].ToString();
+                            radiusVerguetung = reader["Radius1"].ToString();
+                            radiusRueckseite = reader["Radius2"].ToString();
+                            gNummer = reader["G_Nummer"].ToString();
+                            glassorte = reader["GLASSORTE"].ToString();
+                            dicke = reader["DICKE"].ToString();
+                            bemerkung = reader["BEMERKUNG"].ToString();
+                            zusatzinfo = reader["InfoZeichnung_Bemerkungen"].ToString();
+                            vorreinigung = reader["Vorreinigung"].ToString();
+                            handreinigung = reader["Handreinigung"].ToString();
+                            bildPfad = reader["Zeichnungspfad"].ToString();
+
                             // Bildpfad aus der Datenbank abfragen
-                            
                             string bildPfadInfoZeichnung = reader["Zeichnungspfad"].ToString();
                             string bildPfadInfoZeichnungBemerkung = reader["InfoZeichnung"].ToString();
                             // Überprüfen, ob der Pfad gültig ist und das Bild existiert
@@ -590,6 +620,140 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             return sharpenedImage;
         }
 
+        private void CopyImageToClipboard()
+        {
+            if (PictureboxAuflegenLinsenPrismen.Image != null)
+            {
+                Clipboard.SetImage(PictureboxAuflegenLinsenPrismen.Image);
+            }
+            else
+            {
+                MessageBox.Show("Kein Bild vorhanden, das kopiert werden kann.");
+            }
+        }
 
+        // Funktion zum Kopieren der Daten in Excel
+
+        public void CopyDataToExcel(string filePath)
+        {
+            // Zellenzuweisungen
+            var cellAssignments = new System.Collections.Generic.Dictionary<string, string>
+            {
+                { "H1", Auftragsnummer },{"H24", Auftragsnummer},
+                { "D2", artikel }, { "D25", artikel },
+                { "F2", bezeichnung }, { "F25", bezeichnung },
+                { "D3", seiteArtikel }, { "D26", seiteArtikel },
+                { "C8", belag }, { "C31", belag },
+                { "E8", prozess }, { "E31", prozess },
+                { "G11", radiusVerguetung }, { "G34", radiusVerguetung },
+                { "G5", radiusRueckseite }, { "G28", radiusRueckseite },
+                { "I14", gNummer }, { "I37", gNummer },
+                { "I15", glassorte }, { "I38", glassorte },
+                { "I16", durchmesser + " mm" }, { "I39", durchmesser + " mm" },
+                { "I17", dicke + " mm" }, { "I40", dicke + " mm" },
+                { "B15", bemerkung }, {"B38", bemerkung },
+            };
+
+            Excel.Application excelApp = new Excel.Application();
+            Excel.Workbook workbook = null;
+            Excel.Worksheet worksheet = null;
+
+            try
+            {
+                Console.WriteLine("Starte Excel Anwendung...");
+
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine("Die Datei existiert nicht: " + filePath);
+                    return;
+                }
+
+                workbook = excelApp.Workbooks.Open(filePath);
+                excelApp.Visible = true;
+                worksheet = (Excel.Worksheet)workbook.Sheets[1];
+
+                foreach (var assignment in cellAssignments)
+                {
+                    Console.WriteLine($"Schreibe in Zelle {assignment.Key}: {assignment.Value}");
+                    worksheet.Range[assignment.Key].Value = assignment.Value;
+                }
+
+                // Bild aus der Zwischenablage einfügen
+                Console.WriteLine("Füge Bild aus der Zwischenablage ein...");
+
+                // Füge das Bild in die Zelle G6 ein
+                Excel.Range targetCell = worksheet.Cells[6, 7]; // Zelle G6
+                targetCell.Select(); // Wähle die Zielzelle aus
+                excelApp.ActiveSheet.Paste(); // Füge das Bild ein
+
+                // Größe des Bildes anpassen
+                var picture = worksheet.Shapes.Item(worksheet.Shapes.Count); // Das zuletzt eingefügte Bild
+                picture.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue; // Seitenverhältnis beibehalten
+                picture.Width = 140; // Hier die Breite anpassen
+                picture.Height = 90; // Hier die Höhe anpassen
+
+                // Füge das Bild in die Zelle G29 ein
+                Excel.Range targetCell1 = worksheet.Cells[29, 7]; // Zelle G29
+                targetCell1.Select(); // Wähle die Zielzelle aus
+                excelApp.ActiveSheet.Paste(); // Füge das Bild ein
+
+                // Größe des zweiten Bildes anpassen
+                var picture1 = worksheet.Shapes.Item(worksheet.Shapes.Count); // Das zuletzt eingefügte Bild
+                picture1.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue; // Seitenverhältnis beibehalten
+                picture1.Width = 140; // Hier die Breite anpassen
+                picture1.Height = 90; // Hier die Höhe anpassen
+
+                // Drucken der ersten Seite
+                Console.WriteLine("Drucke die erste Seite der Excel-Datei...");
+                worksheet.PrintOut(From: 1, To: 1); // Drucken nur der ersten Seite
+
+                // Optional: Warte einige Sekunden, um sicherzustellen, dass der Druckauftrag verarbeitet wird
+                System.Threading.Thread.Sleep(4000); // Pause für 2 Sekunden
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fehler: {ex.Message}");
+            }
+            finally
+            {
+                try
+                {
+                    if (workbook != null)
+                    {
+                        workbook.Close(false); // Schließe die Arbeitsmappe ohne zu speichern
+                        Marshal.ReleaseComObject(workbook);
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                    }
+
+                    if (excelApp != null)
+                    {
+                        excelApp.Quit(); // Schließe die Excel-Anwendung
+                        Marshal.ReleaseComObject(excelApp);
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                    }
+                }
+                catch (Exception closeEx)
+                {
+                    Console.WriteLine($"Fehler beim Schließen der Excel-Objekte: {closeEx.Message}");
+                }
+                finally
+                {
+                    worksheet = null;
+                    workbook = null;
+                    excelApp = null;
+
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
     }
 }
+
+

@@ -1,6 +1,7 @@
 ﻿using System; // Importieren des System-Namespace für grundlegende Funktionalitäten
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für GUI-Funktionalität
-using VerwaltungKST1127.EingabeSerienartikelPrototyp; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
+using VerwaltungKST1127.EingabeSerienartikelPrototyp;
+using VerwaltungKST1127.Farbauswertung; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
 
 namespace VerwaltungKST1127
 {
@@ -43,6 +44,13 @@ namespace VerwaltungKST1127
         {
             Form_PrototypenauftragErstellen form_PrototypenauftragErstellen = new Form_PrototypenauftragErstellen();
             form_PrototypenauftragErstellen.ShowDialog();
+        }
+
+        // Button Event, wenn man darauf klickt
+        private void BtnFarbwerte_Click(object sender, EventArgs e)
+        {
+            Form_Farbauswertung form_Farbauswertung = new Form_Farbauswertung();
+            form_Farbauswertung.ShowDialog();
         }
     }
 }

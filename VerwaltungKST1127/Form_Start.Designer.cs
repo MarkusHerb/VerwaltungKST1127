@@ -38,6 +38,11 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.BtnPrototypenAuftragErstellen = new System.Windows.Forms.Button();
+            this.LblInfo1 = new System.Windows.Forms.Label();
+            this.BtnFarbwerte = new System.Windows.Forms.Button();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.LblQualitaet = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             this.SuspendLayout();
             // 
@@ -80,7 +85,7 @@
             this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.BtnSerienartikelPrototyp.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(661, 164);
+            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(13, 211);
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
             this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(239, 66);
             this.BtnSerienartikelPrototyp.TabIndex = 5;
@@ -109,7 +114,7 @@
             this.BtnPrototypenAuftragErstellen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.BtnPrototypenAuftragErstellen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPrototypenAuftragErstellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(661, 236);
+            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(13, 283);
             this.BtnPrototypenAuftragErstellen.Name = "BtnPrototypenAuftragErstellen";
             this.BtnPrototypenAuftragErstellen.Size = new System.Drawing.Size(239, 66);
             this.BtnPrototypenAuftragErstellen.TabIndex = 8;
@@ -117,12 +122,66 @@
             this.BtnPrototypenAuftragErstellen.UseVisualStyleBackColor = false;
             this.BtnPrototypenAuftragErstellen.Click += new System.EventHandler(this.BtnPrototypenAuftragErstellen_Click);
             // 
+            // LblInfo1
+            // 
+            this.LblInfo1.AutoSize = true;
+            this.LblInfo1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblInfo1.Location = new System.Drawing.Point(73, 166);
+            this.LblInfo1.Name = "LblInfo1";
+            this.LblInfo1.Size = new System.Drawing.Size(126, 26);
+            this.LblInfo1.TabIndex = 9;
+            this.LblInfo1.Text = "Produktion";
+            // 
+            // BtnFarbwerte
+            // 
+            this.BtnFarbwerte.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.BtnFarbwerte.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnFarbwerte.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnFarbwerte.Location = new System.Drawing.Point(257, 211);
+            this.BtnFarbwerte.Name = "BtnFarbwerte";
+            this.BtnFarbwerte.Size = new System.Drawing.Size(239, 66);
+            this.BtnFarbwerte.TabIndex = 10;
+            this.BtnFarbwerte.Text = "Farbauswertung";
+            this.BtnFarbwerte.UseVisualStyleBackColor = false;
+            this.BtnFarbwerte.Click += new System.EventHandler(this.BtnFarbwerte_Click);
+            // 
+            // panel3
+            // 
+            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
+            this.panel3.Location = new System.Drawing.Point(254, 157);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1, 483);
+            this.panel3.TabIndex = 11;
+            // 
+            // LblQualitaet
+            // 
+            this.LblQualitaet.AutoSize = true;
+            this.LblQualitaet.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblQualitaet.Location = new System.Drawing.Point(329, 166);
+            this.LblQualitaet.Name = "LblQualitaet";
+            this.LblQualitaet.Size = new System.Drawing.Size(95, 26);
+            this.LblQualitaet.TabIndex = 12;
+            this.LblQualitaet.Text = "Qualität";
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
+            this.panel4.Location = new System.Drawing.Point(498, 157);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1, 483);
+            this.panel4.TabIndex = 13;
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.panel4);
+            this.Controls.Add(this.LblQualitaet);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.BtnFarbwerte);
+            this.Controls.Add(this.LblInfo1);
             this.Controls.Add(this.BtnPrototypenAuftragErstellen);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -151,6 +210,11 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button BtnPrototypenAuftragErstellen;
+        private System.Windows.Forms.Label LblInfo1;
+        private System.Windows.Forms.Button BtnFarbwerte;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label LblQualitaet;
+        private System.Windows.Forms.Panel panel4;
     }
 }
 
