@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.printDocument1 = new System.Drawing.Printing.PrintDocument();
             this.printDialog1 = new System.Windows.Forms.PrintDialog();
             this.BtnDrucken = new System.Windows.Forms.Button();
@@ -57,7 +57,7 @@
             // BtnDrucken
             // 
             this.BtnDrucken.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.BtnDrucken.Location = new System.Drawing.Point(1064, 12);
+            this.BtnDrucken.Location = new System.Drawing.Point(1123, 12);
             this.BtnDrucken.Name = "BtnDrucken";
             this.BtnDrucken.Size = new System.Drawing.Size(127, 41);
             this.BtnDrucken.TabIndex = 10;
@@ -67,33 +67,35 @@
             // 
             // ChartMonatsuebersicht
             // 
-            chartArea3.Name = "ChartArea1";
-            this.ChartMonatsuebersicht.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.ChartMonatsuebersicht.Legends.Add(legend3);
+            chartArea1.Name = "ChartArea1";
+            this.ChartMonatsuebersicht.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.ChartMonatsuebersicht.Legends.Add(legend1);
             this.ChartMonatsuebersicht.Location = new System.Drawing.Point(17, 59);
             this.ChartMonatsuebersicht.Name = "ChartMonatsuebersicht";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.ChartMonatsuebersicht.Series.Add(series3);
-            this.ChartMonatsuebersicht.Size = new System.Drawing.Size(1174, 382);
+            this.ChartMonatsuebersicht.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate;
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.ChartMonatsuebersicht.Series.Add(series1);
+            this.ChartMonatsuebersicht.Size = new System.Drawing.Size(1233, 382);
             this.ChartMonatsuebersicht.TabIndex = 11;
             this.ChartMonatsuebersicht.Text = "chart1";
             // 
             // ChartBelagsuebersicht
             // 
-            chartArea4.Name = "ChartArea1";
-            this.ChartBelagsuebersicht.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            this.ChartBelagsuebersicht.Legends.Add(legend4);
+            chartArea2.Name = "ChartArea1";
+            this.ChartBelagsuebersicht.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.ChartBelagsuebersicht.Legends.Add(legend2);
             this.ChartBelagsuebersicht.Location = new System.Drawing.Point(13, 499);
             this.ChartBelagsuebersicht.Name = "ChartBelagsuebersicht";
-            series4.ChartArea = "ChartArea1";
-            series4.Legend = "Legend1";
-            series4.Name = "Series1";
-            this.ChartBelagsuebersicht.Series.Add(series4);
-            this.ChartBelagsuebersicht.Size = new System.Drawing.Size(1178, 346);
+            this.ChartBelagsuebersicht.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate;
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.ChartBelagsuebersicht.Series.Add(series2);
+            this.ChartBelagsuebersicht.Size = new System.Drawing.Size(1237, 346);
             this.ChartBelagsuebersicht.TabIndex = 12;
             this.ChartBelagsuebersicht.Text = "chart2";
             // 
@@ -138,7 +140,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1203, 857);
+            this.ClientSize = new System.Drawing.Size(1262, 857);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.LblAverage);

@@ -43,6 +43,11 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.LblQualitaet = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.Organisation = new System.Windows.Forms.Label();
+            this.BtnMateriallager = new System.Windows.Forms.Button();
+            this.BtnInformation = new System.Windows.Forms.Button();
+            this.BtnLupe = new System.Windows.Forms.Button();
+            this.BtnHomepage = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             this.SuspendLayout();
             // 
@@ -82,8 +87,9 @@
             // 
             // BtnSerienartikelPrototyp
             // 
-            this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.BtnSerienartikelPrototyp.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnSerienartikelPrototyp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(13, 211);
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
@@ -111,8 +117,9 @@
             // 
             // BtnPrototypenAuftragErstellen
             // 
-            this.BtnPrototypenAuftragErstellen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.BtnPrototypenAuftragErstellen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.BtnPrototypenAuftragErstellen.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnPrototypenAuftragErstellen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPrototypenAuftragErstellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(13, 283);
             this.BtnPrototypenAuftragErstellen.Name = "BtnPrototypenAuftragErstellen";
@@ -135,7 +142,9 @@
             // BtnFarbwerte
             // 
             this.BtnFarbwerte.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.BtnFarbwerte.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("BtnFarbwerte.BackgroundImage")));
             this.BtnFarbwerte.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnFarbwerte.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnFarbwerte.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnFarbwerte.Location = new System.Drawing.Point(257, 211);
             this.BtnFarbwerte.Name = "BtnFarbwerte";
@@ -171,12 +180,83 @@
             this.panel4.Size = new System.Drawing.Size(1, 483);
             this.panel4.TabIndex = 13;
             // 
+            // Organisation
+            // 
+            this.Organisation.AutoSize = true;
+            this.Organisation.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Organisation.Location = new System.Drawing.Point(552, 166);
+            this.Organisation.Name = "Organisation";
+            this.Organisation.Size = new System.Drawing.Size(112, 26);
+            this.Organisation.TabIndex = 15;
+            this.Organisation.Text = "Abteilung";
+            // 
+            // BtnMateriallager
+            // 
+            this.BtnMateriallager.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.BtnMateriallager.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnMateriallager.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnMateriallager.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnMateriallager.Location = new System.Drawing.Point(501, 211);
+            this.BtnMateriallager.Name = "BtnMateriallager";
+            this.BtnMateriallager.Size = new System.Drawing.Size(239, 66);
+            this.BtnMateriallager.TabIndex = 14;
+            this.BtnMateriallager.Text = "Materiallager";
+            this.BtnMateriallager.UseVisualStyleBackColor = false;
+            this.BtnMateriallager.Click += new System.EventHandler(this.BtnMateriallager_Click);
+            // 
+            // BtnInformation
+            // 
+            this.BtnInformation.BackColor = System.Drawing.Color.MediumSeaGreen;
+            this.BtnInformation.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnInformation.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnInformation.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnInformation.Location = new System.Drawing.Point(922, 573);
+            this.BtnInformation.Name = "BtnInformation";
+            this.BtnInformation.Size = new System.Drawing.Size(134, 66);
+            this.BtnInformation.TabIndex = 16;
+            this.BtnInformation.Text = "Information";
+            this.BtnInformation.UseVisualStyleBackColor = false;
+            this.BtnInformation.Click += new System.EventHandler(this.BtnInformation_Click);
+            // 
+            // BtnLupe
+            // 
+            this.BtnLupe.BackColor = System.Drawing.Color.MediumSeaGreen;
+            this.BtnLupe.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnLupe.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnLupe.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnLupe.Location = new System.Drawing.Point(922, 501);
+            this.BtnLupe.Name = "BtnLupe";
+            this.BtnLupe.Size = new System.Drawing.Size(134, 66);
+            this.BtnLupe.TabIndex = 17;
+            this.BtnLupe.Text = "OptikLupe";
+            this.BtnLupe.UseVisualStyleBackColor = false;
+            this.BtnLupe.Click += new System.EventHandler(this.BtnLupe_Click);
+            // 
+            // BtnHomepage
+            // 
+            this.BtnHomepage.BackColor = System.Drawing.Color.MediumSeaGreen;
+            this.BtnHomepage.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnHomepage.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnHomepage.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnHomepage.Location = new System.Drawing.Point(922, 429);
+            this.BtnHomepage.Name = "BtnHomepage";
+            this.BtnHomepage.Size = new System.Drawing.Size(134, 66);
+            this.BtnHomepage.TabIndex = 18;
+            this.BtnHomepage.Text = "Homepage";
+            this.BtnHomepage.UseVisualStyleBackColor = false;
+            this.BtnHomepage.Click += new System.EventHandler(this.BtnHomepage_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.BtnHomepage);
+            this.Controls.Add(this.BtnLupe);
+            this.Controls.Add(this.BtnInformation);
+            this.Controls.Add(this.Organisation);
+            this.Controls.Add(this.BtnMateriallager);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.LblQualitaet);
             this.Controls.Add(this.panel3);
@@ -215,6 +295,11 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label LblQualitaet;
         private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label Organisation;
+        private System.Windows.Forms.Button BtnMateriallager;
+        private System.Windows.Forms.Button BtnInformation;
+        private System.Windows.Forms.Button BtnLupe;
+        private System.Windows.Forms.Button BtnHomepage;
     }
 }
 

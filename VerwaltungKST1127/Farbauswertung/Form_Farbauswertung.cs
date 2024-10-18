@@ -294,9 +294,9 @@ namespace VerwaltungKST1127.Farbauswertung
             string process = TextBoxProzess.Text;
             string anlage = TextBoxAnlage.Text;
             // Neue Instanz zu Form_Messbild - Values übergeben
-            ////Form_Messbild form_Messbild = new Form_Messbild(dateValue, chargValue, XiValue, XaValue, YiValue,
-            ////    YaValue, ZiValue, ZaValue, belag, process, anlage);
-            ////form_Messbild.Show(); // Formular anzeigen
+            Form_Messbild form_Messbild = new Form_Messbild(dateValue, chargValue, XiValue, XaValue, YiValue,
+                YaValue, ZiValue, ZaValue, belag, process, anlage);
+            form_Messbild.Show(); // Formular anzeigen
         }
 
         // Event-Handler-Methode, die ausgelöst wird, wenn der Button zum Löschen aller Filter geklickt wird

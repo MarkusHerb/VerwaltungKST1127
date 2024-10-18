@@ -52,5 +52,33 @@ namespace VerwaltungKST1127
             Form_Farbauswertung form_Farbauswertung = new Form_Farbauswertung();
             form_Farbauswertung.ShowDialog();
         }
+
+        // Button Event, wenn man darauf klickt
+        private void BtnMateriallager_Click(object sender, EventArgs e)
+        {
+            Form_Materiallager form_Materiallager = new Form_Materiallager();
+            form_Materiallager.ShowDialog();
+        }
+
+        // Button Event, wenn man darauf klickt
+        private void BtnHomepage_Click(object sender, EventArgs e)
+        {
+            string url = "https://www.swarovskioptik.com/at/de/jagd";
+            System.Diagnostics.Process.Start(url);
+        }
+
+        // Button Event, wenn man darauf klickt
+        private void BtnLupe_Click(object sender, EventArgs e)
+        {
+            string url = "http://lupe.swarovskioptik.at/";
+            System.Diagnostics.Process.Start(url);  
+        }
+
+        // Button Event, wenn man darauf klickt
+        private void BtnInformation_Click(object sender, EventArgs e)
+        {
+            Form_Copyright form_Copyright = new Form_Copyright();
+            form_Copyright.ShowDialog();    
+        }
     }
 }

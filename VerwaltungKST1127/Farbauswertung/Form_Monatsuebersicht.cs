@@ -27,6 +27,8 @@ namespace VerwaltungKST1127.Farbauswertung
 
             // Querformat für das PrintDocument festlegen
             printDocument.DefaultPageSettings.Landscape = true;  // Querformat aktivieren
+            // Ramen des formulars ausbleden
+            ////this.FormBorderStyle = FormBorderStyle.None;            
         }
 
         private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)

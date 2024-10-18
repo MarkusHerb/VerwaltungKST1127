@@ -838,6 +838,8 @@
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.MaximumSize = new System.Drawing.Size(1123, 794);
+            this.MinimumSize = new System.Drawing.Size(1123, 794);
             this.Name = "Form_PrototypenauftragErstellen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Prototypen Auftrag";

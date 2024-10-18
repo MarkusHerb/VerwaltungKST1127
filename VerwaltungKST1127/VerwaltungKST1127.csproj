@@ -201,11 +201,35 @@
     <Compile Include="Farbauswertung\Form_Farbauswertung.Designer.cs">
       <DependentUpon>Form_Farbauswertung.cs</DependentUpon>
     </Compile>
+    <Compile Include="Farbauswertung\Form_Messbild.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Farbauswertung\Form_Messbild.Designer.cs">
+      <DependentUpon>Form_Messbild.cs</DependentUpon>
+    </Compile>
     <Compile Include="Farbauswertung\Form_Monatsuebersicht.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Farbauswertung\Form_Monatsuebersicht.Designer.cs">
       <DependentUpon>Form_Monatsuebersicht.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_Copyright.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Copyright.Designer.cs">
+      <DependentUpon>Form_Copyright.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Material\Form_InputMenge.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Material\Form_InputMenge.Designer.cs">
+      <DependentUpon>Form_InputMenge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Material\Form_Materiallager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Material\Form_Materiallager.Designer.cs">
+      <DependentUpon>Form_Materiallager.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_Start.cs">
       <SubType>Form</SubType>
@@ -227,11 +251,23 @@
     <EmbeddedResource Include="Farbauswertung\Form_Farbauswertung.resx">
       <DependentUpon>Form_Farbauswertung.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Farbauswertung\Form_Messbild.resx">
+      <DependentUpon>Form_Messbild.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Farbauswertung\Form_Monatsuebersicht.resx">
       <DependentUpon>Form_Monatsuebersicht.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_Copyright.resx">
+      <DependentUpon>Form_Copyright.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_Start.resx">
       <DependentUpon>Form_Start.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Material\Form_InputMenge.resx">
+      <DependentUpon>Form_InputMenge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Material\Form_Materiallager.resx">
+      <DependentUpon>Form_Materiallager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -286,9 +322,17 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Bilder\Ansicht.png" />
     <Content Include="Bilder\BackgroundMainWindow.png" />
     <Content Include="Bilder\ButtonSpectrum.png" />
+    <Content Include="Bilder\Deckel für Liner.png" />
+    <Content Include="Bilder\InformationLager.png" />
     <Content Include="Bilder\Leer.gif" />
+    <Content Include="Bilder\Mo Liner 0 95 023.png" />
+    <Content Include="Bilder\Mo Liner 0 95 025.png" />
+    <Content Include="Bilder\Mo Liner 0 95 033.png" />
+    <Content Include="Bilder\Mo Liner 0 95 058.png" />
+    <Content Include="Bilder\Mo Liner 0 95 110.png" />
     <Content Include="Bilder\SwarovskiOptikLogo.png" />
     <Content Include="Bilder\Wavelength.png" />
     <Content Include="Bilder\Wavelength2.png" />

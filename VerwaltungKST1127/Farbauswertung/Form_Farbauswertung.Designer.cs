@@ -1196,6 +1196,8 @@
             this.Controls.Add(this.PictureBoxLogo);
             this.Controls.Add(this.LblTimeDate);
             this.Controls.Add(this.DgvFarbauswertung);
+            this.MaximumSize = new System.Drawing.Size(1680, 946);
+            this.MinimumSize = new System.Drawing.Size(1680, 946);
             this.Name = "Form_Farbauswertung";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form_Farbauswertung";

@@ -950,6 +950,8 @@
             this.Controls.Add(this.TxtboxBezeichnung);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.TxtboxArtikelnummer);
+            this.MaximumSize = new System.Drawing.Size(1106, 782);
+            this.MinimumSize = new System.Drawing.Size(1106, 782);
             this.Name = "Form_EingabeSeriePrototyp";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Eingabe neuer Artikel";
