@@ -44,7 +44,7 @@ namespace VerwaltungKST1127
                 // Spaltenbreite des Dgvs festlegen
                 DgvMateriallager.Columns[0].Width = 30;
                 DgvMateriallager.Columns[2].Width = 220;
-                DgvMateriallager.Columns[7].Width = 330;
+                DgvMateriallager.Columns[7].Width = 445;
                 sqlConnection.Close(); // Datenbankverbindung trennen
             }
             catch (Exception ex)
@@ -117,9 +117,11 @@ namespace VerwaltungKST1127
                         int neueMenge = int.Parse(TextBoxLagerstand.Text) - abzugMenge;
                         string query = $"UPDATE MaterialLager SET Lagerstand = {neueMenge} WHERE Id = {currentId}";
                         ExecuteQuery(query);
+                        MessageBox.Show("Erfolgreich " + abzugMenge + " " + TextBoxEinheit1.Text + " abgezogen!");
                         UpdateDgvMateriallager();
                         ClearTextBoxes();
                     }
+                    
                 }
             }
         }

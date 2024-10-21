@@ -48,6 +48,7 @@
             this.BtnInformation = new System.Windows.Forms.Button();
             this.BtnLupe = new System.Windows.Forms.Button();
             this.BtnHomepage = new System.Windows.Forms.Button();
+            this.ListBoxDocuments = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             this.SuspendLayout();
             // 
@@ -133,7 +134,7 @@
             // 
             this.LblInfo1.AutoSize = true;
             this.LblInfo1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblInfo1.Location = new System.Drawing.Point(73, 166);
+            this.LblInfo1.Location = new System.Drawing.Point(72, 166);
             this.LblInfo1.Name = "LblInfo1";
             this.LblInfo1.Size = new System.Drawing.Size(126, 26);
             this.LblInfo1.TabIndex = 9;
@@ -146,7 +147,7 @@
             this.BtnFarbwerte.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnFarbwerte.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnFarbwerte.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnFarbwerte.Location = new System.Drawing.Point(257, 211);
+            this.BtnFarbwerte.Location = new System.Drawing.Point(281, 211);
             this.BtnFarbwerte.Name = "BtnFarbwerte";
             this.BtnFarbwerte.Size = new System.Drawing.Size(239, 66);
             this.BtnFarbwerte.TabIndex = 10;
@@ -157,7 +158,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel3.Location = new System.Drawing.Point(254, 157);
+            this.panel3.Location = new System.Drawing.Point(266, 157);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1, 483);
             this.panel3.TabIndex = 11;
@@ -166,7 +167,7 @@
             // 
             this.LblQualitaet.AutoSize = true;
             this.LblQualitaet.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblQualitaet.Location = new System.Drawing.Point(329, 166);
+            this.LblQualitaet.Location = new System.Drawing.Point(350, 166);
             this.LblQualitaet.Name = "LblQualitaet";
             this.LblQualitaet.Size = new System.Drawing.Size(95, 26);
             this.LblQualitaet.TabIndex = 12;
@@ -175,7 +176,7 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel4.Location = new System.Drawing.Point(498, 157);
+            this.panel4.Location = new System.Drawing.Point(534, 157);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1, 483);
             this.panel4.TabIndex = 13;
@@ -184,7 +185,7 @@
             // 
             this.Organisation.AutoSize = true;
             this.Organisation.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Organisation.Location = new System.Drawing.Point(552, 166);
+            this.Organisation.Location = new System.Drawing.Point(612, 166);
             this.Organisation.Name = "Organisation";
             this.Organisation.Size = new System.Drawing.Size(112, 26);
             this.Organisation.TabIndex = 15;
@@ -196,7 +197,7 @@
             this.BtnMateriallager.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnMateriallager.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnMateriallager.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnMateriallager.Location = new System.Drawing.Point(501, 211);
+            this.BtnMateriallager.Location = new System.Drawing.Point(549, 211);
             this.BtnMateriallager.Name = "BtnMateriallager";
             this.BtnMateriallager.Size = new System.Drawing.Size(239, 66);
             this.BtnMateriallager.TabIndex = 14;
@@ -246,12 +247,28 @@
             this.BtnHomepage.UseVisualStyleBackColor = false;
             this.BtnHomepage.Click += new System.EventHandler(this.BtnHomepage_Click);
             // 
+            // ListBoxDocuments
+            // 
+            this.ListBoxDocuments.BackColor = System.Drawing.Color.MediumSeaGreen;
+            this.ListBoxDocuments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ListBoxDocuments.ForeColor = System.Drawing.Color.Black;
+            this.ListBoxDocuments.FormattingEnabled = true;
+            this.ListBoxDocuments.Location = new System.Drawing.Point(922, 166);
+            this.ListBoxDocuments.Name = "ListBoxDocuments";
+            this.ListBoxDocuments.Size = new System.Drawing.Size(134, 251);
+            this.ListBoxDocuments.TabIndex = 19;
+            this.ListBoxDocuments.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBoxDocuments_DrawItem);
+            this.ListBoxDocuments.DoubleClick += new System.EventHandler(this.ListBoxDocuments_DoubleClick);
+            this.ListBoxDocuments.MouseLeave += new System.EventHandler(this.ListBoxDocuments_MouseLeave);
+            this.ListBoxDocuments.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ListBoxDocuments_MouseMove);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.ListBoxDocuments);
             this.Controls.Add(this.BtnHomepage);
             this.Controls.Add(this.BtnLupe);
             this.Controls.Add(this.BtnInformation);
@@ -300,6 +317,7 @@
         private System.Windows.Forms.Button BtnInformation;
         private System.Windows.Forms.Button BtnLupe;
         private System.Windows.Forms.Button BtnHomepage;
+        private System.Windows.Forms.ListBox ListBoxDocuments;
     }
 }
 
