@@ -3,7 +3,8 @@ using System.Diagnostics;
 using System.Drawing; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für GUI-Funktionalität
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
-using VerwaltungKST1127.Farbauswertung; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
+using VerwaltungKST1127.Farbauswertung;
+using VerwaltungKST1127.Personal; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
 
 namespace VerwaltungKST1127
 {
@@ -84,6 +85,13 @@ namespace VerwaltungKST1127
         {
             Form_Copyright form_Copyright = new Form_Copyright();
             form_Copyright.ShowDialog();    
+        }
+
+        // Button Event, wenn man darauf klickt
+        private void BtnPersonalliste_Click(object sender, EventArgs e)
+        {
+            Form_Personalliste form_Personalliste = new Form_Personalliste();
+            form_Personalliste.ShowDialog();
         }
 
         // #### ListBox ####
@@ -191,5 +199,7 @@ namespace VerwaltungKST1127
         {
             OpenSelectedDocument();
         }
+
+        
     }
 }

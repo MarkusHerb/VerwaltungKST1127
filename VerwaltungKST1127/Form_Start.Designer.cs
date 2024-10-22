@@ -49,6 +49,7 @@
             this.BtnLupe = new System.Windows.Forms.Button();
             this.BtnHomepage = new System.Windows.Forms.Button();
             this.ListBoxDocuments = new System.Windows.Forms.ListBox();
+            this.BtnPersonalliste = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             this.SuspendLayout();
             // 
@@ -249,7 +250,7 @@
             // 
             // ListBoxDocuments
             // 
-            this.ListBoxDocuments.BackColor = System.Drawing.Color.MediumSeaGreen;
+            this.ListBoxDocuments.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ListBoxDocuments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ListBoxDocuments.ForeColor = System.Drawing.Color.Black;
             this.ListBoxDocuments.FormattingEnabled = true;
@@ -262,12 +263,27 @@
             this.ListBoxDocuments.MouseLeave += new System.EventHandler(this.ListBoxDocuments_MouseLeave);
             this.ListBoxDocuments.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ListBoxDocuments_MouseMove);
             // 
+            // BtnPersonalliste
+            // 
+            this.BtnPersonalliste.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.BtnPersonalliste.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnPersonalliste.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnPersonalliste.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnPersonalliste.Location = new System.Drawing.Point(549, 283);
+            this.BtnPersonalliste.Name = "BtnPersonalliste";
+            this.BtnPersonalliste.Size = new System.Drawing.Size(239, 66);
+            this.BtnPersonalliste.TabIndex = 20;
+            this.BtnPersonalliste.Text = "Personalliste";
+            this.BtnPersonalliste.UseVisualStyleBackColor = false;
+            this.BtnPersonalliste.Click += new System.EventHandler(this.BtnPersonalliste_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.BtnPersonalliste);
             this.Controls.Add(this.ListBoxDocuments);
             this.Controls.Add(this.BtnHomepage);
             this.Controls.Add(this.BtnLupe);
@@ -318,6 +334,7 @@
         private System.Windows.Forms.Button BtnLupe;
         private System.Windows.Forms.Button BtnHomepage;
         private System.Windows.Forms.ListBox ListBoxDocuments;
+        private System.Windows.Forms.Button BtnPersonalliste;
     }
 }
 
