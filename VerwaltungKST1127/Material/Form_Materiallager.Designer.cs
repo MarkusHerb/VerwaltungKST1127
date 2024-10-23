@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Materiallager));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.TextBoxArtikel = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.RichTextBoxBemerkung = new System.Windows.Forms.RichTextBox();
@@ -150,7 +150,7 @@
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.Black;
-            this.label7.Location = new System.Drawing.Point(15, 123);
+            this.label7.Location = new System.Drawing.Point(12, 123);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(98, 18);
             this.label7.TabIndex = 55;
@@ -183,7 +183,7 @@
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.Black;
-            this.label3.Location = new System.Drawing.Point(14, 67);
+            this.label3.Location = new System.Drawing.Point(12, 67);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 18);
             this.label3.TabIndex = 52;
@@ -216,9 +216,9 @@
             this.BtnHinzufuegen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.BtnHinzufuegen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BtnHinzufuegen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnHinzufuegen.Location = new System.Drawing.Point(674, 8);
+            this.BtnHinzufuegen.Location = new System.Drawing.Point(811, 8);
             this.BtnHinzufuegen.Name = "BtnHinzufuegen";
-            this.BtnHinzufuegen.Size = new System.Drawing.Size(131, 63);
+            this.BtnHinzufuegen.Size = new System.Drawing.Size(131, 49);
             this.BtnHinzufuegen.TabIndex = 75;
             this.BtnHinzufuegen.Text = "Material Hinzufügen";
             this.BtnHinzufuegen.UseVisualStyleBackColor = false;
@@ -229,9 +229,9 @@
             this.BtnAendern.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.BtnAendern.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BtnAendern.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnAendern.Location = new System.Drawing.Point(811, 8);
+            this.BtnAendern.Location = new System.Drawing.Point(537, 63);
             this.BtnAendern.Name = "BtnAendern";
-            this.BtnAendern.Size = new System.Drawing.Size(131, 63);
+            this.BtnAendern.Size = new System.Drawing.Size(131, 49);
             this.BtnAendern.TabIndex = 76;
             this.BtnAendern.Text = "Material Anpassen";
             this.BtnAendern.UseVisualStyleBackColor = false;
@@ -244,7 +244,7 @@
             this.BtnAustragen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnAustragen.Location = new System.Drawing.Point(537, 8);
             this.BtnAustragen.Name = "BtnAustragen";
-            this.BtnAustragen.Size = new System.Drawing.Size(131, 63);
+            this.BtnAustragen.Size = new System.Drawing.Size(131, 49);
             this.BtnAustragen.TabIndex = 77;
             this.BtnAustragen.Text = "Material Austragen";
             this.BtnAustragen.UseVisualStyleBackColor = false;
@@ -255,9 +255,9 @@
             this.BtnSpeichern.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.BtnSpeichern.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BtnSpeichern.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnSpeichern.Location = new System.Drawing.Point(674, 78);
+            this.BtnSpeichern.Location = new System.Drawing.Point(811, 63);
             this.BtnSpeichern.Name = "BtnSpeichern";
-            this.BtnSpeichern.Size = new System.Drawing.Size(131, 63);
+            this.BtnSpeichern.Size = new System.Drawing.Size(131, 49);
             this.BtnSpeichern.TabIndex = 78;
             this.BtnSpeichern.Text = "Speichern";
             this.BtnSpeichern.UseVisualStyleBackColor = false;
@@ -268,11 +268,11 @@
             this.BtnLoeschen.BackColor = System.Drawing.Color.IndianRed;
             this.BtnLoeschen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.BtnLoeschen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnLoeschen.Location = new System.Drawing.Point(811, 77);
+            this.BtnLoeschen.Location = new System.Drawing.Point(674, 8);
             this.BtnLoeschen.Name = "BtnLoeschen";
-            this.BtnLoeschen.Size = new System.Drawing.Size(131, 64);
+            this.BtnLoeschen.Size = new System.Drawing.Size(131, 49);
             this.BtnLoeschen.TabIndex = 79;
-            this.BtnLoeschen.Text = "Löschen";
+            this.BtnLoeschen.Text = "Material Löschen";
             this.BtnLoeschen.UseVisualStyleBackColor = false;
             this.BtnLoeschen.Click += new System.EventHandler(this.BtnLoeschen_Click);
             // 
@@ -291,14 +291,14 @@
             this.DgvMateriallager.AllowUserToAddRows = false;
             this.DgvMateriallager.AllowUserToDeleteRows = false;
             this.DgvMateriallager.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.GrayText;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.GrayText;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle4;
             this.DgvMateriallager.Location = new System.Drawing.Point(12, 204);
             this.DgvMateriallager.MultiSelect = false;
             this.DgvMateriallager.Name = "DgvMateriallager";

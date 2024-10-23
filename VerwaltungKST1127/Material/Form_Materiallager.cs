@@ -4,7 +4,8 @@ using System.Data; // Importieren des System.Data-Namespace für Datenoperatione
 using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für den Zugriff auf SQL Server-Datenbanken (z.B. zum Arbeiten mit SQL-Verbindungen, Befehlen und Datenlesern in ADO.NET)
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Farben, Bilder, Schriften und andere grafische Ressourcen)
 using System.IO; // Importieren des System.IO-Namespace für Dateioperationen und Stream-E/A (z.B. zum Lesen und Schreiben von Dateien, Arbeiten mit Verzeichnissen)
-using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für Windows Forms-Steuerelemente und Benutzeroberflächen (z.B. Button, TextBox, Label für GUI-Entwicklung)
+using System.Windows.Forms;
+using VerwaltungKST1127.Material; // Importieren des System.Windows.Forms-Namespace für Windows Forms-Steuerelemente und Benutzeroberflächen (z.B. Button, TextBox, Label für GUI-Entwicklung)
 
 namespace VerwaltungKST1127
 {
@@ -45,6 +46,22 @@ namespace VerwaltungKST1127
                 DgvMateriallager.Columns[0].Width = 30;
                 DgvMateriallager.Columns[2].Width = 220;
                 DgvMateriallager.Columns[7].Width = 445;
+                // Überprüfen, ob Lagerbestand den Mindestbestand unterschreitet
+                foreach (DataGridViewRow row in DgvMateriallager.Rows)
+                {
+                    int lagerstand = Convert.ToInt32(row.Cells["Lagerstand"].Value);
+                    int mindestbestand = Convert.ToInt32(row.Cells["Mindestbestand"].Value);
+
+                    if (lagerstand <= mindestbestand)
+                    {
+                        row.Cells["BestellStatus"].Value = "Bestellen";
+                    }
+                    else
+                    {
+                        row.Cells["BestellStatus"].Value = string.Empty; // Status zurücksetzen
+                    }
+                }
+
                 sqlConnection.Close(); // Datenbankverbindung trennen
             }
             catch (Exception ex)
@@ -52,6 +69,7 @@ namespace VerwaltungKST1127
                 MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
             }
         }
+
 
         // Methode zur Ausführung einer SQL-Abfrage
         private void ExecuteQuery(string query)
@@ -100,14 +118,12 @@ namespace VerwaltungKST1127
         // Event-Handler wenn der Button "Material austragen" gedrückt wird
         private void BtnAustragen_Click(object sender, EventArgs e)
         {
-            // Kontrolliert, ob in der Tabelle ein Artikel ausgewählt wurde
             if (currentId == 0)
             {
                 MessageBox.Show("Bitte zuerst einen Artikel in der Tabelle auswählen.");
                 return;
             }
 
-            // Zeige das Formular für die Mengeneingabe an und übergebe den Wert von TextBoxEinheit1
             using (Form_InputMenge inputMenge = new Form_InputMenge(TextBoxEinheit1.Text))
             {
                 if (inputMenge.ShowDialog() == DialogResult.OK)
@@ -117,14 +133,18 @@ namespace VerwaltungKST1127
                         int neueMenge = int.Parse(TextBoxLagerstand.Text) - abzugMenge;
                         string query = $"UPDATE MaterialLager SET Lagerstand = {neueMenge} WHERE Id = {currentId}";
                         ExecuteQuery(query);
+
+                        // Überprüfen, ob Lagerstand <= Mindestbestand ist und BestellStatus setzen
+                        CheckAndUpdateBestellStatus(neueMenge, int.Parse(TextBoxMindestbestand.Text));
+
                         MessageBox.Show("Erfolgreich " + abzugMenge + " " + TextBoxEinheit1.Text + " abgezogen!");
                         UpdateDgvMateriallager();
                         ClearTextBoxes();
                     }
-                    
                 }
             }
         }
+
 
         // Event-Handler für den Button "Hinzufügen"
         private void BtnHinzufuegen_Click(object sender, EventArgs e)
@@ -218,23 +238,42 @@ namespace VerwaltungKST1127
                 // Nur fortfahren, wenn der Benutzer "OK" auswählt
                 if (result == DialogResult.OK)
                 {
-                    // SQL-Delete-Statement erstellen
-                    string query = $"DELETE FROM MaterialLager WHERE Id = {currentId}";
+                    // Passwortabfrage anzeigen
+                    using (Form_Pw passwordPrompt = new Form_Pw())
+                    {
+                        if (passwordPrompt.ShowDialog() == DialogResult.OK)
+                        {
+                            // Das korrekte Passwort festlegen (dieses Passwort kann später durch ein sichereres Verfahren ersetzt werden)
+                            string correctPassword = "1127"; // Ersetze "deinPasswort" durch das tatsächliche Passwort
 
-                    // SQL-Abfrage ausführen
-                    ExecuteQuery(query);
+                            // Überprüfen, ob das eingegebene Passwort korrekt ist
+                            if (passwordPrompt.Passwort == correctPassword)
+                            {
+                                // SQL-Delete-Statement erstellen
+                                string query = $"DELETE FROM MaterialLager WHERE Id = {currentId}";
 
-                    // Erfolgsnachricht anzeigen
-                    MessageBox.Show("Eintrag erfolgreich gelöscht.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                // SQL-Abfrage ausführen
+                                ExecuteQuery(query);
 
-                    // Aktualisiere das DataGridView, um die Änderungen anzuzeigen
-                    UpdateDgvMateriallager();
+                                // Erfolgsnachricht anzeigen
+                                MessageBox.Show("Eintrag erfolgreich gelöscht.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // Textfelder leeren
-                    ClearTextBoxes();
+                                // Aktualisiere das DataGridView, um die Änderungen anzuzeigen
+                                UpdateDgvMateriallager();
 
-                    // Setze currentId auf 0, da kein Eintrag mehr ausgewählt ist
-                    currentId = 0;
+                                // Textfelder leeren
+                                ClearTextBoxes();
+
+                                // Setze currentId auf 0, da kein Eintrag mehr ausgewählt ist
+                                currentId = 0;
+                            }
+                            else
+                            {
+                                // Fehlermeldung anzeigen, wenn das Passwort falsch ist
+                                MessageBox.Show("Falsches Passwort. Der Eintrag wird nicht gelöscht.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -249,7 +288,6 @@ namespace VerwaltungKST1127
         {
             try
             {
-                // Daten aus den Textboxen entnehmen
                 string kategorie = TextBoxKategorie.Text;
                 string artikel = TextBoxArtikel.Text;
                 int lagerstand = int.Parse(TextBoxLagerstand.Text);
@@ -257,25 +295,36 @@ namespace VerwaltungKST1127
                 string einheit = TextBoxEinheit1.Text;
                 string bemerkung = RichTextBoxBemerkung.Text;
 
-                // SQL-Insert-Statement erstellen, ohne die ID zu spezifizieren
                 string query = $"INSERT INTO MaterialLager (Kategorie, Artikel, Lagerstand, Mindestbestand, Einheit, Bemerkungen) " +
                                $"VALUES ('{kategorie}', '{artikel}', {lagerstand}, {mindestbestand}, '{einheit}', '{bemerkung}')";
-
-                // SQL-Abfrage ausführen
                 ExecuteQuery(query);
 
-                // Erfolgsnachricht anzeigen
-                MessageBox.Show("Neues Material erfolgreich hinzugefügt.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Überprüfen, ob der Lagerstand den Mindestbestand unterschreitet und ggf. Bestellstatus setzen
+                CheckAndUpdateBestellStatus(lagerstand, mindestbestand);
 
-                // Aktualisiere das DataGridView, um den neuen Eintrag anzuzeigen
+                MessageBox.Show("Neues Material erfolgreich hinzugefügt.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 UpdateDgvMateriallager();
             }
             catch (Exception ex)
             {
-                // Fehlernachricht anzeigen, falls ein Fehler auftritt
                 MessageBox.Show($"Fehler beim Hinzufügen des neuen Materials: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void CheckAndUpdateBestellStatus(int lagerstand, int mindestbestand)
+        {
+            try
+            {
+                string bestellStatus = lagerstand <= mindestbestand ? "Bestellen" : string.Empty;
+                string query = $"UPDATE MaterialLager SET BestellStatus = '{bestellStatus}' WHERE Id = {currentId}";
+                ExecuteQuery(query);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fehler beim Aktualisieren des Bestellstatus: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
 
         // Event-Handler-Methode, die ausgelöst wird, wenn auf eine Zelle im DataGridView geklickt wird
         private void DgvMateriallager_CellClick(object sender, DataGridViewCellEventArgs e)

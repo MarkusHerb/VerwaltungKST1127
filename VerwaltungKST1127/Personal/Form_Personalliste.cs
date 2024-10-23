@@ -72,6 +72,9 @@ namespace VerwaltungKST1127.Personal
             DgvPersonalliste.Columns[8].Width = 110;
             DgvPersonalliste.Columns[10].Width = 80;
             DgvPersonalliste.Columns[13].Width = 110;
+
+            // Zusatzinformation laden
+            BerechneDatenAusDgv();
         }
 
         // Methode zur Berechnung des Alters basierend auf dem Geburtstag
@@ -427,7 +430,7 @@ namespace VerwaltungKST1127.Personal
                                 DgvPersonalliste.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Silver; // Farbe für Team 158
                                 break;
                             case 159:
-                                DgvPersonalliste.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightSlateGray; // Farbe für Team 159
+                                DgvPersonalliste.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGray; // Farbe für Team 159
                                 break;
                             case 160:
                                 DgvPersonalliste.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGreen; // Farbe für Team 160
@@ -439,6 +442,31 @@ namespace VerwaltungKST1127.Personal
                     }
                 }
             }
+        }
+
+        // Funktion um Zusatzinformation zu berechnen
+        private void BerechneDatenAusDgv()
+        {
+            int mitarbeiterzahl = 0;
+            int vollzeit = 0;
+            int teilzeit = 0;
+            foreach (DataGridViewRow row in DgvPersonalliste.Rows)
+            {
+                mitarbeiterzahl++;
+                lblMitarbeiterGesamt.Text = mitarbeiterzahl.ToString();
+                if (row.Cells[11].Value.ToString() == "38,5" || row.Cells[11].Value.ToString() == "38.5")
+                {
+                    vollzeit++;
+                    lblVollzeit.Text = vollzeit.ToString();
+                }
+                else if (row.Cells[11].Value.ToString() != "38,5" || row.Cells[11].Value.ToString() != "38.5")
+                {
+                    teilzeit++;
+                    lblTeilzeit.Text = teilzeit.ToString();
+                }
+            }
+
+            
         }
     }
 }

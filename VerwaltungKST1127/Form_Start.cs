@@ -56,14 +56,14 @@ namespace VerwaltungKST1127
         private void BtnFarbwerte_Click(object sender, EventArgs e)
         {
             Form_Farbauswertung form_Farbauswertung = new Form_Farbauswertung();
-            form_Farbauswertung.ShowDialog();
+            form_Farbauswertung.Show();
         }
 
         // Button Event, wenn man darauf klickt
         private void BtnMateriallager_Click(object sender, EventArgs e)
         {
             Form_Materiallager form_Materiallager = new Form_Materiallager();
-            form_Materiallager.ShowDialog();
+            form_Materiallager.Show();
         }
 
         // Button Event, wenn man darauf klickt
@@ -84,14 +84,14 @@ namespace VerwaltungKST1127
         private void BtnInformation_Click(object sender, EventArgs e)
         {
             Form_Copyright form_Copyright = new Form_Copyright();
-            form_Copyright.ShowDialog();    
+            form_Copyright.Show();    
         }
 
         // Button Event, wenn man darauf klickt
         private void BtnPersonalliste_Click(object sender, EventArgs e)
         {
             Form_Personalliste form_Personalliste = new Form_Personalliste();
-            form_Personalliste.ShowDialog();
+            form_Personalliste.Show();
         }
 
         // #### ListBox ####

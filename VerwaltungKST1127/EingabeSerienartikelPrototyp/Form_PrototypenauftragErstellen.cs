@@ -133,7 +133,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             int marginLeft = 20;    // Linker Rand
             int marginRight = 30;   // Rechter Rand
             int marginTop = 20;     // Oberer Rand
-            int marginBottom = 30;  // Unterer Rand
+            int marginBottom = -15;  // Unterer Rand
 
             int dpi = 600; // DPI für die Druckqualität
 
@@ -195,7 +195,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             float xMengeLabel = 39; float yMengeLabel = 200; float xMengeBox = 195; float yMengeBox = 200;
             float xBelagLabel = 39; float yBelagLabel = 235; float xBelagBox = 195; float yBelagBox = 235;
             float xProzessLabel = 350; float yProzessLabel = 235; float xProzessBox = 495; float yProzessBox = 235;
-            float xInfoAuflegen = 730; float yInfoAulegen = 55; float xDatenArtikel = 39; float yDatenArtikel = 295;
+            float xInfoAuflegen = 720; float yInfoAulegen = 60; float xDatenArtikel = 39; float yDatenArtikel = 295;
             float xDurchmesser = 39; float yDurchmesser = 340; float xDurchmesserBox = 195; float yDurchmesserBox = 340;
             float xRadiusVerguetung = 39; float yRadiusVerguetung = 375; float xRadiusVerguetungBox = 195; float yRadiusVerguetungBox = 375;
             float xGnummer = 39; float yGnummer = 410; float xGnummerBox = 195; float yGnummerBox = 410;
@@ -203,12 +203,12 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             float xBrechwert = 350; float yBrechwert = 340; float xBrechwertBox = 495; float yBrechwertBox = 340;
             float xRadiusRueckseite = 350; float yRadiusRueckseite = 375; float xRadiusRueckseiteBox = 495; float yRadiusRueckseiteBox = 375;
             float xGlassorte = 350; float yGlassorte = 410; float xGlassorteBox = 495; float yGlassorteBox = 410;
-            float xZusatzInfo = 730; float yZusatzInfo = 425; float xVorbehandlung = 39; float yVorbehandlung = 470;
+            float xZusatzInfo = 720; float yZusatzInfo = 430; float xVorbehandlung = 39; float yVorbehandlung = 465;
             float xVorreinigen = 39; float yVorreinigen = 515; float xVorreinigenBox = 195; float yVorreinigenBox = 515;
             float xHandreinigung = 350; float yHandreinigung = 515; float xHandreinigungBox = 495; float yHandreinigungBox = 515;
             float xBearbeitung = 39; float yBearbeitung = 570; float xDatum = 120; float yDatum = 615;
-            float xName = 270; float yName = 615; float xStueck = 398; float yStueck = 615;
-            float xStueckGes = 485; float yStueckGes = 615; float xZeit = 610; float yZeit = 615;
+            float xName = 265; float yName = 615; float xStueck = 393; float yStueck = 615;
+            float xStueckGes = 475; float yStueckGes = 615; float xZeit = 598; float yZeit = 615;
             float xDatumAktuell = 39; float yDatumAktuell = 753; float xDokument = 730; float yDokument = 753;
 
             // Texte zeichnen
@@ -298,6 +298,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             {
                 BtnClose.Visible = true;
                 BtnDrucken.Visible = true;
+                return;
             }
 
             // Optional: Setze die Sichtbarkeit der Elemente zurück, wenn der Druck abgeschlossen ist

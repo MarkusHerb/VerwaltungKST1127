@@ -93,7 +93,7 @@
             this.BtnSerienartikelPrototyp.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnSerienartikelPrototyp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(13, 211);
+            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(40, 211);
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
             this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(239, 66);
             this.BtnSerienartikelPrototyp.TabIndex = 5;
@@ -123,7 +123,7 @@
             this.BtnPrototypenAuftragErstellen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPrototypenAuftragErstellen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPrototypenAuftragErstellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(13, 283);
+            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(40, 283);
             this.BtnPrototypenAuftragErstellen.Name = "BtnPrototypenAuftragErstellen";
             this.BtnPrototypenAuftragErstellen.Size = new System.Drawing.Size(239, 66);
             this.BtnPrototypenAuftragErstellen.TabIndex = 8;
@@ -135,7 +135,7 @@
             // 
             this.LblInfo1.AutoSize = true;
             this.LblInfo1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblInfo1.Location = new System.Drawing.Point(72, 166);
+            this.LblInfo1.Location = new System.Drawing.Point(99, 166);
             this.LblInfo1.Name = "LblInfo1";
             this.LblInfo1.Size = new System.Drawing.Size(126, 26);
             this.LblInfo1.TabIndex = 9;
@@ -148,7 +148,7 @@
             this.BtnFarbwerte.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnFarbwerte.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnFarbwerte.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnFarbwerte.Location = new System.Drawing.Point(281, 211);
+            this.BtnFarbwerte.Location = new System.Drawing.Point(328, 211);
             this.BtnFarbwerte.Name = "BtnFarbwerte";
             this.BtnFarbwerte.Size = new System.Drawing.Size(239, 66);
             this.BtnFarbwerte.TabIndex = 10;
@@ -159,7 +159,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel3.Location = new System.Drawing.Point(266, 157);
+            this.panel3.Location = new System.Drawing.Point(303, 157);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1, 483);
             this.panel3.TabIndex = 11;
@@ -168,7 +168,7 @@
             // 
             this.LblQualitaet.AutoSize = true;
             this.LblQualitaet.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblQualitaet.Location = new System.Drawing.Point(350, 166);
+            this.LblQualitaet.Location = new System.Drawing.Point(397, 166);
             this.LblQualitaet.Name = "LblQualitaet";
             this.LblQualitaet.Size = new System.Drawing.Size(95, 26);
             this.LblQualitaet.TabIndex = 12;
@@ -177,7 +177,7 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel4.Location = new System.Drawing.Point(534, 157);
+            this.panel4.Location = new System.Drawing.Point(590, 157);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1, 483);
             this.panel4.TabIndex = 13;
@@ -186,7 +186,7 @@
             // 
             this.Organisation.AutoSize = true;
             this.Organisation.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Organisation.Location = new System.Drawing.Point(612, 166);
+            this.Organisation.Location = new System.Drawing.Point(678, 166);
             this.Organisation.Name = "Organisation";
             this.Organisation.Size = new System.Drawing.Size(112, 26);
             this.Organisation.TabIndex = 15;
@@ -198,7 +198,7 @@
             this.BtnMateriallager.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnMateriallager.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnMateriallager.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnMateriallager.Location = new System.Drawing.Point(549, 211);
+            this.BtnMateriallager.Location = new System.Drawing.Point(615, 211);
             this.BtnMateriallager.Name = "BtnMateriallager";
             this.BtnMateriallager.Size = new System.Drawing.Size(239, 66);
             this.BtnMateriallager.TabIndex = 14;
@@ -269,7 +269,7 @@
             this.BtnPersonalliste.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPersonalliste.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPersonalliste.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnPersonalliste.Location = new System.Drawing.Point(549, 283);
+            this.BtnPersonalliste.Location = new System.Drawing.Point(615, 283);
             this.BtnPersonalliste.Name = "BtnPersonalliste";
             this.BtnPersonalliste.Size = new System.Drawing.Size(239, 66);
             this.BtnPersonalliste.TabIndex = 20;

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.DgvPersonalliste = new System.Windows.Forms.DataGridView();
             this.lblUeberschrift = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -56,9 +56,12 @@
             this.BtnMitarbeiterLoeschen = new System.Windows.Forms.Button();
             this.BtnMitarbeiterAnpassen = new System.Windows.Forms.Button();
             this.comboBoxPosition = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
+            this.lblMitarbeiterGesamt = new System.Windows.Forms.Label();
+            this.lblVollzeit = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lblTeilzeit = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPersonalliste)).BeginInit();
             this.SuspendLayout();
             // 
@@ -71,14 +74,14 @@
             this.DgvPersonalliste.AllowUserToResizeRows = false;
             this.DgvPersonalliste.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
             this.DgvPersonalliste.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.Desktop;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DgvPersonalliste.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.Desktop;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DgvPersonalliste.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.DgvPersonalliste.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgvPersonalliste.Location = new System.Drawing.Point(13, 210);
             this.DgvPersonalliste.MultiSelect = false;
@@ -112,7 +115,7 @@
             // 
             // txtboxPersonalnummer
             // 
-            this.txtboxPersonalnummer.Location = new System.Drawing.Point(134, 74);
+            this.txtboxPersonalnummer.Location = new System.Drawing.Point(134, 75);
             this.txtboxPersonalnummer.Name = "txtboxPersonalnummer";
             this.txtboxPersonalnummer.Size = new System.Drawing.Size(132, 20);
             this.txtboxPersonalnummer.TabIndex = 3;
@@ -210,7 +213,7 @@
             this.txtboxWochenstunden.Location = new System.Drawing.Point(762, 100);
             this.txtboxWochenstunden.Name = "txtboxWochenstunden";
             this.txtboxWochenstunden.Size = new System.Drawing.Size(132, 20);
-            this.txtboxWochenstunden.TabIndex = 25;
+            this.txtboxWochenstunden.TabIndex = 34;
             // 
             // label9
             // 
@@ -237,7 +240,7 @@
             this.txtboxTelefonnummer.Location = new System.Drawing.Point(762, 74);
             this.txtboxTelefonnummer.Name = "txtboxTelefonnummer";
             this.txtboxTelefonnummer.Size = new System.Drawing.Size(132, 20);
-            this.txtboxTelefonnummer.TabIndex = 21;
+            this.txtboxTelefonnummer.TabIndex = 33;
             // 
             // label11
             // 
@@ -290,7 +293,7 @@
             this.comboboxLohngruppe.Location = new System.Drawing.Point(762, 126);
             this.comboboxLohngruppe.Name = "comboboxLohngruppe";
             this.comboboxLohngruppe.Size = new System.Drawing.Size(132, 21);
-            this.comboboxLohngruppe.TabIndex = 31;
+            this.comboboxLohngruppe.TabIndex = 35;
             // 
             // comboboxDirekterVorgesetzter
             // 
@@ -312,7 +315,7 @@
             this.BtnNeuerMitarbeiter.Location = new System.Drawing.Point(1049, 152);
             this.BtnNeuerMitarbeiter.Name = "BtnNeuerMitarbeiter";
             this.BtnNeuerMitarbeiter.Size = new System.Drawing.Size(139, 48);
-            this.BtnNeuerMitarbeiter.TabIndex = 33;
+            this.BtnNeuerMitarbeiter.TabIndex = 50;
             this.BtnNeuerMitarbeiter.Text = "Neuer Mitarbeiter";
             this.BtnNeuerMitarbeiter.UseVisualStyleBackColor = false;
             this.BtnNeuerMitarbeiter.Click += new System.EventHandler(this.BtnNeuerMitarbeiter_Click);
@@ -323,7 +326,7 @@
             this.BtnMitarbeiterLoeschen.Location = new System.Drawing.Point(1194, 153);
             this.BtnMitarbeiterLoeschen.Name = "BtnMitarbeiterLoeschen";
             this.BtnMitarbeiterLoeschen.Size = new System.Drawing.Size(139, 47);
-            this.BtnMitarbeiterLoeschen.TabIndex = 34;
+            this.BtnMitarbeiterLoeschen.TabIndex = 60;
             this.BtnMitarbeiterLoeschen.Text = "Mitarbeiter Löschen";
             this.BtnMitarbeiterLoeschen.UseVisualStyleBackColor = false;
             this.BtnMitarbeiterLoeschen.Click += new System.EventHandler(this.BtnMitarbeiterLoeschen_Click);
@@ -334,7 +337,7 @@
             this.BtnMitarbeiterAnpassen.Location = new System.Drawing.Point(1339, 153);
             this.BtnMitarbeiterAnpassen.Name = "BtnMitarbeiterAnpassen";
             this.BtnMitarbeiterAnpassen.Size = new System.Drawing.Size(139, 48);
-            this.BtnMitarbeiterAnpassen.TabIndex = 35;
+            this.BtnMitarbeiterAnpassen.TabIndex = 70;
             this.BtnMitarbeiterAnpassen.Text = "Mitarbeiter Anpassen";
             this.BtnMitarbeiterAnpassen.UseVisualStyleBackColor = false;
             this.BtnMitarbeiterAnpassen.Click += new System.EventHandler(this.BtnMitarbeiterAnpassen_Click);
@@ -355,27 +358,17 @@
             this.comboBoxPosition.Location = new System.Drawing.Point(134, 152);
             this.comboBoxPosition.Name = "comboBoxPosition";
             this.comboBoxPosition.Size = new System.Drawing.Size(132, 21);
-            this.comboBoxPosition.TabIndex = 36;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(1046, 72);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(85, 17);
-            this.label5.TabIndex = 39;
-            this.label5.Text = "Lohngruppe";
+            this.comboBoxPosition.TabIndex = 9;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(1046, 46);
+            this.label6.Location = new System.Drawing.Point(1118, 46);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(122, 17);
+            this.label6.Size = new System.Drawing.Size(57, 17);
             this.label6.TabIndex = 38;
-            this.label6.Text = "Vollzeitäquivalent:";
+            this.label6.Text = "Vollzeit:";
             // 
             // label13
             // 
@@ -387,12 +380,55 @@
             this.label13.TabIndex = 37;
             this.label13.Text = "Mitarbeiter gesamt:";
             // 
+            // lblMitarbeiterGesamt
+            // 
+            this.lblMitarbeiterGesamt.AutoSize = true;
+            this.lblMitarbeiterGesamt.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMitarbeiterGesamt.Location = new System.Drawing.Point(1181, 20);
+            this.lblMitarbeiterGesamt.Name = "lblMitarbeiterGesamt";
+            this.lblMitarbeiterGesamt.Size = new System.Drawing.Size(16, 17);
+            this.lblMitarbeiterGesamt.TabIndex = 71;
+            this.lblMitarbeiterGesamt.Text = "0";
+            // 
+            // lblVollzeit
+            // 
+            this.lblVollzeit.AutoSize = true;
+            this.lblVollzeit.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVollzeit.Location = new System.Drawing.Point(1181, 46);
+            this.lblVollzeit.Name = "lblVollzeit";
+            this.lblVollzeit.Size = new System.Drawing.Size(16, 17);
+            this.lblVollzeit.TabIndex = 72;
+            this.lblVollzeit.Text = "0";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(1118, 73);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(57, 17);
+            this.label5.TabIndex = 73;
+            this.label5.Text = "Teilzeit:";
+            // 
+            // lblTeilzeit
+            // 
+            this.lblTeilzeit.AutoSize = true;
+            this.lblTeilzeit.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTeilzeit.Location = new System.Drawing.Point(1181, 73);
+            this.lblTeilzeit.Name = "lblTeilzeit";
+            this.lblTeilzeit.Size = new System.Drawing.Size(16, 17);
+            this.lblTeilzeit.TabIndex = 74;
+            this.lblTeilzeit.Text = "0";
+            // 
             // Form_Personalliste
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1490, 905);
+            this.Controls.Add(this.lblTeilzeit);
             this.Controls.Add(this.label5);
+            this.Controls.Add(this.lblVollzeit);
+            this.Controls.Add(this.lblMitarbeiterGesamt);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.comboBoxPosition);
@@ -422,6 +458,8 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lblUeberschrift);
             this.Controls.Add(this.DgvPersonalliste);
+            this.MaximumSize = new System.Drawing.Size(1506, 944);
+            this.MinimumSize = new System.Drawing.Size(1506, 944);
             this.Name = "Form_Personalliste";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Personalliste Kst1127";
@@ -460,8 +498,11 @@
         private System.Windows.Forms.Button BtnMitarbeiterLoeschen;
         private System.Windows.Forms.Button BtnMitarbeiterAnpassen;
         private System.Windows.Forms.ComboBox comboBoxPosition;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label lblMitarbeiterGesamt;
+        private System.Windows.Forms.Label lblVollzeit;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblTeilzeit;
     }
 }
