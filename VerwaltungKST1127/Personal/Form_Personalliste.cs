@@ -450,6 +450,17 @@ namespace VerwaltungKST1127.Personal
             int mitarbeiterzahl = 0;
             int vollzeit = 0;
             int teilzeit = 0;
+
+            //double produktiv = 0.0;
+            //double produktivTeilzeit1 = 0.42;
+            //double produktivTeilzeit2 = 0.47;
+            //double produktivTeilzeit3 = 0.49;
+            //double produktivTeilzeit4 = 0.52;
+            //double produktivTeilzeit5 = 0.6;
+            //double produktivSchichtleiter = 0.5;
+            //double produktivSchichtleiterStv = 0.75;
+            //int produktivNormal = 1;
+            
             foreach (DataGridViewRow row in DgvPersonalliste.Rows)
             {
                 mitarbeiterzahl++;
@@ -464,9 +475,12 @@ namespace VerwaltungKST1127.Personal
                     teilzeit++;
                     lblTeilzeit.Text = teilzeit.ToString();
                 }
-            }
 
-            
+                //if (row.Cells["Position"].Value != null && row.Cells["Position"].Value.ToString() == "Aufleger:in")
+                //{
+                //    produktiv += produktivNormal;
+                //}
+            }
         }
     }
 }

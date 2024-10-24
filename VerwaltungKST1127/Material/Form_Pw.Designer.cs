@@ -53,8 +53,9 @@
             // 
             // BtnOk
             // 
-            this.BtnOk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.BtnOk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.BtnOk.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnOk.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnOk.Location = new System.Drawing.Point(143, 35);
             this.BtnOk.Name = "BtnOk";
             this.BtnOk.Size = new System.Drawing.Size(156, 23);
@@ -65,8 +66,9 @@
             // 
             // BtnCancle
             // 
-            this.BtnCancle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.BtnCancle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.BtnCancle.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnCancle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnCancle.Location = new System.Drawing.Point(143, 60);
             this.BtnCancle.Name = "BtnCancle";
             this.BtnCancle.Size = new System.Drawing.Size(156, 23);
@@ -85,6 +87,8 @@
             this.Controls.Add(this.BtnOk);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBoxPw);
+            this.MaximumSize = new System.Drawing.Size(327, 134);
+            this.MinimumSize = new System.Drawing.Size(327, 134);
             this.Name = "Form_Pw";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Passwort";

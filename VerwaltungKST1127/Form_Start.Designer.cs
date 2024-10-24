@@ -71,6 +71,7 @@
             // 
             this.LblUeberschrift.AutoSize = true;
             this.LblUeberschrift.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblUeberschrift.ForeColor = System.Drawing.Color.Green;
             this.LblUeberschrift.Location = new System.Drawing.Point(12, 28);
             this.LblUeberschrift.Name = "LblUeberschrift";
             this.LblUeberschrift.Size = new System.Drawing.Size(784, 46);
@@ -81,6 +82,7 @@
             // 
             this.LblUhrzeitDatum.AutoSize = true;
             this.LblUhrzeitDatum.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblUhrzeitDatum.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.LblUhrzeitDatum.Location = new System.Drawing.Point(16, 84);
             this.LblUhrzeitDatum.Name = "LblUhrzeitDatum";
             this.LblUhrzeitDatum.Size = new System.Drawing.Size(211, 31);
@@ -89,7 +91,7 @@
             // 
             // BtnSerienartikelPrototyp
             // 
-            this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.BtnSerienartikelPrototyp.BackColor = System.Drawing.Color.Silver;
             this.BtnSerienartikelPrototyp.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnSerienartikelPrototyp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -119,7 +121,7 @@
             // 
             // BtnPrototypenAuftragErstellen
             // 
-            this.BtnPrototypenAuftragErstellen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.BtnPrototypenAuftragErstellen.BackColor = System.Drawing.Color.Silver;
             this.BtnPrototypenAuftragErstellen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPrototypenAuftragErstellen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPrototypenAuftragErstellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -143,8 +145,7 @@
             // 
             // BtnFarbwerte
             // 
-            this.BtnFarbwerte.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.BtnFarbwerte.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("BtnFarbwerte.BackgroundImage")));
+            this.BtnFarbwerte.BackColor = System.Drawing.Color.Silver;
             this.BtnFarbwerte.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnFarbwerte.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnFarbwerte.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -194,7 +195,7 @@
             // 
             // BtnMateriallager
             // 
-            this.BtnMateriallager.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.BtnMateriallager.BackColor = System.Drawing.Color.Silver;
             this.BtnMateriallager.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnMateriallager.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnMateriallager.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -265,7 +266,7 @@
             // 
             // BtnPersonalliste
             // 
-            this.BtnPersonalliste.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.BtnPersonalliste.BackColor = System.Drawing.Color.Silver;
             this.BtnPersonalliste.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPersonalliste.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPersonalliste.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

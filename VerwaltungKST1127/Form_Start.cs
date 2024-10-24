@@ -70,14 +70,14 @@ namespace VerwaltungKST1127
         private void BtnHomepage_Click(object sender, EventArgs e)
         {
             string url = "https://www.swarovskioptik.com/at/de/jagd";
-            System.Diagnostics.Process.Start(url);
+            Process.Start(url);
         }
 
         // Button Event, wenn man darauf klickt
         private void BtnLupe_Click(object sender, EventArgs e)
         {
             string url = "http://lupe.swarovskioptik.at/";
-            System.Diagnostics.Process.Start(url);  
+            Process.Start(url);  
         }
 
         // Button Event, wenn man darauf klickt

@@ -62,6 +62,14 @@
             this.lblVollzeit = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.lblTeilzeit = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.lblVollzeitAequivalent = new System.Windows.Forms.Label();
+            this.lblProduktivstunden = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPersonalliste)).BeginInit();
             this.SuspendLayout();
             // 
@@ -312,7 +320,7 @@
             // BtnNeuerMitarbeiter
             // 
             this.BtnNeuerMitarbeiter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.BtnNeuerMitarbeiter.Location = new System.Drawing.Point(1049, 152);
+            this.BtnNeuerMitarbeiter.Location = new System.Drawing.Point(1018, 141);
             this.BtnNeuerMitarbeiter.Name = "BtnNeuerMitarbeiter";
             this.BtnNeuerMitarbeiter.Size = new System.Drawing.Size(139, 48);
             this.BtnNeuerMitarbeiter.TabIndex = 50;
@@ -323,7 +331,7 @@
             // BtnMitarbeiterLoeschen
             // 
             this.BtnMitarbeiterLoeschen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.BtnMitarbeiterLoeschen.Location = new System.Drawing.Point(1194, 153);
+            this.BtnMitarbeiterLoeschen.Location = new System.Drawing.Point(1163, 142);
             this.BtnMitarbeiterLoeschen.Name = "BtnMitarbeiterLoeschen";
             this.BtnMitarbeiterLoeschen.Size = new System.Drawing.Size(139, 47);
             this.BtnMitarbeiterLoeschen.TabIndex = 60;
@@ -334,7 +342,7 @@
             // BtnMitarbeiterAnpassen
             // 
             this.BtnMitarbeiterAnpassen.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.BtnMitarbeiterAnpassen.Location = new System.Drawing.Point(1339, 153);
+            this.BtnMitarbeiterAnpassen.Location = new System.Drawing.Point(1308, 142);
             this.BtnMitarbeiterAnpassen.Name = "BtnMitarbeiterAnpassen";
             this.BtnMitarbeiterAnpassen.Size = new System.Drawing.Size(139, 48);
             this.BtnMitarbeiterAnpassen.TabIndex = 70;
@@ -364,7 +372,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(1118, 46);
+            this.label6.Location = new System.Drawing.Point(1069, 46);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(57, 17);
             this.label6.TabIndex = 38;
@@ -373,8 +381,9 @@
             // label13
             // 
             this.label13.AutoSize = true;
+            this.label13.BackColor = System.Drawing.SystemColors.Control;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(1046, 20);
+            this.label13.Location = new System.Drawing.Point(997, 20);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(129, 17);
             this.label13.TabIndex = 37;
@@ -384,7 +393,7 @@
             // 
             this.lblMitarbeiterGesamt.AutoSize = true;
             this.lblMitarbeiterGesamt.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMitarbeiterGesamt.Location = new System.Drawing.Point(1181, 20);
+            this.lblMitarbeiterGesamt.Location = new System.Drawing.Point(1132, 20);
             this.lblMitarbeiterGesamt.Name = "lblMitarbeiterGesamt";
             this.lblMitarbeiterGesamt.Size = new System.Drawing.Size(16, 17);
             this.lblMitarbeiterGesamt.TabIndex = 71;
@@ -394,7 +403,7 @@
             // 
             this.lblVollzeit.AutoSize = true;
             this.lblVollzeit.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVollzeit.Location = new System.Drawing.Point(1181, 46);
+            this.lblVollzeit.Location = new System.Drawing.Point(1132, 46);
             this.lblVollzeit.Name = "lblVollzeit";
             this.lblVollzeit.Size = new System.Drawing.Size(16, 17);
             this.lblVollzeit.TabIndex = 72;
@@ -404,7 +413,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(1118, 73);
+            this.label5.Location = new System.Drawing.Point(1069, 73);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(57, 17);
             this.label5.TabIndex = 73;
@@ -414,17 +423,102 @@
             // 
             this.lblTeilzeit.AutoSize = true;
             this.lblTeilzeit.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTeilzeit.Location = new System.Drawing.Point(1181, 73);
+            this.lblTeilzeit.Location = new System.Drawing.Point(1132, 73);
             this.lblTeilzeit.Name = "lblTeilzeit";
             this.lblTeilzeit.Size = new System.Drawing.Size(16, 17);
             this.lblTeilzeit.TabIndex = 74;
             this.lblTeilzeit.Text = "0";
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.Black;
+            this.panel1.Location = new System.Drawing.Point(971, 18);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1, 179);
+            this.panel1.TabIndex = 75;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Black;
+            this.panel2.Location = new System.Drawing.Point(972, 121);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(500, 1);
+            this.panel2.TabIndex = 76;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(1377, 73);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(16, 17);
+            this.label14.TabIndex = 82;
+            this.label14.Text = "0";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(1314, 73);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(57, 17);
+            this.label15.TabIndex = 81;
+            this.label15.Text = "Teilzeit:";
+            // 
+            // lblVollzeitAequivalent
+            // 
+            this.lblVollzeitAequivalent.AutoSize = true;
+            this.lblVollzeitAequivalent.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVollzeitAequivalent.Location = new System.Drawing.Point(1377, 46);
+            this.lblVollzeitAequivalent.Name = "lblVollzeitAequivalent";
+            this.lblVollzeitAequivalent.Size = new System.Drawing.Size(16, 17);
+            this.lblVollzeitAequivalent.TabIndex = 80;
+            this.lblVollzeitAequivalent.Text = "0";
+            // 
+            // lblProduktivstunden
+            // 
+            this.lblProduktivstunden.AutoSize = true;
+            this.lblProduktivstunden.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblProduktivstunden.Location = new System.Drawing.Point(1377, 20);
+            this.lblProduktivstunden.Name = "lblProduktivstunden";
+            this.lblProduktivstunden.Size = new System.Drawing.Size(16, 17);
+            this.lblProduktivstunden.TabIndex = 79;
+            this.lblProduktivstunden.Text = "0";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(1249, 46);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(122, 17);
+            this.label18.TabIndex = 78;
+            this.label18.Text = "Vollzeitäquivalent:";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.BackColor = System.Drawing.SystemColors.Control;
+            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label19.Location = new System.Drawing.Point(1249, 20);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(122, 17);
+            this.label19.TabIndex = 77;
+            this.label19.Text = "Produktivstunden:";
             // 
             // Form_Personalliste
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1490, 905);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.lblVollzeitAequivalent);
+            this.Controls.Add(this.lblProduktivstunden);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.label19);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.lblTeilzeit);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lblVollzeit);
@@ -504,5 +598,13 @@
         private System.Windows.Forms.Label lblVollzeit;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblTeilzeit;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label lblVollzeitAequivalent;
+        private System.Windows.Forms.Label lblProduktivstunden;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label19;
     }
 }
