@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.DgvPersonalliste = new System.Windows.Forms.DataGridView();
             this.lblUeberschrift = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -64,7 +64,7 @@
             this.lblTeilzeit = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label14 = new System.Windows.Forms.Label();
+            this.lblAlgemein = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.lblVollzeitAequivalent = new System.Windows.Forms.Label();
             this.lblProduktivstunden = new System.Windows.Forms.Label();
@@ -82,14 +82,14 @@
             this.DgvPersonalliste.AllowUserToResizeRows = false;
             this.DgvPersonalliste.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
             this.DgvPersonalliste.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.Desktop;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DgvPersonalliste.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.Desktop;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DgvPersonalliste.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.DgvPersonalliste.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgvPersonalliste.Location = new System.Drawing.Point(13, 210);
             this.DgvPersonalliste.MultiSelect = false;
@@ -445,31 +445,31 @@
             this.panel2.Size = new System.Drawing.Size(500, 1);
             this.panel2.TabIndex = 76;
             // 
-            // label14
+            // lblAlgemein
             // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(1377, 73);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(16, 17);
-            this.label14.TabIndex = 82;
-            this.label14.Text = "0";
+            this.lblAlgemein.AutoSize = true;
+            this.lblAlgemein.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAlgemein.Location = new System.Drawing.Point(1377, 73);
+            this.lblAlgemein.Name = "lblAlgemein";
+            this.lblAlgemein.Size = new System.Drawing.Size(16, 17);
+            this.lblAlgemein.TabIndex = 82;
+            this.lblAlgemein.Text = "0";
             // 
             // label15
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(1314, 73);
+            this.label15.Location = new System.Drawing.Point(1301, 73);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(57, 17);
+            this.label15.Size = new System.Drawing.Size(70, 17);
             this.label15.TabIndex = 81;
-            this.label15.Text = "Teilzeit:";
+            this.label15.Text = "Algemein:";
             // 
             // lblVollzeitAequivalent
             // 
             this.lblVollzeitAequivalent.AutoSize = true;
             this.lblVollzeitAequivalent.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVollzeitAequivalent.Location = new System.Drawing.Point(1377, 46);
+            this.lblVollzeitAequivalent.Location = new System.Drawing.Point(1377, 20);
             this.lblVollzeitAequivalent.Name = "lblVollzeitAequivalent";
             this.lblVollzeitAequivalent.Size = new System.Drawing.Size(16, 17);
             this.lblVollzeitAequivalent.TabIndex = 80;
@@ -479,7 +479,7 @@
             // 
             this.lblProduktivstunden.AutoSize = true;
             this.lblProduktivstunden.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblProduktivstunden.Location = new System.Drawing.Point(1377, 20);
+            this.lblProduktivstunden.Location = new System.Drawing.Point(1377, 46);
             this.lblProduktivstunden.Name = "lblProduktivstunden";
             this.lblProduktivstunden.Size = new System.Drawing.Size(16, 17);
             this.lblProduktivstunden.TabIndex = 79;
@@ -489,7 +489,7 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(1249, 46);
+            this.label18.Location = new System.Drawing.Point(1249, 20);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(122, 17);
             this.label18.TabIndex = 78;
@@ -500,18 +500,18 @@
             this.label19.AutoSize = true;
             this.label19.BackColor = System.Drawing.SystemColors.Control;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(1249, 20);
+            this.label19.Location = new System.Drawing.Point(1255, 46);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(122, 17);
+            this.label19.Size = new System.Drawing.Size(116, 17);
             this.label19.TabIndex = 77;
-            this.label19.Text = "Produktivstunden:";
+            this.label19.Text = "Davon Produktiv:";
             // 
             // Form_Personalliste
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1490, 905);
-            this.Controls.Add(this.label14);
+            this.Controls.Add(this.lblAlgemein);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.lblVollzeitAequivalent);
             this.Controls.Add(this.lblProduktivstunden);
@@ -600,7 +600,7 @@
         private System.Windows.Forms.Label lblTeilzeit;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label lblAlgemein;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label lblVollzeitAequivalent;
         private System.Windows.Forms.Label lblProduktivstunden;

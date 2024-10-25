@@ -1,6 +1,5 @@
 ﻿using System; // Grundlegender Namespace, der grundlegende Datentypen und Funktionen (wie Exception-Handling, Datums- und Zeitfunktionen) bereitstellt.
 using System.Collections.Generic; // Namespace für die Nutzung generischer Datentypen wie Listen, Dictionaries etc.
-using System.ComponentModel; // Importieren des System.ComponentModel-Namespace für Komponentenmodelle und Datenbindung (z.B. zum Arbeiten mit Events und benachrichtigungsfähigen Eigenschaften)
 using System.Drawing; // Namespace für grafische Elemente wie Farben, Schriftarten, Bilder und Formen. Wird häufig in der Gestaltung von Benutzeroberflächen verwendet.
 using System.Linq; // Namespace, der LINQ (Language Integrated Query) bereitstellt. Ermöglicht das Durchführen von Abfragen und das Verarbeiten von Sammlungen (z. B. List<T>, Arrays) auf eine deklarative Weise.
 using System.Windows.Forms; // Namespace für Windows Forms-Anwendungen. Enthält Klassen für die Erstellung grafischer Benutzeroberflächen (GUIs) wie Formulare, Schaltflächen, Textfelder etc.
@@ -46,8 +45,27 @@ namespace VerwaltungKST1127.Personal
                 mitarbeiter.JahreUnternehmen = BerechneJahreImUnternehmen(mitarbeiter.Eintritt);
             }
 
+            // Definiere die gewünschte Reihenfolge der Positionen
+            var positionsReihenfolge = new List<string>
+            {
+                "Kostenstellenleiter:in",
+                "Stv. Kostenstellenleiter:in",
+                "Gruppenleiter:in",
+                "Stv. Gruppenleiter:in",
+                "Anlagentechniker:in",
+                "Aufleger:in",
+                "US-Bediener:in",
+                "Werkzeugwart:in"
+            };
+
+            // Sortiere die Liste nach Team aufsteigend und dann nach Position in der gewünschten Reihenfolge
+            var sortierteListe = _mitarbeiterListe
+                .OrderBy(m => m.Team)
+                .ThenBy(m => positionsReihenfolge.IndexOf(m.Position))
+                .ToList();
+
             // Sortiere die Liste nach dem "Team"
-            var sortierteListe = _mitarbeiterListe.OrderBy(m => m.Team).ToList();
+            //var sortierteListe = _mitarbeiterListe.OrderBy(m => m.Team).ToList();
 
             // Erstelle eine BindingSource
             BindingSource bindingSource = new BindingSource();
@@ -64,7 +82,7 @@ namespace VerwaltungKST1127.Personal
 
             // Optional: Die Spaltenbreite anpassen; mittig anzeigen
             //DgvPersonalliste.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font(DataGridView.DefaultFont, FontStyle.Bold);
-            DgvPersonalliste.ColumnHeadersDefaultCellStyle.Alignment =DataGridViewContentAlignment.MiddleCenter;
+            DgvPersonalliste.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             //DgvPersonalliste.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             DgvPersonalliste.Columns[0].Width = 50;
             DgvPersonalliste.Columns[1].Width = 90;
@@ -102,8 +120,8 @@ namespace VerwaltungKST1127.Personal
             SetPlaceholder(txtboxVorname, "Günter");
             SetPlaceholder(txtboxNachname, "Günsterer");
 
-            SetPlaceholder(txtboxTelefonnummer, "0664/9999999");
-            SetPlaceholder(txtboxWochenstunden, "00,0");
+            SetPlaceholder(txtboxTelefonnummer, "0664 / 9999999");
+            SetPlaceholder(txtboxWochenstunden, "00,0 oder 00.0");
 
 
             // Füge Platzhalter zu ComboBoxen hinzu
@@ -196,8 +214,8 @@ namespace VerwaltungKST1127.Personal
                 IsFieldEmpty(comboBoxPosition, "Dropdown verwenden") ||
                 IsFieldEmpty(comboboxTeam, "Dropdown verwenden") ||
                 IsFieldEmpty(comboboxDirekterVorgesetzter, "Dropdown verwenden") ||
-                IsFieldEmpty(txtboxTelefonnummer, "0664/9999999") ||
-                IsFieldEmpty(txtboxWochenstunden, "00,0") ||
+                IsFieldEmpty(txtboxTelefonnummer, "0664 / 9999999") ||
+                IsFieldEmpty(txtboxWochenstunden, "00,0 oder 00.0") ||
                 IsFieldEmpty(comboboxLohngruppe, "Dropdown verwenden"))
             {
                 MessageBox.Show("Bitte füllen Sie alle erforderlichen Felder aus!", "Eingabefehler", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -271,8 +289,8 @@ namespace VerwaltungKST1127.Personal
                 IsFieldEmpty(comboBoxPosition, "Dropdown verwenden") ||
                 IsFieldEmpty(comboboxTeam, "Dropdown verwenden") ||
                 IsFieldEmpty(comboboxDirekterVorgesetzter, "Dropdown verwenden") ||
-                IsFieldEmpty(txtboxTelefonnummer, "0664/9999999") ||
-                IsFieldEmpty(txtboxWochenstunden, "00,0") ||
+                IsFieldEmpty(txtboxTelefonnummer, "0664 / 9999999") ||
+                IsFieldEmpty(txtboxWochenstunden, "00,0 oder 00.0") ||
                 IsFieldEmpty(comboboxLohngruppe, "Dropdown verwenden"))
             {
                 MessageBox.Show("Mitarbeiter zuerst auswählen!", "Eingabefehler", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -444,43 +462,120 @@ namespace VerwaltungKST1127.Personal
             }
         }
 
-        // Funktion um Zusatzinformation zu berechnen
+        // Funktion zur Berechnung von Zusatzinformationen aus der DataGridView
         private void BerechneDatenAusDgv()
         {
+            // Initialisierung der Variablen
             int mitarbeiterzahl = 0;
             int vollzeit = 0;
             int teilzeit = 0;
+            double vollzeitAequivalent = 0.0;
 
-            //double produktiv = 0.0;
-            //double produktivTeilzeit1 = 0.42;
-            //double produktivTeilzeit2 = 0.47;
-            //double produktivTeilzeit3 = 0.49;
-            //double produktivTeilzeit4 = 0.52;
-            //double produktivTeilzeit5 = 0.6;
-            //double produktivSchichtleiter = 0.5;
-            //double produktivSchichtleiterStv = 0.75;
-            //int produktivNormal = 1;
-            
+            double produktiv = 0.0;
+            double produktivTeilzeit1 = 0.42;
+            double produktivTeilzeit2 = 0.47;
+            //double produktivTeilzeit3 = 0.49; // Dieser Wert wird derzeit nicht verwendet
+            double produktivTeilzeit4 = 0.52;
+            double produktivTeilzeit5 = 0.6;
+            double produktivSchichtleiter = 0.5;
+            double produktivSchichtleiterStv = 0.75;
+            int produktivNormal = 1;
+
+            // Schleife durch alle Zeilen der DataGridView
             foreach (DataGridViewRow row in DgvPersonalliste.Rows)
             {
-                mitarbeiterzahl++;
+                mitarbeiterzahl++; // Zählt die Gesamtzahl der Mitarbeiter
                 lblMitarbeiterGesamt.Text = mitarbeiterzahl.ToString();
-                if (row.Cells[11].Value.ToString() == "38,5" || row.Cells[11].Value.ToString() == "38.5")
+                string wochenstunden = row.Cells[11].Value.ToString();
+
+                // Überprüfung der Wochenstunden für Vollzeit oder Teilzeit
+                if (wochenstunden == "38,5" || wochenstunden == "38.5")
                 {
-                    vollzeit++;
+                    vollzeit++; // Zählt die Vollzeitmitarbeiter
                     lblVollzeit.Text = vollzeit.ToString();
+                    vollzeitAequivalent += 1; // Erhöht das Vollzeitäquivalent um 1
                 }
-                else if (row.Cells[11].Value.ToString() != "38,5" || row.Cells[11].Value.ToString() != "38.5")
+                else
                 {
-                    teilzeit++;
+                    teilzeit++; // Zählt die Teilzeitmitarbeiter
                     lblTeilzeit.Text = teilzeit.ToString();
+
+                    // Berechnung des Vollzeitäquivalents basierend auf den Wochenstunden
+                    switch (wochenstunden)
+                    {
+                        case "23":
+                            vollzeitAequivalent += 0.6;
+                            break;
+                        case "20":
+                            vollzeitAequivalent += 0.52;
+                            break;
+                        case "19":
+                            vollzeitAequivalent += 0.49;
+                            break;
+                        case "18":
+                            vollzeitAequivalent += 0.47;
+                            break;
+                        case "16":
+                            vollzeitAequivalent += 0.42;
+                            break;
+                    }
                 }
 
-                //if (row.Cells["Position"].Value != null && row.Cells["Position"].Value.ToString() == "Aufleger:in")
-                //{
-                //    produktiv += produktivNormal;
-                //}
+                // Überprüfung der Position und Anpassung der Produktivitätswerte
+                if (row.Cells["Position"].Value != null)
+                {
+                    string position = row.Cells["Position"].Value.ToString();
+
+                    if (position == "Aufleger:in")
+                    {
+                        if (wochenstunden == "38,5" || wochenstunden == "38.5")
+                        {
+                            produktiv += produktivNormal;
+                        }
+                        else if (wochenstunden == "16")
+                        {
+                            produktiv += produktivTeilzeit1;
+                        }
+                        else if (wochenstunden == "19")
+                        {
+                            produktiv += produktivTeilzeit2;
+                        }
+                        else if (wochenstunden == "23")
+                        {
+                            produktiv += produktivTeilzeit5;
+                        }
+                        else if (wochenstunden == "20")
+                        {
+                            produktiv += produktivTeilzeit4;
+                        }
+                    }
+                    else if (position == "Gruppenleiter:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
+                    {
+                        produktiv += produktivSchichtleiter;
+                    }
+                    else if (position == "Stv. Gruppenleiter:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
+                    {
+                        produktiv += produktivSchichtleiterStv;
+                    }
+                    else if (position == "Anlagentechniker:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
+                    {
+                        produktiv += produktivNormal;
+                    }
+                    else if (position == "US-Bediener:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
+                    {
+                        produktiv += produktivNormal;
+                    }
+                    else if (position == "Werkzeugwart:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
+                    {
+                        produktiv += produktivNormal;
+                    }
+                }
             }
+
+            // Aktualisierung der Labels mit den berechneten Werten
+            lblVollzeitAequivalent.Text = vollzeitAequivalent.ToString();
+            lblProduktivstunden.Text = produktiv.ToString();
+            lblAlgemein.Text = (vollzeitAequivalent - produktiv).ToString();
         }
     }
 }
