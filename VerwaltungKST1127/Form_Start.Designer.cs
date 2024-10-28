@@ -50,7 +50,10 @@
             this.BtnHomepage = new System.Windows.Forms.Button();
             this.ListBoxDocuments = new System.Windows.Forms.ListBox();
             this.BtnPersonalliste = new System.Windows.Forms.Button();
+            this.PictureBoxBestellung = new System.Windows.Forms.PictureBox();
+            this.BtnAuftragsverwaltung = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBoxLinsenPrismen
@@ -278,12 +281,38 @@
             this.BtnPersonalliste.UseVisualStyleBackColor = false;
             this.BtnPersonalliste.Click += new System.EventHandler(this.BtnPersonalliste_Click);
             // 
+            // PictureBoxBestellung
+            // 
+            this.PictureBoxBestellung.BackColor = System.Drawing.Color.Silver;
+            this.PictureBoxBestellung.Location = new System.Drawing.Point(809, 225);
+            this.PictureBoxBestellung.Name = "PictureBoxBestellung";
+            this.PictureBoxBestellung.Size = new System.Drawing.Size(29, 40);
+            this.PictureBoxBestellung.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.PictureBoxBestellung.TabIndex = 21;
+            this.PictureBoxBestellung.TabStop = false;
+            // 
+            // BtnAuftragsverwaltung
+            // 
+            this.BtnAuftragsverwaltung.BackColor = System.Drawing.Color.Silver;
+            this.BtnAuftragsverwaltung.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnAuftragsverwaltung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnAuftragsverwaltung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnAuftragsverwaltung.Location = new System.Drawing.Point(40, 355);
+            this.BtnAuftragsverwaltung.Name = "BtnAuftragsverwaltung";
+            this.BtnAuftragsverwaltung.Size = new System.Drawing.Size(239, 66);
+            this.BtnAuftragsverwaltung.TabIndex = 22;
+            this.BtnAuftragsverwaltung.Text = "Auftragsverwaltung";
+            this.BtnAuftragsverwaltung.UseVisualStyleBackColor = false;
+            this.BtnAuftragsverwaltung.Click += new System.EventHandler(this.BtnAuftragsverwaltung_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.BtnAuftragsverwaltung);
+            this.Controls.Add(this.PictureBoxBestellung);
             this.Controls.Add(this.BtnPersonalliste);
             this.Controls.Add(this.ListBoxDocuments);
             this.Controls.Add(this.BtnHomepage);
@@ -309,6 +338,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Hauptmenü";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -336,6 +366,8 @@
         private System.Windows.Forms.Button BtnHomepage;
         private System.Windows.Forms.ListBox ListBoxDocuments;
         private System.Windows.Forms.Button BtnPersonalliste;
+        private System.Windows.Forms.PictureBox PictureBoxBestellung;
+        private System.Windows.Forms.Button BtnAuftragsverwaltung;
     }
 }
 

@@ -177,6 +177,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auftragsverwaltung\Form_HauptansichtAuftragsverwaltung.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Auftragsverwaltung\Form_HauptansichtAuftragsverwaltung.Designer.cs">
+      <DependentUpon>Form_HauptansichtAuftragsverwaltung.cs</DependentUpon>
+    </Compile>
     <Compile Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -253,6 +259,9 @@
     <Compile Include="Personal\MitarbeiterService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Auftragsverwaltung\Form_HauptansichtAuftragsverwaltung.resx">
+      <DependentUpon>Form_HauptansichtAuftragsverwaltung.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.resx">
       <DependentUpon>Form_ArtikelPrototypAendern.cs</DependentUpon>
     </EmbeddedResource>
@@ -353,6 +362,7 @@
     <Content Include="Bilder\Mo Liner 0 95 033.png" />
     <Content Include="Bilder\Mo Liner 0 95 058.png" />
     <Content Include="Bilder\Mo Liner 0 95 110.png" />
+    <Content Include="Bilder\RufezeichenFuerBestellung.png" />
     <Content Include="Bilder\SwarovskiOptikLogo.png" />
     <Content Include="Bilder\Wavelength.png" />
     <Content Include="Bilder\Wavelength2.png" />

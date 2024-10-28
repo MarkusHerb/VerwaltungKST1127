@@ -5,19 +5,64 @@ using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace f�
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
 using VerwaltungKST1127.Farbauswertung;
 using VerwaltungKST1127.Personal; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
+using System.Data.SqlClient;
+using System.IO;
+using VerwaltungKST1127.Auftragsverwaltung; // Um SQL funktionen zu verwenden
 
 namespace VerwaltungKST1127
 {
+
     public partial class Form_Start : Form
     {
+        private void BestellstatusAbfragen()
+        {
+            // Verbindungszeichenfolge für die SQL Server-Datenbank // Wird benötigt, um den Bestellstatus abzufragen
+            string connectionString = @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Chargenprotokoll;Integrated Security=True;Encrypt=False";
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                // Datenbank öfnnen
+                con.Open();
+                // Sql-Abfrage, um nach "Bestellen" in der Spalte BestellStatus zu suchen
+                string query = "SELECT COUNT(*) FROM Materiallager WHERE BestellStatus = 'Bestellen'";
+                SqlCommand cmd = new SqlCommand(query, con);
+                // Ausführen der Abfrage und Ergebnise abrufen
+                int count = (int)cmd.ExecuteScalar();
+                // Variable Bestellung setzten
+                int Bestellung = (count > 0) ? 1 : 0;
+                // ImagePath
+                string imagePath = "";
+                // Rufezeichen anzeigen oder nicht
+                if (Bestellung == 1)
+                {
+                    imagePath = "K:\\Kst_127\\Programmierung\\Programierung Markus\\Verwaltung\\VerwaltungKST1127\\VerwaltungKST1127\\Bilder\\RufezeichenFuerBestellung.png";
+                }
+                // Überprüfen, ob ein gültiger Bildpfad gefunden wurde und das Bild existiert
+                if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
+                {
+                    // Das Bild der PictureBox zuweisen
+                    PictureBoxBestellung.Visible = true;
+                    PictureBoxBestellung.Enabled = false;
+                    PictureBoxBestellung.Image = new Bitmap(imagePath);
+                    PictureBoxBestellung.Refresh();
+                }
+                else
+                {
+                    // Anderenfalls die PictureBox leeren oder ein Platzhalterbild anzeigen
+                    PictureBoxBestellung.Image = null;
+                    PictureBoxBestellung.Visible = false;
+                }
+            }
+        }
+        
         public Form_Start()
         {
             InitializeComponent();
             // Timer für Uhrzeit/Datum starten
-            TimerDatumUhrzeit.Start(); 
+            TimerDatumUhrzeit.Start();
             UpdateZeitDatum();
             // ListBoxDocuments laden
             InitializeDocumentList();
+            
         }
 
         // ############## Selbst erstellte Funktionen 
@@ -27,6 +72,8 @@ namespace VerwaltungKST1127
         {
             DateTime aktuell = DateTime.Now; //Aktuelles Datum und Uhrzeit abrufen
             LblUhrzeitDatum.Text = aktuell.ToString("dd.MM.yyyy HH:mm:ss"); // Datum und Uhrzeit im zugeweisenen Label anzeigen
+            // Tickevent des UhrzeitsTimers verwenden damit die PictureBoxBestellung ständig aktualisiert wird
+            BestellstatusAbfragen();
         }
 
         // ############## Event-Handler für die unterschiedlichen Items aus der Toolbox
@@ -92,6 +139,13 @@ namespace VerwaltungKST1127
         {
             Form_Personalliste form_Personalliste = new Form_Personalliste();
             form_Personalliste.Show();
+        }
+
+        // Event-Handler, wenn man darauf klickt
+        private void BtnAuftragsverwaltung_Click(object sender, EventArgs e)
+        {
+            Form_HauptansichtAuftragsverwaltung form_hauptansichtAuftragsverwaltung = new Form_HauptansichtAuftragsverwaltung();
+            form_hauptansichtAuftragsverwaltung.Show();
         }
 
         // #### ListBox ####
@@ -199,7 +253,6 @@ namespace VerwaltungKST1127
         {
             OpenSelectedDocument();
         }
-
-        
+      
     }
 }

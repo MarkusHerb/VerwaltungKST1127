@@ -46,19 +46,30 @@ namespace VerwaltungKST1127
                 DgvMateriallager.Columns[0].Width = 30;
                 DgvMateriallager.Columns[2].Width = 220;
                 DgvMateriallager.Columns[7].Width = 445;
-                // Überprüfen, ob Lagerbestand den Mindestbestand unterschreitet
-                foreach (DataGridViewRow row in DgvMateriallager.Rows)
+
+                // Überprüfen, ob Lagerbestand den Mindestbestand unterschreitet und Datenbank aktualisieren
+                foreach (DataRow row in dataSet.Tables[0].Rows)
                 {
-                    int lagerstand = Convert.ToInt32(row.Cells["Lagerstand"].Value);
-                    int mindestbestand = Convert.ToInt32(row.Cells["Mindestbestand"].Value);
+                    int lagerstand = Convert.ToInt32(row["Lagerstand"]);
+                    int mindestbestand = Convert.ToInt32(row["Mindestbestand"]);
 
                     if (lagerstand <= mindestbestand)
                     {
-                        row.Cells["BestellStatus"].Value = "Bestellen";
+                        row["BestellStatus"] = "Bestellen";
+                        // SQL-Update-Befehl für "Bestellen"
+                        string updateQuery = "UPDATE MaterialLager SET BestellStatus = 'Bestellen' WHERE ID = @ID";
+                        SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection);
+                        updateCommand.Parameters.AddWithValue("@ID", row["ID"]);
+                        updateCommand.ExecuteNonQuery();
                     }
                     else
                     {
-                        row.Cells["BestellStatus"].Value = string.Empty; // Status zurücksetzen
+                        row["BestellStatus"] = string.Empty;
+                        // SQL-Update-Befehl für leeren BestellStatus
+                        string updateQuery = "UPDATE MaterialLager SET BestellStatus = '' WHERE ID = @ID";
+                        SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection);
+                        updateCommand.Parameters.AddWithValue("@ID", row["ID"]);
+                        updateCommand.ExecuteNonQuery();
                     }
                 }
 
@@ -69,7 +80,6 @@ namespace VerwaltungKST1127
                 MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
             }
         }
-
 
         // Methode zur Ausführung einer SQL-Abfrage
         private void ExecuteQuery(string query)
