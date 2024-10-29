@@ -36,6 +36,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.btnOpenTLTLForm = new System.Windows.Forms.Button();
+            this.lblPfad = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dGvAuftragZuBelag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dGvAnsichtAuswahlAuftrag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dGvInfoZuAuswahlAuftrag)).BeginInit();
@@ -61,22 +63,26 @@
             this.dGvAnsichtAuswahlAuftrag.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dGvAnsichtAuswahlAuftrag.Location = new System.Drawing.Point(295, 36);
             this.dGvAnsichtAuswahlAuftrag.Name = "dGvAnsichtAuswahlAuftrag";
-            this.dGvAnsichtAuswahlAuftrag.Size = new System.Drawing.Size(1285, 532);
+            this.dGvAnsichtAuswahlAuftrag.RowHeadersVisible = false;
+            this.dGvAnsichtAuswahlAuftrag.Size = new System.Drawing.Size(1531, 532);
             this.dGvAnsichtAuswahlAuftrag.TabIndex = 1;
+            this.dGvAnsichtAuswahlAuftrag.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dGvAnsichtAuswahlAuftrag_CellFormatting);
+            this.dGvAnsichtAuswahlAuftrag.Click += new System.EventHandler(this.dGvAnsichtAuswahlAuftrag_Click);
             // 
             // dGvInfoZuAuswahlAuftrag
             // 
             this.dGvInfoZuAuswahlAuftrag.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dGvInfoZuAuswahlAuftrag.Location = new System.Drawing.Point(295, 607);
             this.dGvInfoZuAuswahlAuftrag.Name = "dGvInfoZuAuswahlAuftrag";
-            this.dGvInfoZuAuswahlAuftrag.Size = new System.Drawing.Size(962, 214);
+            this.dGvInfoZuAuswahlAuftrag.Size = new System.Drawing.Size(1208, 214);
             this.dGvInfoZuAuswahlAuftrag.TabIndex = 2;
             // 
             // pictureBoxAnsichtArtikel
             // 
-            this.pictureBoxAnsichtArtikel.Location = new System.Drawing.Point(1263, 607);
+            this.pictureBoxAnsichtArtikel.Location = new System.Drawing.Point(1509, 607);
             this.pictureBoxAnsichtArtikel.Name = "pictureBoxAnsichtArtikel";
             this.pictureBoxAnsichtArtikel.Size = new System.Drawing.Size(317, 214);
+            this.pictureBoxAnsichtArtikel.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxAnsichtArtikel.TabIndex = 3;
             this.pictureBoxAnsichtArtikel.TabStop = false;
             // 
@@ -114,17 +120,41 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(1259, 579);
+            this.label4.Location = new System.Drawing.Point(1505, 579);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(209, 20);
+            this.label4.Size = new System.Drawing.Size(154, 20);
             this.label4.TabIndex = 7;
-            this.label4.Text = "Artikel ausgewählter Auftrag";
+            this.label4.Text = "Ausgewählter Artikel";
+            // 
+            // btnOpenTLTLForm
+            // 
+            this.btnOpenTLTLForm.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnOpenTLTLForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnOpenTLTLForm.Location = new System.Drawing.Point(12, 827);
+            this.btnOpenTLTLForm.Name = "btnOpenTLTLForm";
+            this.btnOpenTLTLForm.Size = new System.Drawing.Size(277, 44);
+            this.btnOpenTLTLForm.TabIndex = 8;
+            this.btnOpenTLTLForm.Text = "Zukauf hinzufügen / löschen";
+            this.btnOpenTLTLForm.UseVisualStyleBackColor = false;
+            this.btnOpenTLTLForm.Click += new System.EventHandler(this.btnOpenTLTLForm_Click);
+            // 
+            // lblPfad
+            // 
+            this.lblPfad.AutoSize = true;
+            this.lblPfad.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPfad.Location = new System.Drawing.Point(1509, 824);
+            this.lblPfad.Name = "lblPfad";
+            this.lblPfad.Size = new System.Drawing.Size(58, 9);
+            this.lblPfad.TabIndex = 9;
+            this.lblPfad.Text = "Zeichnungspfad";
             // 
             // Form_HauptansichtAuftragsverwaltung
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1592, 873);
+            this.ClientSize = new System.Drawing.Size(1838, 883);
+            this.Controls.Add(this.lblPfad);
+            this.Controls.Add(this.btnOpenTLTLForm);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -155,5 +185,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnOpenTLTLForm;
+        private System.Windows.Forms.Label lblPfad;
     }
 }
