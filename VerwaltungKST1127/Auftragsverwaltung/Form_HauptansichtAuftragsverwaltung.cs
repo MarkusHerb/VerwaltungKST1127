@@ -83,6 +83,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     UpdateDgvAnsichtAuswahlAuftrag(selectedBelagValue);
                 }
+                dGvInfoZuAuswahlAuftrag.DataSource = null;
             }
         }
 
@@ -164,7 +165,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     }
                     else if (rltlData.TL.Contains(artikelNr))
                     {
-                        row["Zukauf"] = "TL-Lager";
+                        row["Zukauf"] = "T-Lager";
                     }
 
                     // Material abfragen und setzen
@@ -280,6 +281,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // Reihenbreite anpassen
                 dGvAnsichtAuswahlAuftrag.Columns["Teilebez."].Width = 170;
                 dGvAnsichtAuswahlAuftrag.Columns["Seite"].Width = 60;
+                dGvAnsichtAuswahlAuftrag.Columns["AVOinfo"].Width = 140;
                 // Spalte ausblenden
                 dGvAnsichtAuswahlAuftrag.Columns["Sortierwert"].Visible = false;
                 // Picturebox zurücksetzten
@@ -291,6 +293,106 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
             finally
             {
+                if (sqlConnectionVerwaltung.State == ConnectionState.Open)
+                {
+                    sqlConnectionVerwaltung.Close();
+                }
+            }
+        }
+
+        // Wenn auf eine Zelle in AuswahlAuftrag geklickt wird
+        private void dGvAnsichtAuswahlAuftrag_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Überprüfen, ob der Klick in einer gültigen Zeile stattgefunden hat
+            if (e.RowIndex >= 0)
+            {
+                // Auftragsnummer aus der geklickten Zeile abrufen
+                var auftragsNummer = dGvAnsichtAuswahlAuftrag.Rows[e.RowIndex].Cells["Auftragsnr."].Value?.ToString();
+
+                // Nur wenn die Auftragsnummer nicht null oder leer ist, die Datenbankabfrage starten
+                if (!string.IsNullOrEmpty(auftragsNummer))
+                {
+                    // Funktion aufrufen, die die SQL-Datenbank abfragt und das DataGridView aktualisiert
+                    UpdateDgvAuswahlInfo(auftragsNummer);
+                }
+            }
+        }
+
+        // Funktion zum Abrufen der Daten aus der Datenbank und zum Aktualisieren von dGvAuswahlInfo
+        private void UpdateDgvAuswahlInfo(string auftragsNummer)
+        {
+            // SQL-Abfrage, um alle Datensätze mit der passenden Auftragsnummer aus LN_ProdOrders_PRD abzurufen
+            string query = "SELECT * FROM LN_ProdOrders_PRD WHERE pdno_prodnr = @Auftragsnummer";
+
+            // DataTable zur Speicherung der Ergebnisse
+            DataTable dataTable = new DataTable();
+
+            try
+            {
+                // SQL-Verbindung öffnen
+                using (SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung))
+                {
+                    // Parameter zur Abfrage hinzufügen, um SQL-Injection zu vermeiden
+                    command.Parameters.AddWithValue("@Auftragsnummer", auftragsNummer);
+
+                    // Adapter einrichten und die Ergebnisse in die DataTable füllen
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    adapter.Fill(dataTable);
+                }
+
+                // Die abgerufenen Daten in das DataGridView dGvAuswahlInfo laden
+                dGvInfoZuAuswahlAuftrag.DataSource = dataTable;
+                dGvInfoZuAuswahlAuftrag.Columns["pdsta_prodstat"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["refo_avotext"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["mtyp_anlage"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["trdt_startdate"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["cwoc_kst"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["opno2_voravo"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["rutm2_sollzeit"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["sutm_sollruest"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["rutm_vorgabezeit"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["dsca_teilebez"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["srce_itemquelle"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["goca_warentraeger"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["pkdf_transportbehaelter"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["qhnd1_stk_teilelager"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["qhnd2_lagerbestand"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["qana_bereitstellbestand"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["demand_jahresbedarf"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["created_date"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["Last_modified"].Visible = false;
+                dGvInfoZuAuswahlAuftrag.Columns["import_date"].Visible = false;
+                // Überprüfen, ob die relevanten Spalten existieren, bevor auf sie zugegriffen wird
+                if (dGvInfoZuAuswahlAuftrag.Columns["trdf_enddate"] != null)
+                {
+                    dGvInfoZuAuswahlAuftrag.Columns["trdf_enddate"].DefaultCellStyle.Format = "dd.MM.yyyy";
+                }
+
+                // Zahlenformatierung für die Spalten von dGvAnsichtAuswahlAuftrag
+                if (dGvInfoZuAuswahlAuftrag.Columns["qplo_sollstk"] != null)
+                {
+                    dGvInfoZuAuswahlAuftrag.Columns["qplo_sollstk"].DefaultCellStyle.Format = "N0";
+                }
+                if (dGvInfoZuAuswahlAuftrag.Columns["qcmp_iststk"] != null)
+                {
+                    dGvInfoZuAuswahlAuftrag.Columns["qcmp_iststk"].DefaultCellStyle.Format = "N0";
+                }
+                if (dGvInfoZuAuswahlAuftrag.Columns["qcmp2_vorstk"] != null)
+                {
+                    dGvInfoZuAuswahlAuftrag.Columns["qcmp2_vorstk"].DefaultCellStyle.Format = "N0";
+                }
+
+                // Spalten anpassen, sodass sie das DataGridView ausfüllen
+                dGvInfoZuAuswahlAuftrag.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            }
+            catch (Exception ex)
+            {
+                // Fehlerbehandlung (z.B. Fehlerprotokollierung oder Benachrichtigung)
+                MessageBox.Show("Fehler beim Abrufen der Daten: " + ex.Message);
+            }
+            finally
+            {
+                // Verbindung schließen
                 if (sqlConnectionVerwaltung.State == ConnectionState.Open)
                 {
                     sqlConnectionVerwaltung.Close();
@@ -390,7 +492,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // Überprüfen, ob der Status "Gestartet" ist
                 if (e.Value != null && e.Value.ToString() == "Gestartet")
                 {
-                    dGvAnsichtAuswahlAuftrag.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
+                    e.CellStyle.BackColor = Color.LightSkyBlue;
+                    //dGvAnsichtAuswahlAuftrag.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
                 }
             }
 
@@ -443,5 +546,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
         }
+
+        
     }
 }

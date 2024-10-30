@@ -364,31 +364,31 @@ namespace VerwaltungKST1127
                     // Überprüfen, welcher Artikel ausgewählt wurde und den entsprechenden Bildpfad zuweisen
                     if (TextBoxArtikel.Text == "Mo Liner 0 95 023")
                     {
-                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\Verwaltung\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 023.png";
+                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 023.png";
                     }
                     else if (TextBoxArtikel.Text == "Mo Liner 0 95 025")
                     {
-                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\Verwaltung\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 025.png";
+                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 025.png";
                     }
                     else if (TextBoxArtikel.Text == "Mo Liner 0 95 033")
                     {
-                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\Verwaltung\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 033.png";
+                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 033.png";
                     }
                     else if (TextBoxArtikel.Text == "Mo Liner 0 95 058")
                     {
-                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\Verwaltung\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 058.png";
+                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 058.png";
                     }
                     else if (TextBoxArtikel.Text == "Mo Liner 0 95 110")
                     {
-                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\Verwaltung\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 110.png";
+                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\VerwaltungKST1127\VerwaltungKST1127\Bilder\Mo Liner 0 95 110.png";
                     }
                     else if (TextBoxArtikel.Text == "Deckel für Liner")
                     {
-                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\Verwaltung\VerwaltungKST1127\VerwaltungKST1127\Bilder\Deckel für Liner.png";
+                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\VerwaltungKST1127\VerwaltungKST1127\Bilder\Deckel für Liner.png";
                     }
                     else
                     {
-                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\Verwaltung\VerwaltungKST1127\VerwaltungKST1127\Bilder\Ansicht.png";
+                        imagePath = @"K:\Kst_127\Programmierung\Programierung Markus\VerwaltungKST1127\VerwaltungKST1127\Bilder\Ansicht.png";
                     }
 
                     // Überprüfen, ob ein gültiger Bildpfad gefunden wurde und das Bild existiert

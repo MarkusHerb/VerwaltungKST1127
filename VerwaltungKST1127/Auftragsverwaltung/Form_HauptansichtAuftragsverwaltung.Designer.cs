@@ -66,6 +66,7 @@
             this.dGvAnsichtAuswahlAuftrag.RowHeadersVisible = false;
             this.dGvAnsichtAuswahlAuftrag.Size = new System.Drawing.Size(1531, 532);
             this.dGvAnsichtAuswahlAuftrag.TabIndex = 1;
+            this.dGvAnsichtAuswahlAuftrag.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGvAnsichtAuswahlAuftrag_CellClick);
             this.dGvAnsichtAuswahlAuftrag.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dGvAnsichtAuswahlAuftrag_CellFormatting);
             this.dGvAnsichtAuswahlAuftrag.Click += new System.EventHandler(this.dGvAnsichtAuswahlAuftrag_Click);
             // 
@@ -74,6 +75,7 @@
             this.dGvInfoZuAuswahlAuftrag.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dGvInfoZuAuswahlAuftrag.Location = new System.Drawing.Point(295, 607);
             this.dGvInfoZuAuswahlAuftrag.Name = "dGvInfoZuAuswahlAuftrag";
+            this.dGvInfoZuAuswahlAuftrag.RowHeadersVisible = false;
             this.dGvInfoZuAuswahlAuftrag.Size = new System.Drawing.Size(1208, 214);
             this.dGvInfoZuAuswahlAuftrag.TabIndex = 2;
             // 
@@ -92,9 +94,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 8);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(153, 20);
+            this.label1.Size = new System.Drawing.Size(71, 20);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Auswahl Filter Belag";
+            this.label1.Text = "Filterung";
             // 
             // label2
             // 
@@ -102,9 +104,9 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(291, 8);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(210, 20);
+            this.label2.Size = new System.Drawing.Size(155, 20);
             this.label2.TabIndex = 5;
-            this.label2.Text = "Auswahl Auftrag nach Belag";
+            this.label2.Text = "Aufträge nach Belag";
             // 
             // label3
             // 
@@ -112,9 +114,9 @@
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(291, 579);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(271, 20);
+            this.label3.Size = new System.Drawing.Size(284, 20);
             this.label3.TabIndex = 6;
-            this.label3.Text = "Information zu ausgewählten Auftrag";
+            this.label3.Text = "Information zum ausgewählten Auftrag";
             // 
             // label4
             // 
@@ -142,7 +144,7 @@
             // 
             this.lblPfad.AutoSize = true;
             this.lblPfad.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPfad.Location = new System.Drawing.Point(1509, 824);
+            this.lblPfad.Location = new System.Drawing.Point(1509, 830);
             this.lblPfad.Name = "lblPfad";
             this.lblPfad.Size = new System.Drawing.Size(58, 9);
             this.lblPfad.TabIndex = 9;

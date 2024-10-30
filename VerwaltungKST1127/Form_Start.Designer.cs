@@ -52,6 +52,12 @@
             this.BtnPersonalliste = new System.Windows.Forms.Button();
             this.PictureBoxBestellung = new System.Windows.Forms.PictureBox();
             this.BtnAuftragsverwaltung = new System.Windows.Forms.Button();
+            this.process1 = new System.Diagnostics.Process();
+            this.TimerCpu = new System.Windows.Forms.Timer(this.components);
+            this.TimerRam = new System.Windows.Forms.Timer(this.components);
+            this.LblCpu = new System.Windows.Forms.Label();
+            this.LblRam = new System.Windows.Forms.Label();
+            this.splitter1 = new System.Windows.Forms.Splitter();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             this.SuspendLayout();
@@ -73,22 +79,22 @@
             // LblUeberschrift
             // 
             this.LblUeberschrift.AutoSize = true;
-            this.LblUeberschrift.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblUeberschrift.ForeColor = System.Drawing.Color.Green;
+            this.LblUeberschrift.Font = new System.Drawing.Font("Rockwell", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblUeberschrift.ForeColor = System.Drawing.Color.Black;
             this.LblUeberschrift.Location = new System.Drawing.Point(12, 28);
             this.LblUeberschrift.Name = "LblUeberschrift";
-            this.LblUeberschrift.Size = new System.Drawing.Size(784, 46);
+            this.LblUeberschrift.Size = new System.Drawing.Size(817, 46);
             this.LblUeberschrift.TabIndex = 3;
             this.LblUeberschrift.Text = "Verwaltung Kst1127 US-Reinigen/Vergüten";
             // 
             // LblUhrzeitDatum
             // 
             this.LblUhrzeitDatum.AutoSize = true;
-            this.LblUhrzeitDatum.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblUhrzeitDatum.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.LblUhrzeitDatum.Font = new System.Drawing.Font("Rockwell", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblUhrzeitDatum.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
             this.LblUhrzeitDatum.Location = new System.Drawing.Point(16, 84);
             this.LblUhrzeitDatum.Name = "LblUhrzeitDatum";
-            this.LblUhrzeitDatum.Size = new System.Drawing.Size(211, 31);
+            this.LblUhrzeitDatum.Size = new System.Drawing.Size(213, 31);
             this.LblUhrzeitDatum.TabIndex = 4;
             this.LblUhrzeitDatum.Text = "Datum + Uhrzeit";
             // 
@@ -98,7 +104,7 @@
             this.BtnSerienartikelPrototyp.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnSerienartikelPrototyp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(40, 211);
+            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(44, 283);
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
             this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(239, 66);
             this.BtnSerienartikelPrototyp.TabIndex = 5;
@@ -128,7 +134,7 @@
             this.BtnPrototypenAuftragErstellen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPrototypenAuftragErstellen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPrototypenAuftragErstellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(40, 283);
+            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(44, 573);
             this.BtnPrototypenAuftragErstellen.Name = "BtnPrototypenAuftragErstellen";
             this.BtnPrototypenAuftragErstellen.Size = new System.Drawing.Size(239, 66);
             this.BtnPrototypenAuftragErstellen.TabIndex = 8;
@@ -140,7 +146,7 @@
             // 
             this.LblInfo1.AutoSize = true;
             this.LblInfo1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblInfo1.Location = new System.Drawing.Point(99, 166);
+            this.LblInfo1.Location = new System.Drawing.Point(103, 166);
             this.LblInfo1.Name = "LblInfo1";
             this.LblInfo1.Size = new System.Drawing.Size(126, 26);
             this.LblInfo1.TabIndex = 9;
@@ -152,7 +158,7 @@
             this.BtnFarbwerte.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnFarbwerte.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnFarbwerte.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnFarbwerte.Location = new System.Drawing.Point(328, 211);
+            this.BtnFarbwerte.Location = new System.Drawing.Point(332, 211);
             this.BtnFarbwerte.Name = "BtnFarbwerte";
             this.BtnFarbwerte.Size = new System.Drawing.Size(239, 66);
             this.BtnFarbwerte.TabIndex = 10;
@@ -163,7 +169,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel3.Location = new System.Drawing.Point(303, 157);
+            this.panel3.Location = new System.Drawing.Point(307, 157);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1, 483);
             this.panel3.TabIndex = 11;
@@ -172,7 +178,7 @@
             // 
             this.LblQualitaet.AutoSize = true;
             this.LblQualitaet.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblQualitaet.Location = new System.Drawing.Point(397, 166);
+            this.LblQualitaet.Location = new System.Drawing.Point(401, 166);
             this.LblQualitaet.Name = "LblQualitaet";
             this.LblQualitaet.Size = new System.Drawing.Size(95, 26);
             this.LblQualitaet.TabIndex = 12;
@@ -181,7 +187,7 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel4.Location = new System.Drawing.Point(590, 157);
+            this.panel4.Location = new System.Drawing.Point(594, 157);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(1, 483);
             this.panel4.TabIndex = 13;
@@ -190,7 +196,7 @@
             // 
             this.Organisation.AutoSize = true;
             this.Organisation.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Organisation.Location = new System.Drawing.Point(678, 166);
+            this.Organisation.Location = new System.Drawing.Point(682, 166);
             this.Organisation.Name = "Organisation";
             this.Organisation.Size = new System.Drawing.Size(112, 26);
             this.Organisation.TabIndex = 15;
@@ -202,7 +208,7 @@
             this.BtnMateriallager.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnMateriallager.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnMateriallager.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnMateriallager.Location = new System.Drawing.Point(615, 211);
+            this.BtnMateriallager.Location = new System.Drawing.Point(619, 211);
             this.BtnMateriallager.Name = "BtnMateriallager";
             this.BtnMateriallager.Size = new System.Drawing.Size(239, 66);
             this.BtnMateriallager.TabIndex = 14;
@@ -273,7 +279,7 @@
             this.BtnPersonalliste.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPersonalliste.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPersonalliste.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnPersonalliste.Location = new System.Drawing.Point(615, 283);
+            this.BtnPersonalliste.Location = new System.Drawing.Point(619, 283);
             this.BtnPersonalliste.Name = "BtnPersonalliste";
             this.BtnPersonalliste.Size = new System.Drawing.Size(239, 66);
             this.BtnPersonalliste.TabIndex = 20;
@@ -297,7 +303,7 @@
             this.BtnAuftragsverwaltung.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnAuftragsverwaltung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnAuftragsverwaltung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnAuftragsverwaltung.Location = new System.Drawing.Point(40, 355);
+            this.BtnAuftragsverwaltung.Location = new System.Drawing.Point(44, 211);
             this.BtnAuftragsverwaltung.Name = "BtnAuftragsverwaltung";
             this.BtnAuftragsverwaltung.Size = new System.Drawing.Size(239, 66);
             this.BtnAuftragsverwaltung.TabIndex = 22;
@@ -305,12 +311,61 @@
             this.BtnAuftragsverwaltung.UseVisualStyleBackColor = false;
             this.BtnAuftragsverwaltung.Click += new System.EventHandler(this.BtnAuftragsverwaltung_Click);
             // 
+            // process1
+            // 
+            this.process1.StartInfo.Domain = "";
+            this.process1.StartInfo.LoadUserProfile = false;
+            this.process1.StartInfo.Password = null;
+            this.process1.StartInfo.StandardErrorEncoding = null;
+            this.process1.StartInfo.StandardOutputEncoding = null;
+            this.process1.StartInfo.UserName = "";
+            this.process1.SynchronizingObject = this;
+            // 
+            // TimerCpu
+            // 
+            this.TimerCpu.Interval = 1000;
+            this.TimerCpu.Tick += new System.EventHandler(this.TimerCpu_Tick);
+            // 
+            // TimerRam
+            // 
+            this.TimerRam.Interval = 1000;
+            this.TimerRam.Tick += new System.EventHandler(this.TimerRam_Tick);
+            // 
+            // LblCpu
+            // 
+            this.LblCpu.AutoSize = true;
+            this.LblCpu.Location = new System.Drawing.Point(22, 123);
+            this.LblCpu.Name = "LblCpu";
+            this.LblCpu.Size = new System.Drawing.Size(26, 13);
+            this.LblCpu.TabIndex = 23;
+            this.LblCpu.Text = "Cpu";
+            // 
+            // LblRam
+            // 
+            this.LblRam.AutoSize = true;
+            this.LblRam.Location = new System.Drawing.Point(166, 122);
+            this.LblRam.Name = "LblRam";
+            this.LblRam.Size = new System.Drawing.Size(31, 13);
+            this.LblRam.TabIndex = 24;
+            this.LblRam.Text = "RAM";
+            // 
+            // splitter1
+            // 
+            this.splitter1.Location = new System.Drawing.Point(0, 0);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(3, 651);
+            this.splitter1.TabIndex = 25;
+            this.splitter1.TabStop = false;
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.splitter1);
+            this.Controls.Add(this.LblRam);
+            this.Controls.Add(this.LblCpu);
             this.Controls.Add(this.BtnAuftragsverwaltung);
             this.Controls.Add(this.PictureBoxBestellung);
             this.Controls.Add(this.BtnPersonalliste);
@@ -368,6 +423,12 @@
         private System.Windows.Forms.Button BtnPersonalliste;
         private System.Windows.Forms.PictureBox PictureBoxBestellung;
         private System.Windows.Forms.Button BtnAuftragsverwaltung;
+        private System.Diagnostics.Process process1;
+        private System.Windows.Forms.Timer TimerCpu;
+        private System.Windows.Forms.Timer TimerRam;
+        private System.Windows.Forms.Label LblRam;
+        private System.Windows.Forms.Label LblCpu;
+        private System.Windows.Forms.Splitter splitter1;
     }
 }
 

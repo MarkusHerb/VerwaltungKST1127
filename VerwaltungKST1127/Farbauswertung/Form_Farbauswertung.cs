@@ -42,10 +42,10 @@ namespace VerwaltungKST1127.Farbauswertung
             // Initialisieren der Leistungsindikatoren - RAM
             InitializeMemoryCounter();
             // Starten des Timers für die CPU-Auslastung
-            TimerCpu.Interval = 1000; // Aktualisierung alle 1 Sekunde
+            //TimerCpu.Interval = 1000; // Aktualisierung alle 1 Sekunde
             TimerCpu.Start();
             // Starten des Timers für die RAM-Auslastung
-            TimerMemory.Interval = 1000; // Aktualisierung alle 1 Sekunde
+            //TimerMemory.Interval = 1000; // Aktualisierung alle 1 Sekunde
             TimerMemory.Start();
         }
 

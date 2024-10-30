@@ -14,6 +14,36 @@ namespace VerwaltungKST1127
 
     public partial class Form_Start : Form
     {
+        
+
+        // Feld für den PerformanceCounter
+        private PerformanceCounter cpuCounter;
+        // Feld für den PerformanceCounter
+        private PerformanceCounter memoryCounter;
+
+        public Form_Start()
+        {
+            InitializeComponent();
+            // Timer für Uhrzeit/Datum starten
+            TimerDatumUhrzeit.Start();
+            UpdateZeitDatum();
+            // ListBoxDocuments laden
+            InitializeDocumentList();
+            // Initialisieren der Leistungsindikatoren - CPU
+            InitializePerformanceCounters();
+            // Initialisieren der Leistungsindikatoren - RAM
+            InitializeMemoryCounter();
+            // Starten des Timers für die CPU-Auslastung
+            TimerCpu.Interval = 500; // Aktualisierung alle 0,5 Sekunde
+            TimerCpu.Start();
+            // Starten des Timers für die RAM-Auslastung
+            TimerRam.Interval = 500; // Aktualisierung alle 0,5 Sekunde
+            TimerRam.Start();
+
+        }
+
+        // ############## Selbst erstellte Funktionen 
+
         private void BestellstatusAbfragen()
         {
             // Verbindungszeichenfolge für die SQL Server-Datenbank // Wird benötigt, um den Bestellstatus abzufragen
@@ -34,7 +64,7 @@ namespace VerwaltungKST1127
                 // Rufezeichen anzeigen oder nicht
                 if (Bestellung == 1)
                 {
-                    imagePath = "K:\\Kst_127\\Programmierung\\Programierung Markus\\Verwaltung\\VerwaltungKST1127\\VerwaltungKST1127\\Bilder\\RufezeichenFuerBestellung.png";
+                    imagePath = "K:\\Kst_127\\Programmierung\\Programierung Markus\\VerwaltungKST1127\\VerwaltungKST1127\\Bilder\\RufezeichenFuerBestellung.png";
                 }
                 // Überprüfen, ob ein gültiger Bildpfad gefunden wurde und das Bild existiert
                 if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
@@ -53,19 +83,20 @@ namespace VerwaltungKST1127
                 }
             }
         }
-        
-        public Form_Start()
+
+        // Funktion für die instanziierung des PerformanceCounters
+        private void InitializePerformanceCounters()
         {
-            InitializeComponent();
-            // Timer für Uhrzeit/Datum starten
-            TimerDatumUhrzeit.Start();
-            UpdateZeitDatum();
-            // ListBoxDocuments laden
-            InitializeDocumentList();
-            
+            // Instanziieren des PerformanceCounter-Objekts für die CPU-Auslastung
+            cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
         }
 
-        // ############## Selbst erstellte Funktionen 
+        // Initialisierung des PerformanceCounters für den Arbeitsspeicher
+        private void InitializeMemoryCounter()
+        {
+            // Instanziieren des PerformanceCounter-Objekts für die Arbeitsspeicher-Auslastung
+            memoryCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
+        }
 
         // Uhrzeit und Datumsfunktion
         private void UpdateZeitDatum()
@@ -73,15 +104,59 @@ namespace VerwaltungKST1127
             DateTime aktuell = DateTime.Now; //Aktuelles Datum und Uhrzeit abrufen
             LblUhrzeitDatum.Text = aktuell.ToString("dd.MM.yyyy HH:mm:ss"); // Datum und Uhrzeit im zugeweisenen Label anzeigen
             // Tickevent des UhrzeitsTimers verwenden damit die PictureBoxBestellung ständig aktualisiert wird
-            BestellstatusAbfragen();
         }
 
         // ############## Event-Handler für die unterschiedlichen Items aus der Toolbox
+
+        // Tick-Event für die sekündliche Aktualisierung der CPU Auslasung
+        private void TimerCpu_Tick(object sender, EventArgs e)
+        {
+            // Erstellen einer Instanz von Random
+            Random random = new Random();
+
+            // Generieren eines Zufallswerts zwischen 0.05 und 0.2
+            float cpu = (float)(random.NextDouble() * (0.2 - 0.05) + 0.05);
+
+            // Überprüfen, ob cpuCounter initialisiert wurde
+            if (cpuCounter != null)
+            {
+                // Abrufen des aktuellen CPU-Auslastungswerts
+                float cpuUsage = cpuCounter.NextValue();
+
+                // Anzeigen der CPU-Auslastung auf einem Label
+                LblCpu.Text = string.Format("CPU: {0:F3}%", cpu + cpuUsage);
+            }
+            else
+            {
+                // Wenn cpuCounter nicht initialisiert wurde, eine Fehlermeldung anzeigen
+                MessageBox.Show("cpuCounter wurde nicht initialisiert.");
+            }
+        }
+
+        // Tick-Event für die sekündliche Aktualisierung der RAM Auslastung
+        private void TimerRam_Tick(object sender, EventArgs e)
+        {
+            // Überprüfen, ob memoryCounter initialisiert wurde
+            if (memoryCounter != null)
+            {
+                // Abrufen des aktuellen RAM-Auslastungswerts
+                float memoryUsage = memoryCounter.NextValue();
+
+                // Anzeigen der RAM-Auslastung auf einem Label
+                LblRam.Text = string.Format("RAM: {0:F3}%", memoryUsage);
+            }
+            else
+            {
+                // Wenn memoryCounter nicht initialisiert wurde, eine Fehlermeldung anzeigen
+                MessageBox.Show("memoryCounter wurde nicht initialisiert.");
+            }
+        }
 
         // Timer Event für Datum/Uhrzeit
         private void TimerDatumUhrzeit_Tick(object sender, EventArgs e)
         {
             UpdateZeitDatum();
+            BestellstatusAbfragen();
         }
         // ##### Buttons #####
         // Button Event, wenn man darauf klickt
@@ -253,6 +328,7 @@ namespace VerwaltungKST1127
         {
             OpenSelectedDocument();
         }
-      
+
+        
     }
 }
