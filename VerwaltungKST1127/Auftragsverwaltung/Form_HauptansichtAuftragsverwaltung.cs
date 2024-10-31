@@ -115,7 +115,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 qana_bereitstellbestand AS Bereitstell,
                 demand_jahresbedarf AS Jahresbedarf,
                 '' AS Zukauf, -- Spalte bleibt aktuell leer
-                '' AS Dringed, -- Spalte bleibt aktuell leer
+                '' AS Dringend, -- Spalte bleibt aktuell leer
                 CONVERT(date, import_date) AS Aktualisiert
             FROM 
                 LN_ProdOrders_PRD 
@@ -138,6 +138,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 sqlConnectionVerwaltung.Open();
                 adapter.Fill(dataTable);
                 sqlConnectionVerwaltung.Close();
+
+                
 
                 // JSON-Datei laden und deserialisieren
                 RLTLData rltlData;
@@ -173,13 +175,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     string material = GetMaterialFromSerienlinsen(artikelNr, seite);
                     row["Material"] = material;
 
-                    //// Hole den Zeichnungspfad aus der dbo_Serienlinsen-Tabelle
-                    //string zeichnungspfad = GetZeichnungspfad(artikelNr, seite);
-                    //if (!string.IsNullOrEmpty(zeichnungspfad))
-                    //{
-                    //    // Bildpfad setzen
-                    //    pictureBoxAnsichtArtikel.ImageLocation = zeichnungspfad; // pictureBoxZeichnung ist die PictureBox
-                    //}
+                    
                 }
 
                 // Zweite Abfrage: Holen Sie alle 'pdno_prodnr' mit Status 'Gestartet' aus der Tabelle 'ProdOrders_Stamm'
@@ -222,6 +218,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     row["Material"] = material;
                 }
 
+                
                 // Füge eine neue Spalte für den Sortierwert hinzu
                 dataTable.Columns.Add("Sortierwert", typeof(int));
 
@@ -249,6 +246,37 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     }
                 }
 
+                // Dringend-Daten aus Ansicht_Bildschirm abfragen
+                string dringendQuery = @"SELECT Auftrag, Dringend FROM Ansicht_Bildschirm";
+                SqlCommand dringendCommand = new SqlCommand(dringendQuery, sqlConnectionVerwaltung);
+                SqlDataAdapter dringendAdapter = new SqlDataAdapter(dringendCommand);
+                DataTable dringendTable = new DataTable();
+
+                sqlConnectionVerwaltung.Open();
+                dringendAdapter.Fill(dringendTable);
+                sqlConnectionVerwaltung.Close();
+
+                // Dictionary für schnelles Nachschlagen von Dringend-Werten basierend auf der Auftragsnummer erstellen
+                var dringendDict = dringendTable.AsEnumerable()
+                    .ToDictionary(row => row.Field<string>("Auftrag"),
+                                  row => row.Field<string>("Dringend"));
+
+                // Setzen des Dringend-Werts im Haupt-DataTable basierend auf Auftragsnummer
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    string auftragsNr = row["Auftragsnr."].ToString();
+
+                    // Nachsehen, ob die Auftragsnummer in dringendDict existiert und Wert setzen
+                    if (dringendDict.TryGetValue(auftragsNr, out string dringendWert))
+                    {
+                        row["Dringend"] = dringendWert;
+                    }
+                    else
+                    {
+                        row["Dringend"] = string.Empty; // Standardwert, falls kein Dringend-Wert gefunden wird
+                    }
+                }
+
                 // Sortiere die DataTable nach der neuen Spalte und dann nach Enddatum
                 DataView dataView = new DataView(dataTable);
                 dataView.Sort = "Sortierwert ASC, Enddatum ASC"; // Zuerst nach Sortierwert, dann nach Enddatum
@@ -271,6 +299,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 dGvAnsichtAuswahlAuftrag.Columns["Bereitstell"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dGvAnsichtAuswahlAuftrag.Columns["Jahresbedarf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dGvAnsichtAuswahlAuftrag.Columns["Zukauf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dGvAnsichtAuswahlAuftrag.Columns["Dringend"].DefaultCellStyle.Alignment =DataGridViewContentAlignment.MiddleCenter;
                 // Headertexte der Spalten mittig ausrichten
                 foreach (DataGridViewColumn column in dGvAnsichtAuswahlAuftrag.Columns)
                 {
@@ -510,6 +539,18 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
 
+            // Überprüfe, ob in der Reihe dringend etwas steht
+            if (dGvAnsichtAuswahlAuftrag.Columns[e.ColumnIndex].Name == "Dringend")
+            {
+                if (e.Value != null && e.Value.ToString() == "1")
+                {
+                    e.CellStyle.BackColor = Color.Orange;
+                }
+                else if (e.Value != null && e.Value.ToString() =="2")
+                {
+                    e.CellStyle.BackColor = Color.Yellow;
+                }
+            }
         }
 
         // Öffnet das Formular um Artikel für Zukauf einzugeben

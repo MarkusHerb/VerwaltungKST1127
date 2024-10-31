@@ -38,6 +38,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.btnOpenTLTLForm = new System.Windows.Forms.Button();
             this.lblPfad = new System.Windows.Forms.Label();
+            this.btnAuswertungen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGvAuftragZuBelag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dGvAnsichtAuswahlAuftrag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dGvInfoZuAuswahlAuftrag)).BeginInit();
@@ -150,11 +151,23 @@
             this.lblPfad.TabIndex = 9;
             this.lblPfad.Text = "Zeichnungspfad";
             // 
+            // btnAuswertungen
+            // 
+            this.btnAuswertungen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.btnAuswertungen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAuswertungen.Location = new System.Drawing.Point(298, 827);
+            this.btnAuswertungen.Name = "btnAuswertungen";
+            this.btnAuswertungen.Size = new System.Drawing.Size(164, 44);
+            this.btnAuswertungen.TabIndex = 10;
+            this.btnAuswertungen.Text = "Laufende Aufträge";
+            this.btnAuswertungen.UseVisualStyleBackColor = false;
+            // 
             // Form_HauptansichtAuftragsverwaltung
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1838, 883);
+            this.Controls.Add(this.btnAuswertungen);
             this.Controls.Add(this.lblPfad);
             this.Controls.Add(this.btnOpenTLTLForm);
             this.Controls.Add(this.label4);
@@ -189,5 +202,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnOpenTLTLForm;
         private System.Windows.Forms.Label lblPfad;
+        private System.Windows.Forms.Button btnAuswertungen;
     }
 }
