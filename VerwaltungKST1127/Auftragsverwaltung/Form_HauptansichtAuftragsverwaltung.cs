@@ -1,12 +1,12 @@
-﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
+﻿using Newtonsoft.Json;
+using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
 using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
+using System.IO; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
 using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
 using System.Windows.Forms;
-using System.IO; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
 
 namespace VerwaltungKST1127.Auftragsverwaltung
 {
@@ -139,7 +139,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 adapter.Fill(dataTable);
                 sqlConnectionVerwaltung.Close();
 
-                
+
 
                 // JSON-Datei laden und deserialisieren
                 RLTLData rltlData;
@@ -175,7 +175,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     string material = GetMaterialFromSerienlinsen(artikelNr, seite);
                     row["Material"] = material;
 
-                    
+
                 }
 
                 // Zweite Abfrage: Holen Sie alle 'pdno_prodnr' mit Status 'Gestartet' aus der Tabelle 'ProdOrders_Stamm'
@@ -190,9 +190,27 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 SqlCommand startedCommand = new SqlCommand(startedQuery, sqlConnectionVerwaltung);
                 SqlDataAdapter startedAdapter = new SqlDataAdapter(startedCommand);
                 DataTable startedTable = new DataTable();
-                sqlConnectionVerwaltung.Open();
-                startedAdapter.Fill(startedTable);
-                sqlConnectionVerwaltung.Close();
+                try
+                {
+                    sqlConnectionVerwaltung.Open();
+                    startedAdapter.Fill(startedTable);
+                    sqlConnectionVerwaltung.Close();
+
+                    // Anzahl der gestarteten Aufträge ermitteln und im Label anzeigen
+                    int gestarteteAnzahl = startedTable.Rows.Count;
+                    lblGestartet.Text = gestarteteAnzahl.ToString();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Fehler beim Abrufen der gestarteten Aufträge: " + ex.Message);
+                }
+                finally
+                {
+                    if (sqlConnectionVerwaltung.State == ConnectionState.Open)
+                    {
+                        sqlConnectionVerwaltung.Close();
+                    }
+                }
 
                 // Alle Auftragsnummern mit Status 'Gestartet' in eine Liste konvertieren
                 List<string> gestarteteAuftragsNummern = startedTable.AsEnumerable()
@@ -218,7 +236,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     row["Material"] = material;
                 }
 
-                
+
                 // Füge eine neue Spalte für den Sortierwert hinzu
                 dataTable.Columns.Add("Sortierwert", typeof(int));
 
@@ -299,7 +317,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 dGvAnsichtAuswahlAuftrag.Columns["Bereitstell"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dGvAnsichtAuswahlAuftrag.Columns["Jahresbedarf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dGvAnsichtAuswahlAuftrag.Columns["Zukauf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dGvAnsichtAuswahlAuftrag.Columns["Dringend"].DefaultCellStyle.Alignment =DataGridViewContentAlignment.MiddleCenter;
+                dGvAnsichtAuswahlAuftrag.Columns["Dringend"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 // Headertexte der Spalten mittig ausrichten
                 foreach (DataGridViewColumn column in dGvAnsichtAuswahlAuftrag.Columns)
                 {
@@ -533,7 +551,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     e.CellStyle.BackColor = Color.GreenYellow;
                 }
-                else if ( e.Value != null && e.Value.ToString() == "TL-Lager")
+                else if (e.Value != null && e.Value.ToString() == "TL-Lager")
                 {
                     e.CellStyle.BackColor = Color.Salmon;
                 }
@@ -546,7 +564,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     e.CellStyle.BackColor = Color.Orange;
                 }
-                else if (e.Value != null && e.Value.ToString() =="2")
+                else if (e.Value != null && e.Value.ToString() == "2")
                 {
                     e.CellStyle.BackColor = Color.Yellow;
                 }
@@ -588,6 +606,6 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        
+
     }
 }

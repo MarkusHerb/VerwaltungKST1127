@@ -38,7 +38,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.btnOpenTLTLForm = new System.Windows.Forms.Button();
             this.lblPfad = new System.Windows.Forms.Label();
-            this.btnAuswertungen = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lblGestartet = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dGvAuftragZuBelag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dGvAnsichtAuswahlAuftrag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dGvInfoZuAuswahlAuftrag)).BeginInit();
@@ -151,23 +152,33 @@
             this.lblPfad.TabIndex = 9;
             this.lblPfad.Text = "Zeichnungspfad";
             // 
-            // btnAuswertungen
+            // label5
             // 
-            this.btnAuswertungen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.btnAuswertungen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAuswertungen.Location = new System.Drawing.Point(298, 827);
-            this.btnAuswertungen.Name = "btnAuswertungen";
-            this.btnAuswertungen.Size = new System.Drawing.Size(164, 44);
-            this.btnAuswertungen.TabIndex = 10;
-            this.btnAuswertungen.Text = "Laufende Aufträge";
-            this.btnAuswertungen.UseVisualStyleBackColor = false;
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(938, 8);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(127, 20);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Gestartet AVOs:";
+            // 
+            // lblGestartet
+            // 
+            this.lblGestartet.AutoSize = true;
+            this.lblGestartet.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGestartet.Location = new System.Drawing.Point(1067, 8);
+            this.lblGestartet.Name = "lblGestartet";
+            this.lblGestartet.Size = new System.Drawing.Size(18, 20);
+            this.lblGestartet.TabIndex = 11;
+            this.lblGestartet.Text = "0";
             // 
             // Form_HauptansichtAuftragsverwaltung
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1838, 883);
-            this.Controls.Add(this.btnAuswertungen);
+            this.Controls.Add(this.lblGestartet);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.lblPfad);
             this.Controls.Add(this.btnOpenTLTLForm);
             this.Controls.Add(this.label4);
@@ -202,6 +213,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnOpenTLTLForm;
         private System.Windows.Forms.Label lblPfad;
-        private System.Windows.Forms.Button btnAuswertungen;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblGestartet;
     }
 }
