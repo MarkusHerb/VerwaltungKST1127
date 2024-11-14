@@ -99,8 +99,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-
-        // Lade die Artikel-Details aus der Datenbank
         // Lade die Artikel-Details aus der Datenbank
         private void LadeArtikelDetails(string artikelnummer, string seite)
         {
@@ -150,6 +148,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                                 TxtboxRadiusVerguetung.Text = reader["Radius1"].ToString();
                                 TxtboxRadiusRueckseite.Text = reader["Radius2"].ToString();
                                 TxtboxBelagVerguetung.Text = reader["Belag1"].ToString();
+                                TxtboxBelagRueckseite.Text = reader["Belag2"].ToString();
                                 TxtboxStkSegment.Text = reader["STK_SEGM"].ToString();
                                 TxtboxStkCharge.Text = reader["STK_CHARGE"].ToString();
                                 TxtboxZeitProzess.Text = reader["CHARGENZEIT"].ToString();

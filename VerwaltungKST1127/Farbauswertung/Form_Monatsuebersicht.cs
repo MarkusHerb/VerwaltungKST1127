@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VerwaltungKST1127.Farbauswertung
@@ -31,7 +28,7 @@ namespace VerwaltungKST1127.Farbauswertung
             ////this.FormBorderStyle = FormBorderStyle.None;            
         }
 
-        private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
+        private void printDocument1_PrintPage(object sender, PrintPageEventArgs e)
         {
             // Erstellen eines Bitmaps, das die aktuelle Größe des Formulars widerspiegelt
             Bitmap bmp = new Bitmap(this.Width, this.Height);
@@ -145,7 +142,7 @@ namespace VerwaltungKST1127.Farbauswertung
             foreach (var series in ChartMonatsuebersicht.Series)
             {
                 series.LabelForeColor = Color.Black;  // Optional: Farbe der Beschriftungen
-                series.Font = new Font("Arial", 8);  // Schriftart und -größe für die Balkenbeschriftungen
+                series.Font = new Font("Arial", 8, FontStyle.Bold);  // Schriftart und -größe für die Balkenbeschriftungen
             }
 
             // Umbenennen der Series[0] in "Monate"
@@ -215,7 +212,7 @@ namespace VerwaltungKST1127.Farbauswertung
             foreach (var series in ChartBelagsuebersicht.Series)
             {
                 series.LabelForeColor = Color.Black;  // Optional: Farbe der Beschriftungen
-                series.Font = new Font("Arial", 8);  // Schriftart und -größe für die Balkenbeschriftungen
+                series.Font = new Font("Arial", 8, FontStyle.Bold);  // Schriftart und -größe für die Balkenbeschriftungen
             }
 
             // Entfernen der Umrandungen der Balken (keine Linien)

@@ -19,7 +19,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
 
         private PrintDocument printDocument;  // Deklarieren eines PrintDocument-Objekts für den Druckprozess
-                                              // Instanzvariablen
+        // Instanzvariablen
         private string Auftragsnummer;
         private string artikel;
         private string seiteArtikel;
@@ -129,8 +129,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-
-
             // Justierbare Ränder in Pixeln
             int marginLeft = 20;    // Linker Rand
             int marginRight = 30;   // Rechter Rand
@@ -185,7 +183,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             //////////////////////////////////////////Test
             // Schriftarten definieren
             Font fontProjektNr = new Font("Arial", 17, FontStyle.Bold); // Dicke Schriftart für lblProjektNr
-            Font fontAuftragsnummer = new Font("Arial", 15); // Schriftart für txtboxAuftragsnummer
+            Font fontAuftragsnummer = new Font("Arial", 16); // Schriftart für txtboxAuftragsnummer
             Font fontBezeichnungBold = new Font("Arial", 15, FontStyle.Bold); // Schriftart für mehrere elemente
             // Font fontBezeichnungBoldUnderlined = new Font("Arial", 15, FontStyle.Bold | FontStyle.Underline);
             Font fontBezeichnung = new Font("Arial", 15); // Schriftart für mehrere elemente
@@ -206,7 +204,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             float xRadiusRueckseite = 350; float yRadiusRueckseite = 375; float xRadiusRueckseiteBox = 495; float yRadiusRueckseiteBox = 375;
             float xGlassorte = 350; float yGlassorte = 410; float xGlassorteBox = 495; float yGlassorteBox = 410;
             float xZusatzInfo = 720; float yZusatzInfo = 430; float xVorbehandlung = 39; float yVorbehandlung = 465;
-            float xVorreinigen = 39; float yVorreinigen = 515; float xVorreinigenBox = 195; float yVorreinigenBox = 515;
+            float xVorreinigen = 39; float yVorreinigen = 515; float xVorreinigenBox = 185; float yVorreinigenBox = 515;
             float xHandreinigung = 350; float yHandreinigung = 515; float xHandreinigungBox = 495; float yHandreinigungBox = 515;
             float xBearbeitung = 39; float yBearbeitung = 570; float xDatum = 120; float yDatum = 615;
             float xName = 265; float yName = 615; float xStueck = 393; float yStueck = 615;
@@ -214,7 +212,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             float xDatumAktuell = 39; float yDatumAktuell = 753; float xDokument = 730; float yDokument = 753;
 
             // Texte zeichnen
-
             e.Graphics.DrawString(lblNrProjekt.Text, fontProjektNr, Brushes.DarkGreen, xProjektNr, yProjektNr);
             e.Graphics.DrawString(txtboxAuftragsnummer.Text, fontAuftragsnummer, Brushes.Black, xAuftragsnummer, yAuftragsnummer);
             e.Graphics.DrawString(lblArtikelnummer.Text, fontProjektNr, Brushes.Black, xArtikelnummerLabel, yArtikelnummerLabel);
@@ -261,8 +258,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             // Aufräumen
             bmp.Dispose();
             sharpenedBmp.Dispose(); // Freigabe der scharfen Bitmap
-                                    // Temporäre Datei löschen
-            File.Delete(tempPngPath);
+                                    
+            File.Delete(tempPngPath); // Temporäre Datei löschen
         }
 
         // Wenn auf den Button Drucken gedrückt wird
@@ -270,17 +267,14 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         {
 
             // Setze die Texte für den Druck
-            ComboboxArtikel.Text = "PR " + ComboboxArtikel.Text;
+            //ComboboxArtikel.Text = "PR " + ComboboxArtikel.Text;
             TxtboxMenge.Text = TxtboxMenge.Text + " Stk.";
             txtboxDurchmesser.Text = txtboxDurchmesser.Text + " mm";
             txtboxDicke.Text = txtboxDicke.Text + " mm";
-
-            //Variablen fürs Chargenbegleitblatt
-
+            Auftragsnummer = txtboxAuftragsnummer.Text.ToString();
 
             // Elemente unsichtbar machen
             VisibleFalse();
-
 
             // Fokus auf ein anderes Steuerelement setzen
             this.ActiveControl = null;
@@ -294,6 +288,11 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             {
                 printDocument.Print();
                 BtnClose.Visible = true;
+                // "Stk." aus der Menge-Textbox entfernen
+                if (!string.IsNullOrEmpty(TxtboxMenge.Text) && TxtboxMenge.Text.Contains(" Stk."))
+                {
+                    TxtboxMenge.Text = TxtboxMenge.Text.Replace(" Stk.", "");
+                }
 
             }
             else
@@ -472,7 +471,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                             txtboxHandreinigung.Text = reader["Handreinigung"].ToString();
 
                             //Öffentlich zugänglich machen
-                            Auftragsnummer = txtboxAuftragsnummer.Text.ToString();
+                            //Auftragsnummer = txtboxAuftragsnummer.Text.ToString();
                             artikel = reader["ARTNR"].ToString();
                             seiteArtikel = reader["SEITE"].ToString();
                             bezeichnung = reader["BEZ"].ToString();
@@ -538,7 +537,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         private void SetPlaceholders()
         {
             SetPlaceholder(txtboxAuftragsnummer, "XXXXXXXXXXX");
-
         }
 
         // Waserzeichen setzten
@@ -618,7 +616,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                     sharpenedImage.SetPixel(x, y, newColor);
                 }
             }
-
             // Gibt das geschärfte Bild zurück
             return sharpenedImage;
         }
@@ -753,9 +750,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 GC.WaitForPendingFinalizers();
             }
             GC.Collect();
-            GC.WaitForPendingFinalizers();
+            GC.WaitForPendingFinalizers(); 
         }
     }
 }
-
-

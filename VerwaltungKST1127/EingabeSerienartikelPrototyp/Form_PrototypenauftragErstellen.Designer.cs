@@ -121,9 +121,9 @@
             this.lblDokument.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblDokument.Location = new System.Drawing.Point(713, 717);
             this.lblDokument.Name = "lblDokument";
-            this.lblDokument.Size = new System.Drawing.Size(135, 17);
+            this.lblDokument.Size = new System.Drawing.Size(141, 17);
             this.lblDokument.TabIndex = 16;
-            this.lblDokument.Text = "Dokument: LF-00xxx";
+            this.lblDokument.Text = "Dokument: LF-00263";
             // 
             // LblErstelltAm
             // 

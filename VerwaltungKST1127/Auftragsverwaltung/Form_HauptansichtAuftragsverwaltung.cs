@@ -139,8 +139,6 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 adapter.Fill(dataTable);
                 sqlConnectionVerwaltung.Close();
 
-
-
                 // JSON-Datei laden und deserialisieren
                 RLTLData rltlData;
                 string jsonFilePath = "rltl_data.json";
@@ -174,8 +172,6 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     int seite = int.Parse(row["Seite"].ToString()); // Die Seite von der Abfrage abholen
                     string material = GetMaterialFromSerienlinsen(artikelNr, seite);
                     row["Material"] = material;
-
-
                 }
 
                 // Zweite Abfrage: Holen Sie alle 'pdno_prodnr' mit Status 'Gestartet' aus der Tabelle 'ProdOrders_Stamm'
@@ -346,6 +342,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
         }
+        
 
         // Wenn auf eine Zelle in AuswahlAuftrag geklickt wird
         private void dGvAnsichtAuswahlAuftrag_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -529,7 +526,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             return material;
         }
 
-        // Grafische gestaltung des dgvs
+        // Grafische gestaltung des DGVs
         private void dGvAnsichtAuswahlAuftrag_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
 
@@ -605,7 +602,5 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
         }
-
-
     }
 }

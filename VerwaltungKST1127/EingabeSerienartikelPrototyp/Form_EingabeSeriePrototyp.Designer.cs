@@ -120,7 +120,7 @@
             // 
             this.TxtboxArtikelnummer.BackColor = System.Drawing.Color.White;
             this.TxtboxArtikelnummer.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TxtboxArtikelnummer.Location = new System.Drawing.Point(158, 12);
+            this.TxtboxArtikelnummer.Location = new System.Drawing.Point(158, 13);
             this.TxtboxArtikelnummer.Name = "TxtboxArtikelnummer";
             this.TxtboxArtikelnummer.Size = new System.Drawing.Size(160, 26);
             this.TxtboxArtikelnummer.TabIndex = 11;
@@ -453,7 +453,8 @@
             this.ComboboxRing.Location = new System.Drawing.Point(503, 244);
             this.ComboboxRing.Name = "ComboboxRing";
             this.ComboboxRing.Size = new System.Drawing.Size(160, 28);
-            this.ComboboxRing.TabIndex = 51;
+            this.ComboboxRing.TabIndex = 48;
+            this.ComboboxRing.SelectedIndexChanged += new System.EventHandler(this.ComboboxRing_SelectedIndexChanged);
             // 
             // label18
             // 
@@ -577,21 +578,25 @@
             // 
             this.LblPfadAuflegenLinsenPrismen.AutoSize = true;
             this.LblPfadAuflegenLinsenPrismen.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblPfadAuflegenLinsenPrismen.ForeColor = System.Drawing.Color.Red;
             this.LblPfadAuflegenLinsenPrismen.Location = new System.Drawing.Point(679, 277);
             this.LblPfadAuflegenLinsenPrismen.Name = "LblPfadAuflegenLinsenPrismen";
-            this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(367, 13);
+            this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(379, 13);
             this.LblPfadAuflegenLinsenPrismen.TabIndex = 67;
-            this.LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen; Wenn kein bild -> Leerbild auswählen";
+            this.LblPfadAuflegenLinsenPrismen.Text = "Doppelklick auf Bild um Pfad zu öffnen; Wenn kein bild -> Leerbild auswählen !!!\r" +
+    "\n";
             // 
             // LblPfadZusatzinfo
             // 
             this.LblPfadZusatzinfo.AutoSize = true;
             this.LblPfadZusatzinfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblPfadZusatzinfo.ForeColor = System.Drawing.Color.Red;
             this.LblPfadZusatzinfo.Location = new System.Drawing.Point(678, 567);
             this.LblPfadZusatzinfo.Name = "LblPfadZusatzinfo";
-            this.LblPfadZusatzinfo.Size = new System.Drawing.Size(367, 13);
+            this.LblPfadZusatzinfo.Size = new System.Drawing.Size(379, 13);
             this.LblPfadZusatzinfo.TabIndex = 68;
-            this.LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen; Wenn kein bild -> Leerbild auswählen";
+            this.LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen; Wenn kein bild -> Leerbild auswählen !!!\r" +
+    "\n";
             // 
             // panel2
             // 
@@ -626,7 +631,7 @@
             this.DateTimePickerAufgenommenLinsePrisma.Location = new System.Drawing.Point(158, 374);
             this.DateTimePickerAufgenommenLinsePrisma.Name = "DateTimePickerAufgenommenLinsePrisma";
             this.DateTimePickerAufgenommenLinsePrisma.Size = new System.Drawing.Size(198, 20);
-            this.DateTimePickerAufgenommenLinsePrisma.TabIndex = 72;
+            this.DateTimePickerAufgenommenLinsePrisma.TabIndex = 36;
             // 
             // label25
             // 
@@ -754,7 +759,7 @@
             this.RichtxtboxZusatzinfo.Location = new System.Drawing.Point(680, 618);
             this.RichtxtboxZusatzinfo.Name = "RichtxtboxZusatzinfo";
             this.RichtxtboxZusatzinfo.Size = new System.Drawing.Size(397, 58);
-            this.RichtxtboxZusatzinfo.TabIndex = 81;
+            this.RichtxtboxZusatzinfo.TabIndex = 89;
             this.RichtxtboxZusatzinfo.Text = "";
             // 
             // label31
@@ -773,7 +778,7 @@
             this.RichtxtboxBemerkungWaschen.Location = new System.Drawing.Point(158, 618);
             this.RichtxtboxBemerkungWaschen.Name = "RichtxtboxBemerkungWaschen";
             this.RichtxtboxBemerkungWaschen.Size = new System.Drawing.Size(505, 58);
-            this.RichtxtboxBemerkungWaschen.TabIndex = 83;
+            this.RichtxtboxBemerkungWaschen.TabIndex = 88;
             this.RichtxtboxBemerkungWaschen.Text = "";
             // 
             // BtnArtikelSpeichern
@@ -783,7 +788,7 @@
             this.BtnArtikelSpeichern.Location = new System.Drawing.Point(350, 682);
             this.BtnArtikelSpeichern.Name = "BtnArtikelSpeichern";
             this.BtnArtikelSpeichern.Size = new System.Drawing.Size(313, 49);
-            this.BtnArtikelSpeichern.TabIndex = 85;
+            this.BtnArtikelSpeichern.TabIndex = 100;
             this.BtnArtikelSpeichern.Text = "Artikel in Serienlinsentabelle aufnehmen";
             this.BtnArtikelSpeichern.UseVisualStyleBackColor = false;
             this.BtnArtikelSpeichern.Click += new System.EventHandler(this.BtnArtikelSpeichern_Click);
@@ -832,7 +837,7 @@
             this.BtnArtikelAendern.Location = new System.Drawing.Point(14, 682);
             this.BtnArtikelAendern.Name = "BtnArtikelAendern";
             this.BtnArtikelAendern.Size = new System.Drawing.Size(330, 49);
-            this.BtnArtikelAendern.TabIndex = 90;
+            this.BtnArtikelAendern.TabIndex = 110;
             this.BtnArtikelAendern.Text = "Einen Artikel ändern";
             this.BtnArtikelAendern.UseVisualStyleBackColor = false;
             this.BtnArtikelAendern.Click += new System.EventHandler(this.BtnArtikelAendern_Click);
@@ -846,7 +851,7 @@
             this.ComboboxBelagVerguetung.Location = new System.Drawing.Point(504, 142);
             this.ComboboxBelagVerguetung.Name = "ComboboxBelagVerguetung";
             this.ComboboxBelagVerguetung.Size = new System.Drawing.Size(160, 28);
-            this.ComboboxBelagVerguetung.TabIndex = 91;
+            this.ComboboxBelagVerguetung.TabIndex = 44;
             this.ComboboxBelagVerguetung.SelectedIndexChanged += new System.EventHandler(this.ComboboxBelagVerguetung_SelectedIndexChanged);
             // 
             // ComboboxProzess
@@ -858,7 +863,7 @@
             this.ComboboxProzess.Location = new System.Drawing.Point(503, 176);
             this.ComboboxProzess.Name = "ComboboxProzess";
             this.ComboboxProzess.Size = new System.Drawing.Size(160, 28);
-            this.ComboboxProzess.TabIndex = 92;
+            this.ComboboxProzess.TabIndex = 45;
             // 
             // ComboboxBelagRueckseite
             // 
@@ -869,7 +874,7 @@
             this.ComboboxBelagRueckseite.Location = new System.Drawing.Point(503, 210);
             this.ComboboxBelagRueckseite.Name = "ComboboxBelagRueckseite";
             this.ComboboxBelagRueckseite.Size = new System.Drawing.Size(160, 28);
-            this.ComboboxBelagRueckseite.TabIndex = 93;
+            this.ComboboxBelagRueckseite.TabIndex = 46;
             // 
             // Form_EingabeSeriePrototyp
             // 

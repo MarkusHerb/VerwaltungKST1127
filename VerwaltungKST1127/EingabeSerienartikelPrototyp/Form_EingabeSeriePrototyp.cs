@@ -1,4 +1,5 @@
 ﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
+using System.Collections.Generic;
 using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
 using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
@@ -311,6 +312,119 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 }
             }
         }
+
+        // Wenn der index der ComboboxRing geändert wird
+        // Aktualisierte Methode zur Auswahländerung in der Combobox
+        private void ComboboxRing_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboboxRing.SelectedItem != null)
+            {
+                // Den ausgewählten Eintrag aus der ComboBox extrahieren
+                string selectedItem = ComboboxRing.SelectedItem.ToString();
+
+                // Extrahiere den Ringnamen (z.B., "R450") aus dem kombinierten String in der ComboBox
+                string ringName = selectedItem.Split('-')[0].Trim();
+
+                // Rufe die Methode auf und übergebe den Ringnamen, um die Stückzahl zu laden
+                GetStueckSegmentCharge(ringName);
+            }
+        }
+
+        // Methode um die Stückzahl für den ausgewählten Ring zu erhalten und anzuzeigen
+        private void GetStueckSegmentCharge(string ringName)
+        {
+            // SQL-Abfrage, um den Wert der Spalte Gerundet_Segment für den ausgewählten Ring in Ring_Stamm zu finden
+            string query = @"
+        SELECT Gerundet_SegmentDM 
+        FROM Ring_Stamm 
+        WHERE Vorrichtungsnummer = @RingName"; // Filtere die Zeilen, die genau mit dem Ringnamen übereinstimmen
+
+            try
+            {
+                // Öffne die SQL-Verbindung
+                sqlConnectionShuttle.Open();
+
+                // SQL-Befehl erstellen und Parameter setzen
+                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionShuttle))
+                {
+                    sqlCommand.Parameters.AddWithValue("@RingName", ringName);
+
+                    // Führe die Abfrage aus und erhalte den Gerundet_Segment-Wert
+                    object result = sqlCommand.ExecuteScalar();
+
+                    if (result != null && int.TryParse(result.ToString(), out int gerundetSegment))
+                    {
+                        // Dictionary mit festen Werten für Gerundet_Segment
+                        Dictionary<int, int> stueckProSegment = new Dictionary<int, int>
+                {
+                    {0,0},
+                    {2,2},
+                    {5,5},
+                    {7,7},
+                    {13,458},
+                    {18,242},
+                    {20,210},
+                    {21,210},
+                    {24,171},
+                    {28,120},
+                    {30,119},
+                    {32,96},
+                    {37,84},
+                    {39,66},
+                    {47,49},
+                    {53,36},
+                    {59,28},
+                    {62,28},
+                    {67,28},
+                    {73,23},
+                    {85,12},
+                    {86,17},
+                    {93,15},
+                    {105,16},
+                    {126,7},
+                    {999,0}
+                };
+
+                        // Überprüfen, ob der Wert im Dictionary vorhanden ist und die entsprechende Stückzahl abrufen
+                        if (stueckProSegment.TryGetValue(gerundetSegment, out int stueckzahl))
+                        {
+                            // Aktualisiere die Textbox mit der gefundenen Stückzahl
+                            TxtboxStkSegment.Text = stueckzahl.ToString();
+
+                            // Optional: Berechne und setze die Gesamtstückzahl in einer anderen Textbox
+                            int stueckzahlGesamt = stueckzahl * 3;
+                            TxtboxStkCharge.Text = stueckzahlGesamt.ToString();
+                        }
+                        else
+                        {
+                            // Wenn kein passender Wert gefunden wurde, setze die Textboxen auf 0
+                            TxtboxStkSegment.Text = "0";
+                            TxtboxStkCharge.Text = "0";
+                        }
+                    }
+                    else
+                    {
+                        // Wenn keine Daten gefunden wurden, setze die Textboxen auf 0
+                        TxtboxStkSegment.Text = "0";
+                        TxtboxStkCharge.Text = "0";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Zeige eine Fehlermeldung an, falls ein Fehler auftritt
+                MessageBox.Show("Fehler beim Abrufen der Stückzahl: " + ex.Message);
+            }
+            finally
+            {
+                // Schließe die Verbindung
+                if (sqlConnectionShuttle.State == System.Data.ConnectionState.Open)
+                {
+                    sqlConnectionShuttle.Close();
+                }
+            }
+        }
+
 
         private void SpeichereDatenInDatenbank(string artikelnummer, string bezeichnung, string status, string gruppenname, string zukauf, string flaeche
             , string gNummer, string glassorte, decimal durchmesser, string durchmesserWaschen, decimal freibereich, decimal dicke, string seite, decimal brechwert
@@ -694,5 +808,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             form_ArtikelPrototypAendern.Show(); // Zeigt das neue Formular an
             form_ArtikelPrototypAendern.BringToFront(); // Bringt das neue Formular in den Vordergrund
         }
+
+       
     }
 }
