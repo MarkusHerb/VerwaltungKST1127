@@ -7,14 +7,22 @@ using VerwaltungKST1127.Farbauswertung;
 using VerwaltungKST1127.Personal; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
 using System.Data.SqlClient;
 using System.IO;
-using VerwaltungKST1127.Auftragsverwaltung; // Um SQL funktionen zu verwenden
+using VerwaltungKST1127.Auftragsverwaltung;
+using System.Windows.Forms.DataVisualization.Charting; // Um SQL funktionen zu verwenden
 
 namespace VerwaltungKST1127
 {
 
     public partial class Form_Start : Form
     {
-        
+        // Felder für die Bewegung des Bildes
+        private double angle = 0;
+        private int centerX;
+        private int centerY;
+        private int radius;
+        private double speed;
+        private int offsetX = 0; // Offset für die X-Position
+        private int offsetY = 0; // Offset für die Y-Position
 
         // Feld für den PerformanceCounter
         private PerformanceCounter cpuCounter;
@@ -24,6 +32,7 @@ namespace VerwaltungKST1127
         public Form_Start()
         {
             InitializeComponent();
+            InitializeChart();
             // Timer für Uhrzeit/Datum starten
             TimerDatumUhrzeit.Start();
             UpdateZeitDatum();
@@ -40,6 +49,23 @@ namespace VerwaltungKST1127
             TimerRam.Interval = 500; // Aktualisierung alle 0,5 Sekunde
             TimerRam.Start();
 
+        }
+
+        // Event-Handler, wenn das Formular geladen wird
+        private void Form_Start_Load(object sender, EventArgs e)
+        {
+            // Initialisiere die Parameter
+            centerX = this.ClientSize.Width / 2;
+            centerY = this.ClientSize.Height / 2;
+            radius = 40; // Radius des Kreises (kann angepasst werden)
+            speed = 0.1; // Geschwindigkeit der Bewegung (kann angepasst werden)
+            // Setze die Startposition der PictureBox basierend auf ihrer aktuellen Position
+            SetInitialPictureBoxPosition();
+            // Setze die Offsets für die Position
+            SetPositionOffset(-80, 80);
+            // Starte den Timer
+            this.TimerBild.Interval = 1; // Kleineres Intervall für flüssigere Bewegung
+            this.TimerBild.Start();
         }
 
         // ############## Selbst erstellte Funktionen 
@@ -108,48 +134,136 @@ namespace VerwaltungKST1127
 
         // ############## Event-Handler für die unterschiedlichen Items aus der Toolbox
 
-        // Tick-Event für die sekündliche Aktualisierung der CPU Auslasung
+        private void InitializeChart()
+        {
+            // Initialisiere die Datenserien für CPU und RAM
+            Series seriesCpu = new Series("CPU");
+            seriesCpu.ChartType = SeriesChartType.Line;
+            chartPerformance.Series.Add(seriesCpu);
+
+            Series seriesRam = new Series("RAM");
+            seriesRam.ChartType = SeriesChartType.Line;
+            chartPerformance.Series.Add(seriesRam);
+
+            // Setze die X-Achse auf einen festen Bereich von 0 bis 100
+            chartPerformance.ChartAreas[0].AxisX.Minimum = 0;
+            chartPerformance.ChartAreas[0].AxisX.Maximum = 100;
+
+            // Legendenbeschriftung ändern  
+            chartPerformance.Series[0].Name = "Legende";
+
+            // Setze die Hintergrundfarbe des ChartArea
+            chartPerformance.ChartAreas[0].BackColor = Color.FromArgb(224, 224, 224);
+
+        }
+
         private void TimerCpu_Tick(object sender, EventArgs e)
         {
-            // Erstellen einer Instanz von Random
             Random random = new Random();
-
-            // Generieren eines Zufallswerts zwischen 0.05 und 0.2
             float cpu = (float)(random.NextDouble() * (0.2 - 0.05) + 0.05);
 
-            // Überprüfen, ob cpuCounter initialisiert wurde
             if (cpuCounter != null)
             {
-                // Abrufen des aktuellen CPU-Auslastungswerts
                 float cpuUsage = cpuCounter.NextValue();
-
-                // Anzeigen der CPU-Auslastung auf einem Label
                 LblCpu.Text = string.Format("CPU: {0:F3}%", cpu + cpuUsage);
+                UpdateChart(chartPerformance.Series["CPU"], cpu + cpuUsage);
             }
             else
             {
-                // Wenn cpuCounter nicht initialisiert wurde, eine Fehlermeldung anzeigen
                 MessageBox.Show("cpuCounter wurde nicht initialisiert.");
             }
         }
 
-        // Tick-Event für die sekündliche Aktualisierung der RAM Auslastung
         private void TimerRam_Tick(object sender, EventArgs e)
         {
-            // Überprüfen, ob memoryCounter initialisiert wurde
             if (memoryCounter != null)
             {
-                // Abrufen des aktuellen RAM-Auslastungswerts
                 float memoryUsage = memoryCounter.NextValue();
-
-                // Anzeigen der RAM-Auslastung auf einem Label
                 LblRam.Text = string.Format("RAM: {0:F3}%", memoryUsage);
+                UpdateChart(chartPerformance.Series["RAM"], memoryUsage);
             }
             else
             {
-                // Wenn memoryCounter nicht initialisiert wurde, eine Fehlermeldung anzeigen
                 MessageBox.Show("memoryCounter wurde nicht initialisiert.");
             }
+        }
+
+        private void UpdateChart(Series series, float value)
+        {
+            // Füge den neuen Wert hinzu
+            series.Points.AddY(value);
+
+            // Entferne den ersten Wert, wenn die Anzahl der Punkte 100 überschreitet
+            if (series.Points.Count > 100)
+            {
+                series.Points.RemoveAt(0);
+            }
+
+            // Aktualisiere die X-Werte, um sicherzustellen, dass sie von 0 bis 99 gehen
+            for (int i = 0; i < series.Points.Count; i++)
+            {
+                series.Points[i].XValue = i;
+            }
+
+            // Berechne den maximalen Y-Wert aus beiden Serien und füge einen Puffer hinzu
+            double maxYValue = 0;
+            foreach (var point in chartPerformance.Series["CPU"].Points)
+            {
+                if (point.YValues[0] > maxYValue)
+                {
+                    maxYValue = point.YValues[0];
+                }
+            }
+            foreach (var point in chartPerformance.Series["RAM"].Points)
+            {
+                if (point.YValues[0] > maxYValue)
+                {
+                    maxYValue = point.YValues[0];
+                }
+            }
+            double buffer = 5; // Fester Pufferwert
+            chartPerformance.ChartAreas[0].AxisY.Maximum = maxYValue + buffer;
+
+            // Aktualisiere die X-Achse, um den Bereich von 0 bis 100 anzuzeigen
+            chartPerformance.ChartAreas[0].AxisX.Minimum = 0;
+            chartPerformance.ChartAreas[0].AxisX.Maximum = 100;
+        }
+
+        // Tick-Event für die Bewegung des Bildes
+        private void TimerBild_Tick(object sender, EventArgs e)
+        {
+            // Berechne die neue Position des Bildes
+            int x = centerX + (int)(radius * Math.Cos(angle)) - (pictureboxBild.Width / 2) + offsetX;
+            int y = centerY + (int)(radius * Math.Sin(angle)) - (pictureboxBild.Height / 2) + offsetY;
+
+            // Setze die neue Position des Bildes
+            pictureboxBild.Location = new Point(x, y);
+
+            // Erhöhe den Winkel für die nächste Position
+            angle += speed;
+
+            // Halte den Winkel im Bereich von 0 bis 2*PI
+            if (angle >= 2 * Math.PI)
+            {
+                angle = 0;
+            }
+        }
+
+        // Funktion um die Position des Bildes zu setzen
+        public void SetPositionOffset(int x, int y) 
+        {
+            offsetX = x;
+            offsetY = y;
+        }
+
+        private void SetInitialPictureBoxPosition()
+        {
+            // Berechne die Startposition des Bildes basierend auf der aktuellen Position
+            int initialX = pictureboxBild.Location.X + (pictureboxBild.Width / 2);
+            int initialY = pictureboxBild.Location.Y + (pictureboxBild.Height / 2);
+
+            // Berechne den Winkel basierend auf der aktuellen Position
+            angle = Math.Atan2(initialY - centerY, initialX - centerX);
         }
 
         // Timer Event für Datum/Uhrzeit
@@ -329,6 +443,6 @@ namespace VerwaltungKST1127
             OpenSelectedDocument();
         }
 
-        
+      
     }
 }

@@ -61,15 +61,22 @@ namespace VerwaltungKST1127.Farbauswertung
         // Event-Handler für den Druck-Button
         private void BtnDrucken_Click(object sender, EventArgs e)
         {
+            BtnDrucken.Visible = false; // Druck-Button ausblenden
+            this.FormBorderStyle = FormBorderStyle.None; // Entfernt die Titelleiste und die Rahmen des Formulars
             // PrintDialog anzeigen, um den Benutzer einen Drucker auswählen zu lassen
             PrintDialog printDialog = new PrintDialog(); // Erstellen eines PrintDialogs
             printDialog.Document = printDocument; // Zuweisen des PrintDocuments zum PrintDialog
 
             // Überprüfen, ob der Benutzer im PrintDialog auf "OK" klickt
             if (printDialog.ShowDialog() == DialogResult.OK)
-            {
+            {               
                 // Diagramm drucken
                 printDocument.Print(); // Starten des Druckprozesses
+            }
+            else
+            {
+                BtnDrucken.Visible = true;
+                this.FormBorderStyle = FormBorderStyle.Sizable; // Ramen wieder einblenden 
             }
         }
 
@@ -91,6 +98,9 @@ namespace VerwaltungKST1127.Farbauswertung
                                          .Min(row => Convert.ToDateTime(row["Datum"]));
             DateTime maxDate = sortedData.AsEnumerable()
                                          .Max(row => Convert.ToDateTime(row["Datum"]));
+
+            // Aktualisieren des Labels lblEingelesenAb mit dem minDate
+            lblEingelesenAb.Text = $"Eingelesen ab: {minDate:dd.MM.yyyy}";
 
             // Schleife über alle Monate zwischen dem frühesten und spätesten Datum
             for (DateTime date = new DateTime(minDate.Year, minDate.Month, 1);

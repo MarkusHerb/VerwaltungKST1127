@@ -30,6 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -58,8 +61,13 @@
             this.LblCpu = new System.Windows.Forms.Label();
             this.LblRam = new System.Windows.Forms.Label();
             this.splitter1 = new System.Windows.Forms.Splitter();
+            this.pictureboxBild = new System.Windows.Forms.PictureBox();
+            this.TimerBild = new System.Windows.Forms.Timer(this.components);
+            this.chartPerformance = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxBild)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBoxLinsenPrismen
@@ -357,12 +365,47 @@
             this.splitter1.TabIndex = 25;
             this.splitter1.TabStop = false;
             // 
+            // pictureboxBild
+            // 
+            this.pictureboxBild.Image = ((System.Drawing.Image)(resources.GetObject("pictureboxBild.Image")));
+            this.pictureboxBild.Location = new System.Drawing.Point(332, 313);
+            this.pictureboxBild.Name = "pictureboxBild";
+            this.pictureboxBild.Size = new System.Drawing.Size(41, 36);
+            this.pictureboxBild.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureboxBild.TabIndex = 26;
+            this.pictureboxBild.TabStop = false;
+            // 
+            // TimerBild
+            // 
+            this.TimerBild.Tick += new System.EventHandler(this.TimerBild_Tick);
+            // 
+            // chartPerformance
+            // 
+            this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            chartArea1.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea1);
+            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend1.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend1);
+            this.chartPerformance.Location = new System.Drawing.Point(454, 77);
+            this.chartPerformance.Name = "chartPerformance";
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartPerformance.Series.Add(series1);
+            this.chartPerformance.Size = new System.Drawing.Size(366, 65);
+            this.chartPerformance.TabIndex = 27;
+            this.chartPerformance.Text = "chart1";
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.chartPerformance);
+            this.Controls.Add(this.pictureboxBild);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.LblRam);
             this.Controls.Add(this.LblCpu);
@@ -392,8 +435,11 @@
             this.Name = "Form_Start";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Hauptmenü";
+            this.Load += new System.EventHandler(this.Form_Start_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxBild)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -429,6 +475,9 @@
         private System.Windows.Forms.Label LblRam;
         private System.Windows.Forms.Label LblCpu;
         private System.Windows.Forms.Splitter splitter1;
+        private System.Windows.Forms.PictureBox pictureboxBild;
+        private System.Windows.Forms.Timer TimerBild;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartPerformance;
     }
 }
 

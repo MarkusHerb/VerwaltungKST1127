@@ -86,10 +86,16 @@ namespace VerwaltungKST1127.Personal
             //DgvPersonalliste.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             DgvPersonalliste.Columns[0].Width = 50;
             DgvPersonalliste.Columns[1].Width = 90;
-            DgvPersonalliste.Columns[4].Width = 170;
+            DgvPersonalliste.Columns[4].Width = 150;
             DgvPersonalliste.Columns[8].Width = 110;
             DgvPersonalliste.Columns[10].Width = 80;
             DgvPersonalliste.Columns[13].Width = 110;
+
+            // Reihe Nr vortlaufend nummerieren 
+            foreach (DataGridViewRow row in DgvPersonalliste.Rows)
+            {
+                row.Cells["Nummer"].Value = row.Index + 1;
+            }   
 
             // Zusatzinformation laden
             BerechneDatenAusDgv();
@@ -297,16 +303,16 @@ namespace VerwaltungKST1127.Personal
                 return; // Abbrechen, wenn ein Feld leer ist
             }
 
-            if (DgvPersonalliste.CurrentRow != null)
+            if (DgvPersonalliste.CurrentRow != null) // Überprüfen, ob eine Zeile im DataGridView ausgewählt ist
             {
-                var result = MessageBox.Show("Mitarbeiter löschen?",
+                var result = MessageBox.Show("Mitarbeiter löschen?", // Sicherheitsabfrage, bevor ein Mitarbeiter gelöscht wird
                                               "Mitarbeiter löschen",
                                               MessageBoxButtons.YesNo,
                                               MessageBoxIcon.Question);
 
-                if (result == DialogResult.Yes)
+                if (result == DialogResult.Yes) // Wenn der Benutzer "Ja" auswählt, wird der Mitarbeiter gelöscht
                 {
-                    var selectedMitarbeiter = (Mitarbeiter)DgvPersonalliste.CurrentRow.DataBoundItem;
+                    var selectedMitarbeiter = (Mitarbeiter)DgvPersonalliste.CurrentRow.DataBoundItem; // Den ausgewählten Mitarbeiter aus dem DataGridView abrufen
                     _mitarbeiterListe.Remove(selectedMitarbeiter);
                     _mitarbeiterService.SaveMitarbeiter(_mitarbeiterListe); // Liste speichern
                     RefreshDataGridView();
@@ -470,16 +476,26 @@ namespace VerwaltungKST1127.Personal
             int vollzeit = 0;
             int teilzeit = 0;
             double vollzeitAequivalent = 0.0;
-
             double produktiv = 0.0;
-            double produktivTeilzeit1 = 0.42;
-            double produktivTeilzeit2 = 0.47;
-            //double produktivTeilzeit3 = 0.49; // Dieser Wert wird derzeit nicht verwendet
-            double produktivTeilzeit4 = 0.52;
-            double produktivTeilzeit5 = 0.6;
-            double produktivSchichtleiter = 0.5;
-            double produktivSchichtleiterStv = 0.75;
-            int produktivNormal = 1;
+
+            var produktivTeilzeit = new Dictionary<string, double>
+    {
+        { "16", 0.42 },
+        { "18", 0.47 },
+        { "19", 0.49 },
+        { "20", 0.52 },
+        { "23", 0.6 }
+    };
+
+            var produktivPosition = new Dictionary<string, double>
+    {
+        { "Aufleger:in", 1.0 },
+        { "Gruppenleiter:in", 0.5 },
+        { "Stv. Gruppenleiter:in", 0.75 },
+        { "Anlagentechniker:in", 1.0 },
+        { "US-Bediener:in", 1.0 },
+        { "Werkzeugwart:in", 1.0 }
+    };
 
             // Schleife durch alle Zeilen der DataGridView
             foreach (DataGridViewRow row in DgvPersonalliste.Rows)
@@ -501,23 +517,9 @@ namespace VerwaltungKST1127.Personal
                     lblTeilzeit.Text = teilzeit.ToString();
 
                     // Berechnung des Vollzeitäquivalents basierend auf den Wochenstunden
-                    switch (wochenstunden)
+                    if (produktivTeilzeit.ContainsKey(wochenstunden))
                     {
-                        case "23":
-                            vollzeitAequivalent += 0.6;
-                            break;
-                        case "20":
-                            vollzeitAequivalent += 0.52;
-                            break;
-                        case "19":
-                            vollzeitAequivalent += 0.49;
-                            break;
-                        case "18":
-                            vollzeitAequivalent += 0.47;
-                            break;
-                        case "16":
-                            vollzeitAequivalent += 0.42;
-                            break;
+                        vollzeitAequivalent += produktivTeilzeit[wochenstunden];
                     }
                 }
 
@@ -526,48 +528,9 @@ namespace VerwaltungKST1127.Personal
                 {
                     string position = row.Cells["Position"].Value.ToString();
 
-                    if (position == "Aufleger:in")
+                    if (produktivPosition.ContainsKey(position) && (wochenstunden == "38,5" || wochenstunden == "38.5" || produktivTeilzeit.ContainsKey(wochenstunden)))
                     {
-                        if (wochenstunden == "38,5" || wochenstunden == "38.5")
-                        {
-                            produktiv += produktivNormal;
-                        }
-                        else if (wochenstunden == "16")
-                        {
-                            produktiv += produktivTeilzeit1;
-                        }
-                        else if (wochenstunden == "19")
-                        {
-                            produktiv += produktivTeilzeit2;
-                        }
-                        else if (wochenstunden == "23")
-                        {
-                            produktiv += produktivTeilzeit5;
-                        }
-                        else if (wochenstunden == "20")
-                        {
-                            produktiv += produktivTeilzeit4;
-                        }
-                    }
-                    else if (position == "Gruppenleiter:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
-                    {
-                        produktiv += produktivSchichtleiter;
-                    }
-                    else if (position == "Stv. Gruppenleiter:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
-                    {
-                        produktiv += produktivSchichtleiterStv;
-                    }
-                    else if (position == "Anlagentechniker:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
-                    {
-                        produktiv += produktivNormal;
-                    }
-                    else if (position == "US-Bediener:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
-                    {
-                        produktiv += produktivNormal;
-                    }
-                    else if (position == "Werkzeugwart:in" && (wochenstunden == "38,5" || wochenstunden == "38.5"))
-                    {
-                        produktiv += produktivNormal;
+                        produktiv += produktivPosition[position] * (wochenstunden == "38,5" || wochenstunden == "38.5" ? 1 : produktivTeilzeit[wochenstunden]);
                     }
                 }
             }
@@ -577,5 +540,6 @@ namespace VerwaltungKST1127.Personal
             lblProduktivstunden.Text = produktiv.ToString();
             lblAlgemein.Text = (vollzeitAequivalent - produktiv).ToString();
         }
+
     }
 }

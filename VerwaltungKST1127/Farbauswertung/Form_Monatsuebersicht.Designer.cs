@@ -42,6 +42,7 @@
             this.LblAverage = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.lblEingelesenAb = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ChartMonatsuebersicht)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ChartBelagsuebersicht)).BeginInit();
             this.SuspendLayout();
@@ -90,7 +91,7 @@
             this.ChartBelagsuebersicht.Legends.Add(legend2);
             this.ChartBelagsuebersicht.Location = new System.Drawing.Point(13, 499);
             this.ChartBelagsuebersicht.Name = "ChartBelagsuebersicht";
-            this.ChartBelagsuebersicht.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Chocolate;
+            this.ChartBelagsuebersicht.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Light;
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
             series2.Name = "Series1";
@@ -135,12 +136,25 @@
             this.label2.TabIndex = 15;
             this.label2.Text = "Anzahl, wie oft ein Belag gemessen wurde";
             // 
+            // lblEingelesenAb
+            // 
+            this.lblEingelesenAb.AutoSize = true;
+            this.lblEingelesenAb.BackColor = System.Drawing.Color.White;
+            this.lblEingelesenAb.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblEingelesenAb.ForeColor = System.Drawing.Color.Black;
+            this.lblEingelesenAb.Location = new System.Drawing.Point(12, 37);
+            this.lblEingelesenAb.Name = "lblEingelesenAb";
+            this.lblEingelesenAb.Size = new System.Drawing.Size(129, 22);
+            this.lblEingelesenAb.TabIndex = 16;
+            this.lblEingelesenAb.Text = "Eingelesen ab:";
+            // 
             // Form_Monatsuebersicht
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1262, 857);
+            this.Controls.Add(this.lblEingelesenAb);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.LblAverage);
@@ -166,5 +180,6 @@
         private System.Windows.Forms.Label LblAverage;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblEingelesenAb;
     }
 }

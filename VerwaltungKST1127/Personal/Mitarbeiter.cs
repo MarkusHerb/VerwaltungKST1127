@@ -18,5 +18,6 @@ namespace VerwaltungKST1127.Personal
         public decimal Wochenstunden { get; set; }
         public string Lohngruppe { get; set; }
         public string DirekterVorgesetzter { get; set; }        
+        public int Nummer { get; set; }
     }
 }
