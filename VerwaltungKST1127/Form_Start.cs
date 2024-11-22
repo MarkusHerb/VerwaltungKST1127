@@ -1,14 +1,14 @@
 ﻿using System; // Importieren des System-Namespace für grundlegende Funktionalitäten
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
+using System.IO;
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für GUI-Funktionalität
+using System.Windows.Forms.DataVisualization.Charting; // Um SQL funktionen zu verwenden
+using VerwaltungKST1127.Auftragsverwaltung;
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
 using VerwaltungKST1127.Farbauswertung;
 using VerwaltungKST1127.Personal; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
-using System.Data.SqlClient;
-using System.IO;
-using VerwaltungKST1127.Auftragsverwaltung;
-using System.Windows.Forms.DataVisualization.Charting; // Um SQL funktionen zu verwenden
 
 namespace VerwaltungKST1127
 {
@@ -69,7 +69,6 @@ namespace VerwaltungKST1127
         }
 
         // ############## Selbst erstellte Funktionen 
-
         private void BestellstatusAbfragen()
         {
             // Verbindungszeichenfolge für die SQL Server-Datenbank // Wird benötigt, um den Bestellstatus abzufragen
@@ -139,10 +138,11 @@ namespace VerwaltungKST1127
             // Initialisiere die Datenserien für CPU und RAM
             Series seriesCpu = new Series("CPU");
             seriesCpu.ChartType = SeriesChartType.Line;
+            seriesCpu.Color = Color.Green;
             chartPerformance.Series.Add(seriesCpu);
-
             Series seriesRam = new Series("RAM");
             seriesRam.ChartType = SeriesChartType.Line;
+            seriesRam.Color = Color.DarkOrange;
             chartPerformance.Series.Add(seriesRam);
 
             // Setze die X-Achse auf einen festen Bereich von 0 bis 100
@@ -157,6 +157,7 @@ namespace VerwaltungKST1127
 
         }
 
+        // Timer-Event für die CPU-Auslastung
         private void TimerCpu_Tick(object sender, EventArgs e)
         {
             Random random = new Random();
@@ -164,9 +165,9 @@ namespace VerwaltungKST1127
 
             if (cpuCounter != null)
             {
-                float cpuUsage = cpuCounter.NextValue();
-                LblCpu.Text = string.Format("CPU: {0:F3}%", cpu + cpuUsage);
-                UpdateChart(chartPerformance.Series["CPU"], cpu + cpuUsage);
+                float cpuUsage = cpuCounter.NextValue(); // CPU-Auslastung abrufen
+                LblCpu.Text = string.Format("CPU: {0:F3}%", cpu + cpuUsage); // Auslastung in Label anzeigen
+                UpdateChart(chartPerformance.Series["CPU"], cpu + cpuUsage); // Diagramm aktualisieren
             }
             else
             {
@@ -174,13 +175,14 @@ namespace VerwaltungKST1127
             }
         }
 
+        // Timer-Event für die RAM-Auslastung
         private void TimerRam_Tick(object sender, EventArgs e)
         {
             if (memoryCounter != null)
             {
-                float memoryUsage = memoryCounter.NextValue();
-                LblRam.Text = string.Format("RAM: {0:F3}%", memoryUsage);
-                UpdateChart(chartPerformance.Series["RAM"], memoryUsage);
+                float memoryUsage = memoryCounter.NextValue(); // Arbeitsspeicher-Auslastung abrufen
+                LblRam.Text = string.Format("RAM: {0:F3}%", memoryUsage); // Auslastung in Label anzeigen
+                UpdateChart(chartPerformance.Series["RAM"], memoryUsage); // Diagramm aktualisieren
             }
             else
             {
@@ -188,13 +190,14 @@ namespace VerwaltungKST1127
             }
         }
 
+        // Funktion zum Aktualisieren des Diagramms
         private void UpdateChart(Series series, float value)
         {
             // Füge den neuen Wert hinzu
             series.Points.AddY(value);
 
-            // Entferne den ersten Wert, wenn die Anzahl der Punkte 100 überschreitet
-            if (series.Points.Count > 100)
+            // Entferne den ersten Wert, wenn die Anzahl der Punkte 20 überschreitet
+            if (series.Points.Count > 50)
             {
                 series.Points.RemoveAt(0);
             }
@@ -226,7 +229,7 @@ namespace VerwaltungKST1127
 
             // Aktualisiere die X-Achse, um den Bereich von 0 bis 100 anzuzeigen
             chartPerformance.ChartAreas[0].AxisX.Minimum = 0;
-            chartPerformance.ChartAreas[0].AxisX.Maximum = 100;
+            chartPerformance.ChartAreas[0].AxisX.Maximum = 50;
         }
 
         // Tick-Event für die Bewegung des Bildes
@@ -250,7 +253,7 @@ namespace VerwaltungKST1127
         }
 
         // Funktion um die Position des Bildes zu setzen
-        public void SetPositionOffset(int x, int y) 
+        public void SetPositionOffset(int x, int y)
         {
             offsetX = x;
             offsetY = y;
@@ -264,6 +267,8 @@ namespace VerwaltungKST1127
 
             // Berechne den Winkel basierend auf der aktuellen Position
             angle = Math.Atan2(initialY - centerY, initialX - centerX);
+            // ########################################Picturebox auf unsichtbar setzten
+            pictureboxBild.Visible = false;
         }
 
         // Timer Event für Datum/Uhrzeit
@@ -313,14 +318,14 @@ namespace VerwaltungKST1127
         private void BtnLupe_Click(object sender, EventArgs e)
         {
             string url = "http://lupe.swarovskioptik.at/";
-            Process.Start(url);  
+            Process.Start(url);
         }
 
         // Button Event, wenn man darauf klickt
         private void BtnInformation_Click(object sender, EventArgs e)
         {
             Form_Copyright form_Copyright = new Form_Copyright();
-            form_Copyright.Show();    
+            form_Copyright.Show();
         }
 
         // Button Event, wenn man darauf klickt
@@ -372,6 +377,7 @@ namespace VerwaltungKST1127
             }
         }
 
+        // Event-Handler, wenn ein Dokument ausgewählt wird
         private void OpenSelectedDocument()
         {
             // Index des ausgewählten Elements in der ListBox erhalten
@@ -442,7 +448,5 @@ namespace VerwaltungKST1127
         {
             OpenSelectedDocument();
         }
-
-      
     }
 }

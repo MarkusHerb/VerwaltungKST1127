@@ -192,6 +192,12 @@
     <Compile Include="Auftragsverwaltung\Form_RLTL.Designer.cs">
       <DependentUpon>Form_RLTL.cs</DependentUpon>
     </Compile>
+    <Compile Include="Auftragsverwaltung\Form_TestansichtInforEinlesen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Auftragsverwaltung\Form_TestansichtInforEinlesen.Designer.cs">
+      <DependentUpon>Form_TestansichtInforEinlesen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Auftragsverwaltung\RLTLData.cs" />
     <Compile Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.cs">
       <SubType>Form</SubType>
@@ -274,6 +280,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Auftragsverwaltung\Form_RLTL.resx">
       <DependentUpon>Form_RLTL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Auftragsverwaltung\Form_TestansichtInforEinlesen.resx">
+      <DependentUpon>Form_TestansichtInforEinlesen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.resx">
       <DependentUpon>Form_ArtikelPrototypAendern.cs</DependentUpon>

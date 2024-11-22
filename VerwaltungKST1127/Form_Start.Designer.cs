@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -89,7 +89,7 @@
             this.LblUeberschrift.AutoSize = true;
             this.LblUeberschrift.Font = new System.Drawing.Font("Rockwell", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUeberschrift.ForeColor = System.Drawing.Color.Black;
-            this.LblUeberschrift.Location = new System.Drawing.Point(12, 28);
+            this.LblUeberschrift.Location = new System.Drawing.Point(12, 24);
             this.LblUeberschrift.Name = "LblUeberschrift";
             this.LblUeberschrift.Size = new System.Drawing.Size(817, 46);
             this.LblUeberschrift.TabIndex = 3;
@@ -100,7 +100,7 @@
             this.LblUhrzeitDatum.AutoSize = true;
             this.LblUhrzeitDatum.Font = new System.Drawing.Font("Rockwell", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUhrzeitDatum.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.LblUhrzeitDatum.Location = new System.Drawing.Point(16, 84);
+            this.LblUhrzeitDatum.Location = new System.Drawing.Point(562, 89);
             this.LblUhrzeitDatum.Name = "LblUhrzeitDatum";
             this.LblUhrzeitDatum.Size = new System.Drawing.Size(213, 31);
             this.LblUhrzeitDatum.TabIndex = 4;
@@ -342,7 +342,7 @@
             // LblCpu
             // 
             this.LblCpu.AutoSize = true;
-            this.LblCpu.Location = new System.Drawing.Point(22, 123);
+            this.LblCpu.Location = new System.Drawing.Point(320, 90);
             this.LblCpu.Name = "LblCpu";
             this.LblCpu.Size = new System.Drawing.Size(26, 13);
             this.LblCpu.TabIndex = 23;
@@ -351,7 +351,7 @@
             // LblRam
             // 
             this.LblRam.AutoSize = true;
-            this.LblRam.Location = new System.Drawing.Point(166, 122);
+            this.LblRam.Location = new System.Drawing.Point(320, 103);
             this.LblRam.Name = "LblRam";
             this.LblRam.Size = new System.Drawing.Size(31, 13);
             this.LblRam.TabIndex = 24;
@@ -383,18 +383,18 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea1.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea1);
-            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend1.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend1);
-            this.chartPerformance.Location = new System.Drawing.Point(454, 77);
+            chartArea3.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea3);
+            legend3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend3.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend3);
+            this.chartPerformance.Location = new System.Drawing.Point(4, 73);
             this.chartPerformance.Name = "chartPerformance";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartPerformance.Series.Add(series1);
-            this.chartPerformance.Size = new System.Drawing.Size(366, 65);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chartPerformance.Series.Add(series3);
+            this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
             // 

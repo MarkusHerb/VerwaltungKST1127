@@ -12,8 +12,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
     public partial class Form_PrototypenauftragErstellen : Form
     {
-        private Excel.Application excelApp; // Speichern der Excel-Anwendung
-        private Excel.Workbook workbook;
+        //private Excel.Application excelApp; // Speichern der Excel-Anwendung
+        //private Excel.Workbook workbook;
 
         // Verbindungszeichenfolgen für die SQL Server-Datenbanken
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
@@ -715,7 +715,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
             finally
             {
-                try
+                try // Versuche, die Excel-Objekte zu schließen und freizugeben
                 {
                     if (workbook != null)
                     {

@@ -40,6 +40,7 @@
             this.lblPfad = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.lblGestartet = new System.Windows.Forms.Label();
+            this.BtnNeuEinlsen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGvAuftragZuBelag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dGvAnsichtAuswahlAuftrag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dGvInfoZuAuswahlAuftrag)).BeginInit();
@@ -134,7 +135,7 @@
             // 
             this.btnOpenTLTLForm.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.btnOpenTLTLForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnOpenTLTLForm.Location = new System.Drawing.Point(12, 827);
+            this.btnOpenTLTLForm.Location = new System.Drawing.Point(295, 827);
             this.btnOpenTLTLForm.Name = "btnOpenTLTLForm";
             this.btnOpenTLTLForm.Size = new System.Drawing.Size(277, 44);
             this.btnOpenTLTLForm.TabIndex = 8;
@@ -172,11 +173,25 @@
             this.lblGestartet.TabIndex = 11;
             this.lblGestartet.Text = "0";
             // 
+            // BtnNeuEinlsen
+            // 
+            this.BtnNeuEinlsen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.BtnNeuEinlsen.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnNeuEinlsen.Location = new System.Drawing.Point(12, 827);
+            this.BtnNeuEinlsen.Name = "BtnNeuEinlsen";
+            this.BtnNeuEinlsen.Size = new System.Drawing.Size(277, 44);
+            this.BtnNeuEinlsen.TabIndex = 12;
+            this.BtnNeuEinlsen.Text = "Infor Daten neu einlesen (aktuell nur ein Test - kann man einfach drücken); Daten" +
+    " werden nicht übertragen!!!";
+            this.BtnNeuEinlsen.UseVisualStyleBackColor = false;
+            this.BtnNeuEinlsen.Click += new System.EventHandler(this.BtnNeuEinlsen_Click);
+            // 
             // Form_HauptansichtAuftragsverwaltung
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1838, 883);
+            this.Controls.Add(this.BtnNeuEinlsen);
             this.Controls.Add(this.lblGestartet);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lblPfad);
@@ -215,5 +230,6 @@
         private System.Windows.Forms.Label lblPfad;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblGestartet;
+        private System.Windows.Forms.Button BtnNeuEinlsen;
     }
 }

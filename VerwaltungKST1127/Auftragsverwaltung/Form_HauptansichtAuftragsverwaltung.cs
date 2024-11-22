@@ -14,6 +14,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
     {
         // Verbindungszeichenfolge für die SQL Server-Datenbank Verwaltung
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
+        private string connectionString = "Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False";
 
         public Form_HauptansichtAuftragsverwaltung()
         {
@@ -548,7 +549,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     e.CellStyle.BackColor = Color.GreenYellow;
                 }
-                else if (e.Value != null && e.Value.ToString() == "TL-Lager")
+                else if (e.Value != null && e.Value.ToString() == "T-Lager")
                 {
                     e.CellStyle.BackColor = Color.Salmon;
                 }
@@ -575,6 +576,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             rltlForm.ShowDialog();
         }
 
+        // Event-Handler für das Klicken auf eine Zelle in dGvAnsichtAuswahlAuftrag
         private void dGvAnsichtAuswahlAuftrag_Click(object sender, EventArgs e)
         {
             // Überprüfen, ob eine Zeile ausgewählt ist
@@ -583,24 +585,123 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // Die ausgewählte Zeile abrufen
                 DataGridViewRow selectedRow = dGvAnsichtAuswahlAuftrag.CurrentRow;
 
-                // Artikelnummer und Seite aus der ausgewählten Zeile abrufen
-                string artikelNr = selectedRow.Cells["Artikel"].Value.ToString();
-                int seite = int.Parse(selectedRow.Cells["Seite"].Value.ToString());
-
-                // Zeichnungspfad abrufen
-                string zeichnungspfad = GetZeichnungspfad(artikelNr, seite);
-
-                // Wenn der Zeichnungspfad nicht leer ist, das Bild in der PictureBox anzeigen
-                if (!string.IsNullOrEmpty(zeichnungspfad))
+                // Überprüfen, ob die Zellen "Artikel" und "Seite" nicht null oder leer sind
+                if (selectedRow.Cells["Artikel"].Value != null && !string.IsNullOrEmpty(selectedRow.Cells["Artikel"].Value.ToString()) &&
+                    selectedRow.Cells["Seite"].Value != null && !string.IsNullOrEmpty(selectedRow.Cells["Seite"].Value.ToString()))
                 {
-                    pictureBoxAnsichtArtikel.ImageLocation = zeichnungspfad;
-                }
-                else
-                {
-                    // Optional: Wenn kein Bild gefunden wird, ein Platzhalterbild oder eine Nachricht setzen
-                    pictureBoxAnsichtArtikel.Image = null; // oder ein Standardbild setzen
+                    // Artikelnummer und Seite aus der ausgewählten Zeile abrufen
+                    string artikelNr = selectedRow.Cells["Artikel"].Value.ToString();
+                    int seite;
+                    if (int.TryParse(selectedRow.Cells["Seite"].Value.ToString(), out seite))
+                    {
+                        // Zeichnungspfad abrufen
+                        string zeichnungspfad = GetZeichnungspfad(artikelNr, seite);
+
+                        // Wenn der Zeichnungspfad nicht leer ist, das Bild in der PictureBox anzeigen
+                        if (!string.IsNullOrEmpty(zeichnungspfad))
+                        {
+                            pictureBoxAnsichtArtikel.ImageLocation = zeichnungspfad;
+                        }
+                        else
+                        {
+                            // Optional: Wenn kein Bild gefunden wird, ein Platzhalterbild oder eine Nachricht setzen
+                            pictureBoxAnsichtArtikel.Image = null; // oder ein Standardbild setzen
+                        }
+                    }
                 }
             }
         }
+        // ##############################################################################################################################################################################
+        // ################ Testbestrieb für Daten einlesen ##############################################################################################################
+
+        // Event-Handler für das Klicken auf den Button "Neu einlösen"
+        private void BtnNeuEinlsen_Click(object sender, EventArgs e)
+        {
+            DataTable combinedTable = LoadData();
+            Form_TestansichtInforEinlesen form = new Form_TestansichtInforEinlesen();
+            form.LoadData(combinedTable);
+            form.ShowDialog();
+        }
+
+        private DataTable LoadData()
+        {
+            DataTable combinedTable = new DataTable();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query1 = "SELECT * FROM LN_ProdOrders_PRD";
+                string query2 = "SELECT * FROM Serienlinsen";
+
+                SqlDataAdapter adapter1 = new SqlDataAdapter(query1, connection);
+                SqlDataAdapter adapter2 = new SqlDataAdapter(query2, connection);
+
+                DataTable table1 = new DataTable();
+                DataTable table2 = new DataTable();
+
+                adapter1.Fill(table1);
+                adapter2.Fill(table2);
+
+                // Füge die Spalten von Tabelle1 hinzu
+                foreach (DataColumn column in table1.Columns)
+                {
+                    if (column.ColumnName != "refo_avonr")
+                    {
+                        combinedTable.Columns.Add("Tabelle1_" + column.ColumnName, column.DataType);
+                    }
+                }
+
+                // Füge die Spalten von Tabelle2 hinzu
+                foreach (DataColumn column in table2.Columns)
+                {
+                    if (column.ColumnName != "refo_avonr")
+                    {
+                        combinedTable.Columns.Add("Tabelle2_" + column.ColumnName, column.DataType);
+                    }
+                }
+
+                // Füge die Spalte refo_avonr hinzu
+                combinedTable.Columns.Add("refo_avonr", typeof(string));
+
+                var query = from t1 in table1.AsEnumerable()
+                            join t2 in table2.AsEnumerable()
+                            on t1.Field<string>("refo_avonr") equals t2.Field<string>("refo_avonr")
+                            select new
+                            {
+                                refo_avonr = t1.Field<string>("refo_avonr"),
+                                Tabelle1 = t1,
+                                Tabelle2 = t2
+                            };
+
+                foreach (var row in query)
+                {
+                    DataRow newRow = combinedTable.NewRow();
+
+                    foreach (DataColumn column in table1.Columns)
+                    {
+                        if (column.ColumnName != "refo_avonr")
+                        {
+                            newRow["Tabelle1_" + column.ColumnName] = row.Tabelle1[column];
+                        }
+                    }
+
+                    foreach (DataColumn column in table2.Columns)
+                    {
+                        if (column.ColumnName != "refo_avonr")
+                        {
+                            newRow["Tabelle2_" + column.ColumnName] = row.Tabelle2[column];
+                        }
+                    }
+
+                    newRow["refo_avonr"] = row.refo_avonr;
+                    combinedTable.Rows.Add(newRow);
+                }
+            }
+
+            return combinedTable;
+        }
+
+
     }
 }
