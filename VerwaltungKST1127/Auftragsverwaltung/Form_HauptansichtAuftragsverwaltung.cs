@@ -623,6 +623,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             form.ShowDialog();
         }
 
+        // Funktion zum Laden von Daten aus zwei Tabellen und Kombinieren der Ergebnisse in eine DataTable
         private DataTable LoadData()
         {
             DataTable combinedTable = new DataTable();

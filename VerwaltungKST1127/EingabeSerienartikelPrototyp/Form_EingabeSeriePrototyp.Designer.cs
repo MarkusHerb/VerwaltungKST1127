@@ -102,6 +102,8 @@
             this.ComboboxBelagVerguetung = new System.Windows.Forms.ComboBox();
             this.ComboboxProzess = new System.Windows.Forms.ComboBox();
             this.ComboboxBelagRueckseite = new System.Windows.Forms.ComboBox();
+            this.lblWichtig1 = new System.Windows.Forms.Label();
+            this.lblWichtig2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxAuflegenLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxZusatzinfo)).BeginInit();
             this.SuspendLayout();
@@ -579,7 +581,7 @@
             this.LblPfadAuflegenLinsenPrismen.AutoSize = true;
             this.LblPfadAuflegenLinsenPrismen.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblPfadAuflegenLinsenPrismen.ForeColor = System.Drawing.Color.Red;
-            this.LblPfadAuflegenLinsenPrismen.Location = new System.Drawing.Point(679, 277);
+            this.LblPfadAuflegenLinsenPrismen.Location = new System.Drawing.Point(678, 273);
             this.LblPfadAuflegenLinsenPrismen.Name = "LblPfadAuflegenLinsenPrismen";
             this.LblPfadAuflegenLinsenPrismen.Size = new System.Drawing.Size(379, 13);
             this.LblPfadAuflegenLinsenPrismen.TabIndex = 67;
@@ -591,7 +593,7 @@
             this.LblPfadZusatzinfo.AutoSize = true;
             this.LblPfadZusatzinfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblPfadZusatzinfo.ForeColor = System.Drawing.Color.Red;
-            this.LblPfadZusatzinfo.Location = new System.Drawing.Point(678, 567);
+            this.LblPfadZusatzinfo.Location = new System.Drawing.Point(678, 563);
             this.LblPfadZusatzinfo.Name = "LblPfadZusatzinfo";
             this.LblPfadZusatzinfo.Size = new System.Drawing.Size(379, 13);
             this.LblPfadZusatzinfo.TabIndex = 68;
@@ -659,6 +661,7 @@
             this.ComboboxVorreinigen.FormattingEnabled = true;
             this.ComboboxVorreinigen.ItemHeight = 20;
             this.ComboboxVorreinigen.Items.AddRange(new object[] {
+            "0014",
             "Handreinigung",
             "Sonderoptik"});
             this.ComboboxVorreinigen.Location = new System.Drawing.Point(158, 516);
@@ -876,12 +879,36 @@
             this.ComboboxBelagRueckseite.Size = new System.Drawing.Size(160, 28);
             this.ComboboxBelagRueckseite.TabIndex = 46;
             // 
+            // lblWichtig1
+            // 
+            this.lblWichtig1.AutoSize = true;
+            this.lblWichtig1.BackColor = System.Drawing.Color.White;
+            this.lblWichtig1.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWichtig1.Location = new System.Drawing.Point(716, 141);
+            this.lblWichtig1.Name = "lblWichtig1";
+            this.lblWichtig1.Size = new System.Drawing.Size(326, 31);
+            this.lblWichtig1.TabIndex = 111;
+            this.lblWichtig1.Text = "Immer Bild auswählen!!!";
+            // 
+            // lblWichtig2
+            // 
+            this.lblWichtig2.AutoSize = true;
+            this.lblWichtig2.BackColor = System.Drawing.Color.White;
+            this.lblWichtig2.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWichtig2.Location = new System.Drawing.Point(716, 438);
+            this.lblWichtig2.Name = "lblWichtig2";
+            this.lblWichtig2.Size = new System.Drawing.Size(326, 31);
+            this.lblWichtig2.TabIndex = 112;
+            this.lblWichtig2.Text = "Immer Bild auswählen!!!";
+            // 
             // Form_EingabeSeriePrototyp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1090, 743);
+            this.Controls.Add(this.lblWichtig2);
+            this.Controls.Add(this.lblWichtig1);
             this.Controls.Add(this.ComboboxBelagRueckseite);
             this.Controls.Add(this.ComboboxProzess);
             this.Controls.Add(this.ComboboxBelagVerguetung);
@@ -1042,5 +1069,7 @@
         private System.Windows.Forms.ComboBox ComboboxBelagVerguetung;
         private System.Windows.Forms.ComboBox ComboboxProzess;
         private System.Windows.Forms.ComboBox ComboboxBelagRueckseite;
+        private System.Windows.Forms.Label lblWichtig1;
+        private System.Windows.Forms.Label lblWichtig2;
     }
 }

@@ -15,15 +15,6 @@ namespace VerwaltungKST1127
 
     public partial class Form_Start : Form
     {
-        // Felder für die Bewegung des Bildes
-        private double angle = 0;
-        private int centerX;
-        private int centerY;
-        private int radius;
-        private double speed;
-        private int offsetX = 0; // Offset für die X-Position
-        private int offsetY = 0; // Offset für die Y-Position
-
         // Feld für den PerformanceCounter
         private PerformanceCounter cpuCounter;
         // Feld für den PerformanceCounter
@@ -51,23 +42,6 @@ namespace VerwaltungKST1127
 
         }
 
-        // Event-Handler, wenn das Formular geladen wird
-        private void Form_Start_Load(object sender, EventArgs e)
-        {
-            // Initialisiere die Parameter
-            centerX = this.ClientSize.Width / 2;
-            centerY = this.ClientSize.Height / 2;
-            radius = 40; // Radius des Kreises (kann angepasst werden)
-            speed = 0.1; // Geschwindigkeit der Bewegung (kann angepasst werden)
-            // Setze die Startposition der PictureBox basierend auf ihrer aktuellen Position
-            SetInitialPictureBoxPosition();
-            // Setze die Offsets für die Position
-            SetPositionOffset(-80, 80);
-            // Starte den Timer
-            this.TimerBild.Interval = 1; // Kleineres Intervall für flüssigere Bewegung
-            this.TimerBild.Start();
-        }
-
         // ############## Selbst erstellte Funktionen 
         private void BestellstatusAbfragen()
         {
@@ -89,7 +63,7 @@ namespace VerwaltungKST1127
                 // Rufezeichen anzeigen oder nicht
                 if (Bestellung == 1)
                 {
-                    imagePath = "K:\\Kst_127\\Programmierung\\Programierung Markus\\VerwaltungKST1127\\VerwaltungKST1127\\Bilder\\RufezeichenFuerBestellung.png";
+                    imagePath = "P:\\TEDuTOZ\\Auftragsverwaltung Daten\\VerwaltungKst1127\\Bilder\\RufezeichenFuerBestellung.png";
                 }
                 // Überprüfen, ob ein gültiger Bildpfad gefunden wurde und das Bild existiert
                 if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
@@ -230,45 +204,6 @@ namespace VerwaltungKST1127
             // Aktualisiere die X-Achse, um den Bereich von 0 bis 100 anzuzeigen
             chartPerformance.ChartAreas[0].AxisX.Minimum = 0;
             chartPerformance.ChartAreas[0].AxisX.Maximum = 50;
-        }
-
-        // Tick-Event für die Bewegung des Bildes
-        private void TimerBild_Tick(object sender, EventArgs e)
-        {
-            // Berechne die neue Position des Bildes
-            int x = centerX + (int)(radius * Math.Cos(angle)) - (pictureboxBild.Width / 2) + offsetX;
-            int y = centerY + (int)(radius * Math.Sin(angle)) - (pictureboxBild.Height / 2) + offsetY;
-
-            // Setze die neue Position des Bildes
-            pictureboxBild.Location = new Point(x, y);
-
-            // Erhöhe den Winkel für die nächste Position
-            angle += speed;
-
-            // Halte den Winkel im Bereich von 0 bis 2*PI
-            if (angle >= 2 * Math.PI)
-            {
-                angle = 0;
-            }
-        }
-
-        // Funktion um die Position des Bildes zu setzen
-        public void SetPositionOffset(int x, int y)
-        {
-            offsetX = x;
-            offsetY = y;
-        }
-
-        private void SetInitialPictureBoxPosition()
-        {
-            // Berechne die Startposition des Bildes basierend auf der aktuellen Position
-            int initialX = pictureboxBild.Location.X + (pictureboxBild.Width / 2);
-            int initialY = pictureboxBild.Location.Y + (pictureboxBild.Height / 2);
-
-            // Berechne den Winkel basierend auf der aktuellen Position
-            angle = Math.Atan2(initialY - centerY, initialX - centerX);
-            // ########################################Picturebox auf unsichtbar setzten
-            pictureboxBild.Visible = false;
         }
 
         // Timer Event für Datum/Uhrzeit

@@ -306,7 +306,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             VisibleTrue();
             // Bild in die Zwischenablage kopieren
             CopyImageToClipboard();
-            CopyDataToExcel(@"K:\Kst_127\Programmierung\Programierung Markus\VerwaltungKST1127\VerwaltungKST1127\Chargenbegleitblatt.xlsx");
+            CopyDataToExcel(@"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Chargenbegleitblatt.xlsx");
         }
 
         private void VisibleFalse()

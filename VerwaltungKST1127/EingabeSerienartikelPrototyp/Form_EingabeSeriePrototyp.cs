@@ -31,6 +31,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             FillComboboxRing();
             FillComboBoxBelagVerguetungRueckseite();
             SetPlaceholders();
+            lblWichtig1.Enabled = false;
+            lblWichtig2.Enabled = false;
         }
 
         // ############## Selbst erstellte Funktionen ################
@@ -578,6 +580,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             ComboboxBelagRueckseite.SelectedIndex = -1;
             ComboboxProzess.SelectedIndex = -1;
             ComboboxSeite.SelectedIndex = -1;
+            ComboboxRing.SelectedIndex = -1;
             // Setze alle RichTextBoxen auf String.Empty
             RichtxtboxBemerkung.Text = string.Empty;
             RichtxtboxBemerkungWaschen.Text = string.Empty;
@@ -592,6 +595,10 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             LblPfadZusatzinfo.Text = "Doppelklick auf Bild um Pfad zu öffnen";
             // Setze den DateTimePicker auf das heutige Datum
             DateTimePickerAufgenommenLinsePrisma.Value = DateTime.Now;
+            // Info für Bildeingabe wieder auf visible setzten
+            lblWichtig1.Visible = true;
+            lblWichtig2.Visible = true;
+
         }
         // Funktion um die felder zu leeren wenn eine weiter seite eingegeben werden soll
         private void SetPlaceholders()
@@ -682,6 +689,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
                     // Aktualisiere das Label mit dem vollständigen Pfad
                     LblPfadAuflegenLinsenPrismen.Text = selectedFilePath;
+                    lblWichtig1.Visible = false;
                 }
             }
         }
@@ -708,6 +716,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
                     // Aktualisiere das Label mit dem vollständigen Pfad
                     LblPfadZusatzinfo.Text = selectedFilePath;
+                    lblWichtig2.Visible = false;
                 }
             }
         }
