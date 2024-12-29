@@ -24,7 +24,7 @@ namespace VerwaltungKST1127.Farbauswertung
         // Feld für den PerformanceCounter
         private PerformanceCounter memoryCounter;
         // Deklaration der Instanzvariablen originalDataTable für die ursprünglichen Daten
-        private System.Data.DataTable originalDataTable = new System.Data.DataTable();
+        private readonly System.Data.DataTable originalDataTable = new System.Data.DataTable();
 
         public Form_Farbauswertung()
         {

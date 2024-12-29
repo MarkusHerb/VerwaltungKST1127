@@ -5,7 +5,9 @@ using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace 
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Farben, Bilder, Schriften und andere grafische Ressourcen)
 using System.IO; // Importieren des System.IO-Namespace für Dateioperationen und Stream-E/A (z.B. zum Lesen und Schreiben von Dateien, Arbeiten mit Verzeichnissen)
 using System.Windows.Forms;
+using Excel = Microsoft.Office.Interop.Excel; // Importieren des Microsoft.Office.Interop.Excel-Namespace für den Zugriff auf Excel-Objekte und -Funktionen (z.B. Excel-Anwendungen, Arbeitsmappen, Tabellen)
 using VerwaltungKST1127.Material; // Importieren des System.Windows.Forms-Namespace für Windows Forms-Steuerelemente und Benutzeroberflächen (z.B. Button, TextBox, Label für GUI-Entwicklung)
+
 
 namespace VerwaltungKST1127
 {
@@ -21,7 +23,7 @@ namespace VerwaltungKST1127
         {
             InitializeComponent();
             // Aktualisieren des DataGridView
-            UpdateDgvMateriallager(); 
+            UpdateDgvMateriallager();
             // Sichtbarkeit festlegen
             BtnSpeichern.Visible = false;
             //BtnLoeschen.Visible = false;
@@ -53,7 +55,7 @@ namespace VerwaltungKST1127
                     int lagerstand = Convert.ToInt32(row["Lagerstand"]);
                     int mindestbestand = Convert.ToInt32(row["Mindestbestand"]);
 
-                    if (lagerstand <= mindestbestand)
+                    if (lagerstand <= mindestbestand) //
                     {
                         row["BestellStatus"] = "Bestellen";
                         // SQL-Update-Befehl für "Bestellen"
@@ -70,6 +72,17 @@ namespace VerwaltungKST1127
                         SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection);
                         updateCommand.Parameters.AddWithValue("@ID", row["ID"]);
                         updateCommand.ExecuteNonQuery();
+                    }
+                }
+
+                // lblAnzahlArtikelBestellen aktualisieren (Anzahl der Artikel, die bestellt werden müssen)
+                int anzahlArtikelBestellen = 0;
+                foreach (DataRow row in dataSet.Tables[0].Rows)
+                {
+                    if (row["BestellStatus"].ToString() == "Bestellen")
+                    {
+                        anzahlArtikelBestellen++;
+                        lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen.ToString() + " Artikel müssen bestellt werden!";
                     }
                 }
 
@@ -477,6 +490,94 @@ namespace VerwaltungKST1127
             TextBoxEinheit1.Text = string.Empty;
             TextBoxEinheit2.Text = string.Empty;
             RichTextBoxBemerkung.Text = string.Empty;
+        }
+
+        // Event-Handler für den Button "Drucken"
+        private void BtnInventur_Click(object sender, EventArgs e)
+        {
+            ExportToExcel();
+        }
+
+        private void ExportToExcel()
+        {
+            // Excel - Anwendung erstellen
+            Excel.Application excelApp = new Excel.Application
+            {
+                Visible = true              
+            };
+
+            // Neue Arbeitsmappe hinzufügen
+            Excel.Workbook workbook = excelApp.Workbooks.Add(Type.Missing);
+            Excel.Worksheet worksheet = workbook.Sheets[1];
+            worksheet.Name = "Lager Checkliste";
+
+            // Überschrift hinzufügen
+            worksheet.Cells[1, 1] = "Checkliste für Vergütungslager --> Wenn Lagerstand abweicht, bitte richtigen Wert daneben hin schreiben.";
+            Excel.Range headerRange = worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, DgvMateriallager.Columns.Count]];
+            headerRange.Merge();
+            headerRange.Font.Size = 18;
+            headerRange.Font.Bold = true;
+            headerRange.Font.Color = Color.Blue;
+            headerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+
+            // Leere Zeile nach der Überschrift
+            int startRow = 3;
+
+            // Spaltenüberschriften hinzufügen
+            for (int i = 0; i < DgvMateriallager.Columns.Count; i++)
+            {
+                worksheet.Cells[startRow, i + 1] = DgvMateriallager.Columns[i].HeaderText;
+                worksheet.Cells[startRow, i + 1].Font.Bold = true;
+            }
+
+            // Daten hinzufügen und unterstreichen
+            for (int i = 0; i < DgvMateriallager.Rows.Count; i++)
+            {
+                for (int j = 0; j < DgvMateriallager.Columns.Count; j++)
+                {
+                    worksheet.Cells[i + startRow + 1, j + 1] = DgvMateriallager.Rows[i].Cells[j].Value?.ToString();
+                }
+
+                // Unterstreichen der gesamten Zeile
+                Excel.Range dataRowRange = worksheet.Range[worksheet.Cells[i + startRow + 1, 1], worksheet.Cells[i + startRow + 1, DgvMateriallager.Columns.Count]];
+                dataRowRange.Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+            }
+
+            // Prüfen, ob in irgendeiner Zelle in Spalte G (ab G4) etwas steht und Text in Rot formatieren
+            for (int i = 4; i <= DgvMateriallager.Rows.Count + startRow; i++)
+            {
+                Excel.Range cell = worksheet.Cells[i, 7]; // G4, G5, ..., Gn
+                if (cell.Value != null)
+                {
+                    cell.Font.Color = ColorTranslator.ToOle(Color.Red);
+                }
+            }
+
+            // AutoFit der Spalten
+            worksheet.Columns.AutoFit();
+
+            // Druckeinstellungen anpassen
+            worksheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape;
+            worksheet.PageSetup.PaperSize = Excel.XlPaperSize.xlPaperA4;
+            worksheet.PageSetup.FitToPagesWide = 1;
+            worksheet.PageSetup.FitToPagesTall = 1;
+            worksheet.PageSetup.Zoom = false; // Deaktiviert die Zoom-Einstellung, um FitToPagesWide und FitToPagesTall zu aktivieren
+
+
+            //// Speicher-Dialog anzeigen
+            //SaveFileDialog saveFileDialog = new SaveFileDialog
+            //{
+            //    Filter = "Excel Files|*.xlsx",
+            //    Title = "Speichern Sie die Excel-Datei"
+            //};
+            //saveFileDialog.ShowDialog();
+
+            //if (saveFileDialog.FileName != "")
+            //{
+            //    workbook.SaveAs(saveFileDialog.FileName);
+            //    workbook.Close();
+            //    excelApp.Quit();
+            //}
         }
     }
 }

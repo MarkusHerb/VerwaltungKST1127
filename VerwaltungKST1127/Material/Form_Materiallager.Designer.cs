@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Materiallager));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.TextBoxArtikel = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.RichTextBoxBemerkung = new System.Windows.Forms.RichTextBox();
@@ -53,6 +53,8 @@
             this.BtnLoeschen = new System.Windows.Forms.Button();
             this.PictureBoxInfo = new System.Windows.Forms.PictureBox();
             this.DgvMateriallager = new System.Windows.Forms.DataGridView();
+            this.lblAnzahlArtikelBestellen = new System.Windows.Forms.Label();
+            this.BtnInventur = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvMateriallager)).BeginInit();
             this.SuspendLayout();
@@ -291,14 +293,14 @@
             this.DgvMateriallager.AllowUserToAddRows = false;
             this.DgvMateriallager.AllowUserToDeleteRows = false;
             this.DgvMateriallager.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.GrayText;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.GrayText;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle2;
             this.DgvMateriallager.Location = new System.Drawing.Point(12, 204);
             this.DgvMateriallager.MultiSelect = false;
             this.DgvMateriallager.Name = "DgvMateriallager";
@@ -309,12 +311,38 @@
             this.DgvMateriallager.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvMateriallager_CellClick);
             this.DgvMateriallager.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvMateriallager_CellFormatting);
             // 
+            // lblAnzahlArtikelBestellen
+            // 
+            this.lblAnzahlArtikelBestellen.AutoSize = true;
+            this.lblAnzahlArtikelBestellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAnzahlArtikelBestellen.ForeColor = System.Drawing.Color.Red;
+            this.lblAnzahlArtikelBestellen.Location = new System.Drawing.Point(538, 148);
+            this.lblAnzahlArtikelBestellen.Name = "lblAnzahlArtikelBestellen";
+            this.lblAnzahlArtikelBestellen.Size = new System.Drawing.Size(170, 17);
+            this.lblAnzahlArtikelBestellen.TabIndex = 82;
+            this.lblAnzahlArtikelBestellen.Text = "AnzahlArtikelBestellen";
+            // 
+            // BtnInventur
+            // 
+            this.BtnInventur.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.BtnInventur.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnInventur.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnInventur.Location = new System.Drawing.Point(674, 63);
+            this.BtnInventur.Name = "BtnInventur";
+            this.BtnInventur.Size = new System.Drawing.Size(131, 49);
+            this.BtnInventur.TabIndex = 83;
+            this.BtnInventur.Text = "Inventurliste";
+            this.BtnInventur.UseVisualStyleBackColor = false;
+            this.BtnInventur.Click += new System.EventHandler(this.BtnInventur_Click);
+            // 
             // Form_Materiallager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1279, 736);
+            this.Controls.Add(this.BtnInventur);
+            this.Controls.Add(this.lblAnzahlArtikelBestellen);
             this.Controls.Add(this.DgvMateriallager);
             this.Controls.Add(this.PictureBoxInfo);
             this.Controls.Add(this.BtnLoeschen);
@@ -375,5 +403,7 @@
         private System.Windows.Forms.Button BtnLoeschen;
         private System.Windows.Forms.PictureBox PictureBoxInfo;
         private System.Windows.Forms.DataGridView DgvMateriallager;
+        private System.Windows.Forms.Label lblAnzahlArtikelBestellen;
+        private System.Windows.Forms.Button BtnInventur;
     }
 }

@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -63,6 +63,7 @@
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.TimerBild = new System.Windows.Forms.Timer(this.components);
             this.chartPerformance = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -87,7 +88,7 @@
             this.LblUeberschrift.AutoSize = true;
             this.LblUeberschrift.Font = new System.Drawing.Font("Rockwell", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUeberschrift.ForeColor = System.Drawing.Color.Black;
-            this.LblUeberschrift.Location = new System.Drawing.Point(12, 24);
+            this.LblUeberschrift.Location = new System.Drawing.Point(36, 12);
             this.LblUeberschrift.Name = "LblUeberschrift";
             this.LblUeberschrift.Size = new System.Drawing.Size(817, 46);
             this.LblUeberschrift.TabIndex = 3;
@@ -98,7 +99,7 @@
             this.LblUhrzeitDatum.AutoSize = true;
             this.LblUhrzeitDatum.Font = new System.Drawing.Font("Rockwell", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUhrzeitDatum.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.LblUhrzeitDatum.Location = new System.Drawing.Point(562, 89);
+            this.LblUhrzeitDatum.Location = new System.Drawing.Point(586, 77);
             this.LblUhrzeitDatum.Name = "LblUhrzeitDatum";
             this.LblUhrzeitDatum.Size = new System.Drawing.Size(213, 31);
             this.LblUhrzeitDatum.TabIndex = 4;
@@ -267,12 +268,13 @@
             // ListBoxDocuments
             // 
             this.ListBoxDocuments.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ListBoxDocuments.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ListBoxDocuments.Font = new System.Drawing.Font("PMingLiU-ExtB", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ListBoxDocuments.ForeColor = System.Drawing.Color.Black;
             this.ListBoxDocuments.FormattingEnabled = true;
-            this.ListBoxDocuments.Location = new System.Drawing.Point(922, 166);
+            this.ListBoxDocuments.ItemHeight = 12;
+            this.ListBoxDocuments.Location = new System.Drawing.Point(922, 199);
             this.ListBoxDocuments.Name = "ListBoxDocuments";
-            this.ListBoxDocuments.Size = new System.Drawing.Size(134, 251);
+            this.ListBoxDocuments.Size = new System.Drawing.Size(134, 208);
             this.ListBoxDocuments.TabIndex = 19;
             this.ListBoxDocuments.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBoxDocuments_DrawItem);
             this.ListBoxDocuments.DoubleClick += new System.EventHandler(this.ListBoxDocuments_DoubleClick);
@@ -340,7 +342,7 @@
             // LblCpu
             // 
             this.LblCpu.AutoSize = true;
-            this.LblCpu.Location = new System.Drawing.Point(320, 90);
+            this.LblCpu.Location = new System.Drawing.Point(344, 78);
             this.LblCpu.Name = "LblCpu";
             this.LblCpu.Size = new System.Drawing.Size(26, 13);
             this.LblCpu.TabIndex = 23;
@@ -349,7 +351,7 @@
             // LblRam
             // 
             this.LblRam.AutoSize = true;
-            this.LblRam.Location = new System.Drawing.Point(320, 103);
+            this.LblRam.Location = new System.Drawing.Point(344, 91);
             this.LblRam.Name = "LblRam";
             this.LblRam.Size = new System.Drawing.Size(31, 13);
             this.LblRam.TabIndex = 24;
@@ -367,20 +369,30 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea2.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea2);
-            legend2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend2.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend2);
-            this.chartPerformance.Location = new System.Drawing.Point(4, 73);
+            chartArea1.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea1);
+            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend1.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend1);
+            this.chartPerformance.Location = new System.Drawing.Point(28, 61);
             this.chartPerformance.Name = "chartPerformance";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartPerformance.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartPerformance.Series.Add(series1);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(919, 170);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(140, 26);
+            this.label1.TabIndex = 28;
+            this.label1.Text = "Doppelklick, um Dokument/\r\nOrdner zu öffnen";
             // 
             // Form_Start
             // 
@@ -388,6 +400,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.chartPerformance);
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.LblRam);
@@ -458,6 +471,7 @@
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Timer TimerBild;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartPerformance;
+        private System.Windows.Forms.Label label1;
     }
 }
 

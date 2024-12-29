@@ -39,7 +39,6 @@ namespace VerwaltungKST1127
             // Starten des Timers für die RAM-Auslastung
             TimerRam.Interval = 500; // Aktualisierung alle 0,5 Sekunde
             TimerRam.Start();
-
         }
 
         // ############## Selbst erstellte Funktionen 
@@ -110,13 +109,17 @@ namespace VerwaltungKST1127
         private void InitializeChart()
         {
             // Initialisiere die Datenserien für CPU und RAM
-            Series seriesCpu = new Series("CPU");
-            seriesCpu.ChartType = SeriesChartType.Line;
-            seriesCpu.Color = Color.Green;
+            Series seriesCpu = new Series("CPU")
+            {
+                ChartType = SeriesChartType.Line,
+                Color = Color.Green
+            };
             chartPerformance.Series.Add(seriesCpu);
-            Series seriesRam = new Series("RAM");
-            seriesRam.ChartType = SeriesChartType.Line;
-            seriesRam.Color = Color.DarkOrange;
+            Series seriesRam = new Series("RAM")
+            {
+                ChartType = SeriesChartType.Line,
+                Color = Color.DarkOrange
+            };
             chartPerformance.Series.Add(seriesRam);
 
             // Setze die X-Achse auf einen festen Bereich von 0 bis 100
@@ -279,7 +282,7 @@ namespace VerwaltungKST1127
 
         // #### ListBox ####
         // Array zur Speicherung der Dokumentnamen und Dateipfade
-        private string[,] documents = {
+        private readonly string[,] documents = {
             {"Grundeinstellungen", @"P:\TEDuTOZ\Beschichtungsanlagen\Grundeinstellungen_aktuell.xlsx"},
             {"Anlagen - Fehlerliste", @"P:\TEDuTOZ\Beschichtungsanlagen\Fehlersuche an Vergütungsanlagen.xlsx"},
             {"Abriebtest", @"P:\TEDuTOZ\QS\Abriebtest Taber Abraser.xlsx"},

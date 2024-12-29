@@ -879,7 +879,6 @@
             this.TxtboxSeite.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TxtboxSeite.Location = new System.Drawing.Point(502, 69);
             this.TxtboxSeite.Name = "TxtboxSeite";
-            this.TxtboxSeite.ReadOnly = true;
             this.TxtboxSeite.Size = new System.Drawing.Size(160, 26);
             this.TxtboxSeite.TabIndex = 169;
             // 
