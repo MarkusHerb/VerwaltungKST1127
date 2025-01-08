@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Farbauswertung));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label30 = new System.Windows.Forms.Label();
             this.LblA65Vortag = new System.Windows.Forms.Label();
             this.LblA60Vortag = new System.Windows.Forms.Label();
@@ -127,6 +127,7 @@
             this.LblTimeDate = new System.Windows.Forms.Label();
             this.DgvFarbauswertung = new System.Windows.Forms.DataGridView();
             this.farbwerteBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.BtnInformaitonMessungen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvFarbauswertung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.farbwerteBindingSource)).BeginInit();
@@ -1074,14 +1075,14 @@
             this.DgvFarbauswertung.AllowUserToAddRows = false;
             this.DgvFarbauswertung.AllowUserToDeleteRows = false;
             this.DgvFarbauswertung.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.GrayText;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DgvFarbauswertung.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.GrayText;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DgvFarbauswertung.DefaultCellStyle = dataGridViewCellStyle2;
             this.DgvFarbauswertung.Location = new System.Drawing.Point(12, 240);
             this.DgvFarbauswertung.MultiSelect = false;
             this.DgvFarbauswertung.Name = "DgvFarbauswertung";
@@ -1098,12 +1099,26 @@
             // 
             this.farbwerteBindingSource.DataMember = "Farbwerte";
             // 
+            // BtnInformaitonMessungen
+            // 
+            this.BtnInformaitonMessungen.BackColor = System.Drawing.Color.Goldenrod;
+            this.BtnInformaitonMessungen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnInformaitonMessungen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnInformaitonMessungen.Location = new System.Drawing.Point(641, 188);
+            this.BtnInformaitonMessungen.Name = "BtnInformaitonMessungen";
+            this.BtnInformaitonMessungen.Size = new System.Drawing.Size(121, 22);
+            this.BtnInformaitonMessungen.TabIndex = 206;
+            this.BtnInformaitonMessungen.Text = "Information";
+            this.BtnInformaitonMessungen.UseVisualStyleBackColor = false;
+            this.BtnInformaitonMessungen.Click += new System.EventHandler(this.BtnInformaitonMessungen_Click);
+            // 
             // Form_Farbauswertung
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
             this.ClientSize = new System.Drawing.Size(1664, 907);
+            this.Controls.Add(this.BtnInformaitonMessungen);
             this.Controls.Add(this.label30);
             this.Controls.Add(this.LblA65Vortag);
             this.Controls.Add(this.LblA60Vortag);
@@ -1308,5 +1323,6 @@
         private System.Windows.Forms.PictureBox PictureBoxLogo;
         private System.Windows.Forms.Label LblTimeDate;
         private System.Windows.Forms.DataGridView DgvFarbauswertung;
+        private System.Windows.Forms.Button BtnInformaitonMessungen;
     }
 }

@@ -1212,7 +1212,7 @@ namespace VerwaltungKST1127.Farbauswertung
                 object[] xValues = new object[dataRowCount];
                 for (int i = 0; i < dataRowCount; i++)
                 {
-                    xValues[i] = i + 1;
+                    xValues[i] = i + 1; // Index für die X-Achse festlegen  
                 }
 
                 // Erste Linie hinzufügen
@@ -1258,6 +1258,11 @@ namespace VerwaltungKST1127.Farbauswertung
             }
         }
 
-
+        // Um das Formular Form_Informationsmessungen zu öffnen
+        private void BtnInformaitonMessungen_Click(object sender, EventArgs e)
+        {
+            Form_InformationZuMessung form_InformationZuMessung = new Form_InformationZuMessung();
+            form_InformationZuMessung.Show();
+        }
     }
 }

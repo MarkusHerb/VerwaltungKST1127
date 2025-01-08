@@ -223,6 +223,12 @@
     <Compile Include="Farbauswertung\Form_Farbauswertung.Designer.cs">
       <DependentUpon>Form_Farbauswertung.cs</DependentUpon>
     </Compile>
+    <Compile Include="Farbauswertung\Form_InformationZuMessung.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Farbauswertung\Form_InformationZuMessung.Designer.cs">
+      <DependentUpon>Form_InformationZuMessung.cs</DependentUpon>
+    </Compile>
     <Compile Include="Farbauswertung\Form_Messbild.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -295,6 +301,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Farbauswertung\Form_Farbauswertung.resx">
       <DependentUpon>Form_Farbauswertung.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Farbauswertung\Form_InformationZuMessung.resx">
+      <DependentUpon>Form_InformationZuMessung.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Farbauswertung\Form_Messbild.resx">
       <DependentUpon>Form_Messbild.cs</DependentUpon>
