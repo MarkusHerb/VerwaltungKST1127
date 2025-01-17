@@ -8,7 +8,8 @@ using System.Windows.Forms.DataVisualization.Charting; // Um SQL funktionen zu v
 using VerwaltungKST1127.Auftragsverwaltung;
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
 using VerwaltungKST1127.Farbauswertung;
-using VerwaltungKST1127.Personal; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
+using VerwaltungKST1127.Personal;
+using VerwaltungKST1127.RingSpannzange; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
 
 namespace VerwaltungKST1127
 {
@@ -385,6 +386,13 @@ namespace VerwaltungKST1127
         private void ListBoxDocuments_DoubleClick(object sender, EventArgs e)
         {
             OpenSelectedDocument();
+        }
+
+        // Event-Handler, wenn der Button "Dokument öffnen" geklickt wird
+        private void BtnEingabeRingSpannzange_Click(object sender, EventArgs e)
+        {
+            DgvZuordnungArtikel form_UebersichtRingSpannzangen = new DgvZuordnungArtikel();
+            form_UebersichtRingSpannzangen.Show();
         }
     }
 }

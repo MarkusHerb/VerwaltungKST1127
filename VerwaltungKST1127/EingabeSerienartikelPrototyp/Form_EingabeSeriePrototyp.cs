@@ -738,7 +738,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             // Konvertiere Strings zu Decimals und runde auf zwei Nachkommastellen
             if (!decimal.TryParse(TxtboxDurchmesser.Text, out decimal durchmesser))
             {
-                MessageBox.Show("Ungültiger Wert für Durchmesser. Bitte überprüfen Sie das Format oder eine 0 eingebenoder.");
+                MessageBox.Show("Ungültiger Wert für Durchmesser. Bitte überprüfen Sie das Format oder eine 0 eingeben.");
                 return;
             }
             durchmesser = Math.Round(durchmesser, 2);
@@ -787,8 +787,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             string stkGesamt = TxtboxStkCharge.Text;
 
             // Datum vom DateTimePicker
-            DateTime eingabedatum;
-            if (!DateTime.TryParse(DateTimePickerAufgenommenLinsePrisma.Text, out eingabedatum))
+            if (!DateTime.TryParse(DateTimePickerAufgenommenLinsePrisma.Text, out DateTime eingabedatum))
             {
                 MessageBox.Show("Ungültiges Datum. Bitte überprüfen Sie das Format.");
                 return; // Beende die Methode, wenn das Datum ungültig ist

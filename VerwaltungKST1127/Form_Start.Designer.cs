@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -64,6 +64,7 @@
             this.TimerBild = new System.Windows.Forms.Timer(this.components);
             this.chartPerformance = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label1 = new System.Windows.Forms.Label();
+            this.BtnEingabeRingSpannzange = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -369,17 +370,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea1.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea1);
-            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend1.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend1);
+            chartArea3.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea3);
+            legend3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend3.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend3);
             this.chartPerformance.Location = new System.Drawing.Point(28, 61);
             this.chartPerformance.Name = "chartPerformance";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartPerformance.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chartPerformance.Series.Add(series3);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -394,12 +395,27 @@
             this.label1.TabIndex = 28;
             this.label1.Text = "Doppelklick, um Dokument/\r\nOrdner zu öffnen";
             // 
+            // BtnEingabeRingSpannzange
+            // 
+            this.BtnEingabeRingSpannzange.BackColor = System.Drawing.Color.Silver;
+            this.BtnEingabeRingSpannzange.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnEingabeRingSpannzange.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnEingabeRingSpannzange.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnEingabeRingSpannzange.Location = new System.Drawing.Point(619, 355);
+            this.BtnEingabeRingSpannzange.Name = "BtnEingabeRingSpannzange";
+            this.BtnEingabeRingSpannzange.Size = new System.Drawing.Size(239, 66);
+            this.BtnEingabeRingSpannzange.TabIndex = 29;
+            this.BtnEingabeRingSpannzange.Text = "Neuer Ring/Spannzange\r\nZuordnung Boxen/Artikel";
+            this.BtnEingabeRingSpannzange.UseVisualStyleBackColor = false;
+            this.BtnEingabeRingSpannzange.Click += new System.EventHandler(this.BtnEingabeRingSpannzange_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.BtnEingabeRingSpannzange);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.chartPerformance);
             this.Controls.Add(this.splitter1);
@@ -472,6 +488,7 @@
         private System.Windows.Forms.Timer TimerBild;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartPerformance;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button BtnEingabeRingSpannzange;
     }
 }
 
