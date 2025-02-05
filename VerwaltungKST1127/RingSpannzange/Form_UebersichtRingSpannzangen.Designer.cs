@@ -59,9 +59,6 @@
             this.blb = new System.Windows.Forms.Label();
             this.BtnNeuerArtikelZuRing = new System.Windows.Forms.Button();
             this.BtnArtikelLoeschen = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
-            this.BtnLoescheBox = new System.Windows.Forms.Button();
-            this.BtnNeueBox = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DgvAnsichtAlleRingeSpannzangen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvBoxen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvArtikel)).BeginInit();
@@ -341,9 +338,9 @@
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label10.Location = new System.Drawing.Point(51, 569);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(141, 24);
+            this.label10.Size = new System.Drawing.Size(132, 24);
             this.label10.TabIndex = 27;
-            this.label10.Text = "Eingabe Boxen";
+            this.label10.Text = "Ansicht Boxen";
             // 
             // blb
             // 
@@ -377,45 +374,11 @@
             this.BtnArtikelLoeschen.UseVisualStyleBackColor = false;
             this.BtnArtikelLoeschen.Click += new System.EventHandler(this.BtnArtikelLoeschen_Click);
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.ForeColor = System.Drawing.Color.IndianRed;
-            this.label11.Location = new System.Drawing.Point(135, 653);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(143, 24);
-            this.label11.TabIndex = 31;
-            this.label11.Text = "Geht noch nicht";
-            // 
-            // BtnLoescheBox
-            // 
-            this.BtnLoescheBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.BtnLoescheBox.Location = new System.Drawing.Point(150, 752);
-            this.BtnLoescheBox.Name = "BtnLoescheBox";
-            this.BtnLoescheBox.Size = new System.Drawing.Size(89, 23);
-            this.BtnLoescheBox.TabIndex = 33;
-            this.BtnLoescheBox.Text = "Lösche Box";
-            this.BtnLoescheBox.UseVisualStyleBackColor = false;
-            // 
-            // BtnNeueBox
-            // 
-            this.BtnNeueBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.BtnNeueBox.Location = new System.Drawing.Point(55, 752);
-            this.BtnNeueBox.Name = "BtnNeueBox";
-            this.BtnNeueBox.Size = new System.Drawing.Size(89, 23);
-            this.BtnNeueBox.TabIndex = 32;
-            this.BtnNeueBox.Text = "Neuer Box";
-            this.BtnNeueBox.UseVisualStyleBackColor = false;
-            // 
             // DgvZuordnungArtikel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(705, 824);
-            this.Controls.Add(this.BtnLoescheBox);
-            this.Controls.Add(this.BtnNeueBox);
-            this.Controls.Add(this.label11);
             this.Controls.Add(this.BtnArtikelLoeschen);
             this.Controls.Add(this.BtnNeuerArtikelZuRing);
             this.Controls.Add(this.blb);
@@ -491,8 +454,5 @@
         private System.Windows.Forms.Label blb;
         private System.Windows.Forms.Button BtnNeuerArtikelZuRing;
         private System.Windows.Forms.Button BtnArtikelLoeschen;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button BtnLoescheBox;
-        private System.Windows.Forms.Button BtnNeueBox;
     }
 }

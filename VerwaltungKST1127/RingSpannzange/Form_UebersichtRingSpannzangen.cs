@@ -20,8 +20,10 @@ namespace VerwaltungKST1127.RingSpannzange
         // Klasse für die Passwort-Eingabeaufforderung
         public static class Prompt
         {
-            public static string ShowDialog(string text, string caption)
+            
+            public static string ShowDialog(string text, string caption) 
             {
+                // Erstellen eines neuen Formulars
                 Form prompt = new Form()
                 {
                     Width = 400,
@@ -31,16 +33,16 @@ namespace VerwaltungKST1127.RingSpannzange
                     StartPosition = FormStartPosition.CenterScreen
                 };
 
-                Label textLabel = new Label() { Left = 20, Top = 20, Text = text, Width = 340 };
-                TextBox inputBox = new TextBox() { Left = 20, Top = 50, Width = 340, UseSystemPasswordChar = true };
-                Button confirmation = new Button() { Text = "OK", Left = 250, Width = 100, Top = 80, DialogResult = DialogResult.OK };
-                confirmation.Click += (sender, e) => { prompt.Close(); };
-
+                Label textLabel = new Label() { Left = 20, Top = 20, Text = text, Width = 340 }; // Text für die Passwort-Eingabeaufforderung
+                TextBox inputBox = new TextBox() { Left = 20, Top = 50, Width = 340, UseSystemPasswordChar = true }; // Textbox für die Passworteingabe
+                Button confirmation = new Button() { Text = "OK", Left = 250, Width = 100, Top = 80, DialogResult = DialogResult.OK }; // Button für die Bestätigung der Passworteingabe
+                confirmation.Click += (sender, e) => { prompt.Close(); }; // Event-Handler für den Button "OK"
+                // Hinzufügen der Steuerelemente zum Formular
                 prompt.Controls.Add(textLabel);
                 prompt.Controls.Add(inputBox);
                 prompt.Controls.Add(confirmation);
                 prompt.AcceptButton = confirmation;
-
+                // Anzeigen des Dialogs
                 return prompt.ShowDialog() == DialogResult.OK ? inputBox.Text : null;
             }
         }
@@ -116,7 +118,22 @@ namespace VerwaltungKST1127.RingSpannzange
                 using (SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source = sqlvgt.swarovskioptik.at; Initial Catalog = SOA127_Shuttle; Integrated Security = True"))
                 {
                     sqlConnectionShuttle.Open();
-                    using (SqlCommand sqlCommand = new SqlCommand("INSERT INTO Ring_Stamm ([Vorrichtungsnummer], [Durchmesser_Innen], [Segmetdurchmesser], [Freidurchmesser], [Gerundet_SegmentDM], [AnzahlRing]) VALUES (@Vorrichtungsnummer, @Durchmesser_Innen, @Segmetdurchmesser, @Freidurchmesser, @Gerundet_SegmentDM, @AnzahlRing)", sqlConnectionShuttle))
+
+                    // Überprüfen, ob die Vorrichtungsnummer bereits existiert
+                    using (SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM Ring_Stamm WHERE [Vorrichtungsnummer] = @Vorrichtungsnummer", sqlConnectionShuttle))
+                    {
+                        sqlCommand.Parameters.AddWithValue("@Vorrichtungsnummer", vorrichtungsnummerRing);
+                        int count = (int)sqlCommand.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            MessageBox.Show("Die Vorrichtungsnummer existiert bereits. Bitte geben Sie eine andere Vorrichtungsnummer ein.");
+                            return;
+                        }
+                    }
+
+                    // Einfügen der Daten in die Datenbank
+                    using (SqlCommand sqlCommand = new SqlCommand("INSERT INTO Ring_Stamm ([Vorrichtungsnummer], [Durchmesser_Innen], [Segmetdurchmesser], [Freidurchmesser], [Gerundet_SegmentDM], [AnzahlRing]) " +
+                        "VALUES (@Vorrichtungsnummer, @Durchmesser_Innen, @Segmetdurchmesser, @Freidurchmesser, @Gerundet_SegmentDM, @AnzahlRing)", sqlConnectionShuttle))
                     {
                         sqlCommand.Parameters.AddWithValue("@Vorrichtungsnummer", vorrichtungsnummerRing);
                         sqlCommand.Parameters.AddWithValue("@Durchmesser_Innen", dmInnen);
@@ -154,6 +171,20 @@ namespace VerwaltungKST1127.RingSpannzange
                 using (SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source = sqlvgt.swarovskioptik.at; Initial Catalog = SOA127_Shuttle; Integrated Security = True"))
                 {
                     sqlConnectionShuttle.Open();
+
+                    // Überprüfen, ob die Vorrichtungsnummer bereits existiert
+                    using (SqlCommand sqlCommand = new SqlCommand("SELECT COUNT(*) FROM Ring_Stamm WHERE [Vorrichtungsnummer] = @Vorrichtungsnummer", sqlConnectionShuttle))
+                    {
+                        sqlCommand.Parameters.AddWithValue("@Vorrichtungsnummer", vorrichtungsnummerZange);
+                        int count = (int)sqlCommand.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            MessageBox.Show("Die Vorrichtungsnummer existiert bereits. Bitte geben Sie eine andere Vorrichtungsnummer ein.");
+                            return;
+                        }
+                    }
+
+                    // Einfügen der Daten in die Datenbank
                     using (SqlCommand sqlCommand = new SqlCommand("INSERT INTO Ring_Stamm ([Vorrichtungsnummer],[Durchmesser_Innen],[AnzahlRing]) VALUES (@Vorrichtungsnummer, @Durchmesser_Innen, @AnzahlRing)", sqlConnectionShuttle))
                     {
                         sqlCommand.Parameters.AddWithValue("@Vorrichtungsnummer", vorrichtungsnummerZange);
@@ -234,10 +265,42 @@ namespace VerwaltungKST1127.RingSpannzange
         {
             if (e.RowIndex >= 0)
             {
+                // Ausgewählte Zeile abrufen
                 DataGridViewRow row = DgvAnsichtAlleRingeSpannzangen.Rows[e.RowIndex];
 
                 // Wert der öffentlichen Variablen setzen
                 RingId = row.Cells["Ring_ID"].Value.ToString();
+
+                // Angeklickte Zeile in Textboxen anzeigen
+                // Wenn Vorrichtungsnummer mit R, A, K oder T beginnt
+
+                if (row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("R") || row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("T") 
+                    || row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("A") || row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("K"))
+                {
+                    txtBoxVorrichtungsNummerRing.Text = row.Cells["Vorrichtungsnummer"].Value.ToString();
+                    txtBoxDmInnenRing.Text = row.Cells["Durchmesser_Innen"].Value.ToString();
+                    txtBoxDmAussenRing.Text = row.Cells["Segmetdurchmesser"].Value.ToString();
+                    txtBoxDmFreibereich.Text = row.Cells["Freidurchmesser"].Value.ToString();
+                    comboBoxLochSegment.Text = row.Cells["Gerundet_SegmentDM"].Value.ToString();
+                    txtBoxStkRing.Text = row.Cells["AnzahlRing"].Value.ToString();
+                    txtBoxVorrichtungsnummerZange.Text = "Z";
+                    txtBoxDmZange.Text = string.Empty;
+                    txtBoxStkZange.Text = "1";
+                }
+                // Wenn mit Vorrichtunsnummer mit Z beginnt
+                else if (row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("Z"))
+                {
+                    txtBoxVorrichtungsnummerZange.Text = row.Cells["Vorrichtungsnummer"].Value.ToString();
+                    txtBoxDmZange.Text = row.Cells["Durchmesser_Innen"].Value.ToString();
+                    txtBoxStkZange.Text = row.Cells["AnzahlRing"].Value.ToString();
+                    txtBoxVorrichtungsNummerRing.Text = "R";
+                    txtBoxDmInnenRing.Text = string.Empty;
+                    txtBoxDmAussenRing.Text = string.Empty;
+                    txtBoxDmFreibereich.Text = string.Empty;
+                    comboBoxLochSegment.Text = string.Empty;
+                    txtBoxStkRing.Text = string.Empty;
+                }
+
 
                 try
                 {

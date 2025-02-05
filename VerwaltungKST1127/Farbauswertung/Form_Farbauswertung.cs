@@ -648,7 +648,7 @@ namespace VerwaltungKST1127.Farbauswertung
             {
                 // Filter für Belag
                 string belagFilter = ComboBoxBelag.SelectedItem != null ?
-                    $"Belag = '{ComboBoxBelag.SelectedItem.ToString()}'" :
+                    $"Belag = '{ComboBoxBelag.SelectedItem}'" :
                     string.Empty;
 
                 // Filter für Anlage
@@ -660,7 +660,7 @@ namespace VerwaltungKST1127.Farbauswertung
 
                 // Filter für Prozess
                 string prozessFilter = ComboBoxProzess.SelectedItem != null ?
-                    $"Prozess = '{ComboBoxProzess.SelectedItem.ToString()}'" :
+                    $"Prozess = '{ComboBoxProzess.SelectedItem}'" :
                     string.Empty;
 
                 // Filter für Datum
@@ -782,7 +782,7 @@ namespace VerwaltungKST1127.Farbauswertung
             ApplyFilters(); // Filter anwenden, wenn ein neues Datum ausgewählt wird
             ApplyFiltersAndUpdateTotalRowCount();
             // Aktualisieren des Labels mit dem ausgewählten Datum
-            LblChargenAb.Text = $"Eingelesen ab {DateTimePickerDgv.Value.ToString("dd.MM.yyyy")}:";
+            LblChargenAb.Text = $"Eingelesen ab {DateTimePickerDgv.Value:dd.MM.yyyy}:";
         }
 
         // Event-Handler-Methode, die ausgelöst wird, wenn das Datum im DateTimePickerBis geändert wird

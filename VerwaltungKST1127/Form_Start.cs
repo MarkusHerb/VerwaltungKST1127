@@ -40,6 +40,12 @@ namespace VerwaltungKST1127
             // Starten des Timers für die RAM-Auslastung
             TimerRam.Interval = 500; // Aktualisierung alle 0,5 Sekunde
             TimerRam.Start();
+            // Starten des Timers für die Oberflächen heute
+            TimerOberflaechenHeute.Interval = 60000; // Aktualisierung alle 5 Sekunden
+            TimerOberflaechenHeute.Start();
+            // Oberflächen anzeigen
+            UpdateOberflaechenHeute();
+            UpdateOberflaechenGestern();
         }
 
         // ############## Selbst erstellte Funktionen 
@@ -81,6 +87,52 @@ namespace VerwaltungKST1127
                     PictureBoxBestellung.Visible = false;
                 }
             }
+        }
+
+        // Funktion zum Berechnen und Anzeigen der Oberflächen heute
+        private void UpdateOberflaechenHeute()
+        {
+            string connectionString = @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Chargenprotokoll;Integrated Security=True;Encrypt=False";
+            string[] tables = { "Chargenprotokoll20", "Chargenprotokoll25", "Chargenprotokoll30", "Chargenprotokoll35", "Chargenprotokoll40", "Chargenprotokoll45", "Chargenprotokoll50", "Chargenprotokoll60", "Chargenprotokoll65" };
+            int totalSum = 0;
+
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                foreach (string table in tables)
+                {
+                    string query = $"SELECT ISNULL(SUM(Stk1), 0) + ISNULL(SUM(Stk2), 0) + ISNULL(SUM(Stk3), 0) FROM {table} WHERE CAST(Datum AS DATE) = CAST(GETDATE() AS DATE)";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        totalSum += (int)cmd.ExecuteScalar();
+                    }
+                }
+            }
+
+            lblOberflaechenHeute.Text = $"{ totalSum} Stk.";
+        }
+
+        // Funktion zum Berechnen und Anzeigen der Oberflächen gestern
+        private void UpdateOberflaechenGestern()
+        {
+            string connectionString = @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Chargenprotokoll;Integrated Security=True;Encrypt=False";
+            string[] tables = { "Chargenprotokoll20", "Chargenprotokoll25", "Chargenprotokoll30", "Chargenprotokoll35", "Chargenprotokoll40", "Chargenprotokoll45", "Chargenprotokoll50", "Chargenprotokoll60", "Chargenprotokoll65" };
+            int totalSum = 0;
+
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                foreach (string table in tables)
+                {
+                    string query = $"SELECT ISNULL(SUM(Stk1), 0) + ISNULL(SUM(Stk2), 0) + ISNULL(SUM(Stk3), 0) FROM {table} WHERE CAST(Datum AS DATE) = CAST(GETDATE() - 1 AS DATE)";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        totalSum += (int)cmd.ExecuteScalar();
+                    }
+                }
+            }
+
+            lblOberflaechenGestern.Text = $"{totalSum} Stk.";
         }
 
         // Funktion für die instanziierung des PerformanceCounters
@@ -215,6 +267,12 @@ namespace VerwaltungKST1127
         {
             UpdateZeitDatum();
             BestellstatusAbfragen();
+        }
+
+        // Timer Event für die Oberflächen heute
+        private void TimerOberflaechenHeute_Tick(object sender, EventArgs e)
+        {
+            UpdateOberflaechenHeute();
         }
         // ##### Buttons #####
         // Button Event, wenn man darauf klickt
@@ -393,6 +451,13 @@ namespace VerwaltungKST1127
         {
             DgvZuordnungArtikel form_UebersichtRingSpannzangen = new DgvZuordnungArtikel();
             form_UebersichtRingSpannzangen.Show();
+        }
+
+        // Event-Handler, wenn der Button "Dokument öffnen" geklickt wird
+        private void BtngesamtOberflaechen_Click(object sender, EventArgs e)
+        {
+            Form_AnsichtOberflaechen form_AnsichtOberflaechen = new Form_AnsichtOberflaechen();
+            form_AnsichtOberflaechen.Show();
         }
     }
 }

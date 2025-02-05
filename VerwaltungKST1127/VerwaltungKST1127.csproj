@@ -241,6 +241,12 @@
     <Compile Include="Farbauswertung\Form_Monatsuebersicht.Designer.cs">
       <DependentUpon>Form_Monatsuebersicht.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_AnsichtOberflaechen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_AnsichtOberflaechen.Designer.cs">
+      <DependentUpon>Form_AnsichtOberflaechen.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Copyright.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -322,6 +328,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Farbauswertung\Form_Monatsuebersicht.resx">
       <DependentUpon>Form_Monatsuebersicht.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_AnsichtOberflaechen.resx">
+      <DependentUpon>Form_AnsichtOberflaechen.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Copyright.resx">
       <DependentUpon>Form_Copyright.cs</DependentUpon>

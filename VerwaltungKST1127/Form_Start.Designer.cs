@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -65,6 +65,12 @@
             this.chartPerformance = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label1 = new System.Windows.Forms.Label();
             this.BtnEingabeRingSpannzange = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.lblOberflaechenHeute = new System.Windows.Forms.Label();
+            this.lblOberflaechenGestern = new System.Windows.Forms.Label();
+            this.TimerOberflaechenHeute = new System.Windows.Forms.Timer(this.components);
+            this.BtngesamtOberflaechen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -100,7 +106,7 @@
             this.LblUhrzeitDatum.AutoSize = true;
             this.LblUhrzeitDatum.Font = new System.Drawing.Font("Rockwell", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUhrzeitDatum.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.LblUhrzeitDatum.Location = new System.Drawing.Point(586, 77);
+            this.LblUhrzeitDatum.Location = new System.Drawing.Point(603, 65);
             this.LblUhrzeitDatum.Name = "LblUhrzeitDatum";
             this.LblUhrzeitDatum.Size = new System.Drawing.Size(213, 31);
             this.LblUhrzeitDatum.TabIndex = 4;
@@ -269,13 +275,13 @@
             // ListBoxDocuments
             // 
             this.ListBoxDocuments.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ListBoxDocuments.Font = new System.Drawing.Font("PMingLiU-ExtB", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ListBoxDocuments.Font = new System.Drawing.Font("Segoe Condensed", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ListBoxDocuments.ForeColor = System.Drawing.Color.Black;
             this.ListBoxDocuments.FormattingEnabled = true;
-            this.ListBoxDocuments.ItemHeight = 12;
+            this.ListBoxDocuments.ItemHeight = 14;
             this.ListBoxDocuments.Location = new System.Drawing.Point(922, 199);
             this.ListBoxDocuments.Name = "ListBoxDocuments";
-            this.ListBoxDocuments.Size = new System.Drawing.Size(134, 208);
+            this.ListBoxDocuments.Size = new System.Drawing.Size(134, 200);
             this.ListBoxDocuments.TabIndex = 19;
             this.ListBoxDocuments.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBoxDocuments_DrawItem);
             this.ListBoxDocuments.DoubleClick += new System.EventHandler(this.ListBoxDocuments_DoubleClick);
@@ -343,7 +349,7 @@
             // LblCpu
             // 
             this.LblCpu.AutoSize = true;
-            this.LblCpu.Location = new System.Drawing.Point(344, 78);
+            this.LblCpu.Location = new System.Drawing.Point(344, 84);
             this.LblCpu.Name = "LblCpu";
             this.LblCpu.Size = new System.Drawing.Size(26, 13);
             this.LblCpu.TabIndex = 23;
@@ -352,7 +358,7 @@
             // LblRam
             // 
             this.LblRam.AutoSize = true;
-            this.LblRam.Location = new System.Drawing.Point(344, 91);
+            this.LblRam.Location = new System.Drawing.Point(344, 97);
             this.LblRam.Name = "LblRam";
             this.LblRam.Size = new System.Drawing.Size(31, 13);
             this.LblRam.TabIndex = 24;
@@ -370,17 +376,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea3.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea3);
-            legend3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend3.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend3);
-            this.chartPerformance.Location = new System.Drawing.Point(28, 61);
+            chartArea5.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea5);
+            legend5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend5.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend5);
+            this.chartPerformance.Location = new System.Drawing.Point(28, 67);
             this.chartPerformance.Name = "chartPerformance";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.chartPerformance.Series.Add(series3);
+            series5.ChartArea = "ChartArea1";
+            series5.Legend = "Legend1";
+            series5.Name = "Series1";
+            this.chartPerformance.Series.Add(series5);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -401,7 +407,7 @@
             this.BtnEingabeRingSpannzange.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnEingabeRingSpannzange.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnEingabeRingSpannzange.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnEingabeRingSpannzange.Location = new System.Drawing.Point(619, 355);
+            this.BtnEingabeRingSpannzange.Location = new System.Drawing.Point(44, 355);
             this.BtnEingabeRingSpannzange.Name = "BtnEingabeRingSpannzange";
             this.BtnEingabeRingSpannzange.Size = new System.Drawing.Size(239, 66);
             this.BtnEingabeRingSpannzange.TabIndex = 29;
@@ -409,12 +415,74 @@
             this.BtnEingabeRingSpannzange.UseVisualStyleBackColor = false;
             this.BtnEingabeRingSpannzange.Click += new System.EventHandler(this.BtnEingabeRingSpannzange_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(608, 101);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(116, 13);
+            this.label2.TabIndex = 30;
+            this.label2.Text = "Oberflächen heute:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(608, 119);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(126, 13);
+            this.label3.TabIndex = 31;
+            this.label3.Text = "Oberflächen gestern:";
+            // 
+            // lblOberflaechenHeute
+            // 
+            this.lblOberflaechenHeute.AutoSize = true;
+            this.lblOberflaechenHeute.Location = new System.Drawing.Point(733, 101);
+            this.lblOberflaechenHeute.Name = "lblOberflaechenHeute";
+            this.lblOberflaechenHeute.Size = new System.Drawing.Size(13, 13);
+            this.lblOberflaechenHeute.TabIndex = 32;
+            this.lblOberflaechenHeute.Text = "0";
+            // 
+            // lblOberflaechenGestern
+            // 
+            this.lblOberflaechenGestern.AutoSize = true;
+            this.lblOberflaechenGestern.Location = new System.Drawing.Point(733, 119);
+            this.lblOberflaechenGestern.Name = "lblOberflaechenGestern";
+            this.lblOberflaechenGestern.Size = new System.Drawing.Size(13, 13);
+            this.lblOberflaechenGestern.TabIndex = 33;
+            this.lblOberflaechenGestern.Text = "0";
+            // 
+            // TimerOberflaechenHeute
+            // 
+            this.TimerOberflaechenHeute.Interval = 60000;
+            this.TimerOberflaechenHeute.Tick += new System.EventHandler(this.TimerOberflaechenHeute_Tick);
+            // 
+            // BtngesamtOberflaechen
+            // 
+            this.BtngesamtOberflaechen.BackColor = System.Drawing.Color.Gold;
+            this.BtngesamtOberflaechen.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtngesamtOberflaechen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtngesamtOberflaechen.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtngesamtOberflaechen.Location = new System.Drawing.Point(796, 111);
+            this.BtngesamtOberflaechen.Name = "BtngesamtOberflaechen";
+            this.BtngesamtOberflaechen.Size = new System.Drawing.Size(57, 21);
+            this.BtngesamtOberflaechen.TabIndex = 34;
+            this.BtngesamtOberflaechen.Text = "Gesamt";
+            this.BtngesamtOberflaechen.UseVisualStyleBackColor = false;
+            this.BtngesamtOberflaechen.Click += new System.EventHandler(this.BtngesamtOberflaechen_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.Controls.Add(this.BtngesamtOberflaechen);
+            this.Controls.Add(this.lblOberflaechenGestern);
+            this.Controls.Add(this.lblOberflaechenHeute);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.BtnEingabeRingSpannzange);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.chartPerformance);
@@ -489,6 +557,12 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chartPerformance;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button BtnEingabeRingSpannzange;
+        private System.Windows.Forms.Label lblOberflaechenGestern;
+        private System.Windows.Forms.Label lblOberflaechenHeute;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Timer TimerOberflaechenHeute;
+        private System.Windows.Forms.Button BtngesamtOberflaechen;
     }
 }
 
