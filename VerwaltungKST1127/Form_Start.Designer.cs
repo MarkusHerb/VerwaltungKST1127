@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -79,7 +79,7 @@
             // pictureBoxLinsenPrismen
             // 
             this.pictureBoxLinsenPrismen.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxLinsenPrismen.Image")));
-            this.pictureBoxLinsenPrismen.Location = new System.Drawing.Point(906, 12);
+            this.pictureBoxLinsenPrismen.Location = new System.Drawing.Point(1035, 12);
             this.pictureBoxLinsenPrismen.Name = "pictureBoxLinsenPrismen";
             this.pictureBoxLinsenPrismen.Size = new System.Drawing.Size(150, 146);
             this.pictureBoxLinsenPrismen.TabIndex = 2;
@@ -95,7 +95,7 @@
             this.LblUeberschrift.AutoSize = true;
             this.LblUeberschrift.Font = new System.Drawing.Font("Rockwell", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUeberschrift.ForeColor = System.Drawing.Color.Black;
-            this.LblUeberschrift.Location = new System.Drawing.Point(36, 12);
+            this.LblUeberschrift.Location = new System.Drawing.Point(28, 12);
             this.LblUeberschrift.Name = "LblUeberschrift";
             this.LblUeberschrift.Size = new System.Drawing.Size(817, 46);
             this.LblUeberschrift.TabIndex = 3;
@@ -106,7 +106,7 @@
             this.LblUhrzeitDatum.AutoSize = true;
             this.LblUhrzeitDatum.Font = new System.Drawing.Font("Rockwell", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUhrzeitDatum.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.LblUhrzeitDatum.Location = new System.Drawing.Point(603, 65);
+            this.LblUhrzeitDatum.Location = new System.Drawing.Point(30, 84);
             this.LblUhrzeitDatum.Name = "LblUhrzeitDatum";
             this.LblUhrzeitDatum.Size = new System.Drawing.Size(213, 31);
             this.LblUhrzeitDatum.TabIndex = 4;
@@ -118,7 +118,7 @@
             this.BtnSerienartikelPrototyp.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnSerienartikelPrototyp.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(44, 283);
+            this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(36, 283);
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
             this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(239, 66);
             this.BtnSerienartikelPrototyp.TabIndex = 5;
@@ -131,7 +131,7 @@
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.panel1.Location = new System.Drawing.Point(19, 148);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(887, 10);
+            this.panel1.Size = new System.Drawing.Size(1017, 10);
             this.panel1.TabIndex = 6;
             // 
             // panel2
@@ -139,7 +139,7 @@
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
             this.panel2.Location = new System.Drawing.Point(906, 157);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(10, 482);
+            this.panel2.Size = new System.Drawing.Size(10, 554);
             this.panel2.TabIndex = 7;
             // 
             // BtnPrototypenAuftragErstellen
@@ -148,7 +148,7 @@
             this.BtnPrototypenAuftragErstellen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPrototypenAuftragErstellen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPrototypenAuftragErstellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(44, 573);
+            this.BtnPrototypenAuftragErstellen.Location = new System.Drawing.Point(36, 643);
             this.BtnPrototypenAuftragErstellen.Name = "BtnPrototypenAuftragErstellen";
             this.BtnPrototypenAuftragErstellen.Size = new System.Drawing.Size(239, 66);
             this.BtnPrototypenAuftragErstellen.TabIndex = 8;
@@ -160,7 +160,7 @@
             // 
             this.LblInfo1.AutoSize = true;
             this.LblInfo1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblInfo1.Location = new System.Drawing.Point(103, 166);
+            this.LblInfo1.Location = new System.Drawing.Point(95, 166);
             this.LblInfo1.Name = "LblInfo1";
             this.LblInfo1.Size = new System.Drawing.Size(126, 26);
             this.LblInfo1.TabIndex = 9;
@@ -172,7 +172,7 @@
             this.BtnFarbwerte.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnFarbwerte.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnFarbwerte.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnFarbwerte.Location = new System.Drawing.Point(332, 211);
+            this.BtnFarbwerte.Location = new System.Drawing.Point(336, 211);
             this.BtnFarbwerte.Name = "BtnFarbwerte";
             this.BtnFarbwerte.Size = new System.Drawing.Size(239, 66);
             this.BtnFarbwerte.TabIndex = 10;
@@ -183,16 +183,16 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel3.Location = new System.Drawing.Point(307, 157);
+            this.panel3.Location = new System.Drawing.Point(301, 157);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1, 483);
+            this.panel3.Size = new System.Drawing.Size(10, 554);
             this.panel3.TabIndex = 11;
             // 
             // LblQualitaet
             // 
             this.LblQualitaet.AutoSize = true;
             this.LblQualitaet.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblQualitaet.Location = new System.Drawing.Point(401, 166);
+            this.LblQualitaet.Location = new System.Drawing.Point(405, 166);
             this.LblQualitaet.Name = "LblQualitaet";
             this.LblQualitaet.Size = new System.Drawing.Size(95, 26);
             this.LblQualitaet.TabIndex = 12;
@@ -201,16 +201,16 @@
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel4.Location = new System.Drawing.Point(594, 157);
+            this.panel4.Location = new System.Drawing.Point(602, 157);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1, 483);
+            this.panel4.Size = new System.Drawing.Size(10, 553);
             this.panel4.TabIndex = 13;
             // 
             // Organisation
             // 
             this.Organisation.AutoSize = true;
             this.Organisation.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Organisation.Location = new System.Drawing.Point(682, 166);
+            this.Organisation.Location = new System.Drawing.Point(700, 166);
             this.Organisation.Name = "Organisation";
             this.Organisation.Size = new System.Drawing.Size(112, 26);
             this.Organisation.TabIndex = 15;
@@ -222,7 +222,7 @@
             this.BtnMateriallager.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnMateriallager.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnMateriallager.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnMateriallager.Location = new System.Drawing.Point(619, 211);
+            this.BtnMateriallager.Location = new System.Drawing.Point(637, 211);
             this.BtnMateriallager.Name = "BtnMateriallager";
             this.BtnMateriallager.Size = new System.Drawing.Size(239, 66);
             this.BtnMateriallager.TabIndex = 14;
@@ -236,9 +236,9 @@
             this.BtnInformation.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnInformation.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnInformation.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnInformation.Location = new System.Drawing.Point(922, 573);
+            this.BtnInformation.Location = new System.Drawing.Point(1058, 643);
             this.BtnInformation.Name = "BtnInformation";
-            this.BtnInformation.Size = new System.Drawing.Size(134, 66);
+            this.BtnInformation.Size = new System.Drawing.Size(105, 56);
             this.BtnInformation.TabIndex = 16;
             this.BtnInformation.Text = "Information";
             this.BtnInformation.UseVisualStyleBackColor = false;
@@ -250,9 +250,9 @@
             this.BtnLupe.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnLupe.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnLupe.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnLupe.Location = new System.Drawing.Point(922, 501);
+            this.BtnLupe.Location = new System.Drawing.Point(1058, 581);
             this.BtnLupe.Name = "BtnLupe";
-            this.BtnLupe.Size = new System.Drawing.Size(134, 66);
+            this.BtnLupe.Size = new System.Drawing.Size(105, 56);
             this.BtnLupe.TabIndex = 17;
             this.BtnLupe.Text = "OptikLupe";
             this.BtnLupe.UseVisualStyleBackColor = false;
@@ -264,9 +264,9 @@
             this.BtnHomepage.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnHomepage.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnHomepage.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnHomepage.Location = new System.Drawing.Point(922, 429);
+            this.BtnHomepage.Location = new System.Drawing.Point(945, 581);
             this.BtnHomepage.Name = "BtnHomepage";
-            this.BtnHomepage.Size = new System.Drawing.Size(134, 66);
+            this.BtnHomepage.Size = new System.Drawing.Size(107, 56);
             this.BtnHomepage.TabIndex = 18;
             this.BtnHomepage.Text = "Homepage";
             this.BtnHomepage.UseVisualStyleBackColor = false;
@@ -275,13 +275,13 @@
             // ListBoxDocuments
             // 
             this.ListBoxDocuments.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ListBoxDocuments.Font = new System.Drawing.Font("Segoe Condensed", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ListBoxDocuments.Font = new System.Drawing.Font("Segoe Condensed", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ListBoxDocuments.ForeColor = System.Drawing.Color.Black;
             this.ListBoxDocuments.FormattingEnabled = true;
-            this.ListBoxDocuments.ItemHeight = 14;
-            this.ListBoxDocuments.Location = new System.Drawing.Point(922, 199);
+            this.ListBoxDocuments.ItemHeight = 15;
+            this.ListBoxDocuments.Location = new System.Drawing.Point(945, 199);
             this.ListBoxDocuments.Name = "ListBoxDocuments";
-            this.ListBoxDocuments.Size = new System.Drawing.Size(134, 200);
+            this.ListBoxDocuments.Size = new System.Drawing.Size(218, 199);
             this.ListBoxDocuments.TabIndex = 19;
             this.ListBoxDocuments.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBoxDocuments_DrawItem);
             this.ListBoxDocuments.DoubleClick += new System.EventHandler(this.ListBoxDocuments_DoubleClick);
@@ -294,7 +294,7 @@
             this.BtnPersonalliste.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnPersonalliste.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnPersonalliste.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnPersonalliste.Location = new System.Drawing.Point(619, 283);
+            this.BtnPersonalliste.Location = new System.Drawing.Point(637, 283);
             this.BtnPersonalliste.Name = "BtnPersonalliste";
             this.BtnPersonalliste.Size = new System.Drawing.Size(239, 66);
             this.BtnPersonalliste.TabIndex = 20;
@@ -305,7 +305,7 @@
             // PictureBoxBestellung
             // 
             this.PictureBoxBestellung.BackColor = System.Drawing.Color.Silver;
-            this.PictureBoxBestellung.Location = new System.Drawing.Point(809, 225);
+            this.PictureBoxBestellung.Location = new System.Drawing.Point(823, 225);
             this.PictureBoxBestellung.Name = "PictureBoxBestellung";
             this.PictureBoxBestellung.Size = new System.Drawing.Size(29, 40);
             this.PictureBoxBestellung.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -318,7 +318,7 @@
             this.BtnAuftragsverwaltung.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnAuftragsverwaltung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnAuftragsverwaltung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnAuftragsverwaltung.Location = new System.Drawing.Point(44, 211);
+            this.BtnAuftragsverwaltung.Location = new System.Drawing.Point(36, 211);
             this.BtnAuftragsverwaltung.Name = "BtnAuftragsverwaltung";
             this.BtnAuftragsverwaltung.Size = new System.Drawing.Size(239, 66);
             this.BtnAuftragsverwaltung.TabIndex = 22;
@@ -349,7 +349,7 @@
             // LblCpu
             // 
             this.LblCpu.AutoSize = true;
-            this.LblCpu.Location = new System.Drawing.Point(344, 84);
+            this.LblCpu.Location = new System.Drawing.Point(919, 98);
             this.LblCpu.Name = "LblCpu";
             this.LblCpu.Size = new System.Drawing.Size(26, 13);
             this.LblCpu.TabIndex = 23;
@@ -358,7 +358,7 @@
             // LblRam
             // 
             this.LblRam.AutoSize = true;
-            this.LblRam.Location = new System.Drawing.Point(344, 97);
+            this.LblRam.Location = new System.Drawing.Point(919, 111);
             this.LblRam.Name = "LblRam";
             this.LblRam.Size = new System.Drawing.Size(31, 13);
             this.LblRam.TabIndex = 24;
@@ -368,7 +368,7 @@
             // 
             this.splitter1.Location = new System.Drawing.Point(0, 0);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 651);
+            this.splitter1.Size = new System.Drawing.Size(3, 721);
             this.splitter1.TabIndex = 25;
             this.splitter1.TabStop = false;
             // 
@@ -376,17 +376,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea5.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea5);
-            legend5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend5.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend5);
-            this.chartPerformance.Location = new System.Drawing.Point(28, 67);
+            chartArea1.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea1);
+            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend1.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend1);
+            this.chartPerformance.Location = new System.Drawing.Point(602, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series5.ChartArea = "ChartArea1";
-            series5.Legend = "Legend1";
-            series5.Name = "Series1";
-            this.chartPerformance.Series.Add(series5);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartPerformance.Series.Add(series1);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -394,10 +394,10 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(919, 170);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(942, 170);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(140, 26);
+            this.label1.Size = new System.Drawing.Size(165, 26);
             this.label1.TabIndex = 28;
             this.label1.Text = "Doppelklick, um Dokument/\r\nOrdner zu öffnen";
             // 
@@ -407,7 +407,7 @@
             this.BtnEingabeRingSpannzange.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnEingabeRingSpannzange.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnEingabeRingSpannzange.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnEingabeRingSpannzange.Location = new System.Drawing.Point(44, 355);
+            this.BtnEingabeRingSpannzange.Location = new System.Drawing.Point(36, 355);
             this.BtnEingabeRingSpannzange.Name = "BtnEingabeRingSpannzange";
             this.BtnEingabeRingSpannzange.Size = new System.Drawing.Size(239, 66);
             this.BtnEingabeRingSpannzange.TabIndex = 29;
@@ -418,44 +418,46 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(608, 101);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(942, 483);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(116, 13);
+            this.label2.Size = new System.Drawing.Size(148, 17);
             this.label2.TabIndex = 30;
             this.label2.Text = "Oberflächen heute:";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(608, 119);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(942, 501);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(126, 13);
+            this.label3.Size = new System.Drawing.Size(162, 17);
             this.label3.TabIndex = 31;
             this.label3.Text = "Oberflächen gestern:";
             // 
             // lblOberflaechenHeute
             // 
             this.lblOberflaechenHeute.AutoSize = true;
-            this.lblOberflaechenHeute.Location = new System.Drawing.Point(733, 101);
+            this.lblOberflaechenHeute.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblOberflaechenHeute.Location = new System.Drawing.Point(1101, 483);
             this.lblOberflaechenHeute.Name = "lblOberflaechenHeute";
-            this.lblOberflaechenHeute.Size = new System.Drawing.Size(13, 13);
+            this.lblOberflaechenHeute.Size = new System.Drawing.Size(16, 17);
             this.lblOberflaechenHeute.TabIndex = 32;
             this.lblOberflaechenHeute.Text = "0";
             // 
             // lblOberflaechenGestern
             // 
             this.lblOberflaechenGestern.AutoSize = true;
-            this.lblOberflaechenGestern.Location = new System.Drawing.Point(733, 119);
+            this.lblOberflaechenGestern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblOberflaechenGestern.Location = new System.Drawing.Point(1101, 501);
             this.lblOberflaechenGestern.Name = "lblOberflaechenGestern";
-            this.lblOberflaechenGestern.Size = new System.Drawing.Size(13, 13);
+            this.lblOberflaechenGestern.Size = new System.Drawing.Size(16, 17);
             this.lblOberflaechenGestern.TabIndex = 33;
             this.lblOberflaechenGestern.Text = "0";
             // 
             // TimerOberflaechenHeute
             // 
-            this.TimerOberflaechenHeute.Interval = 60000;
+            this.TimerOberflaechenHeute.Interval = 30000;
             this.TimerOberflaechenHeute.Tick += new System.EventHandler(this.TimerOberflaechenHeute_Tick);
             // 
             // BtngesamtOberflaechen
@@ -463,10 +465,10 @@
             this.BtngesamtOberflaechen.BackColor = System.Drawing.Color.Gold;
             this.BtngesamtOberflaechen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtngesamtOberflaechen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.BtngesamtOberflaechen.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtngesamtOberflaechen.Location = new System.Drawing.Point(796, 111);
+            this.BtngesamtOberflaechen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtngesamtOberflaechen.Location = new System.Drawing.Point(1104, 445);
             this.BtngesamtOberflaechen.Name = "BtngesamtOberflaechen";
-            this.BtngesamtOberflaechen.Size = new System.Drawing.Size(57, 21);
+            this.BtngesamtOberflaechen.Size = new System.Drawing.Size(59, 35);
             this.BtngesamtOberflaechen.TabIndex = 34;
             this.BtngesamtOberflaechen.Text = "Gesamt";
             this.BtngesamtOberflaechen.UseVisualStyleBackColor = false;
@@ -477,7 +479,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ClientSize = new System.Drawing.Size(1068, 651);
+            this.ClientSize = new System.Drawing.Size(1197, 721);
             this.Controls.Add(this.BtngesamtOberflaechen);
             this.Controls.Add(this.lblOberflaechenGestern);
             this.Controls.Add(this.lblOberflaechenHeute);
@@ -510,8 +512,6 @@
             this.Controls.Add(this.LblUhrzeitDatum);
             this.Controls.Add(this.LblUeberschrift);
             this.Controls.Add(this.pictureBoxLinsenPrismen);
-            this.MaximumSize = new System.Drawing.Size(1084, 690);
-            this.MinimumSize = new System.Drawing.Size(1084, 690);
             this.Name = "Form_Start";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Hauptmenü";

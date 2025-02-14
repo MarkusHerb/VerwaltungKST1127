@@ -85,10 +85,11 @@ namespace VerwaltungKST1127.RingSpannzange
             dmFreibereich = Math.Round(dmFreibereich, 1);
 
             string lochSegment = comboBoxLochSegment.Text;
-            string anzahlRing = txtBoxStkRing.Text;
+            string anzahlRing = txtBoxAnzahlProRing.Text;
+            string anzahlRingGesamt = txtBoxRingeGesamt.Text;
 
             // Speichern der eingegebenen Daten in der Datenbank
-            SaveDataRing(vorrichtungsnummerRing, dmInnen, dmAussen, dmFreibereich, lochSegment, anzahlRing);
+            SaveDataRing(vorrichtungsnummerRing, dmInnen, dmAussen, dmFreibereich, lochSegment, anzahlRing, anzahlRingGesamt);
         }
 
         // Event-Händler für den Button "Spannzange hinzufügen"
@@ -110,7 +111,7 @@ namespace VerwaltungKST1127.RingSpannzange
         }
 
         // Funktion zum Speichern der eingegebenen Daten in die Datenbank
-        private void SaveDataRing(string vorrichtungsnummerRing, decimal dmInnen, decimal dmAussen, decimal dmFreibereich, string lochSegment, string anzahlRing)
+        private void SaveDataRing(string vorrichtungsnummerRing, decimal dmInnen, decimal dmAussen, decimal dmFreibereich, string lochSegment, string anzahlRing, string anzahlRingGesamt)
         {
             // Verbindung zur Datenbank herstellen
             try
@@ -132,8 +133,8 @@ namespace VerwaltungKST1127.RingSpannzange
                     }
 
                     // Einfügen der Daten in die Datenbank
-                    using (SqlCommand sqlCommand = new SqlCommand("INSERT INTO Ring_Stamm ([Vorrichtungsnummer], [Durchmesser_Innen], [Segmetdurchmesser], [Freidurchmesser], [Gerundet_SegmentDM], [AnzahlRing]) " +
-                        "VALUES (@Vorrichtungsnummer, @Durchmesser_Innen, @Segmetdurchmesser, @Freidurchmesser, @Gerundet_SegmentDM, @AnzahlRing)", sqlConnectionShuttle))
+                    using (SqlCommand sqlCommand = new SqlCommand("INSERT INTO Ring_Stamm ([Vorrichtungsnummer], [Durchmesser_Innen], [Segmetdurchmesser], [Freidurchmesser], [Gerundet_SegmentDM], [AnzahlRing], [Stück]) " +
+                        "VALUES (@Vorrichtungsnummer, @Durchmesser_Innen, @Segmetdurchmesser, @Freidurchmesser, @Gerundet_SegmentDM, @AnzahlRing, @Stueck)", sqlConnectionShuttle))
                     {
                         sqlCommand.Parameters.AddWithValue("@Vorrichtungsnummer", vorrichtungsnummerRing);
                         sqlCommand.Parameters.AddWithValue("@Durchmesser_Innen", dmInnen);
@@ -141,6 +142,7 @@ namespace VerwaltungKST1127.RingSpannzange
                         sqlCommand.Parameters.AddWithValue("@Freidurchmesser", dmFreibereich);
                         sqlCommand.Parameters.AddWithValue("@Gerundet_SegmentDM", lochSegment);
                         sqlCommand.Parameters.AddWithValue("@AnzahlRing", anzahlRing);
+                        sqlCommand.Parameters.AddWithValue("@Stueck", anzahlRingGesamt);
 
                         sqlCommand.ExecuteNonQuery();
                     }
@@ -282,10 +284,11 @@ namespace VerwaltungKST1127.RingSpannzange
                     txtBoxDmAussenRing.Text = row.Cells["Segmetdurchmesser"].Value.ToString();
                     txtBoxDmFreibereich.Text = row.Cells["Freidurchmesser"].Value.ToString();
                     comboBoxLochSegment.Text = row.Cells["Gerundet_SegmentDM"].Value.ToString();
-                    txtBoxStkRing.Text = row.Cells["AnzahlRing"].Value.ToString();
+                    txtBoxAnzahlProRing.Text = row.Cells["AnzahlRing"].Value.ToString();
                     txtBoxVorrichtungsnummerZange.Text = "Z";
                     txtBoxDmZange.Text = string.Empty;
                     txtBoxStkZange.Text = "1";
+                    txtBoxRingeGesamt.Text = row.Cells["Stück"].Value.ToString();
                 }
                 // Wenn mit Vorrichtunsnummer mit Z beginnt
                 else if (row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("Z"))
@@ -298,7 +301,8 @@ namespace VerwaltungKST1127.RingSpannzange
                     txtBoxDmAussenRing.Text = string.Empty;
                     txtBoxDmFreibereich.Text = string.Empty;
                     comboBoxLochSegment.Text = string.Empty;
-                    txtBoxStkRing.Text = string.Empty;
+                    txtBoxAnzahlProRing.Text = string.Empty;
+                    txtBoxRingeGesamt.Text = string.Empty;
                 }
 
 
@@ -330,14 +334,19 @@ namespace VerwaltungKST1127.RingSpannzange
                             DataTable dataTable = new DataTable();
                             sqlDataAdapter.Fill(dataTable);
                             DgvArtikel.DataSource = dataTable;
-                            DgvArtikel.Columns[0].Visible = true;
+                            DgvArtikel.Columns[0].Visible = false;
                             DgvArtikel.Columns[3].Visible = false;
                             DgvArtikel.Columns[7].Visible = false;
                             DgvArtikel.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                             DgvArtikel.Columns["Bemerkungen"].DisplayIndex = DgvArtikel.Columns.Count - 1;
-                            DgvArtikel.Columns[0].HeaderText = "ID";
                             DgvArtikel.Columns[1].HeaderText = "ArtNr.";
+                            DgvArtikel.Columns[4].Width = 40;
+                            DgvArtikel.Columns[5].Width = 50;
+                            DgvArtikel.Columns[6].Width = 50;
                             DgvArtikel.Columns[2].HeaderText = "Info";
+                            DgvArtikel.Columns[2].Width = 50;
+                            // Seite mittig stellen
+                            DgvArtikel.Columns[4].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                         }
                     }
                 }

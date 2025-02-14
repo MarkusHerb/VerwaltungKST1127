@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Materiallager));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.TextBoxArtikel = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.RichTextBoxBemerkung = new System.Windows.Forms.RichTextBox();
@@ -55,6 +55,7 @@
             this.DgvMateriallager = new System.Windows.Forms.DataGridView();
             this.lblAnzahlArtikelBestellen = new System.Windows.Forms.Label();
             this.BtnInventur = new System.Windows.Forms.Button();
+            this.BtnInfoMateriallager = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvMateriallager)).BeginInit();
             this.SuspendLayout();
@@ -293,14 +294,14 @@
             this.DgvMateriallager.AllowUserToAddRows = false;
             this.DgvMateriallager.AllowUserToDeleteRows = false;
             this.DgvMateriallager.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.GrayText;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.GrayText;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle1;
             this.DgvMateriallager.Location = new System.Drawing.Point(12, 204);
             this.DgvMateriallager.MultiSelect = false;
             this.DgvMateriallager.Name = "DgvMateriallager";
@@ -335,12 +336,25 @@
             this.BtnInventur.UseVisualStyleBackColor = false;
             this.BtnInventur.Click += new System.EventHandler(this.BtnInventur_Click);
             // 
+            // BtnInfoMateriallager
+            // 
+            this.BtnInfoMateriallager.BackColor = System.Drawing.Color.DarkGray;
+            this.BtnInfoMateriallager.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnInfoMateriallager.Location = new System.Drawing.Point(849, 149);
+            this.BtnInfoMateriallager.Name = "BtnInfoMateriallager";
+            this.BtnInfoMateriallager.Size = new System.Drawing.Size(93, 37);
+            this.BtnInfoMateriallager.TabIndex = 84;
+            this.BtnInfoMateriallager.Text = "Information";
+            this.BtnInfoMateriallager.UseVisualStyleBackColor = false;
+            this.BtnInfoMateriallager.Click += new System.EventHandler(this.BtnInfoMateriallager_Click);
+            // 
             // Form_Materiallager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1279, 736);
+            this.Controls.Add(this.BtnInfoMateriallager);
             this.Controls.Add(this.BtnInventur);
             this.Controls.Add(this.lblAnzahlArtikelBestellen);
             this.Controls.Add(this.DgvMateriallager);
@@ -405,5 +419,6 @@
         private System.Windows.Forms.DataGridView DgvMateriallager;
         private System.Windows.Forms.Label lblAnzahlArtikelBestellen;
         private System.Windows.Forms.Button BtnInventur;
+        private System.Windows.Forms.Button BtnInfoMateriallager;
     }
 }

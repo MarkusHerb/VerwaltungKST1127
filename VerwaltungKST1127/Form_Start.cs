@@ -9,7 +9,7 @@ using VerwaltungKST1127.Auftragsverwaltung;
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
 using VerwaltungKST1127.Farbauswertung;
 using VerwaltungKST1127.Personal;
-using VerwaltungKST1127.RingSpannzange; // Importieren des System.Diagnostics-Namespace für prozessbezogene Operationen
+using VerwaltungKST1127.RingSpannzange;
 
 namespace VerwaltungKST1127
 {
@@ -41,7 +41,7 @@ namespace VerwaltungKST1127
             TimerRam.Interval = 500; // Aktualisierung alle 0,5 Sekunde
             TimerRam.Start();
             // Starten des Timers für die Oberflächen heute
-            TimerOberflaechenHeute.Interval = 60000; // Aktualisierung alle 5 Sekunden
+            TimerOberflaechenHeute.Interval = 30000; // Aktualisierung alle 5 Sekunden
             TimerOberflaechenHeute.Start();
             // Oberflächen anzeigen
             UpdateOberflaechenHeute();

@@ -41,6 +41,9 @@
     <Reference Include="Azure.Identity, Version=1.12.1.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
       <HintPath>..\packages\Azure.Identity.1.12.1\lib\netstandard2.0\Azure.Identity.dll</HintPath>
     </Reference>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.1.66\lib\net461\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="EPPlus, Version=7.3.2.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.7.3.2\lib\net462\EPPlus.dll</HintPath>
     </Reference>
@@ -50,8 +53,8 @@
     <Reference Include="EPPlus.System.Drawing, Version=6.1.1.0, Culture=neutral, PublicKeyToken=2308d35469c9bac0, processorArchitecture=MSIL">
       <HintPath>..\packages\EPPlus.System.Drawing.6.1.1\lib\net462\EPPlus.System.Drawing.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.1\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.TimeProvider, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.TimeProvider.8.0.1\lib\net462\Microsoft.Bcl.TimeProvider.dll</HintPath>
@@ -253,6 +256,12 @@
     <Compile Include="Form_Copyright.Designer.cs">
       <DependentUpon>Form_Copyright.cs</DependentUpon>
     </Compile>
+    <Compile Include="Material\Form_InfoMateriallager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Material\Form_InfoMateriallager.Designer.cs">
+      <DependentUpon>Form_InfoMateriallager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Material\Form_InputMenge.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -337,6 +346,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Start.resx">
       <DependentUpon>Form_Start.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Material\Form_InfoMateriallager.resx">
+      <DependentUpon>Form_InfoMateriallager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Material\Form_InputMenge.resx">
       <DependentUpon>Form_InputMenge.cs</DependentUpon>

@@ -84,6 +84,12 @@ namespace VerwaltungKST1127
                         anzahlArtikelBestellen++;
                         lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen.ToString() + " Artikel müssen bestellt werden!";
                     }
+                    // Wenn in der Reihe "Bemerkungen" in einer Zeile das Wort "bestellt, Bestellt vorkommt, dann soll die variable anzahlArtikelBestellen um 1 verringert werden
+                    if (row["Bemerkungen"].ToString().ToLower().Contains("bestellt am"))
+                    {
+                        anzahlArtikelBestellen--;
+                        lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen.ToString() + " Artikel müssen bestellt werden!";
+                    }
                 }
 
                 sqlConnection.Close(); // Datenbankverbindung trennen
@@ -562,22 +568,13 @@ namespace VerwaltungKST1127
             worksheet.PageSetup.FitToPagesWide = 1;
             worksheet.PageSetup.FitToPagesTall = 1;
             worksheet.PageSetup.Zoom = false; // Deaktiviert die Zoom-Einstellung, um FitToPagesWide und FitToPagesTall zu aktivieren
+        }
 
-
-            //// Speicher-Dialog anzeigen
-            //SaveFileDialog saveFileDialog = new SaveFileDialog
-            //{
-            //    Filter = "Excel Files|*.xlsx",
-            //    Title = "Speichern Sie die Excel-Datei"
-            //};
-            //saveFileDialog.ShowDialog();
-
-            //if (saveFileDialog.FileName != "")
-            //{
-            //    workbook.SaveAs(saveFileDialog.FileName);
-            //    workbook.Close();
-            //    excelApp.Quit();
-            //}
+        // Event-Handler für den Button "Info Materiallager"
+        private void BtnInfoMateriallager_Click(object sender, EventArgs e)
+        {
+            Form_InfoMateriallager infoMateriallager = new Form_InfoMateriallager();
+            infoMateriallager.ShowDialog();
         }
     }
 }

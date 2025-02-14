@@ -8,8 +8,8 @@ namespace VerwaltungKST1127.Personal
 {
     public partial class Form_Personalliste : Form
     {
-        private List<Mitarbeiter> _mitarbeiterListe = new List<Mitarbeiter>();
-        private MitarbeiterService _mitarbeiterService;
+        private readonly List<Mitarbeiter> _mitarbeiterListe = new List<Mitarbeiter>();
+        private readonly MitarbeiterService _mitarbeiterService;
         private int _currentMitarbeiterId = 0;
 
         public Form_Personalliste()
@@ -50,8 +50,8 @@ namespace VerwaltungKST1127.Personal
             {
                 "Kostenstellenleiter:in",
                 "Stv. Kostenstellenleiter:in",
-                "Gruppenleiter:in",
-                "Stv. Gruppenleiter:in",
+                "Teamleiter:in",
+                "Stv. Teamleiter:in",
                 "Anlagentechniker:in",
                 "Aufleger:in",
                 "US-Bediener:in",
@@ -68,10 +68,11 @@ namespace VerwaltungKST1127.Personal
             //var sortierteListe = _mitarbeiterListe.OrderBy(m => m.Team).ToList();
 
             // Erstelle eine BindingSource
-            BindingSource bindingSource = new BindingSource();
-
-            // Binde die sortierte Liste an die BindingSource
-            bindingSource.DataSource = sortierteListe;
+            BindingSource bindingSource = new BindingSource
+            {
+                // Binde die sortierte Liste an die BindingSource
+                DataSource = sortierteListe
+            };
 
             // Weise die BindingSource dem DataGridView zu
             DgvPersonalliste.DataSource = bindingSource;
@@ -440,9 +441,8 @@ namespace VerwaltungKST1127.Personal
 
                 if (teamValue != null)
                 {
-                    int teamNumber;
                     // Versuche den Wert in eine Zahl zu konvertieren
-                    if (int.TryParse(teamValue.ToString(), out teamNumber))
+                    if (int.TryParse(teamValue.ToString(), out int teamNumber))
                     {
                         // Farben für die verschiedenen Teams festlegen
                         switch (teamNumber)
@@ -490,8 +490,8 @@ namespace VerwaltungKST1127.Personal
             var produktivPosition = new Dictionary<string, double>
     {
         { "Aufleger:in", 1.0 },
-        { "Gruppenleiter:in", 0.5 },
-        { "Stv. Gruppenleiter:in", 0.75 },
+        { "Teamleiter:in", 0.5 },
+        { "Stv. Teamleiter:in", 0.75 },
         { "Anlagentechniker:in", 1.0 },
         { "US-Bediener:in", 1.0 },
         { "Werkzeugwart:in", 1.0 }

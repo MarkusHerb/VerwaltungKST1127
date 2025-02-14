@@ -43,7 +43,7 @@
             this.txtBoxDmInnenRing = new System.Windows.Forms.TextBox();
             this.txtBoxDmFreibereich = new System.Windows.Forms.TextBox();
             this.txtBoxDmAussenRing = new System.Windows.Forms.TextBox();
-            this.txtBoxStkRing = new System.Windows.Forms.TextBox();
+            this.txtBoxAnzahlProRing = new System.Windows.Forms.TextBox();
             this.txtBoxStkZange = new System.Windows.Forms.TextBox();
             this.txtBoxDmZange = new System.Windows.Forms.TextBox();
             this.txtBoxVorrichtungsnummerZange = new System.Windows.Forms.TextBox();
@@ -59,6 +59,8 @@
             this.blb = new System.Windows.Forms.Label();
             this.BtnNeuerArtikelZuRing = new System.Windows.Forms.Button();
             this.BtnArtikelLoeschen = new System.Windows.Forms.Button();
+            this.txtBoxRingeGesamt = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DgvAnsichtAlleRingeSpannzangen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvBoxen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvArtikel)).BeginInit();
@@ -110,9 +112,9 @@
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(52, 276);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(94, 18);
+            this.label5.Size = new System.Drawing.Size(112, 18);
             this.label5.TabIndex = 4;
-            this.label5.Text = "Stk. pro Ring";
+            this.label5.Text = "Anzahl pro Ring";
             // 
             // label6
             // 
@@ -202,12 +204,12 @@
             this.txtBoxDmAussenRing.Size = new System.Drawing.Size(65, 20);
             this.txtBoxDmAussenRing.TabIndex = 13;
             // 
-            // txtBoxStkRing
+            // txtBoxAnzahlProRing
             // 
-            this.txtBoxStkRing.Location = new System.Drawing.Point(211, 276);
-            this.txtBoxStkRing.Name = "txtBoxStkRing";
-            this.txtBoxStkRing.Size = new System.Drawing.Size(65, 20);
-            this.txtBoxStkRing.TabIndex = 16;
+            this.txtBoxAnzahlProRing.Location = new System.Drawing.Point(211, 276);
+            this.txtBoxAnzahlProRing.Name = "txtBoxAnzahlProRing";
+            this.txtBoxAnzahlProRing.Size = new System.Drawing.Size(65, 20);
+            this.txtBoxAnzahlProRing.TabIndex = 16;
             // 
             // txtBoxStkZange
             // 
@@ -233,7 +235,7 @@
             // btnRingSave
             // 
             this.btnRingSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.btnRingSave.Location = new System.Drawing.Point(211, 302);
+            this.btnRingSave.Location = new System.Drawing.Point(211, 335);
             this.btnRingSave.Name = "btnRingSave";
             this.btnRingSave.Size = new System.Drawing.Size(65, 23);
             this.btnRingSave.TabIndex = 20;
@@ -289,7 +291,7 @@
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
-            this.panel3.Location = new System.Drawing.Point(351, 27);
+            this.panel3.Location = new System.Drawing.Point(351, 42);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1, 300);
             this.panel3.TabIndex = 22;
@@ -298,7 +300,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(51, 362);
+            this.label9.Location = new System.Drawing.Point(51, 376);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(290, 24);
             this.label9.TabIndex = 23;
@@ -307,7 +309,7 @@
             // DgvAnsichtAlleRingeSpannzangen
             // 
             this.DgvAnsichtAlleRingeSpannzangen.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DgvAnsichtAlleRingeSpannzangen.Location = new System.Drawing.Point(55, 389);
+            this.DgvAnsichtAlleRingeSpannzangen.Location = new System.Drawing.Point(55, 403);
             this.DgvAnsichtAlleRingeSpannzangen.Name = "DgvAnsichtAlleRingeSpannzangen";
             this.DgvAnsichtAlleRingeSpannzangen.RowHeadersVisible = false;
             this.DgvAnsichtAlleRingeSpannzangen.Size = new System.Drawing.Size(596, 150);
@@ -317,7 +319,7 @@
             // DgvBoxen
             // 
             this.DgvBoxen.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DgvBoxen.Location = new System.Drawing.Point(55, 596);
+            this.DgvBoxen.Location = new System.Drawing.Point(55, 610);
             this.DgvBoxen.Name = "DgvBoxen";
             this.DgvBoxen.RowHeadersVisible = false;
             this.DgvBoxen.Size = new System.Drawing.Size(297, 150);
@@ -326,7 +328,7 @@
             // DgvArtikel
             // 
             this.DgvArtikel.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DgvArtikel.Location = new System.Drawing.Point(354, 596);
+            this.DgvArtikel.Location = new System.Drawing.Point(354, 610);
             this.DgvArtikel.Name = "DgvArtikel";
             this.DgvArtikel.RowHeadersVisible = false;
             this.DgvArtikel.Size = new System.Drawing.Size(297, 150);
@@ -336,7 +338,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(51, 569);
+            this.label10.Location = new System.Drawing.Point(51, 583);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(132, 24);
             this.label10.TabIndex = 27;
@@ -346,7 +348,7 @@
             // 
             this.blb.AutoSize = true;
             this.blb.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.blb.Location = new System.Drawing.Point(350, 569);
+            this.blb.Location = new System.Drawing.Point(350, 583);
             this.blb.Name = "blb";
             this.blb.Size = new System.Drawing.Size(161, 24);
             this.blb.TabIndex = 28;
@@ -355,7 +357,7 @@
             // BtnNeuerArtikelZuRing
             // 
             this.BtnNeuerArtikelZuRing.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            this.BtnNeuerArtikelZuRing.Location = new System.Drawing.Point(467, 752);
+            this.BtnNeuerArtikelZuRing.Location = new System.Drawing.Point(467, 766);
             this.BtnNeuerArtikelZuRing.Name = "BtnNeuerArtikelZuRing";
             this.BtnNeuerArtikelZuRing.Size = new System.Drawing.Size(89, 23);
             this.BtnNeuerArtikelZuRing.TabIndex = 29;
@@ -366,7 +368,7 @@
             // BtnArtikelLoeschen
             // 
             this.BtnArtikelLoeschen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            this.BtnArtikelLoeschen.Location = new System.Drawing.Point(562, 752);
+            this.BtnArtikelLoeschen.Location = new System.Drawing.Point(562, 766);
             this.BtnArtikelLoeschen.Name = "BtnArtikelLoeschen";
             this.BtnArtikelLoeschen.Size = new System.Drawing.Size(89, 23);
             this.BtnArtikelLoeschen.TabIndex = 30;
@@ -374,11 +376,30 @@
             this.BtnArtikelLoeschen.UseVisualStyleBackColor = false;
             this.BtnArtikelLoeschen.Click += new System.EventHandler(this.BtnArtikelLoeschen_Click);
             // 
+            // txtBoxRingeGesamt
+            // 
+            this.txtBoxRingeGesamt.Location = new System.Drawing.Point(211, 309);
+            this.txtBoxRingeGesamt.Name = "txtBoxRingeGesamt";
+            this.txtBoxRingeGesamt.Size = new System.Drawing.Size(65, 20);
+            this.txtBoxRingeGesamt.TabIndex = 32;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(52, 309);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(99, 18);
+            this.label11.TabIndex = 31;
+            this.label11.Text = "Ringe gesamt";
+            // 
             // DgvZuordnungArtikel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(705, 824);
+            this.Controls.Add(this.txtBoxRingeGesamt);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.BtnArtikelLoeschen);
             this.Controls.Add(this.BtnNeuerArtikelZuRing);
             this.Controls.Add(this.blb);
@@ -394,7 +415,7 @@
             this.Controls.Add(this.txtBoxStkZange);
             this.Controls.Add(this.txtBoxDmZange);
             this.Controls.Add(this.txtBoxVorrichtungsnummerZange);
-            this.Controls.Add(this.txtBoxStkRing);
+            this.Controls.Add(this.txtBoxAnzahlProRing);
             this.Controls.Add(this.txtBoxDmFreibereich);
             this.Controls.Add(this.txtBoxDmAussenRing);
             this.Controls.Add(this.txtBoxDmInnenRing);
@@ -438,7 +459,7 @@
         private System.Windows.Forms.TextBox txtBoxDmInnenRing;
         private System.Windows.Forms.TextBox txtBoxDmFreibereich;
         private System.Windows.Forms.TextBox txtBoxDmAussenRing;
-        private System.Windows.Forms.TextBox txtBoxStkRing;
+        private System.Windows.Forms.TextBox txtBoxAnzahlProRing;
         private System.Windows.Forms.TextBox txtBoxStkZange;
         private System.Windows.Forms.TextBox txtBoxDmZange;
         private System.Windows.Forms.TextBox txtBoxVorrichtungsnummerZange;
@@ -454,5 +475,7 @@
         private System.Windows.Forms.Label blb;
         private System.Windows.Forms.Button BtnNeuerArtikelZuRing;
         private System.Windows.Forms.Button BtnArtikelLoeschen;
+        private System.Windows.Forms.TextBox txtBoxRingeGesamt;
+        private System.Windows.Forms.Label label11;
     }
 }
