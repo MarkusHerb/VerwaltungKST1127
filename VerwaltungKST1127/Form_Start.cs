@@ -8,6 +8,7 @@ using System.Windows.Forms.DataVisualization.Charting; // Um SQL funktionen zu v
 using VerwaltungKST1127.Auftragsverwaltung;
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
 using VerwaltungKST1127.Farbauswertung;
+using VerwaltungKST1127.GlasWaschDaten;
 using VerwaltungKST1127.Personal;
 using VerwaltungKST1127.RingSpannzange;
 
@@ -332,13 +333,6 @@ namespace VerwaltungKST1127
             form_Personalliste.Show();
         }
 
-        // Event-Handler, wenn man darauf klickt
-        private void BtnAuftragsverwaltung_Click(object sender, EventArgs e)
-        {
-            Form_HauptansichtAuftragsverwaltung form_hauptansichtAuftragsverwaltung = new Form_HauptansichtAuftragsverwaltung();
-            form_hauptansichtAuftragsverwaltung.Show();
-        }
-
         // #### ListBox ####
         // Array zur Speicherung der Dokumentnamen und Dateipfade
         private readonly string[,] documents = {
@@ -458,6 +452,20 @@ namespace VerwaltungKST1127
         {
             Form_AnsichtOberflaechen form_AnsichtOberflaechen = new Form_AnsichtOberflaechen();
             form_AnsichtOberflaechen.Show();
+        }
+
+        // Event-Handler, wenn der Button "Dokument öffnen" geklickt wird
+        private void BtnGlasWaschDaten_Click(object sender, EventArgs e)
+        {
+            Form_GlasWaschDaten form_glasWaschenDaten = new Form_GlasWaschDaten();
+            form_glasWaschenDaten.Show();
+        }
+
+        // Event-Handler, wenn der Button "Dokument öffnen" geklickt wird
+        private void BtnVerwaltung_Click(object sender, EventArgs e)
+        {
+            Form_VerwaltungHauptansicht form_VerwaltungHauptansicht = new Form_VerwaltungHauptansicht();
+            form_VerwaltungHauptansicht.Show();
         }
     }
 }

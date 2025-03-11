@@ -355,8 +355,8 @@
             // 
             this.comboBoxPosition.FormattingEnabled = true;
             this.comboBoxPosition.Items.AddRange(new object[] {
-            "Kostenstellenleiter:in",
-            "Stv. Kostenstellenleiter:in",
+            "Gruppenleiter:in",
+            "Stv. Gruppenleiter:in",
             "Prozesstechniker:in",
             "Teamleiter:in",
             "Stv. Teamleiter:in",

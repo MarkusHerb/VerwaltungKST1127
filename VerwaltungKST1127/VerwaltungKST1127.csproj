@@ -183,23 +183,17 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auftragsverwaltung\Form_HauptansichtAuftragsverwaltung.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Auftragsverwaltung\Form_HauptansichtAuftragsverwaltung.Designer.cs">
-      <DependentUpon>Form_HauptansichtAuftragsverwaltung.cs</DependentUpon>
-    </Compile>
     <Compile Include="Auftragsverwaltung\Form_RLTL.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Auftragsverwaltung\Form_RLTL.Designer.cs">
       <DependentUpon>Form_RLTL.cs</DependentUpon>
     </Compile>
-    <Compile Include="Auftragsverwaltung\Form_TestansichtInforEinlesen.cs">
+    <Compile Include="Auftragsverwaltung\Form_VerwaltungHauptansicht.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Auftragsverwaltung\Form_TestansichtInforEinlesen.Designer.cs">
-      <DependentUpon>Form_TestansichtInforEinlesen.cs</DependentUpon>
+    <Compile Include="Auftragsverwaltung\Form_VerwaltungHauptansicht.Designer.cs">
+      <DependentUpon>Form_VerwaltungHauptansicht.cs</DependentUpon>
     </Compile>
     <Compile Include="Auftragsverwaltung\RLTLData.cs" />
     <Compile Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.cs">
@@ -256,6 +250,12 @@
     <Compile Include="Form_Copyright.Designer.cs">
       <DependentUpon>Form_Copyright.cs</DependentUpon>
     </Compile>
+    <Compile Include="GlasWaschDaten\Form_GlasWaschDaten.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GlasWaschDaten\Form_GlasWaschDaten.Designer.cs">
+      <DependentUpon>Form_GlasWaschDaten.cs</DependentUpon>
+    </Compile>
     <Compile Include="Material\Form_InfoMateriallager.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -308,14 +308,11 @@
     <Compile Include="RingSpannzange\Form_UebersichtRingSpannzangen.Designer.cs">
       <DependentUpon>Form_UebersichtRingSpannzangen.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Auftragsverwaltung\Form_HauptansichtAuftragsverwaltung.resx">
-      <DependentUpon>Form_HauptansichtAuftragsverwaltung.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Auftragsverwaltung\Form_RLTL.resx">
       <DependentUpon>Form_RLTL.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Auftragsverwaltung\Form_TestansichtInforEinlesen.resx">
-      <DependentUpon>Form_TestansichtInforEinlesen.cs</DependentUpon>
+    <EmbeddedResource Include="Auftragsverwaltung\Form_VerwaltungHauptansicht.resx">
+      <DependentUpon>Form_VerwaltungHauptansicht.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="EingabeSerienartikelPrototyp\Form_ArtikelPrototypAendern.resx">
       <DependentUpon>Form_ArtikelPrototypAendern.cs</DependentUpon>
@@ -346,6 +343,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_Start.resx">
       <DependentUpon>Form_Start.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GlasWaschDaten\Form_GlasWaschDaten.resx">
+      <DependentUpon>Form_GlasWaschDaten.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Material\Form_InfoMateriallager.resx">
       <DependentUpon>Form_InfoMateriallager.cs</DependentUpon>

@@ -257,7 +257,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         }
 
         // Funktion um die ComboboxRing basierend auf der ausgewählten Durchmesser zu befüllen
-        // Klassenvariable definieren
         private void FillComboboxRing()
         {
             // SQL-Abfrage, um Vorrichtungsnummer und den dazugehörigen Durchmesser_Innen abzurufen und nach Durchmesser_Innen zu sortieren
@@ -265,7 +264,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             SELECT DISTINCT Vorrichtungsnummer, Durchmesser_Innen
             FROM Ring_Stamm
             WHERE Vorrichtungsnummer NOT LIKE 'Z%'  -- Ausschließen von Vorrichtungsnummern, die mit 'Z' beginnen
-            ORDER BY Durchmesser_Innen ASC"; // Sortierung nach Durchmesser_Innen in aufsteigender Reihenfolge
+            ORDER BY Vorrichtungsnummer ASC"; // Sortierung nach Durchmesser_Innen in aufsteigender Reihenfolge
 
             try
             {
@@ -315,6 +314,35 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
+        // Wenn der Button geklickt wird, wird die ComboboxRing nach dem Durchmesser sortiert
+        private void BtnOrderDmRing_Click(object sender, EventArgs e)
+        {
+            // Liste zum Speichern der Einträge aus der ComboBox
+            List<Tuple<string, double>> ringList = new List<Tuple<string, double>>();
+
+            // Extrahiere die Einträge aus der ComboBox
+            foreach (var item in ComboboxRing.Items)
+            {
+                string displayValue = item.ToString();
+                string[] parts = displayValue.Split('-');
+                if (parts.Length > 1 && double.TryParse(parts[1].Replace(" mm", "").Trim(), out double durchmesser))
+                {
+                    string ringNummer = parts[0].Trim();
+                    ringList.Add(new Tuple<string, double>(ringNummer, durchmesser));
+                }
+            }
+
+            // Sortiere die Liste nach Durchmesser_Innen
+            ringList = ringList.OrderBy(r => r.Item2).ToList();
+
+            // Leere die ComboBox und füge die sortierten Einträge hinzu
+            ComboboxRing.Items.Clear();
+            foreach (var ring in ringList)
+            {
+                string displayValue = $"{ring.Item1} - {ring.Item2} mm";
+                ComboboxRing.Items.Add(displayValue);
+            }
+        }
         // Wenn der index der ComboboxRing geändert wird
         // Aktualisierte Methode zur Auswahländerung in der Combobox
         private void ComboboxRing_SelectedIndexChanged(object sender, EventArgs e)
@@ -500,6 +528,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 else
                 {
                     ClearAllFields();
+                    this.Close();
                 }
             }
             catch (SqlException sqlEx)
@@ -817,6 +846,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             form_ArtikelPrototypAendern.BringToFront(); // Bringt das neue Formular in den Vordergrund
         }
 
-       
+        
     }
 }

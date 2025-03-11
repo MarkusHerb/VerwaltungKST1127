@@ -104,6 +104,7 @@
             this.ComboboxBelagRueckseite = new System.Windows.Forms.ComboBox();
             this.lblWichtig1 = new System.Windows.Forms.Label();
             this.lblWichtig2 = new System.Windows.Forms.Label();
+            this.BtnOrderDmRing = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxAuflegenLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureboxZusatzinfo)).BeginInit();
             this.SuspendLayout();
@@ -901,12 +902,24 @@
             this.lblWichtig2.TabIndex = 112;
             this.lblWichtig2.Text = "Immer Bild auswählen!!!";
             // 
+            // BtnOrderDmRing
+            // 
+            this.BtnOrderDmRing.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnOrderDmRing.Location = new System.Drawing.Point(428, 246);
+            this.BtnOrderDmRing.Name = "BtnOrderDmRing";
+            this.BtnOrderDmRing.Size = new System.Drawing.Size(59, 26);
+            this.BtnOrderDmRing.TabIndex = 113;
+            this.BtnOrderDmRing.Text = "Nach DM absteigend";
+            this.BtnOrderDmRing.UseVisualStyleBackColor = true;
+            this.BtnOrderDmRing.Click += new System.EventHandler(this.BtnOrderDmRing_Click);
+            // 
             // Form_EingabeSeriePrototyp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1090, 743);
+            this.Controls.Add(this.BtnOrderDmRing);
             this.Controls.Add(this.lblWichtig2);
             this.Controls.Add(this.lblWichtig1);
             this.Controls.Add(this.ComboboxBelagRueckseite);
@@ -1071,5 +1084,6 @@
         private System.Windows.Forms.ComboBox ComboboxBelagRueckseite;
         private System.Windows.Forms.Label lblWichtig1;
         private System.Windows.Forms.Label lblWichtig2;
+        private System.Windows.Forms.Button BtnOrderDmRing;
     }
 }

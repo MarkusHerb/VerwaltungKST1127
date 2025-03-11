@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -54,7 +54,6 @@
             this.ListBoxDocuments = new System.Windows.Forms.ListBox();
             this.BtnPersonalliste = new System.Windows.Forms.Button();
             this.PictureBoxBestellung = new System.Windows.Forms.PictureBox();
-            this.BtnAuftragsverwaltung = new System.Windows.Forms.Button();
             this.process1 = new System.Diagnostics.Process();
             this.TimerCpu = new System.Windows.Forms.Timer(this.components);
             this.TimerRam = new System.Windows.Forms.Timer(this.components);
@@ -71,6 +70,8 @@
             this.lblOberflaechenGestern = new System.Windows.Forms.Label();
             this.TimerOberflaechenHeute = new System.Windows.Forms.Timer(this.components);
             this.BtngesamtOberflaechen = new System.Windows.Forms.Button();
+            this.BtnGlasWaschDaten = new System.Windows.Forms.Button();
+            this.BtnVerwaltung = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -312,20 +313,6 @@
             this.PictureBoxBestellung.TabIndex = 21;
             this.PictureBoxBestellung.TabStop = false;
             // 
-            // BtnAuftragsverwaltung
-            // 
-            this.BtnAuftragsverwaltung.BackColor = System.Drawing.Color.Silver;
-            this.BtnAuftragsverwaltung.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.BtnAuftragsverwaltung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.BtnAuftragsverwaltung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnAuftragsverwaltung.Location = new System.Drawing.Point(36, 211);
-            this.BtnAuftragsverwaltung.Name = "BtnAuftragsverwaltung";
-            this.BtnAuftragsverwaltung.Size = new System.Drawing.Size(239, 66);
-            this.BtnAuftragsverwaltung.TabIndex = 22;
-            this.BtnAuftragsverwaltung.Text = "Auftragsverwaltung";
-            this.BtnAuftragsverwaltung.UseVisualStyleBackColor = false;
-            this.BtnAuftragsverwaltung.Click += new System.EventHandler(this.BtnAuftragsverwaltung_Click);
-            // 
             // process1
             // 
             this.process1.StartInfo.Domain = "";
@@ -376,17 +363,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea1.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea1);
-            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend1.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend1);
+            chartArea2.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea2);
+            legend2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend2.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend2);
             this.chartPerformance.Location = new System.Drawing.Point(602, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartPerformance.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chartPerformance.Series.Add(series2);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -474,12 +461,42 @@
             this.BtngesamtOberflaechen.UseVisualStyleBackColor = false;
             this.BtngesamtOberflaechen.Click += new System.EventHandler(this.BtngesamtOberflaechen_Click);
             // 
+            // BtnGlasWaschDaten
+            // 
+            this.BtnGlasWaschDaten.BackColor = System.Drawing.Color.Silver;
+            this.BtnGlasWaschDaten.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnGlasWaschDaten.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnGlasWaschDaten.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnGlasWaschDaten.Location = new System.Drawing.Point(336, 283);
+            this.BtnGlasWaschDaten.Name = "BtnGlasWaschDaten";
+            this.BtnGlasWaschDaten.Size = new System.Drawing.Size(239, 66);
+            this.BtnGlasWaschDaten.TabIndex = 35;
+            this.BtnGlasWaschDaten.Text = "Glas/Waschdaten";
+            this.BtnGlasWaschDaten.UseVisualStyleBackColor = false;
+            this.BtnGlasWaschDaten.Click += new System.EventHandler(this.BtnGlasWaschDaten_Click);
+            // 
+            // BtnVerwaltung
+            // 
+            this.BtnVerwaltung.BackColor = System.Drawing.Color.Silver;
+            this.BtnVerwaltung.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnVerwaltung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnVerwaltung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnVerwaltung.Location = new System.Drawing.Point(36, 211);
+            this.BtnVerwaltung.Name = "BtnVerwaltung";
+            this.BtnVerwaltung.Size = new System.Drawing.Size(239, 66);
+            this.BtnVerwaltung.TabIndex = 36;
+            this.BtnVerwaltung.Text = "Auftragsverwaltung";
+            this.BtnVerwaltung.UseVisualStyleBackColor = false;
+            this.BtnVerwaltung.Click += new System.EventHandler(this.BtnVerwaltung_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.BtnVerwaltung);
+            this.Controls.Add(this.BtnGlasWaschDaten);
             this.Controls.Add(this.BtngesamtOberflaechen);
             this.Controls.Add(this.lblOberflaechenGestern);
             this.Controls.Add(this.lblOberflaechenHeute);
@@ -491,7 +508,6 @@
             this.Controls.Add(this.splitter1);
             this.Controls.Add(this.LblRam);
             this.Controls.Add(this.LblCpu);
-            this.Controls.Add(this.BtnAuftragsverwaltung);
             this.Controls.Add(this.PictureBoxBestellung);
             this.Controls.Add(this.BtnPersonalliste);
             this.Controls.Add(this.ListBoxDocuments);
@@ -546,7 +562,6 @@
         private System.Windows.Forms.ListBox ListBoxDocuments;
         private System.Windows.Forms.Button BtnPersonalliste;
         private System.Windows.Forms.PictureBox PictureBoxBestellung;
-        private System.Windows.Forms.Button BtnAuftragsverwaltung;
         private System.Diagnostics.Process process1;
         private System.Windows.Forms.Timer TimerCpu;
         private System.Windows.Forms.Timer TimerRam;
@@ -563,6 +578,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Timer TimerOberflaechenHeute;
         private System.Windows.Forms.Button BtngesamtOberflaechen;
+        private System.Windows.Forms.Button BtnGlasWaschDaten;
+        private System.Windows.Forms.Button BtnVerwaltung;
     }
 }
 

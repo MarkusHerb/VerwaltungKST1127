@@ -90,6 +90,11 @@ namespace VerwaltungKST1127
                         anzahlArtikelBestellen--;
                         lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen.ToString() + " Artikel müssen bestellt werden!";
                     }
+                    // Wenn nur ein Artikel bestellt werden muss
+                    if (anzahlArtikelBestellen == 1)
+                    {
+                        lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen.ToString() + " Artikel muss bestellt werden!";
+                    }
                 }
 
                 sqlConnection.Close(); // Datenbankverbindung trennen
