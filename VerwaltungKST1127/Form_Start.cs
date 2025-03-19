@@ -281,14 +281,14 @@ namespace VerwaltungKST1127
         {
             // Formular EingabeSeriePrototyp öffnen
             Form_EingabeSeriePrototyp form_EingabeSeriePrototyp = new Form_EingabeSeriePrototyp();
-            form_EingabeSeriePrototyp.ShowDialog();
+            form_EingabeSeriePrototyp.Show();
         }
 
         // Button Event, wenn man darauf klickt
         private void BtnPrototypenAuftragErstellen_Click(object sender, EventArgs e)
         {
             Form_PrototypenauftragErstellen form_PrototypenauftragErstellen = new Form_PrototypenauftragErstellen();
-            form_PrototypenauftragErstellen.ShowDialog();
+            form_PrototypenauftragErstellen.Show();
         }
 
         // Button Event, wenn man darauf klickt

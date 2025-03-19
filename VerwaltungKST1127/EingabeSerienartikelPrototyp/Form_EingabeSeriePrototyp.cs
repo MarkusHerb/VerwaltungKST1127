@@ -363,11 +363,11 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         // Methode um die Stückzahl für den ausgewählten Ring zu erhalten und anzuzeigen
         private void GetStueckSegmentCharge(string ringName)
         {
-            // SQL-Abfrage, um den Wert der Spalte Gerundet_Segment für den ausgewählten Ring in Ring_Stamm zu finden
+            // SQL-Abfrage, um die Werte der Spalten Gerundet_SegmentDM und AnzahlRing für den ausgewählten Ring in Ring_Stamm zu finden
             string query = @"
-        SELECT Gerundet_SegmentDM 
-        FROM Ring_Stamm 
-        WHERE Vorrichtungsnummer = @RingName"; // Filtere die Zeilen, die genau mit dem Ringnamen übereinstimmen
+    SELECT Gerundet_SegmentDM, AnzahlRing
+    FROM Ring_Stamm 
+    WHERE Vorrichtungsnummer = @RingName"; // Filtere die Zeilen, die genau mit dem Ringnamen übereinstimmen
 
             try
             {
@@ -379,64 +379,74 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 {
                     sqlCommand.Parameters.AddWithValue("@RingName", ringName);
 
-                    // Führe die Abfrage aus und erhalte den Gerundet_Segment-Wert
-                    object result = sqlCommand.ExecuteScalar();
-
-                    if (result != null && int.TryParse(result.ToString(), out int gerundetSegment))
+                    // Führe die Abfrage aus und erhalte die Werte
+                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
-                        // Dictionary mit festen Werten für Gerundet_Segment
-                        Dictionary<int, int> stueckProSegment = new Dictionary<int, int>
-                {
-                    {0,0},
-                    {2,2},
-                    {5,5},
-                    {7,7},
-                    {13,458},
-                    {18,242},
-                    {20,210},
-                    {21,210},
-                    {24,171},
-                    {28,120},
-                    {30,119},
-                    {32,96},
-                    {37,84},
-                    {39,66},
-                    {47,49},
-                    {53,36},
-                    {59,28},
-                    {62,28},
-                    {67,28},
-                    {73,23},
-                    {85,12},
-                    {86,17},
-                    {93,15},
-                    {105,16},
-                    {126,7},
-                    {999,0}
-                };
-
-                        // Überprüfen, ob der Wert im Dictionary vorhanden ist und die entsprechende Stückzahl abrufen
-                        if (stueckProSegment.TryGetValue(gerundetSegment, out int stueckzahl))
+                        if (reader.Read())
                         {
-                            // Aktualisiere die Textbox mit der gefundenen Stückzahl
-                            TxtboxStkSegment.Text = stueckzahl.ToString();
+                            int gerundetSegment = reader.GetInt32(reader.GetOrdinal("Gerundet_SegmentDM"));
+                            int anzahlRing = reader.GetInt32(reader.GetOrdinal("AnzahlRing"));
 
-                            // Optional: Berechne und setze die Gesamtstückzahl in einer anderen Textbox
-                            int stueckzahlGesamt = stueckzahl * 3;
-                            TxtboxStkCharge.Text = stueckzahlGesamt.ToString();
+                            // Dictionary mit festen Werten für Gerundet_Segment
+                            Dictionary<int, int> stueckProSegment = new Dictionary<int, int>
+                    {
+                        {0,0},
+                        {2,2},
+                        {5,5},
+                        {7,7},
+                        {13,458},
+                        {18,242},
+                        {20,210},
+                        {21,210},
+                        {24,171},
+                        {28,120},
+                        {30,119},
+                        {32,96},
+                        {37,84},
+                        {39,66},
+                        {47,49},
+                        {53,36},
+                        {59,28},
+                        {62,28},
+                        {67,28},
+                        {73,23},
+                        {85,12},
+                        {86,17},
+                        {93,15},
+                        {105,16},
+                        {126,7},
+                        {999,0}
+                    };
+
+                            // Überprüfen, ob der Wert im Dictionary vorhanden ist und die entsprechende Stückzahl abrufen
+                            if (stueckProSegment.TryGetValue(gerundetSegment, out int stueckzahl))
+                            {
+                                // Wenn AnzahlRing nicht 0 oder 1 ist, multipliziere stueckzahl mit AnzahlRing
+                                if (anzahlRing != 0 && anzahlRing != 1)
+                                {
+                                    stueckzahl *= anzahlRing;
+                                }
+
+                                // Aktualisiere die Textbox mit der gefundenen Stückzahl
+                                TxtboxStkSegment.Text = stueckzahl.ToString();
+
+                                // Optional: Berechne und setze die Gesamtstückzahl in einer anderen Textbox
+                                int stueckzahlGesamt = stueckzahl * 3;
+                                TxtboxStkCharge.Text = stueckzahlGesamt.ToString();
+                            }
+                            else
+                            {
+                                // Wenn kein passender Wert gefunden wurde, setze die Textboxen auf 0
+                                TxtboxStkSegment.Text = "0";
+                                TxtboxStkCharge.Text = "0";
+                            }
                         }
                         else
                         {
-                            // Wenn kein passender Wert gefunden wurde, setze die Textboxen auf 0
+                            // Wenn keine Daten gefunden wurden, setze die Textboxen auf 0
                             TxtboxStkSegment.Text = "0";
                             TxtboxStkCharge.Text = "0";
                         }
-                    }
-                    else
-                    {
-                        // Wenn keine Daten gefunden wurden, setze die Textboxen auf 0
-                        TxtboxStkSegment.Text = "0";
-                        TxtboxStkCharge.Text = "0";
                     }
                 }
             }
@@ -454,6 +464,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 }
             }
         }
+
 
 
         private void SpeichereDatenInDatenbank(string artikelnummer, string bezeichnung, string status, string gruppenname, string zukauf, string flaeche
@@ -841,7 +852,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         // Event-Handler wenn auf den Button geklickt wird
         private void BtnArtikelAendern_Click(object sender, EventArgs e)
         {
-            Form_ArtikelPrototypAendern form_ArtikelPrototypAendern = new Form_ArtikelPrototypAendern();
+            Form_ArtikelPrototypAendern form_ArtikelPrototypAendern = new Form_ArtikelPrototypAendern("12-2044", "1");
             form_ArtikelPrototypAendern.Show(); // Zeigt das neue Formular an
             form_ArtikelPrototypAendern.BringToFront(); // Bringt das neue Formular in den Vordergrund
         }

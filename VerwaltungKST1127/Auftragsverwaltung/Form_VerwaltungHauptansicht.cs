@@ -6,6 +6,7 @@ using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace 
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
 using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
 using System.Windows.Forms;
+using VerwaltungKST1127.EingabeSerienartikelPrototyp;
 
 namespace VerwaltungKST1127.Auftragsverwaltung
 {
@@ -86,6 +87,21 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             {
                 // Wert, der bei Belag steht, abrufen
                 var selectedBelagValue = DgvLadeBelaege.Rows[e.RowIndex].Cells["Belag"].Value?.ToString();
+                // Nur falls der Wert nicht null ist, wird er weiterverarbeitet
+                if (!string.IsNullOrEmpty(selectedBelagValue))
+                {
+                    UpdateDgvAnsichtAuftraege(selectedBelagValue);
+                }
+            }
+        }
+
+        // Hilfsfunktion um das DgvAnsichtAuftraege zu aktualisieren
+        private void UpdateDgvAnsichtAuftraege2()
+        {
+            if (DgvLadeBelaege.CurrentRow != null)
+            {
+                // Wert, der bei Belag steht, abrufen
+                var selectedBelagValue = DgvLadeBelaege.CurrentRow.Cells["Belag"].Value?.ToString();
                 // Nur falls der Wert nicht null ist, wird er weiterverarbeitet
                 if (!string.IsNullOrEmpty(selectedBelagValue))
                 {
@@ -568,6 +584,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     setzeDringend1.Click += SetzeDringend1_Click;
                     setzeDringend2.Click += SetzeDringend2_Click;
                     resettDringend.Click += ResettDringend_Click;
+                    serienlinse.Click += Serienlinse_Click;
                     // Verknüpfen Sie die anderen Menüeinträge mit ihren entsprechenden Methoden, falls erforderlich
                     // Menüeinträge zum Kontextmenü hinzufügen
                     contextMenu.Items.AddRange(new ToolStripItem[] { setzeDringend1, setzeDringend2, resettDringend, serienlinse });
@@ -600,6 +617,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     // Methode aufrufen, um die Daten in die Ansicht_Bildschirm-Tabelle zu speichern
                     SaveToAnsichtBildschirm(auftragsNr, artikel, "1");
+                    UpdateDgvAnsichtAuftraege2();
                 }
             }
         }
@@ -630,6 +648,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     {
                         // Methode aufrufen, um die Daten in die Ansicht_Bildschirm-Tabelle zu speichern
                         SaveToAnsichtBildschirm(auftragsNr, artikel, "2");
+                        UpdateDgvAnsichtAuftraege2();
                     }
                 }
             }
@@ -650,10 +669,32 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     // Methode aufrufen, um die Daten in die Ansicht_Bildschirm-Tabelle zu speichern
                     DeleteFromAnsichtBildschirm(auftragsNr, artikel);
+                    UpdateDgvAnsichtAuftraege2();
                 }
             }
         }
 
+        // Wenn auf Serienlinse geklickt wird geht das Fenster mit allen Informationen zu der Serienlinse auf
+        private void Serienlinse_Click(object sender, EventArgs e)
+        {
+            // Überprüfen, ob eine Zeile im DataGridView ausgewählt ist
+            if (DgvAnsichtAuftraege.CurrentRow != null)
+            {
+                // Artikelnummer und Seite aus der ausgewählten Zeile abrufen
+                string artikelNr = DgvAnsichtAuftraege.CurrentRow.Cells["Artikel"].Value?.ToString();
+                string seite = DgvAnsichtAuftraege.CurrentRow.Cells["Seite"].Value?.ToString();
+
+                // Überprüfen, ob Artikelnummer und Seite nicht null oder leer sind
+                if (!string.IsNullOrEmpty(artikelNr) && !string.IsNullOrEmpty(seite))
+                {
+                    // Das Formular öffnen und die Artikelnummer und Seite übergeben
+                    Form_ArtikelPrototypAendern artikelPrototypAendern = new Form_ArtikelPrototypAendern(artikelNr, seite);
+                    artikelPrototypAendern.ShowDialog();
+                }
+            }
+        }
+
+        // Methode zum Speichern von Daten in die Ansicht_Bildschirm-Tabelle
         private void SaveToAnsichtBildschirm(string auftragsNr, string artikel, string dringendWert)
         {
             try

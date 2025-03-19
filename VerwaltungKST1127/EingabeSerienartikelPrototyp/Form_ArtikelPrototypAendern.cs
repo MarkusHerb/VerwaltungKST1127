@@ -13,11 +13,23 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
         private readonly SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True");
 
-        public Form_ArtikelPrototypAendern()
+        public Form_ArtikelPrototypAendern(string artikelNr, string seite)
         {
             InitializeComponent();
             FillComboBoxArtikel();
             ComboboxAuswahlArtikel.SelectedIndexChanged += ComboboxAuswahlArtikel_SelectedIndexChanged;
+
+            // Setze die Artikelnummer und die Seite in der ComboBox wenn in der Auftragsverwaltung ein Artikel ausgewählt wurde
+            string artikelSeite = $"{artikelNr} - {seite}";
+
+            // Überprüfen, ob das Element bereits in der ComboBox vorhanden ist
+            int index = ComboboxAuswahlArtikel.Items.IndexOf(artikelSeite);
+
+            if (index != -1)
+            {
+                // Wenn das Element vorhanden ist, wähle es aus
+                ComboboxAuswahlArtikel.SelectedIndex = index;
+            }
 
         }
 

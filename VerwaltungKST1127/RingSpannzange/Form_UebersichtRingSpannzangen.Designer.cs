@@ -61,6 +61,11 @@
             this.BtnArtikelLoeschen = new System.Windows.Forms.Button();
             this.txtBoxRingeGesamt = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.label15 = new System.Windows.Forms.Label();
+            this.txtBoxSucheArtikelRingNummer = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DgvAnsichtAlleRingeSpannzangen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvBoxen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvArtikel)).BeginInit();
@@ -393,11 +398,64 @@
             this.label11.TabIndex = 31;
             this.label11.Text = "Ringe gesamt";
             // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.Black;
+            this.panel1.Location = new System.Drawing.Point(358, 238);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(336, 1);
+            this.panel1.TabIndex = 33;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(384, 252);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(180, 24);
+            this.label15.TabIndex = 34;
+            this.label15.Text = "Suche Ringnummer";
+            // 
+            // txtBoxSucheArtikelRingNummer
+            // 
+            this.txtBoxSucheArtikelRingNummer.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtBoxSucheArtikelRingNummer.Location = new System.Drawing.Point(388, 279);
+            this.txtBoxSucheArtikelRingNummer.Name = "txtBoxSucheArtikelRingNummer";
+            this.txtBoxSucheArtikelRingNummer.Size = new System.Drawing.Size(125, 24);
+            this.txtBoxSucheArtikelRingNummer.TabIndex = 35;
+            this.txtBoxSucheArtikelRingNummer.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtBoxSucheArtikelRingNummer_KeyDown);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(519, 290);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(101, 13);
+            this.label16.TabIndex = 36;
+            this.label16.Text = "Mit Enter bestätigen";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.label17.Location = new System.Drawing.Point(385, 316);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(273, 26);
+            this.label17.TabIndex = 37;
+            this.label17.Text = "z.B R625 o. Z500\r\nDanach klick auf Ring für Info Boxen + Artikelzuordnung";
+            // 
             // DgvZuordnungArtikel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(705, 824);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.txtBoxSucheArtikelRingNummer);
+            this.Controls.Add(this.label15);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.txtBoxRingeGesamt);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.BtnArtikelLoeschen);
@@ -477,5 +535,10 @@
         private System.Windows.Forms.Button BtnArtikelLoeschen;
         private System.Windows.Forms.TextBox txtBoxRingeGesamt;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TextBox txtBoxSucheArtikelRingNummer;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label17;
     }
 }

@@ -20,8 +20,8 @@ namespace VerwaltungKST1127.RingSpannzange
         // Klasse für die Passwort-Eingabeaufforderung
         public static class Prompt
         {
-            
-            public static string ShowDialog(string text, string caption) 
+            // Funktion zum Anzeigen des Dialogs für eine Passwort-Eingabeaufforderung
+            public static string ShowDialog(string text, string caption)
             {
                 // Erstellen eines neuen Formulars
                 Form prompt = new Form()
@@ -50,33 +50,36 @@ namespace VerwaltungKST1127.RingSpannzange
         public DgvZuordnungArtikel()
         {
             InitializeComponent();
-            UpdateDgvAnsichtRinge();
+            UpdateDgvAnsichtRinge(); // Aktualisieren der DataGridView
             txtBoxStkZange.Text = "1";
             txtBoxVorrichtungsnummerZange.Text = "Z";
             txtBoxVorrichtungsNummerRing.Text = "R";
             // Setzen der SelectionMode-Eigenschaft auf FullRowSelect
             DgvArtikel.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            // Event-Handler für die TxtBoxSucheArtikelRingNummer
+            txtBoxSucheArtikelRingNummer.KeyDown += txtBoxSucheArtikelRingNummer_KeyDown;
+
         }
 
         // Event-Händler für den Button "Ring hinzufügen"
         private void BtnRingSave_Click(object sender, EventArgs e)
         {
             string vorrichtungsnummerRing = txtBoxVorrichtungsNummerRing.Text;
-
+            // Validierung 
             if (!decimal.TryParse(txtBoxDmInnenRing.Text, out decimal dmInnen))
             {
                 MessageBox.Show("Ungültiger Wert für DM Ring. Bitte überprüfen Sie das Format oder eine 0 eingeben.");
                 return;
             }
             dmInnen = Math.Round(dmInnen, 1);
-
+            // Validierung 
             if (!decimal.TryParse(txtBoxDmAussenRing.Text, out decimal dmAussen))
             {
                 MessageBox.Show("Ungültiger Wert für DM Ring Außen. Bitte überprüfen Sie das Format oder eine 0 eingeben.");
                 return;
             }
             dmAussen = Math.Round(dmAussen, 1);
-
+            // Validierung 
             if (!decimal.TryParse(txtBoxDmFreibereich.Text, out decimal dmFreibereich))
             {
                 MessageBox.Show("Ungültiger Wert für DM Freibereich. Bitte überprüfen Sie das Format oder eine 0 eingeben.");
@@ -276,7 +279,7 @@ namespace VerwaltungKST1127.RingSpannzange
                 // Angeklickte Zeile in Textboxen anzeigen
                 // Wenn Vorrichtungsnummer mit R, A, K oder T beginnt
 
-                if (row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("R") || row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("T") 
+                if (row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("R") || row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("T")
                     || row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("A") || row.Cells["Vorrichtungsnummer"].Value.ToString().StartsWith("K"))
                 {
                     txtBoxVorrichtungsNummerRing.Text = row.Cells["Vorrichtungsnummer"].Value.ToString();
@@ -468,6 +471,43 @@ namespace VerwaltungKST1127.RingSpannzange
             catch (Exception ex)
             {
                 MessageBox.Show("Fehler: " + ex.Message);
+            }
+        }
+
+        // Wenn ein Wert in der TextBox steht und Enter gedrückt wird, wird in dem DGV nach der Artikelnummer gesucht
+        private void txtBoxSucheArtikelRingNummer_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                // Eingabewert aus der TextBox holen
+                string searchValue = txtBoxSucheArtikelRingNummer.Text;
+
+                // Überprüfen, ob der Eingabewert mit R, Z, K oder A beginnt
+                if (!string.IsNullOrEmpty(searchValue) &&
+                    (searchValue.StartsWith("R") || searchValue.StartsWith("Z") || searchValue.StartsWith("K") || searchValue.StartsWith("A")))
+                {
+                    // Durchsuche die DataGridView nach der Vorrichtungsnummer
+                    foreach (DataGridViewRow row in DgvAnsichtAlleRingeSpannzangen.Rows)
+                    {
+                        if (row.Cells["Vorrichtungsnummer"].Value != null &&
+                            row.Cells["Vorrichtungsnummer"].Value.ToString().Equals(searchValue, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Markiere die gefundene Zeile
+                            row.Selected = true;
+                            DgvAnsichtAlleRingeSpannzangen.FirstDisplayedScrollingRowIndex = row.Index;
+                            return;
+                        }
+                    }
+                    UpdateDgvAnsichtRinge();
+                    UpdateDgvArtikel();
+
+                    // Wenn keine Übereinstimmung gefunden wurde, zeige eine Nachricht an
+                    MessageBox.Show("Keine Übereinstimmung gefunden.", "Hinweis", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Bitte geben Sie eine gültige Vorrichtungsnummer ein, die mit R, Z, K oder A beginnt.", "Ungültige Eingabe", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
     }
