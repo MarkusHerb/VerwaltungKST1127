@@ -47,6 +47,7 @@ namespace VerwaltungKST1127
             // Oberflächen anzeigen
             UpdateOberflaechenHeute();
             UpdateOberflaechenGestern();
+            UpdateOberflaechenGesamt();
         }
 
         // ############## Selbst erstellte Funktionen 
@@ -134,6 +135,27 @@ namespace VerwaltungKST1127
             }
 
             lblOberflaechenGestern.Text = $"{totalSum} Stk.";
+        }
+
+        // Funktion zum Berechnen der gesamten Oberlächen ab 03.24
+        private void UpdateOberflaechenGesamt()
+        {
+            string connectionString = @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Chargenprotokoll;Integrated Security=True;Encrypt=False";
+            string[] tables = { "Chargenprotokoll20", "Chargenprotokoll25", "Chargenprotokoll30", "Chargenprotokoll35", "Chargenprotokoll40", "Chargenprotokoll45", "Chargenprotokoll50", "Chargenprotokoll60", "Chargenprotokoll65" };
+            int totalSum = 0;
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                con.Open();
+                foreach (string table in tables)
+                {
+                    string query = $"SELECT ISNULL(SUM(Stk1), 0) + ISNULL(SUM(Stk2), 0) + ISNULL(SUM(Stk3), 0) FROM {table} WHERE Datum >= '2024-03-01'";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        totalSum += (int)cmd.ExecuteScalar();
+                    }
+                }
+            }
+            lblOberflaechenGesamt.Text = $"{totalSum} Stk.";
         }
 
         // Funktion für die instanziierung des PerformanceCounters

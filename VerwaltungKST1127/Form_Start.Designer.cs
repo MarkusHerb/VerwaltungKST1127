@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend8 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -72,6 +72,8 @@
             this.BtngesamtOberflaechen = new System.Windows.Forms.Button();
             this.BtnGlasWaschDaten = new System.Windows.Forms.Button();
             this.BtnVerwaltung = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lblOberflaechenGesamt = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -363,17 +365,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea2.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea2);
-            legend2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend2.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend2);
+            chartArea8.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea8);
+            legend8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend8.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend8);
             this.chartPerformance.Location = new System.Drawing.Point(602, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartPerformance.Series.Add(series2);
+            series8.ChartArea = "ChartArea1";
+            series8.Legend = "Legend1";
+            series8.Name = "Series1";
+            this.chartPerformance.Series.Add(series8);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -406,7 +408,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(942, 483);
+            this.label2.Location = new System.Drawing.Point(942, 424);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(148, 17);
             this.label2.TabIndex = 30;
@@ -416,7 +418,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(942, 501);
+            this.label3.Location = new System.Drawing.Point(942, 463);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(162, 17);
             this.label3.TabIndex = 31;
@@ -426,7 +428,8 @@
             // 
             this.lblOberflaechenHeute.AutoSize = true;
             this.lblOberflaechenHeute.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOberflaechenHeute.Location = new System.Drawing.Point(1101, 483);
+            this.lblOberflaechenHeute.ForeColor = System.Drawing.Color.Blue;
+            this.lblOberflaechenHeute.Location = new System.Drawing.Point(946, 442);
             this.lblOberflaechenHeute.Name = "lblOberflaechenHeute";
             this.lblOberflaechenHeute.Size = new System.Drawing.Size(16, 17);
             this.lblOberflaechenHeute.TabIndex = 32;
@@ -436,7 +439,8 @@
             // 
             this.lblOberflaechenGestern.AutoSize = true;
             this.lblOberflaechenGestern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOberflaechenGestern.Location = new System.Drawing.Point(1101, 501);
+            this.lblOberflaechenGestern.ForeColor = System.Drawing.Color.Blue;
+            this.lblOberflaechenGestern.Location = new System.Drawing.Point(946, 480);
             this.lblOberflaechenGestern.Name = "lblOberflaechenGestern";
             this.lblOberflaechenGestern.Size = new System.Drawing.Size(16, 17);
             this.lblOberflaechenGestern.TabIndex = 33;
@@ -452,12 +456,12 @@
             this.BtngesamtOberflaechen.BackColor = System.Drawing.Color.Gold;
             this.BtngesamtOberflaechen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtngesamtOberflaechen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.BtngesamtOberflaechen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtngesamtOberflaechen.Location = new System.Drawing.Point(1104, 445);
+            this.BtngesamtOberflaechen.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtngesamtOberflaechen.Location = new System.Drawing.Point(945, 541);
             this.BtngesamtOberflaechen.Name = "BtngesamtOberflaechen";
-            this.BtngesamtOberflaechen.Size = new System.Drawing.Size(59, 35);
+            this.BtngesamtOberflaechen.Size = new System.Drawing.Size(107, 24);
             this.BtngesamtOberflaechen.TabIndex = 34;
-            this.BtngesamtOberflaechen.Text = "Gesamt";
+            this.BtngesamtOberflaechen.Text = "Ansicht Oberflächen";
             this.BtngesamtOberflaechen.UseVisualStyleBackColor = false;
             this.BtngesamtOberflaechen.Click += new System.EventHandler(this.BtngesamtOberflaechen_Click);
             // 
@@ -489,12 +493,35 @@
             this.BtnVerwaltung.UseVisualStyleBackColor = false;
             this.BtnVerwaltung.Click += new System.EventHandler(this.BtnVerwaltung_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(942, 502);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(171, 17);
+            this.label4.TabIndex = 37;
+            this.label4.Text = "Oberflächen ab 03.24:";
+            // 
+            // lblOberflaechenGesamt
+            // 
+            this.lblOberflaechenGesamt.AutoSize = true;
+            this.lblOberflaechenGesamt.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblOberflaechenGesamt.ForeColor = System.Drawing.Color.Blue;
+            this.lblOberflaechenGesamt.Location = new System.Drawing.Point(946, 519);
+            this.lblOberflaechenGesamt.Name = "lblOberflaechenGesamt";
+            this.lblOberflaechenGesamt.Size = new System.Drawing.Size(16, 17);
+            this.lblOberflaechenGesamt.TabIndex = 38;
+            this.lblOberflaechenGesamt.Text = "0";
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.lblOberflaechenGesamt);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.BtnVerwaltung);
             this.Controls.Add(this.BtnGlasWaschDaten);
             this.Controls.Add(this.BtngesamtOberflaechen);
@@ -580,6 +607,8 @@
         private System.Windows.Forms.Button BtngesamtOberflaechen;
         private System.Windows.Forms.Button BtnGlasWaschDaten;
         private System.Windows.Forms.Button BtnVerwaltung;
+        private System.Windows.Forms.Label lblOberflaechenGesamt;
+        private System.Windows.Forms.Label label4;
     }
 }
 

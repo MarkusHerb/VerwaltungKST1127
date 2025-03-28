@@ -15,6 +15,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // Verbindungszeichenfolge für die SQL Server-Datenbank Verwaltung
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
         private readonly SqlConnection sqlConnectionVerwaltungAlt = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung;Integrated Security=True;Encrypt=False");
+        // Feld zum Speichern des ausgewählten Belag-Werts
+        private string selectedBelagValue;
 
         public Form_VerwaltungHauptansicht()
         {
@@ -86,7 +88,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             if (e.RowIndex >= 0)
             {
                 // Wert, der bei Belag steht, abrufen
-                var selectedBelagValue = DgvLadeBelaege.Rows[e.RowIndex].Cells["Belag"].Value?.ToString();
+                selectedBelagValue = DgvLadeBelaege.Rows[e.RowIndex].Cells["Belag"].Value?.ToString();
                 // Nur falls der Wert nicht null ist, wird er weiterverarbeitet
                 if (!string.IsNullOrEmpty(selectedBelagValue))
                 {
@@ -101,7 +103,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             if (DgvLadeBelaege.CurrentRow != null)
             {
                 // Wert, der bei Belag steht, abrufen
-                var selectedBelagValue = DgvLadeBelaege.CurrentRow.Cells["Belag"].Value?.ToString();
+                selectedBelagValue = DgvLadeBelaege.CurrentRow.Cells["Belag"].Value?.ToString();
                 // Nur falls der Wert nicht null ist, wird er weiterverarbeitet
                 if (!string.IsNullOrEmpty(selectedBelagValue))
                 {
@@ -594,6 +596,41 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
+        // Wenn auf eine Reihe doppelt geklickt wird, öffnet sich das Formular Form_Druckuebersiht und gewisse Werte werden übergeben
+        private void DgvAnsichtAuftraege_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Überprüfen, ob eine gültige Zeile ausgewählt ist
+            if (e.RowIndex >= 0)
+            {
+                // Die ausgewählte Zeile abrufen
+                DataGridViewRow selectedRow = DgvAnsichtAuftraege.Rows[e.RowIndex];
+
+                // Werte aus der ausgewählten Zeile abrufen
+                string enddatum = selectedRow.Cells["Enddatum"].Value?.ToString();
+                string teilebez = selectedRow.Cells["Teilebez."].Value?.ToString();
+                string auftragsNr = selectedRow.Cells["Auftragsnr."].Value?.ToString();
+                string artikel = selectedRow.Cells["Artikel"].Value?.ToString();
+                string status = selectedRow.Cells["Status"].Value?.ToString();
+                string avoInfo = selectedRow.Cells["AVOinfo"].Value?.ToString();
+                string material = selectedRow.Cells["Material"].Value?.ToString();
+                string seite = selectedRow.Cells["Seite"].Value?.ToString();
+                string sollStk = selectedRow.Cells["SollStk."].Value?.ToString();
+                string istStk = selectedRow.Cells["IstStk."].Value?.ToString();
+                string vorStk = selectedRow.Cells["VorStk."].Value?.ToString();
+                string teilelager = selectedRow.Cells["Teilelager"].Value?.ToString();
+                string bereitstell = selectedRow.Cells["Bereitstell"].Value?.ToString();
+                string jahresbedarf = selectedRow.Cells["Jahresbedarf"].Value?.ToString();
+                string zukauf = selectedRow.Cells["Zukauf"].Value?.ToString();
+                string dringend = selectedRow.Cells["Dringend"].Value?.ToString();
+                string aktualisiert = selectedRow.Cells["Aktualisiert"].Value?.ToString();
+
+                // Neues Formular Form_Druckübersicht öffnen und Werte übergeben
+                Form_Druckuebersicht druckuebersichtForm = new Form_Druckuebersicht(
+                    enddatum, teilebez, auftragsNr, artikel, status, avoInfo, material, seite, sollStk, istStk, vorStk, teilelager, bereitstell, jahresbedarf, zukauf, dringend, aktualisiert, selectedBelagValue);
+                druckuebersichtForm.ShowDialog();
+            }
+        }
+
         // Wenn auf Setze Dringend 1 geklickt wird
         private void SetzeDringend1_Click(object sender, EventArgs e)
         {
@@ -850,5 +887,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
         }
+
+        
     }
 }

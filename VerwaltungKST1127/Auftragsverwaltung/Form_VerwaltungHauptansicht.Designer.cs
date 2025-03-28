@@ -127,10 +127,6 @@
             this.label1.Size = new System.Drawing.Size(71, 20);
             this.label1.TabIndex = 17;
             this.label1.Text = "Filterung";
-            //
-            // Klick für Dringend1
-            //
-            this.DgvAnsichtAuftraege.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DgvAnsichtAuftraege_MouseDown);
             // 
             // PictureBoxZeichnung
             // 
@@ -159,6 +155,7 @@
             this.DgvAnsichtAuftraege.Size = new System.Drawing.Size(1531, 532);
             this.DgvAnsichtAuftraege.TabIndex = 14;
             this.DgvAnsichtAuftraege.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvAnsichtAuftraege_CellClick);
+            this.DgvAnsichtAuftraege.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvAnsichtAuftraege_CellDoubleClick);
             this.DgvAnsichtAuftraege.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvAnsichtAuftraege_CellFormatting);
             this.DgvAnsichtAuftraege.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DgvAnsichtAuftraege_MouseDown);
             // 
