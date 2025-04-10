@@ -48,6 +48,8 @@ namespace VerwaltungKST1127
             UpdateOberflaechenHeute();
             UpdateOberflaechenGestern();
             UpdateOberflaechenGesamt();
+
+            this.Icon = new Icon("electromagnetic_spectrum_icon.ico");
         }
 
         // ############## Selbst erstellte Funktionen 

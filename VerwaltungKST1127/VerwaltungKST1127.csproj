@@ -440,6 +440,7 @@
     <Content Include="Bilder\BackgroundMainWindow.png" />
     <Content Include="Bilder\ButtonSpectrum.png" />
     <Content Include="Bilder\Deckel für Liner.png" />
+    <Content Include="Bilder\electromagnetic_spectrum_icon.ico" />
     <Content Include="Bilder\InformationLager.png" />
     <Content Include="Bilder\Leer.gif" />
     <Content Include="Bilder\Linsen.png" />

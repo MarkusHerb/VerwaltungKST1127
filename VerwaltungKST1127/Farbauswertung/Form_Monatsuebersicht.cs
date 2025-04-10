@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System; 
+using System.Collections.Generic; 
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace VerwaltungKST1127.Farbauswertung
 {
@@ -169,6 +170,46 @@ namespace VerwaltungKST1127.Farbauswertung
 
             // Setzen des Durchschnitts in das Label
             LblAverage.Text = $"Ø Chargen/Monat: {average:F2}";  // Durchschnitt mit 2 Dezimalstellen anzeigen
+
+            // Trenlinie für den Durchschnittswert zeichnen
+            // --- Trendlinie hinzufügen ---
+            Series trendLine = new Series("Trend")
+            {
+                ChartType = SeriesChartType.Line, // Trendlinie
+                BorderWidth = 1, // Dicke der Linie
+                Color = Color.LightGray, // Farbe der Linie
+                IsVisibleInLegend = false, // Legende ausblenden
+                IsValueShownAsLabel = false, // Werte nicht anzeigen              
+                BorderDashStyle = ChartDashStyle.Dash // gestrichelte Linie
+            };
+
+            // Berechnung der Trendlinie (lineare Regression)
+            double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            int n = ChartMonatsuebersicht.Series[0].Points.Count;
+
+            for (int i = 0; i < n; i++)
+            {
+                double x = i + 1; // Monat als numerischer Wert
+                double y = ChartMonatsuebersicht.Series[0].Points[i].YValues[0];
+
+                sumX += x;
+                sumY += y;
+                sumXY += x * y;
+                sumX2 += x * x;
+            }
+
+            double slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            double intercept = (sumY - slope * sumX) / n;
+
+            for (int i = 0; i < n; i++)
+            {
+                double x = i + 1;
+                double y = slope * x + intercept;
+                trendLine.Points.AddXY(ChartMonatsuebersicht.Series[0].Points[i].AxisLabel, y);
+            }
+
+            ChartMonatsuebersicht.Series.Add(trendLine);
+            // --- Ende der Trendlinie ---
 
             // --- Diagramm: Belagsübersicht ---
 

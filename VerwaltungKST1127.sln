@@ -5,6 +5,11 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VerwaltungKST1127", "VerwaltungKST1127\VerwaltungKST1127.csproj", "{4726E043-2D6F-444F-9D90-E6752EE19226}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{5EBF8BB7-15F8-4EA5-8AF3-51D52FBB00F3}"
+	ProjectSection(SolutionItems) = preProject
+		P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\electromagnetic_spectrum_icon.ico = P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\electromagnetic_spectrum_icon.ico
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

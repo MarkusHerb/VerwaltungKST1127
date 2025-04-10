@@ -521,6 +521,16 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // Grafische gestaltung des Dgvs 
         private void DgvAnsichtAuftraege_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
+            // Wenn in der Reihe Status Active steht, dann soll die ganze Spalte blau hinterlegt werden
+            if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Status")
+            {
+                if (e.Value != null && e.Value.ToString() == "Active")
+                {
+                    e.CellStyle.BackColor = Color.LightGreen;
+                    //dGvAnsichtAuswahlAuftrag.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
+                }
+            }
+
             // Überprüfen, ob es sich um eine Spalte handelt
             if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Status")
             {
@@ -556,7 +566,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     e.CellStyle.BackColor = Color.Yellow;
                 }
-            }
+            }  
         }
 
         private void DgvAnsichtAuftraege_MouseDown(object sender, MouseEventArgs e)
@@ -627,10 +637,10 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // Neues Formular Form_Druckübersicht öffnen und Werte übergeben
                 Form_Druckuebersicht druckuebersichtForm = new Form_Druckuebersicht(
                     enddatum, teilebez, auftragsNr, artikel, status, avoInfo, material, seite, sollStk, istStk, vorStk, teilelager, bereitstell, jahresbedarf, zukauf, dringend, aktualisiert, selectedBelagValue);
-                druckuebersichtForm.ShowDialog();
+                druckuebersichtForm.ShowDialog();  
             }
         }
-
+       
         // Wenn auf Setze Dringend 1 geklickt wird
         private void SetzeDringend1_Click(object sender, EventArgs e)
         {
@@ -887,7 +897,5 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
         }
-
-        
     }
 }

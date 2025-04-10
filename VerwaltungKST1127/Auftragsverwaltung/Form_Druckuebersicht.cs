@@ -1,13 +1,14 @@
-﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
+﻿using Newtonsoft.Json;
+using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
 using System.Collections.Generic; // Importieren des System.Collections.Generic-Namespace für die Arbeit mit generischen Sammlungen (z.B. List<T>, Dictionary<TKey, TValue>)
 using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
 using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
+using System.Drawing.Imaging; // Importieren des System.Drawing.Imaging-Namespace für die Arbeit mit Bildformaten und -konvertierungen
 using System.Runtime.InteropServices; // Importieren des System.Runtime.InteropServices-Namespace für die Interoperabilität zwischen verwalteten und nicht verwalteten Codes
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Windows-Formularanwendungen
-using Excel = Microsoft.Office.Interop.Excel; // Importieren des Microsoft.Office.Interop.Excel-Namespace für die Arbeit mit Excel-Dateien
 using ZXing; // Importieren des ZXing-Namespace für die Erstellung von Barcodes
-using System.Drawing.Imaging; // Importieren des System.Drawing.Imaging-Namespace für die Arbeit mit Bildformaten und -konvertierungen
+using Excel = Microsoft.Office.Interop.Excel; // Importieren des Microsoft.Office.Interop.Excel-Namespace für die Arbeit mit Excel-Dateien
 
 namespace VerwaltungKST1127.Auftragsverwaltung
 {
@@ -334,9 +335,10 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     Excel.Worksheet worksheet = workbook.Sheets[sheetName];
                     worksheet.Cells[2, 6].Value = auftragsNr; // Zelle F2
+                    worksheet.Cells[2, 2].NumberFormat = "@"; // Format der Zelle auf Text setzen
                     worksheet.Cells[2, 2].Value = artikel; // Zelle B2
                     worksheet.Cells[2, 10].Value = teilebez; // Zelle J2
-                    worksheet.Cells[4, 12].Value = sollStk; // Zelle L4
+                    worksheet.Cells[4, 13].Value = sollStk; // Zelle M4
                     worksheet.Cells[4, 7].Value = labelWert; // Zelle G4
                     worksheet.Cells[5, 7].Value = enddatum; // Zelle G5
 
@@ -352,12 +354,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                         worksheet.Cells[23, 11].Value = serienlinsenDaten["DM"]; // Zelle K23
                         worksheet.Cells[24, 11].Value = serienlinsenDaten["DICKE"]; // Zelle K24
                         worksheet.Cells[25, 10].Value = serienlinsenDaten["InfoZeichnung_Bemerkungen"]; // Zelle J26
-                        
-                        // Bild einfügen
-                        string bildPfad = serienlinsenDaten["InfoZeichnung"]; // Pfad zum Bild
-                        if (!string.IsNullOrEmpty(bildPfad) && System.IO.File.Exists(bildPfad)) // Überprüfen, ob das Bild existiert
+
+                        // Bild einfügen Auflegeinformation (Zeichnungspfad)
+                        string bildPfad1 = serienlinsenDaten["Zeichnungspfad"]; // Pfad zum Bild
+                        if (!string.IsNullOrEmpty(bildPfad1) && System.IO.File.Exists(bildPfad1)) // Überprüfen, ob das Bild existiert
                         {
-                            Excel.Range oRange = worksheet.get_Range("I10", "M16"); // Bereich für das Bild
+                            Excel.Range oRange = worksheet.get_Range("I10", "K16"); // Bereich für das Bild
 
                             // Löschen vorhandener Bilder im Bereich
                             List<Excel.Shape> shapesToDelete = new List<Excel.Shape>();
@@ -381,7 +383,38 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                             float top = (float)((double)oRange.Top); // Position des Bereichs
                             float width = (float)((double)oRange.Width); // Breite des Bereichs
                             float height = (float)((double)oRange.Height); // Höhe des Bereichs
-                            worksheet.Shapes.AddPicture(bildPfad, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, left, top, width, height); // Bild einfügen
+                            worksheet.Shapes.AddPicture(bildPfad1, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, left, top, width, height); // Bild einfügen
+                        }
+
+                        // Bild einfügen Info Zeichnung
+                        string bildPfad2 = serienlinsenDaten["InfoZeichnung"]; // Pfad zum Bild
+                        if (!string.IsNullOrEmpty(bildPfad2) && System.IO.File.Exists(bildPfad2)) // Überprüfen, ob das Bild existiert
+                        {
+                            Excel.Range oRange = worksheet.get_Range("M10", "N16"); // Bereich für das Bild
+
+                            // Löschen vorhandener Bilder im Bereich
+                            List<Excel.Shape> shapesToDelete = new List<Excel.Shape>();
+                            foreach (Excel.Shape shape in worksheet.Shapes)
+                            {
+                                if (shape.TopLeftCell.Row >= oRange.Row && shape.TopLeftCell.Column >= oRange.Column &&
+                                    shape.TopLeftCell.Row <= oRange.Row + oRange.Rows.Count - 1 &&
+                                    shape.TopLeftCell.Column <= oRange.Column + oRange.Columns.Count - 1)
+                                {
+                                    shapesToDelete.Add(shape);
+                                }
+                            }
+
+                            foreach (Excel.Shape shape in shapesToDelete)
+                            {
+                                shape.Delete();
+                            }
+
+                            // Neues Bild einfügen
+                            float left = (float)((double)oRange.Left); // Position des Bereichs
+                            float top = (float)((double)oRange.Top); // Position des Bereichs
+                            float width = (float)((double)oRange.Width); // Breite des Bereichs
+                            float height = (float)((double)oRange.Height); // Höhe des Bereichs
+                            worksheet.Shapes.AddPicture(bildPfad2, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, left, top, width, height); // Bild einfügen
                         }
                         // Barcode in Zelle C27 einfügen
                         string[] barcodeTexts = new string[]
@@ -394,15 +427,17 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
                         string[] sheetNames = new string[] { "Seite1", "Seite2", "Seite3", "Seite4" };
 
+                        // Barcode für jede Zelle erstellen
                         for (int i = 0; i < barcodeTexts.Length; i++)
                         {
+                            // Wenn der Barcode-Text nicht leer ist
                             if (!string.IsNullOrEmpty(barcodeTexts[i]))
                             {
-                                Image barcodeImage = GenerateBarcode(barcodeTexts[i]);
-                                string tempPath = System.IO.Path.GetTempFileName();
-                                barcodeImage.Save(tempPath, ImageFormat.Png);
-                                Excel.Worksheet currentWorksheet = workbook.Sheets[sheetNames[i]];
-                                Excel.Range barcodeRange = currentWorksheet.get_Range("C27");
+                                Image barcodeImage = GenerateBarcode(barcodeTexts[i]); // Barcode-Bild generieren
+                                string tempPath = System.IO.Path.GetTempFileName(); // Temporäre Datei erstellen
+                                barcodeImage.Save(tempPath, ImageFormat.Png); // Barcode-Bild speichern
+                                Excel.Worksheet currentWorksheet = workbook.Sheets[sheetNames[i]]; // Aktuelles Arbeitsblatt
+                                Excel.Range barcodeRange = currentWorksheet.get_Range("C27"); // Zelle C27
 
                                 // Löschen vorhandener Bilder in der Zelle
                                 List<Excel.Shape> shapesToDelete = new List<Excel.Shape>();
@@ -410,7 +445,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                                 {
                                     if (shape.TopLeftCell.Address == barcodeRange.Address)
                                     {
-                                        shapesToDelete.Add(shape);
+                                        shapesToDelete.Add(shape); // Shape zur Liste hinzufügen
                                     }
                                 }
 
@@ -420,12 +455,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                                 }
 
                                 // Neues Bild einfügen
-                                float barcodeLeft = (float)((double)barcodeRange.Left);
-                                float barcodeTop = (float)((double)barcodeRange.Top);
-                                currentWorksheet.Shapes.AddPicture(tempPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, barcodeLeft, barcodeTop, barcodeImage.Width, barcodeImage.Height);
+                                float barcodeLeft = (float)((double)barcodeRange.Left); // Linke Position der Zelle
+                                float barcodeTop = (float)((double)barcodeRange.Top); // Obere Position der Zelle
+                                currentWorksheet.Shapes.AddPicture(tempPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, barcodeLeft, barcodeTop, barcodeImage.Width, barcodeImage.Height); // Barcode-Bild einfügen
 
                                 System.IO.File.Delete(tempPath); // Temporäre Datei löschen
-                                Marshal.ReleaseComObject(currentWorksheet);
+                                Marshal.ReleaseComObject(currentWorksheet); // Freigeben des Arbeitsblatts
 
                                 // Sheet als geändert markieren
                                 if (!modifiedSheets.Contains(sheetNames[i]))
@@ -468,7 +503,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 Dictionary<string, string> GetSerienlinsenDaten(string artikel, string seite)
                 {
                     string query = @"
-                        SELECT Belag1, Material, Radius2, Radius1, ND, G_Nummer, GLASSORTE, DM, DICKE, InfoZeichnung_Bemerkungen, InfoZeichnung
+                        SELECT Belag1, Material, Radius2, Radius1, ND, G_Nummer, GLASSORTE, DM, DICKE, InfoZeichnung_Bemerkungen, InfoZeichnung, Zeichnungspfad
                         FROM Serienlinsen
                         WHERE ARTNR = @Artikel AND SEITE = @Seite";
 
@@ -491,10 +526,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     { "ND", reader["ND"].ToString() }, // Füge die Werte in das Dictionary ein
                     { "G_Nummer", reader["G_Nummer"].ToString() }, // Füge die Werte in das Dictionary ein
                     { "GLASSORTE", reader["GLASSORTE"].ToString() }, // Füge die Werte in das Dictionary ein
-                    { "DM", string.Format("{0:F2}", Convert.ToDecimal(reader["DM"])) }, // Füge die Werte in das Dictionary ein
+                    { "DM", reader["DM"].ToString().Replace(',', '.') }, // Füge die Werte in das Dictionary ein
                     { "DICKE", reader["DICKE"].ToString() }, // Füge die Werte in das Dictionary ein
                     { "InfoZeichnung_Bemerkungen", reader["InfoZeichnung_Bemerkungen"].ToString() }, // Füge die Werte in das Dictionary ein
-                    { "InfoZeichnung", reader["InfoZeichnung"].ToString() } // Füge die Werte in das Dictionary ein
+                    { "InfoZeichnung", reader["InfoZeichnung"].ToString() }, // Füge die Werte in das Dictionary ein
+                    { "Zeichnungspfad", reader["Zeichnungspfad"].ToString() } // Füge die Werte in das Dictionary ein
                 };
                                 sqlConnectionVerwaltung.Close();
                                 return daten;
@@ -534,13 +570,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // Änderungen speichern und Arbeitsmappe schließen
                 workbook.Save();
 
-                // Geänderte Sheets drucken
-                foreach (string sheetName in modifiedSheets)
-                {
-                    Excel.Worksheet worksheet = workbook.Sheets[sheetName];
-                    worksheet.PrintOut();
-                    Marshal.ReleaseComObject(worksheet);
-                }
+                //////// Geänderte Sheets drucken und nur die erste Seite davon
+                //////foreach (string sheetName in modifiedSheets)
+                //////{
+                //////    Excel.Worksheet worksheet = workbook.Sheets[sheetName];
+                //////    worksheet.PrintOutEx(1, 1, 1, false);
+                //////}
             }
             catch (Exception ex)
             {
@@ -562,25 +597,21 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
         }
+            
 
         // Funktion zum Generieren eines Barcodes
         private Image GenerateBarcode(string text)
         {
             var barcodeWriter = new BarcodeWriter
             {
-                Format = BarcodeFormat.CODE_128,
-                Options = new ZXing.Common.EncodingOptions
+                Format = BarcodeFormat.CODE_128, // Barcode-Format
+                Options = new ZXing.Common.EncodingOptions 
                 {
-                    Height = 32,
-                    Width = 150 // Breite um die Hälfte reduziert
+                    Height = 32, // Höhe des Barcodes
+                    Width = 150 // Breite des Barcodes
                 }
             };
-            return barcodeWriter.Write(text);
+            return barcodeWriter.Write(text); // Barcode-Bild generieren
         }
-
-
-
-
-
     }
 }

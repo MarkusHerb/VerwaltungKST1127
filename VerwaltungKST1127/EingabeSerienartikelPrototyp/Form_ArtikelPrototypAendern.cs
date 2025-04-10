@@ -190,8 +190,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-
-
         // Methode zum Laden der Bilder in die PictureBoxen
         private void LoadImages()
         {
