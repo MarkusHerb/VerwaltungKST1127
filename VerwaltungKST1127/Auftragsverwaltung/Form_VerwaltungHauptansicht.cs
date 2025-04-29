@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
 using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
+using System.IO; // Für File-Operationen
 using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
 using System.Windows.Forms;
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
@@ -17,67 +18,182 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         private readonly SqlConnection sqlConnectionVerwaltungAlt = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung;Integrated Security=True;Encrypt=False");
         // Feld zum Speichern des ausgewählten Belag-Werts
         private string selectedBelagValue;
+        // Zum Speichern der vollständigen Daten
+        private DataTable _auftraegeDataTable = null;
 
         public Form_VerwaltungHauptansicht()
         {
             InitializeComponent(); // Initialisierung der Komponenten des Formulars
             LoadDataForDgvAuftragZuBelag(); // Laden der Daten für das DataGridView dGvLadeBelaeg
+            ZaehleGestarteteAuftraege(); // Funktion aufrufen
         }
 
+        // Funktion, wenn die Auftragsverwaltung geöffnet wird
         private void LoadDataForDgvAuftragZuBelag()
         {
             try
             {
-                // SQL-Abfrage
-                string query = @"SELECT
-                            Belag,
-                            Chargen_Infor AS AVOs,
-                            Gestartet,
-                            Material,
-                            BBM
-                        FROM
-                            [Auswahl Belag]
-                        WHERE
-                            Chargen_Infor > 0
-                        ORDER BY
-                            Belag ASC";
-                // SQLCommand and SQLDataAdapter initialisieren
+                // --- 1. SQL-Abfrage ---
+                // Hole aus der Datenbank alle Aufträge, deren AVO-Info "Vergüten" enthält,
+                // gruppiert nach txta_avoinfo, und zähle jeweils die Anzahl der Aufträge (AVOs).
+                string query = @"
+                SELECT
+                    txta_avoinfo AS Belag,
+                COUNT(DISTINCT pdno_prodnr) AS AVOs
+                FROM
+                    LN_ProdOrders_PRD
+                WHERE
+                    opsta_avostat IN ('Active', 'Planned', 'Released')
+                AND txta_avoinfo LIKE '%Vergüten%'
+                GROUP BY
+                    txta_avoinfo
+                HAVING
+                COUNT(DISTINCT pdno_prodnr) > 0
+                ORDER BY
+                    Belag ASC;
+                ";
+
                 SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung);
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
                 DataTable dataTable = new DataTable();
 
-                //Verbindung öffnen und schließen
-                sqlConnectionVerwaltung.Open();
-                adapter.Fill(dataTable);
-                sqlConnectionVerwaltung.Close();
-
-                // JSON-Datei speichern
-                string jsonFilePath = "GeladeneBelaege.json";
-                string jsonData = JsonConvert.SerializeObject(dataTable);
-                System.IO.File.WriteAllText(jsonFilePath, jsonData);
-
-                // JSON-Datei laden und in DataGridView dGvLadeBelaeg anzeigen
-                if (System.IO.File.Exists(jsonFilePath))
+                try
                 {
-                    string json = System.IO.File.ReadAllText(jsonFilePath);
+                    // Öffne die Datenbankverbindung und fülle das DataTable mit den Ergebnissen
+                    sqlConnectionVerwaltung.Open();
+                    adapter.Fill(dataTable);
+                }
+                catch (SqlException sqlEx)
+                {
+                    // Fehlerbehandlung bei Problemen mit der SQL-Abfrage
+                    MessageBox.Show($"SQL Fehler beim Laden der Belag-Daten: {sqlEx.Message}", "Datenbankfehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                finally
+                {
+                    // Stelle sicher, dass die Verbindung am Ende wieder geschlossen wird
+                    if (sqlConnectionVerwaltung != null && sqlConnectionVerwaltung.State == ConnectionState.Open)
+                    {
+                        sqlConnectionVerwaltung.Close();
+                    }
+                }
+
+                // --- 2. Nachbearbeitung der Daten ---
+                // Ziel: Belag-Namen vereinheitlichen und gleiche Beläge zusammenfassen (z.B. B103 == B-103)
+
+                // Erzeuge ein Dictionary, um Beläge zu sammeln: Key = gereinigter Belag (z.B. "B103"), Value = Summe AVOs
+                Dictionary<string, int> belagCounts = new Dictionary<string, int>();
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    // Originaler Belag-Text aus der Datenbank
+                    string originalBelag = row["Belag"].ToString();
+                    int avos = Convert.ToInt32(row["AVOs"]);
+
+                    // Belag-Text bereinigen (siehe CleanBelag-Methode unten)
+                    string cleanedBelag = CleanBelag(originalBelag);
+
+                    // Wenn kein gültiger Belag gefunden wurde, überspringen
+                    if (string.IsNullOrEmpty(cleanedBelag))
+                        continue;
+
+                    // Belag in Dictionary einfügen oder AVOs dazu addieren, falls schon vorhanden
+                    if (!belagCounts.ContainsKey(cleanedBelag))
+                    {
+                        belagCounts[cleanedBelag] = 0;
+                    }
+                    belagCounts[cleanedBelag] += avos;
+                }
+
+                // --- 3. Neue bereinigte DataTable aufbauen ---
+                DataTable cleanedTable = new DataTable();
+                cleanedTable.Columns.Add("Belag", typeof(string)); // Spalte für Belag (z.B. "B103")
+                cleanedTable.Columns.Add("AVOs", typeof(int));      // Spalte für Anzahl AVOs
+
+                // Werte aus dem Dictionary in die neue Tabelle übernehmen
+                foreach (var item in belagCounts)
+                {
+                    DataRow newRow = cleanedTable.NewRow();
+                    newRow["Belag"] = item.Key;
+                    newRow["AVOs"] = item.Value;
+                    cleanedTable.Rows.Add(newRow);
+                }
+
+                // --- 4. Ergebnisse als JSON speichern ---
+                // Ziel: Die aufbereiteten Beläge in eine JSON-Datei schreiben
+                string jsonFilePath = "GeladeneBelaege.json";
+                string jsonData = JsonConvert.SerializeObject(cleanedTable, Formatting.Indented); // JSON schön formatiert
+                File.WriteAllText(jsonFilePath, jsonData);
+
+                // --- 5. JSON-Datei lesen und ins DataGridView laden ---
+                if (File.Exists(jsonFilePath))
+                {
+                    string json = File.ReadAllText(jsonFilePath);
                     DataTable jsonDataTable = JsonConvert.DeserializeObject<DataTable>(json);
                     DgvLadeBelaege.DataSource = jsonDataTable;
                 }
+                else
+                {
+                    DgvLadeBelaege.DataSource = null;
+                    MessageBox.Show($"JSON-Datei '{jsonFilePath}' nicht gefunden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
 
-                // Spalten anpassen, sodass sie das DataGridView ausfüllen
-                DgvLadeBelaege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                // --- 6. DataGridView-Optik einstellen ---
+                if (DgvLadeBelaege.DataSource != null)
+                {
+                    DgvLadeBelaege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Spalten füllen automatisch die Breite
+
+                    if (DgvLadeBelaege.Columns.Contains("AVOs"))
+                    {
+                        DgvLadeBelaege.Columns["AVOs"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // AVO-Zahlen zentrieren
+                        DgvLadeBelaege.Columns["AVOs"].DefaultCellStyle.Format = "N0"; // Zahlenformat ohne Dezimalstellen
+                    }
+
+                    // Alle Spaltenüberschriften zentrieren
+                    foreach (DataGridViewColumn column in DgvLadeBelaege.Columns)
+                    {
+                        column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
+                }
+            }
+            catch (JsonException jsonEx)
+            {
+                // Fehlerbehandlung bei Problemen mit JSON-Verarbeitung
+                MessageBox.Show($"JSON Fehler beim Laden der Belag-Daten: {jsonEx.Message}", "JSON Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DgvLadeBelaege.DataSource = null;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Fehler in der Funktion LoadDataForDgvAuftragZuBelag: " + ex.Message);
+                // Allgemeine Fehlerbehandlung
+                MessageBox.Show($"Allgemeiner Fehler in LoadDataForDgvAuftragZuBelag: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DgvLadeBelaege.DataSource = null;
             }
-            finally
+        }
+
+        // --- Hilfsfunktion zum Bereinigen der Belag-Bezeichnung ---
+        // Entfernt den Begriff "Vergüten" (unabhängig von Groß-/Kleinschreibung)
+        // und extrahiert nur die "Bxxx" Information (z.B. B103, B146 usw.)
+        private string CleanBelag(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return "";
+
+            // 1. "Vergüten" entfernen, egal wie geschrieben (Regex mit IgnoreCase)
+            input = System.Text.RegularExpressions.Regex.Replace(input, "vergüten", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
+
+            // 2. Mit Regex nach einem Belag suchen:
+            // Suche nach "B" gefolgt von optional "-" und Ziffern, z.B. "B103", "B-103"
+            var match = System.Text.RegularExpressions.Regex.Match(input, @"B-?\d+");
+
+            if (match.Success)
             {
-                // Sicherstellen, dass die Verbindung geschlossen wird
-                if (sqlConnectionVerwaltung.State == ConnectionState.Open)
-                {
-                    sqlConnectionVerwaltung.Close();
-                }
+                // Gefundenen Belag zurückgeben, Bindestrich entfernen, immer großschreiben
+                return match.Value.Replace("-", "").ToUpper();
+            }
+            else
+            {
+                // Wenn kein passender Belag gefunden wurde, leeres Ergebnis zurückgeben
+                return "";
             }
         }
 
@@ -117,94 +233,106 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         {
             try
             {
-                // SQL-Abfrage mit LIKE-Klausel, um nach 'belagValue' in 'txta_acoinfo' zu suchen
-                string query = @"
-        SELECT 
-            CONVERT(date, trdf_enddate) AS Enddatum,
-            dsca_teilebez AS [Teilebez.],
-            pdno_prodnr AS [Auftragsnr.],
-            mitm_teilenr AS Artikel,
-            opsta_avostat AS Status, 
-            txta_avoinfo AS AVOinfo, 
-            '' AS Material,  -- Spalte Material bleibt leer
-        CASE 
-            WHEN txta_avoinfo LIKE '%III%' OR txta_avoinfo LIKE '%Iii%' OR txta_avoinfo LIKE '%IIi%' OR txta_avoinfo LIKE '%iii%' OR txta_avoinfo LIKE '%iII%' THEN '0'
-            WHEN txta_avoinfo LIKE '%Ii%' OR txta_avoinfo LIKE '%iI%' OR txta_avoinfo LIKE '%ii%' OR txta_avoinfo LIKE '%II%' THEN '2'
-            WHEN txta_avoinfo LIKE '%i%' OR txta_avoinfo LIKE '%I%' THEN '1'
-        ELSE '0'
-        END AS Seite,
-            qplo_sollstk AS [SollStk.],
-            qcmp_iststk AS [IstStk.],
-            qcmp2_vorstk AS [VorStk.],
-            qhnd1_stk_teilelager AS Teilelager,
-            qana_bereitstellbestand AS Bereitstell,
-            demand_jahresbedarf AS Jahresbedarf,
-            '' AS Zukauf, -- Spalte bleibt aktuell leer
-            '' AS Dringend, -- Spalte bleibt aktuell leer
-            CONVERT(date, import_date) AS Aktualisiert
-        FROM 
-            LN_ProdOrders_PRD 
-        WHERE 
-            opsta_avostat IN ('Active', 'Planned', 'Released') 
-            AND txta_avoinfo LIKE '%' + @BelagValue + '%' 
-            AND txta_avoinfo LIKE '%Vergüten%'
-        ORDER
-            BY trdf_enddate ASC";
+                // Zuerst die mögliche Varianten des Belags vorbereiten: mit und ohne Bindestrich, Groß- und Kleinschreibung ignorieren
+                // Beispiel: selectedBelagValue = "B103"
+                // Gesuchte Varianten: '%B103%', '%B-103%', '%b103%', '%b-103%'
+                string belagOhneBindestrich = selectedBelagValue.ToUpper();
+                string belagMitBindestrich = belagOhneBindestrich.Insert(1, "-");
 
-                // SQL-Befehl vorbereiten und Parameter hinzufügen
+                // SQL-Abfrage anpassen: Suche nach beiden Varianten (Bindestrich und ohne Bindestrich) und case-insensitive (durch COLLATE)
+                string query = $@"
+SELECT
+    CONVERT(date, trdf_enddate) AS Enddatum,
+    dsca_teilebez AS [Teilebez.],
+    pdno_prodnr AS [Auftragsnr.],
+    mitm_teilenr AS Artikel,
+    opsta_avostat AS Status,
+    txta_avoinfo AS AVOinfo,
+    '' AS Material, -- Spalte Material bleibt leer
+    CASE
+        WHEN txta_avoinfo LIKE '%III%' OR txta_avoinfo LIKE '%Iii%' OR txta_avoinfo LIKE '%IIi%' OR txta_avoinfo LIKE '%iii%' OR txta_avoinfo LIKE '%iII%' THEN '0'
+        WHEN txta_avoinfo LIKE '%Ii%' OR txta_avoinfo LIKE '%iI%' OR txta_avoinfo LIKE '%ii%' OR txta_avoinfo LIKE '%II%' THEN '2'
+        WHEN txta_avoinfo LIKE '%i%' OR txta_avoinfo LIKE '%I%' THEN '1'
+        ELSE '0'
+    END AS Seite,
+    qplo_sollstk AS [SollStk.],
+    qcmp_iststk AS [IstStk.],
+    qcmp2_vorstk AS [VorStk.],
+    qhnd1_stk_teilelager AS Teilelager,
+    qana_bereitstellbestand AS Bereitstell,
+    demand_jahresbedarf AS Jahresbedarf,
+    '' AS Zukauf, -- aktuell leer
+    '' AS Dringend, -- aktuell leer
+    CONVERT(date, import_date) AS Aktualisiert
+FROM
+    LN_ProdOrders_PRD
+WHERE
+    opsta_avostat IN ('Active', 'Planned', 'Released')
+    AND ( 
+         txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue1
+         OR
+         txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue2
+    )
+    AND txta_avoinfo LIKE '%Vergüten%'
+ORDER BY
+    trdf_enddate ASC;";
+
+                // SQL-Befehl vorbereiten
                 SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung);
-                command.Parameters.AddWithValue("@BelagValue", selectedBelagValue);
+
+                // Parameter befüllen
+                command.Parameters.AddWithValue("@BelagValue1", "%" + belagOhneBindestrich + "%");
+                command.Parameters.AddWithValue("@BelagValue2", "%" + belagMitBindestrich + "%");
 
                 // Datenadapter und DataTable initialisieren
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new DataTable(); // Lokale DataTable zum Befüllen
 
-                // Verbindung öffnen, Daten abrufen und in DataGridView laden
+                // Verbindung öffnen und Daten laden
                 sqlConnectionVerwaltung.Open();
                 adapter.Fill(dataTable);
                 sqlConnectionVerwaltung.Close();
 
-
-                // Material für jede Zeile abrufen und setzen
+                // Material für jede Zeile setzen
                 foreach (DataRow row in dataTable.Rows)
                 {
                     string artikelNr = row["Artikel"].ToString();
                     int seite = int.Parse(row["Seite"].ToString());
-                    string material = GetMaterialFromSerienlinsen(artikelNr, seite);
+                    string material = GetMaterialFromSerienlinsen(artikelNr, seite); // eigene Funktion
                     row["Material"] = material;
                 }
 
-                // JSON-Datei laden und deserialisieren
+                // RL/TL Zukauf-Daten aus JSON laden
                 RLTLData rltlData;
                 string jsonFilePath2 = "rltl_data.json";
-                if (System.IO.File.Exists(jsonFilePath2))
+                if (File.Exists(jsonFilePath2))
                 {
-                    var json = System.IO.File.ReadAllText(jsonFilePath2);
+                    var json = File.ReadAllText(jsonFilePath2);
                     rltlData = JsonConvert.DeserializeObject<RLTLData>(json);
                 }
                 else
                 {
-                    rltlData = new RLTLData();
+                    rltlData = new RLTLData(); // Leeres Objekt
                 }
 
-                // Überprüfen Sie jede Zeile im DataTable und setzen Sie die ZU-Spalte basierend auf der JSON-Datei
+                // Zukauf-Spalte basierend auf RL/TL-Liste setzen
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    // Sicherstellen, dass die Artikelnummer nicht null ist
-                    string artikelNr = row["Artikel"].ToString();
-
-                    // Überprüfen, ob die Artikelnummer in der RL- oder TL-Liste enthalten ist und setze den Wert entsprechend
-                    if (rltlData.RL.Contains(artikelNr))
+                    string artikelNr = row["Artikel"]?.ToString() ?? "";
+                    if (!string.IsNullOrEmpty(artikelNr))
                     {
-                        row["Zukauf"] = "R-Lager";
-                    }
-                    else if (rltlData.TL.Contains(artikelNr))
-                    {
-                        row["Zukauf"] = "T-Lager";
+                        if (rltlData.RL != null && rltlData.RL.Contains(artikelNr))
+                        {
+                            row["Zukauf"] = "R-Lager";
+                        }
+                        else if (rltlData.TL != null && rltlData.TL.Contains(artikelNr))
+                        {
+                            row["Zukauf"] = "T-Lager";
+                        }
                     }
                 }
 
-                // Dringend-Daten aus Ansicht_Bildschirm abfragen
+                // Dringend-Informationen laden
                 string dringendQuery = @"SELECT Auftrag, Dringend FROM Ansicht_Bildschirm";
                 SqlCommand dringendCommand = new SqlCommand(dringendQuery, sqlConnectionVerwaltung);
                 SqlDataAdapter dringendAdapter = new SqlDataAdapter(dringendCommand);
@@ -214,89 +342,53 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 dringendAdapter.Fill(dringendTable);
                 sqlConnectionVerwaltung.Close();
 
-                // Dictionary für schnelles Nachschlagen von Dringend-Werten basierend auf der Auftragsnummer erstellen
                 var dringendDict = dringendTable.AsEnumerable()
                     .ToDictionary(row => row.Field<string>("Auftrag"),
                                   row => row.Field<string>("Dringend"));
 
-                // Setzen des Dringend-Werts im Haupt-DataTable basierend auf Auftragsnummer
+                // Dringend-Wert in DataTable setzen
                 foreach (DataRow row in dataTable.Rows)
                 {
                     string auftragsNr = row["Auftragsnr."].ToString();
-
-                    // Nachsehen, ob die Auftragsnummer in dringendDict existiert und Wert setzen
                     if (dringendDict.TryGetValue(auftragsNr, out string dringendWert))
                     {
                         row["Dringend"] = dringendWert;
                     }
                     else
                     {
-                        row["Dringend"] = string.Empty; // Standardwert, falls kein Dringend-Wert gefunden wird
+                        row["Dringend"] = string.Empty;
                     }
                 }
 
-                // JSON-Datei speichern für das ganze DgvAnsichtAuftraege
+                // Aufbereitete Daten speichern
+                _auftraegeDataTable = dataTable;
+
+                // JSON speichern (optional)
                 string jsonFilePath = "AnsichtAuftraege.json";
-                string jsonData = JsonConvert.SerializeObject(dataTable);
-                System.IO.File.WriteAllText(jsonFilePath, jsonData);
+                string jsonData = JsonConvert.SerializeObject(_auftraegeDataTable, Formatting.Indented);
+                File.WriteAllText(jsonFilePath, jsonData);
 
-                // JSON-Datei laden und in DataGridView dGvAnsichtAuftraege anzeigen
-                if (System.IO.File.Exists(jsonFilePath))
-                {
-                    string json = System.IO.File.ReadAllText(jsonFilePath);
-                    DataTable jsonDataTable = JsonConvert.DeserializeObject<DataTable>(json);
-                    DgvAnsichtAuftraege.DataSource = jsonDataTable;
-                }
+                // Zeige die Daten im DataGridView
+                ApplyFilterAndDisplayData();
 
-                // Spalten anpassen, sodass sie das DataGridView ausfüllen
-                DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-
-                // Zahlenformat der relevanten Spalten anpassen
-                DgvAnsichtAuftraege.Columns["SollStk."].DefaultCellStyle.Format = "N0";
-                DgvAnsichtAuftraege.Columns["IstStk."].DefaultCellStyle.Format = "N0";
-                DgvAnsichtAuftraege.Columns["VorStk."].DefaultCellStyle.Format = "N0";
-                DgvAnsichtAuftraege.Columns["Teilelager"].DefaultCellStyle.Format = "N0";
-                DgvAnsichtAuftraege.Columns["Bereitstell"].DefaultCellStyle.Format = "N0";
-                DgvAnsichtAuftraege.Columns["Jahresbedarf"].DefaultCellStyle.Format = "N0";
-                // Werte in bestimmten Spalten mittig ausrichten
-                DgvAnsichtAuftraege.Columns["SollStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                DgvAnsichtAuftraege.Columns["IstStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                DgvAnsichtAuftraege.Columns["VorStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                DgvAnsichtAuftraege.Columns["Teilelager"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                DgvAnsichtAuftraege.Columns["Bereitstell"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                DgvAnsichtAuftraege.Columns["Jahresbedarf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                DgvAnsichtAuftraege.Columns["Zukauf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                DgvAnsichtAuftraege.Columns["Dringend"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                // Headertexte der Spalten mittig ausrichten
-                foreach (DataGridViewColumn column in DgvAnsichtAuftraege.Columns)
-                {
-                    column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                }
-                // Optional: Spalten automatisch anpassen
-                DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                // Reihenbreite anpassen
-                DgvAnsichtAuftraege.Columns["Teilebez."].Width = 170;
-                DgvAnsichtAuftraege.Columns["Seite"].Width = 60;
-                DgvAnsichtAuftraege.Columns["AVOinfo"].Width = 140;
-                // Spalte ausblenden
-                // DgvAnsichtAuftraege.Columns["Sortierwert"].Visible = false;
-                // Picturebox zurücksetzten
+                // Bildbox resetten
                 PictureBoxZeichnung.Image = null;
             }
-
             catch (Exception ex)
             {
-                MessageBox.Show("Fehler in der Funktion UpdateDgvAnsichtAuftraege: " + ex.Message);
+                MessageBox.Show("Fehler in UpdateDgvAnsichtAuftraege: " + ex.Message);
+                _auftraegeDataTable = null;
+                DgvAnsichtAuftraege.DataSource = null;
             }
             finally
             {
-                // Sicherstellen, dass die Verbindung geschlossen wird
-                if (sqlConnectionVerwaltung.State == ConnectionState.Open)
+                if (sqlConnectionVerwaltung != null && sqlConnectionVerwaltung.State == ConnectionState.Open)
                 {
                     sqlConnectionVerwaltung.Close();
                 }
             }
         }
+
 
         // Funktion zum Abrufen des Materials basierend auf mitm_teilenr und Seite
         private string GetMaterialFromSerienlinsen(string mitmTeilenNr, int seite)
@@ -566,7 +658,76 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     e.CellStyle.BackColor = Color.Yellow;
                 }
-            }  
+            }
+
+            // Sicherstellen, dass Zeile und Spalte gültig sind und der Wert nicht null ist
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && e.Value != null)
+            {
+                // Prüfen, ob es sich um die Spalte "Enddatum" handelt
+                if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Enddatum") // Oder .HeaderText je nach Konfiguration
+                {
+                    DateTime endDate;
+                    // Versuchen, den Zellwert als DateTime zu parsen
+                    if (DateTime.TryParse(e.Value.ToString(), out endDate))
+                    {
+                        // Datum der Zelle mit dem heutigen Datum vergleichen (nur das Datum, ohne Zeit)
+                        if (endDate.Date < DateTime.Today)
+                        {
+                            // Wenn das Datum in der Vergangenheit liegt, Hintergrundfarbe der Zelle auf Hellgrau setzen
+                            e.CellStyle.BackColor = System.Drawing.Color.LightGray;
+                        }
+                        else
+                        {
+                            // Wenn das Datum nicht in der Vergangenheit liegt, sicherstellen, dass die Hintergrundfarbe Standard ist
+                            // Dies ist wichtig, da Zellen wiederverwendet werden (Cell Recycling)
+                            e.CellStyle.BackColor = DgvAnsichtAuftraege.DefaultCellStyle.BackColor;
+                        }
+                    }
+                }
+            }
+
+            // --- Auftragsnummern hervorheben, die in der JSON-Datei gespeichert sind ---
+            if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Auftragsnr." && e.Value != null)
+            {
+                string auftragsNummer = e.Value.ToString();
+                string jsonPfad = "letzteAuftragsnummern.json";
+
+                if (File.Exists(jsonPfad))
+                {
+                    try
+                    {
+                        string jsonInhalt = File.ReadAllText(jsonPfad);
+                        List<string> gespeicherteNummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
+
+                        if (gespeicherteNummern.Contains(auftragsNummer))
+                        {
+                            e.CellStyle.BackColor = Color.SkyBlue;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Fehler beim Lesen der JSON-Datei: {ex.Message}");
+                    }
+                }
+            }
+
+            // --- Schriftfarbe in "Teilelager" ändern, wenn Wert kleiner als "Bereitstell" ---
+            if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Teilelager")
+            {
+                object teilelagerWertObj = e.Value;
+                object bereitstellWertObj = DgvAnsichtAuftraege.Rows[e.RowIndex].Cells["Bereitstell"].Value;
+
+                if (bereitstellWertObj != null && teilelagerWertObj != null &&
+                    double.TryParse(teilelagerWertObj.ToString(), out double teilelagerWert) &&
+                    double.TryParse(bereitstellWertObj.ToString(), out double bereitstellWert))
+                {
+                    if (teilelagerWert < bereitstellWert)
+                    {
+                        e.CellStyle.ForeColor = Color.DarkRed;
+                        e.CellStyle.BackColor = Color.LightSalmon;
+                    }
+                }
+            }
         }
 
         private void DgvAnsichtAuftraege_MouseDown(object sender, MouseEventArgs e)
@@ -592,14 +753,16 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     ToolStripMenuItem setzeDringend2 = new ToolStripMenuItem("Setze Dringend 2");
                     ToolStripMenuItem resettDringend = new ToolStripMenuItem("Resett Dringend");
                     ToolStripMenuItem serienlinse = new ToolStripMenuItem("Serienlinse");
+                    ToolStripMenuItem resettAuftrag = new ToolStripMenuItem("Auftrag abschließen");
                     // Event-Handler für die Menüeinträge hinzufügen
                     setzeDringend1.Click += SetzeDringend1_Click;
                     setzeDringend2.Click += SetzeDringend2_Click;
                     resettDringend.Click += ResettDringend_Click;
                     serienlinse.Click += Serienlinse_Click;
+                    resettAuftrag.Click += ResettAuftrag_Click;
                     // Verknüpfen Sie die anderen Menüeinträge mit ihren entsprechenden Methoden, falls erforderlich
                     // Menüeinträge zum Kontextmenü hinzufügen
-                    contextMenu.Items.AddRange(new ToolStripItem[] { setzeDringend1, setzeDringend2, resettDringend, serienlinse });
+                    contextMenu.Items.AddRange(new ToolStripItem[] { setzeDringend1, setzeDringend2, resettDringend, serienlinse, resettAuftrag });
                     // Kontextmenü an der Position des Mauszeigers anzeigen
                     contextMenu.Show(DgvAnsichtAuftraege, e.Location);
                 }
@@ -624,7 +787,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 string avoInfo = selectedRow.Cells["AVOinfo"].Value?.ToString();
                 string material = selectedRow.Cells["Material"].Value?.ToString();
                 string seite = selectedRow.Cells["Seite"].Value?.ToString();
-                string sollStk = selectedRow.Cells["SollStk."].Value?.ToString();
+                string sollStk = Convert.ToDecimal(selectedRow.Cells["SollStk."].Value).ToString("0");
                 string istStk = selectedRow.Cells["IstStk."].Value?.ToString();
                 string vorStk = selectedRow.Cells["VorStk."].Value?.ToString();
                 string teilelager = selectedRow.Cells["Teilelager"].Value?.ToString();
@@ -637,10 +800,65 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // Neues Formular Form_Druckübersicht öffnen und Werte übergeben
                 Form_Druckuebersicht druckuebersichtForm = new Form_Druckuebersicht(
                     enddatum, teilebez, auftragsNr, artikel, status, avoInfo, material, seite, sollStk, istStk, vorStk, teilelager, bereitstell, jahresbedarf, zukauf, dringend, aktualisiert, selectedBelagValue);
-                druckuebersichtForm.ShowDialog();  
+                druckuebersichtForm.ShowDialog();
             }
         }
-       
+
+        // Wenn auf Resett Auftrag geklickt wird, wird die Auftragsnummer aus der JSON-Datei gelöscht
+        private void ResettAuftrag_Click(object sender, EventArgs e)
+        {
+            // Die ausgewählte Zeile aus dem DataGridView holen
+            var selectedRow = DgvAnsichtAuftraege.SelectedRows[0];
+
+            // Die Auftragsnummer aus der Zelle "Auftragsnr." holen
+            string auftragsNummer = selectedRow.Cells["Auftragsnr."].Value.ToString();
+
+            string jsonPfad = "letzteAuftragsnummern.json";
+
+            // Überprüfen, ob die JSON-Datei existiert
+            if (File.Exists(jsonPfad))
+            {
+                try
+                {
+                    // Den Inhalt der JSON-Datei lesen
+                    string jsonInhalt = File.ReadAllText(jsonPfad);
+
+                    // Die Auftragsnummern aus der JSON-Datei deserialisieren
+                    List<string> gespeicherteNummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
+
+                    // Prüfen, ob die Auftragsnummer in der Liste enthalten ist
+                    if (gespeicherteNummern.Contains(auftragsNummer))
+                    {
+                        // Die Auftragsnummer aus der Liste entfernen
+                        gespeicherteNummern.Remove(auftragsNummer);
+
+                        // Die aktualisierte Liste wieder in die JSON-Datei schreiben
+                        string neuerJsonInhalt = JsonConvert.SerializeObject(gespeicherteNummern, Formatting.Indented);
+                        File.WriteAllText(jsonPfad, neuerJsonInhalt);
+
+                        // Optional: Nachricht anzeigen, dass die Auftragsnummer gelöscht wurde
+                        MessageBox.Show($"Auftragsnummer {auftragsNummer} wurde aus der gestarteten Auftragsliste gelöscht.", "Auftrag abgeschlossen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        UpdateDgvAnsichtAuftraege2();
+                    }
+                    else
+                    {
+                        // Optional: Nachricht anzeigen, falls die Auftragsnummer nicht in der Datei gefunden wurde
+                        MessageBox.Show($"Auftragsnummer {auftragsNummer} wurde nicht in der gestarteten Auftragsliste gefunden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Fehlerbehandlung
+                    MessageBox.Show($"Fehler beim Bearbeiten der JSON-Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                // Optional: Nachricht anzeigen, falls die JSON-Datei nicht existiert
+                MessageBox.Show($"Die Datei '{jsonPfad}' existiert nicht.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         // Wenn auf Setze Dringend 1 geklickt wird
         private void SetzeDringend1_Click(object sender, EventArgs e)
         {
@@ -895,6 +1113,166 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 {
                     sqlConnectionVerwaltungAlt.Close();
                 }
+            }
+        }
+
+        private void checkBoxShowZukauf_CheckedChanged(object sender, EventArgs e)
+        {
+            // Rufe die Funktion auf, die die Daten basierend auf dem aktuellen CheckBox-Status filtert und anzeigt
+            ApplyFilterAndDisplayData();
+        }
+
+        // Filter des Zukaufes
+        private void ApplyFilterAndDisplayData()
+        {
+            int activeCount = 0; // Zähler für "Active" Status initialisieren
+
+            try
+            {
+                if (_auftraegeDataTable == null)
+                {
+                    DgvAnsichtAuftraege.DataSource = null; // Keine Daten zum Anzeigen
+                    return;
+                }
+
+                // Prüfen, ob gefiltert werden soll
+                if (checkBoxShowZukauf.Checked) // Annahme: Deine CheckBox heißt checkBoxShowZukauf
+                {
+                    // Erstelle eine DataView für die Filterung
+                    DataView dv = new DataView(_auftraegeDataTable);
+                    // Filter anwenden: Zeige nur Zeilen, bei denen 'Zukauf' nicht leer oder null ist
+                    dv.RowFilter = "[Zukauf] IS NOT NULL AND [Zukauf] <> ''";
+                    DgvAnsichtAuftraege.DataSource = dv;
+                }
+                else
+                {
+                    // Zeige alle Daten an
+                    DgvAnsichtAuftraege.DataSource = _auftraegeDataTable;
+                }
+
+                // ----- Formatierungscode (aus deinem Original übernommen) -----
+                if (DgvAnsichtAuftraege.DataSource != null && DgvAnsichtAuftraege.Columns.Count > 0)
+                {
+                    // Spalten anpassen, sodass sie das DataGridView ausfüllen
+                    DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+                    // Sicherstellen, dass die Spalten existieren, bevor darauf zugegriffen wird
+                    if (DgvAnsichtAuftraege.Columns.Contains("SollStk."))
+                        DgvAnsichtAuftraege.Columns["SollStk."].DefaultCellStyle.Format = "N0";
+                    if (DgvAnsichtAuftraege.Columns.Contains("IstStk."))
+                        DgvAnsichtAuftraege.Columns["IstStk."].DefaultCellStyle.Format = "N0";
+                    if (DgvAnsichtAuftraege.Columns.Contains("VorStk."))
+                        DgvAnsichtAuftraege.Columns["VorStk."].DefaultCellStyle.Format = "N0";
+                    if (DgvAnsichtAuftraege.Columns.Contains("Teilelager"))
+                        DgvAnsichtAuftraege.Columns["Teilelager"].DefaultCellStyle.Format = "N0";
+                    if (DgvAnsichtAuftraege.Columns.Contains("Bereitstell"))
+                        DgvAnsichtAuftraege.Columns["Bereitstell"].DefaultCellStyle.Format = "N0";
+                    if (DgvAnsichtAuftraege.Columns.Contains("Jahresbedarf"))
+                        DgvAnsichtAuftraege.Columns["Jahresbedarf"].DefaultCellStyle.Format = "N0";
+
+                    // Werte in bestimmten Spalten mittig ausrichten
+                    if (DgvAnsichtAuftraege.Columns.Contains("SollStk."))
+                        DgvAnsichtAuftraege.Columns["SollStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    if (DgvAnsichtAuftraege.Columns.Contains("IstStk."))
+                        DgvAnsichtAuftraege.Columns["IstStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    if (DgvAnsichtAuftraege.Columns.Contains("VorStk."))
+                        DgvAnsichtAuftraege.Columns["VorStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    if (DgvAnsichtAuftraege.Columns.Contains("Teilelager"))
+                        DgvAnsichtAuftraege.Columns["Teilelager"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    if (DgvAnsichtAuftraege.Columns.Contains("Bereitstell"))
+                        DgvAnsichtAuftraege.Columns["Bereitstell"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    if (DgvAnsichtAuftraege.Columns.Contains("Jahresbedarf"))
+                        DgvAnsichtAuftraege.Columns["Jahresbedarf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    if (DgvAnsichtAuftraege.Columns.Contains("Zukauf"))
+                        DgvAnsichtAuftraege.Columns["Zukauf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    if (DgvAnsichtAuftraege.Columns.Contains("Dringend"))
+                        DgvAnsichtAuftraege.Columns["Dringend"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+
+                    // Headertexte der Spalten mittig ausrichten
+                    foreach (DataGridViewColumn column in DgvAnsichtAuftraege.Columns)
+                    {
+                        column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
+
+                    // Optional: Spalten automatisch anpassen (erneut, falls Fill nicht reicht)
+                    // DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells; // Alternative probieren
+                    DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Zurück zu Fill
+
+                    // Reihenbreite anpassen (ggf. erst nach AutoSize prüfen)
+                    if (DgvAnsichtAuftraege.Columns.Contains("Teilebez."))
+                        DgvAnsichtAuftraege.Columns["Teilebez."].Width = 170; // Ggf. anpassen oder FillWeight verwenden
+                    if (DgvAnsichtAuftraege.Columns.Contains("Seite"))
+                        DgvAnsichtAuftraege.Columns["Seite"].Width = 60;
+                    if (DgvAnsichtAuftraege.Columns.Contains("AVOinfo"))
+                        DgvAnsichtAuftraege.Columns["AVOinfo"].Width = 140;
+
+                    // ----- NEU: Zählung der 'Active' Status -----
+                    // Sicherstellen, dass die Spalte "Status" existiert
+                    if (DgvAnsichtAuftraege.Columns.Contains("Status"))
+                    {
+                        // Iteriere durch die tatsächlich angezeigten Zeilen im DataGridView
+                        foreach (DataGridViewRow row in DgvAnsichtAuftraege.Rows)
+                        {
+                            // Zugriff auf den Wert der Zelle in der Spalte "Status"
+                            // Verwende ?.Value für Null-Sicherheit
+                            object cellValue = row.Cells["Status"]?.Value;
+
+                            // Prüfen, ob der Wert nicht null ist und "Active" entspricht (Groß/Klein ignorieren)
+                            if (cellValue != null && cellValue.ToString().Equals("Active", StringComparison.OrdinalIgnoreCase))
+                            {
+                                activeCount++; // Zähler erhöhen
+                            }
+                        }
+                    }
+                    // ----- Ende Zählung -----
+                }
+                else
+                {
+                    // Wenn keine Datenquelle gesetzt ist, gibt es auch nichts zu formatieren
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler beim Anzeigen/Formatieren/Zählen der Daten: " + ex.Message);
+                // Auch im Fehlerfall das Label auf 0 setzen oder letzte bekannte Zahl? Hier 0:
+                activeCount = 0;
+            }
+            finally // Der finally-Block wird immer ausgeführt, auch nach einem Fehler im try
+            {
+                // Aktualisiere das Label mit dem gezählten Wert
+                // Das Format kannst du anpassen (z.B. nur die Zahl oder mit Text)
+                lblGestartet.Text = activeCount.ToString();
+            }
+        }
+
+        // Zählt die gestarteten Aufträge die in der Json Datei stehen
+        private void ZaehleGestarteteAuftraege()
+        {
+            string jsonPfad = "letzteAuftragsnummern.json";
+
+            if (File.Exists(jsonPfad))
+            {
+                try
+                {
+                    string jsonInhalt = File.ReadAllText(jsonPfad);
+                    List<string> auftragsnummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
+
+                    // Eindeutige Auftragsnummern zählen
+                    int anzahlEindeutig = auftragsnummern.Distinct().Count();
+
+                    // Ergebnis im Label anzeigen
+                    lblGestarteAuftraege.Text = anzahlEindeutig.ToString();
+                }
+                catch (Exception ex)
+                {
+                    lblGestarteAuftraege.Text = "Fehler beim Lesen der Datei";
+                    Console.WriteLine($"Fehler beim Lesen der JSON-Datei: {ex.Message}");
+                }
+            }
+            else
+            {
+                lblGestarteAuftraege.Text = "Keine JSON-Datei vorhanden.";
             }
         }
     }

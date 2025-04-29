@@ -368,8 +368,8 @@ namespace VerwaltungKST1127.GlasWaschDaten
                     }
 
                     // Folgende Reihen ausblenden
-                    int[] columnsToHide = { 0, 1, 2, 4, 5, 6, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 28, 30, 31, 
-                        36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 55, 57 };
+                    int[] columnsToHide = { 0, 1, 2, 4, 5, 6, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 26, 28, 30, 31,
+                36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 55, 57 };
                     foreach (int index in columnsToHide)
                     {
                         if (index < DgvAuswahlGlasdaten.Columns.Count)
@@ -397,6 +397,7 @@ namespace VerwaltungKST1127.GlasWaschDaten
                 }
             }
         }
+
 
         // Methode zum Aktualisieren der Labels mit der Anzahl der einzigartigen GNummern und Glassorten
         private void UpdateLabels()

@@ -48,7 +48,9 @@ namespace VerwaltungKST1127
             UpdateOberflaechenHeute();
             UpdateOberflaechenGestern();
             UpdateOberflaechenGesamt();
-
+            // Anzeigen, welcher benützer angemeldet ist
+            lblAngemeldet.Text = "Angemeldet: " + Environment.UserName;
+            // Icon für die Taskleiste
             this.Icon = new Icon("electromagnetic_spectrum_icon.ico");
         }
 

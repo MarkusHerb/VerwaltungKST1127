@@ -28,6 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lblGestartet = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.lblPfad = new System.Windows.Forms.Label();
@@ -40,6 +44,10 @@
             this.DgvInformationZuAuftrag = new System.Windows.Forms.DataGridView();
             this.DgvAnsichtAuftraege = new System.Windows.Forms.DataGridView();
             this.DgvLadeBelaege = new System.Windows.Forms.DataGridView();
+            this.checkBoxShowZukauf = new System.Windows.Forms.CheckBox();
+            this.Btn = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.lblGestarteAuftraege = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxZeichnung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvInformationZuAuftrag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvAnsichtAuftraege)).BeginInit();
@@ -50,7 +58,7 @@
             // 
             this.lblGestartet.AutoSize = true;
             this.lblGestartet.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGestartet.Location = new System.Drawing.Point(1066, 9);
+            this.lblGestartet.Location = new System.Drawing.Point(610, 11);
             this.lblGestartet.Name = "lblGestartet";
             this.lblGestartet.Size = new System.Drawing.Size(18, 20);
             this.lblGestartet.TabIndex = 24;
@@ -60,11 +68,11 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(937, 9);
+            this.label5.Location = new System.Drawing.Point(513, 10);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(127, 20);
+            this.label5.Size = new System.Drawing.Size(102, 20);
             this.label5.TabIndex = 23;
-            this.label5.Text = "Gestartet AVOs:";
+            this.label5.Text = "Aktive AVOs:";
             // 
             // lblPfad
             // 
@@ -80,7 +88,7 @@
             // 
             this.BtnZukauf.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.BtnZukauf.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnZukauf.Location = new System.Drawing.Point(11, 828);
+            this.BtnZukauf.Location = new System.Drawing.Point(11, 755);
             this.BtnZukauf.Name = "BtnZukauf";
             this.BtnZukauf.Size = new System.Drawing.Size(277, 44);
             this.BtnZukauf.TabIndex = 21;
@@ -124,9 +132,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(11, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 20);
+            this.label1.Size = new System.Drawing.Size(63, 20);
             this.label1.TabIndex = 17;
-            this.label1.Text = "Filterung";
+            this.label1.Text = "Suche: ";
             // 
             // PictureBoxZeichnung
             // 
@@ -139,19 +147,46 @@
             // 
             // DgvInformationZuAuftrag
             // 
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DgvInformationZuAuftrag.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.DgvInformationZuAuftrag.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgvInformationZuAuftrag.Location = new System.Drawing.Point(294, 608);
             this.DgvInformationZuAuftrag.Name = "DgvInformationZuAuftrag";
+            this.DgvInformationZuAuftrag.ReadOnly = true;
             this.DgvInformationZuAuftrag.RowHeadersVisible = false;
             this.DgvInformationZuAuftrag.Size = new System.Drawing.Size(1208, 264);
             this.DgvInformationZuAuftrag.TabIndex = 15;
             // 
             // DgvAnsichtAuftraege
             // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DgvAnsichtAuftraege.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.DgvAnsichtAuftraege.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.Desktop;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DgvAnsichtAuftraege.DefaultCellStyle = dataGridViewCellStyle3;
             this.DgvAnsichtAuftraege.Location = new System.Drawing.Point(294, 37);
             this.DgvAnsichtAuftraege.Name = "DgvAnsichtAuftraege";
+            this.DgvAnsichtAuftraege.ReadOnly = true;
             this.DgvAnsichtAuftraege.RowHeadersVisible = false;
+            this.DgvAnsichtAuftraege.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DgvAnsichtAuftraege.Size = new System.Drawing.Size(1531, 532);
             this.DgvAnsichtAuftraege.TabIndex = 14;
             this.DgvAnsichtAuftraege.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvAnsichtAuftraege_CellClick);
@@ -165,19 +200,77 @@
             this.DgvLadeBelaege.AllowUserToDeleteRows = false;
             this.DgvLadeBelaege.AllowUserToResizeColumns = false;
             this.DgvLadeBelaege.AllowUserToResizeRows = false;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DgvLadeBelaege.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.DgvLadeBelaege.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgvLadeBelaege.Location = new System.Drawing.Point(12, 37);
             this.DgvLadeBelaege.Name = "DgvLadeBelaege";
+            this.DgvLadeBelaege.ReadOnly = true;
             this.DgvLadeBelaege.RowHeadersVisible = false;
-            this.DgvLadeBelaege.Size = new System.Drawing.Size(276, 785);
+            this.DgvLadeBelaege.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.DgvLadeBelaege.Size = new System.Drawing.Size(276, 712);
             this.DgvLadeBelaege.TabIndex = 13;
             this.DgvLadeBelaege.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvLadeBelaege_CellClick);
+            // 
+            // checkBoxShowZukauf
+            // 
+            this.checkBoxShowZukauf.AutoSize = true;
+            this.checkBoxShowZukauf.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBoxShowZukauf.Location = new System.Drawing.Point(1677, 9);
+            this.checkBoxShowZukauf.Name = "checkBoxShowZukauf";
+            this.checkBoxShowZukauf.Size = new System.Drawing.Size(149, 24);
+            this.checkBoxShowZukauf.TabIndex = 25;
+            this.checkBoxShowZukauf.Text = "Zeige nur Zukauf";
+            this.checkBoxShowZukauf.UseVisualStyleBackColor = true;
+            this.checkBoxShowZukauf.CheckedChanged += new System.EventHandler(this.checkBoxShowZukauf_CheckedChanged);
+            // 
+            // Btn
+            // 
+            this.Btn.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Btn.Location = new System.Drawing.Point(11, 805);
+            this.Btn.Name = "Btn";
+            this.Btn.Size = new System.Drawing.Size(277, 44);
+            this.Btn.TabIndex = 26;
+            this.Btn.Text = "xxx";
+            this.Btn.UseVisualStyleBackColor = false;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(709, 10);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(213, 20);
+            this.label6.TabIndex = 27;
+            this.label6.Text = "Gestartete Aufträge gesamt:";
+            // 
+            // lblGestarteAuftraege
+            // 
+            this.lblGestarteAuftraege.AutoSize = true;
+            this.lblGestarteAuftraege.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGestarteAuftraege.Location = new System.Drawing.Point(919, 9);
+            this.lblGestarteAuftraege.Name = "lblGestarteAuftraege";
+            this.lblGestarteAuftraege.Size = new System.Drawing.Size(18, 20);
+            this.lblGestarteAuftraege.TabIndex = 28;
+            this.lblGestarteAuftraege.Text = "0";
             // 
             // Form_VerwaltungHauptansicht
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1863, 889);
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.ClientSize = new System.Drawing.Size(1838, 889);
+            this.Controls.Add(this.lblGestarteAuftraege);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.Btn);
+            this.Controls.Add(this.checkBoxShowZukauf);
             this.Controls.Add(this.lblGestartet);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lblPfad);
@@ -215,6 +308,9 @@
         private System.Windows.Forms.DataGridView DgvInformationZuAuftrag;
         private System.Windows.Forms.DataGridView DgvAnsichtAuftraege;
         private System.Windows.Forms.DataGridView DgvLadeBelaege;
-
+        private System.Windows.Forms.CheckBox checkBoxShowZukauf;
+        private System.Windows.Forms.Button Btn;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lblGestarteAuftraege;
     }
 }

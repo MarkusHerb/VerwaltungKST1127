@@ -9,6 +9,8 @@ using System.Runtime.InteropServices; // Importieren des System.Runtime.InteropS
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Windows-Formularanwendungen
 using ZXing; // Importieren des ZXing-Namespace für die Erstellung von Barcodes
 using Excel = Microsoft.Office.Interop.Excel; // Importieren des Microsoft.Office.Interop.Excel-Namespace für die Arbeit mit Excel-Dateien
+using System.Text.Json;
+using System.IO;
 
 namespace VerwaltungKST1127.Auftragsverwaltung
 {
@@ -24,7 +26,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         private string artikel;
         private string status;
         private string avoInfo;
-        private string material;
+        private string material; 
         private string seite;
         private string sollStk;
         private string istStk;
@@ -472,7 +474,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     }
 
                     Marshal.ReleaseComObject(worksheet);
+
+                    // Auftragsnummer in JSON-Datei speichern
+                    FügeAuftragsnummerZurJsonDateiHinzu(auftragsNr);
                 }
+
 
                 // Funktion zum Abrufen des Enddatums aus der SQL-Tabelle
                 string GetEnddatum(string auftragsNr, string arbeitsvorgang)
@@ -570,12 +576,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // Änderungen speichern und Arbeitsmappe schließen
                 workbook.Save();
 
-                //////// Geänderte Sheets drucken und nur die erste Seite davon
-                //////foreach (string sheetName in modifiedSheets)
-                //////{
-                //////    Excel.Worksheet worksheet = workbook.Sheets[sheetName];
-                //////    worksheet.PrintOutEx(1, 1, 1, false);
-                //////}
+                ////// Geänderte Sheets drucken und nur die erste Seite davon
+                ////foreach (string sheetName in modifiedSheets)
+                ////{
+                ////    Excel.Worksheet worksheet = workbook.Sheets[sheetName];
+                ////    worksheet.PrintOutEx(1, 1, 1, false);
+                ////}
             }
             catch (Exception ex)
             {
@@ -597,7 +603,37 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
         }
-            
+
+        // Funktion um die Auftragsnummer in der JsonDatei zu speichern
+        private void FügeAuftragsnummerZurJsonDateiHinzu(string neueAuftragsnummer)
+        {
+            string jsonPfad = "letzteAuftragsnummern.json"; // Datei im aktuellen Verzeichnis
+
+            try
+            {
+                List<string> auftragsnummern = new List<string>();
+
+                if (File.Exists(jsonPfad))
+                {
+                    string vorhandenerJsonInhalt = File.ReadAllText(jsonPfad);
+                    if (!string.IsNullOrWhiteSpace(vorhandenerJsonInhalt))
+                    {
+                        auftragsnummern = System.Text.Json.JsonSerializer.Deserialize<List<string>>(vorhandenerJsonInhalt) ?? new List<string>();
+                    }
+                }
+
+                if (!auftragsnummern.Contains(neueAuftragsnummer))
+                {
+                    auftragsnummern.Add(neueAuftragsnummer);
+                    string neuerJsonInhalt = System.Text.Json.JsonSerializer.Serialize(auftragsnummern, new JsonSerializerOptions { WriteIndented = true });
+                    File.WriteAllText(jsonPfad, neuerJsonInhalt);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fehler beim Schreiben der JSON-Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         // Funktion zum Generieren eines Barcodes
         private Image GenerateBarcode(string text)

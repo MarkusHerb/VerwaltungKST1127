@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend8 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -74,6 +74,7 @@
             this.BtnVerwaltung = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.lblOberflaechenGesamt = new System.Windows.Forms.Label();
+            this.lblAngemeldet = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -365,17 +366,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea8.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea8);
-            legend8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend8.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend8);
+            chartArea1.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea1);
+            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend1.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend1);
             this.chartPerformance.Location = new System.Drawing.Point(602, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series8.ChartArea = "ChartArea1";
-            series8.Legend = "Legend1";
-            series8.Name = "Series1";
-            this.chartPerformance.Series.Add(series8);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartPerformance.Series.Add(series1);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -514,12 +515,23 @@
             this.lblOberflaechenGesamt.TabIndex = 38;
             this.lblOberflaechenGesamt.Text = "0";
             // 
+            // lblAngemeldet
+            // 
+            this.lblAngemeldet.AutoSize = true;
+            this.lblAngemeldet.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAngemeldet.Location = new System.Drawing.Point(36, 119);
+            this.lblAngemeldet.Name = "lblAngemeldet";
+            this.lblAngemeldet.Size = new System.Drawing.Size(81, 13);
+            this.lblAngemeldet.TabIndex = 39;
+            this.lblAngemeldet.Text = "Angemeldet: ";
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.lblAngemeldet);
             this.Controls.Add(this.lblOberflaechenGesamt);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.BtnVerwaltung);
@@ -609,6 +621,7 @@
         private System.Windows.Forms.Button BtnVerwaltung;
         private System.Windows.Forms.Label lblOberflaechenGesamt;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lblAngemeldet;
     }
 }
 
