@@ -9,7 +9,6 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 {
-
     public partial class Form_PrototypenauftragErstellen : Form
     {
         //private Excel.Application excelApp; // Speichern der Excel-Anwendung
@@ -19,8 +18,10 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
 
         private PrintDocument printDocument;  // Deklarieren eines PrintDocument-Objekts für den Druckprozess
+
         // Instanzvariablen
         private string Auftragsnummer;
+
         private string artikel;
         private string seiteArtikel;
         private string bezeichnung;
@@ -110,14 +111,12 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-
         // Uhrzeit und Datumsfunktion
         private void UpdateZeitDatum()
         {
             DateTime aktuell = DateTime.Now;
             LblErstelltAm.Text = "Auftrag erstellt am: " + aktuell.ToString("D");
         }
-
 
         // Hilfsmethode zum Clampen eines Wertes zwischen einem minimalen und maximalen Wert
         private static int Clamp(int value, int min, int max)
@@ -258,14 +257,13 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             // Aufräumen
             bmp.Dispose();
             sharpenedBmp.Dispose(); // Freigabe der scharfen Bitmap
-                                    
+
             File.Delete(tempPngPath); // Temporäre Datei löschen
         }
 
         // Wenn auf den Button Drucken gedrückt wird
         private void BtnDrucken_Click_1(object sender, EventArgs e)
         {
-
             // Setze die Texte für den Druck
             //ComboboxArtikel.Text = "PR " + ComboboxArtikel.Text;
             TxtboxMenge.Text = TxtboxMenge.Text + " Stk.";
@@ -293,7 +291,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 {
                     TxtboxMenge.Text = TxtboxMenge.Text.Replace(" Stk.", "");
                 }
-
             }
             else
             {
@@ -356,6 +353,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             BtnDrucken.Visible = false;
             BtnClose.Visible = false;
         }
+
         private void VisibleTrue()
         {
             lblNrProjekt.Visible = true;
@@ -433,13 +431,11 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-
-
         private void LoadAdditionalInfo(string artikelNummer, string seite)
         {
             sqlConnectionVerwaltung.Open();
             string query = @"
-                SELECT * 
+                SELECT *
                 FROM Serienlinsen
                 WHERE ARTNR = @artikelNummer AND SEITE = @seite"; // Seite in die Abfrage einbeziehen
 
@@ -519,7 +515,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                     }
                 }
             }
-
             catch (Exception ex)
             {
                 MessageBox.Show("Fehler beim Laden der Informationen: " + ex.Message);
@@ -750,7 +745,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 GC.WaitForPendingFinalizers();
             }
             GC.Collect();
-            GC.WaitForPendingFinalizers(); 
+            GC.WaitForPendingFinalizers();
         }
     }
 }

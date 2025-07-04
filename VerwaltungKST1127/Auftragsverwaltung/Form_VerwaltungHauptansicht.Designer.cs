@@ -88,7 +88,7 @@
             // 
             this.BtnZukauf.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.BtnZukauf.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnZukauf.Location = new System.Drawing.Point(11, 755);
+            this.BtnZukauf.Location = new System.Drawing.Point(11, 766);
             this.BtnZukauf.Name = "BtnZukauf";
             this.BtnZukauf.Size = new System.Drawing.Size(277, 44);
             this.BtnZukauf.TabIndex = 21;
@@ -234,7 +234,7 @@
             // 
             this.Btn.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.Btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Btn.Location = new System.Drawing.Point(11, 805);
+            this.Btn.Location = new System.Drawing.Point(11, 816);
             this.Btn.Name = "Btn";
             this.Btn.Size = new System.Drawing.Size(277, 44);
             this.Btn.TabIndex = 26;

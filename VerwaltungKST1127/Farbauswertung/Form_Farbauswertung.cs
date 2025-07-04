@@ -369,64 +369,77 @@ namespace VerwaltungKST1127.Farbauswertung
         {
             try
             {
-                sqlConnection.Open(); // Verbindung zur Datenbank öffnen
-                string query = "SELECT * FROM Geamtauswertungstabelle"; // SQL-Abfrage für die Daten
-                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(query, sqlConnection); // SQLDataAdapter für die Datenbankabfrage
-                originalDataTable.Clear(); // Ursprüngliche Daten löschen
-                sqlDataAdapter.Fill(originalDataTable); // Daten aus der Datenbank abrufen und in die DataTable einfügen
-                DataSet dataSet = new DataSet(); // Neues DataSet erstellen
-                sqlDataAdapter.Fill(dataSet); // Daten in das DataSet einfügen
-                DgvFarbauswertung.DataSource = dataSet.Tables[0]; // Datenquelle des DataGridViews festlegen
-                DgvFarbauswertung.Sort(DgvFarbauswertung.Columns[0], ListSortDirection.Descending); // DataGridView nach der ID absteigend sortieren
-                // Spalten des DataGridViews festlegen (Sichtbarkeit und Breite)
-                DgvFarbauswertung.Columns[0].Visible = false; DgvFarbauswertung.Columns[0].Width = 60;
-                DgvFarbauswertung.Columns[1].Visible = false;
-                DgvFarbauswertung.Columns[2].Visible = false;
-                DgvFarbauswertung.Columns[3].Visible = true; DgvFarbauswertung.Columns[3].Width = 60;
-                DgvFarbauswertung.Columns[4].Visible = true; DgvFarbauswertung.Columns[4].Width = 140;
-                DgvFarbauswertung.Columns[5].Visible = true; DgvFarbauswertung.Columns[5].Width = 65;
-                DgvFarbauswertung.Columns[6].Visible = false;
-                DgvFarbauswertung.Columns[7].Visible = true; DgvFarbauswertung.Columns[7].Width = 65;
-                DgvFarbauswertung.Columns[8].Visible = true; DgvFarbauswertung.Columns[8].Width = 65;
-                DgvFarbauswertung.Columns[9].Visible = true; DgvFarbauswertung.Columns[9].Width = 65;
-                DgvFarbauswertung.Columns[10].Visible = true; DgvFarbauswertung.Columns[10].Width = 97;
-                DgvFarbauswertung.Columns[11].Visible = true; DgvFarbauswertung.Columns[11].Width = 60;
-                DgvFarbauswertung.Columns[12].Visible = true; DgvFarbauswertung.Columns[12].Width = 60;
-                DgvFarbauswertung.Columns[13].Visible = true; DgvFarbauswertung.Columns[13].Width = 60;
-                DgvFarbauswertung.Columns[14].Visible = true; DgvFarbauswertung.Columns[14].Width = 60;
-                DgvFarbauswertung.Columns[15].Visible = true; DgvFarbauswertung.Columns[15].Width = 60;
-                DgvFarbauswertung.Columns[16].Visible = true; DgvFarbauswertung.Columns[16].Width = 70;
-                DgvFarbauswertung.Columns[17].Visible = false;
-                DgvFarbauswertung.Columns[18].Visible = false;
-                DgvFarbauswertung.Columns[19].Visible = false;
-                DgvFarbauswertung.Columns[20].Visible = false;
-                DgvFarbauswertung.Columns[21].Visible = true; DgvFarbauswertung.Columns[21].Width = 60;
-                DgvFarbauswertung.Columns[22].Visible = true; DgvFarbauswertung.Columns[22].Width = 80;
-                DgvFarbauswertung.Columns[23].Visible = true; DgvFarbauswertung.Columns[23].Width = 60;
-                DgvFarbauswertung.Columns[24].Visible = true; DgvFarbauswertung.Columns[24].Width = 60;
-                DgvFarbauswertung.Columns[25].Visible = true; DgvFarbauswertung.Columns[25].Width = 60;
-                DgvFarbauswertung.Columns[26].Visible = true; DgvFarbauswertung.Columns[26].Width = 75;
-                DgvFarbauswertung.Columns[27].Visible = false;
-                DgvFarbauswertung.Columns[28].Visible = false;
-                DgvFarbauswertung.Columns[29].Visible = false;
-                DgvFarbauswertung.Columns[30].Visible = false;
-                DgvFarbauswertung.Columns[31].Visible = true; DgvFarbauswertung.Columns[31].Width = 65;
-                DgvFarbauswertung.Columns[32].Visible = true; DgvFarbauswertung.Columns[32].Width = 80;
-                DgvFarbauswertung.Columns[33].Visible = false;
-                DgvFarbauswertung.Columns[34].Visible = false;
-                DgvFarbauswertung.Columns[35].Visible = true; DgvFarbauswertung.Columns[35].Width = 110;
-                DgvFarbauswertung.Columns[36].Visible = false;
-                // DataGridView-Formatierung: Header-Schriftart und -Ausrichtung
+                // Öffne die Verbindung zur SQL-Datenbank, falls sie noch nicht geöffnet ist
+                if (sqlConnection.State != ConnectionState.Open)
+                    sqlConnection.Open();
+
+                // SQL-Abfrage: alle Daten aus der Auswertungstabelle abrufen
+                string query = "SELECT * FROM Geamtauswertungstabelle";
+
+                // Adapter zum Ausführen der Abfrage und zum Befüllen der DataTable
+                SqlDataAdapter adapter = new SqlDataAdapter(query, sqlConnection);
+
+                // Neue temporäre DataTable zur Aufnahme der Daten
+                System.Data.DataTable table = new System.Data.DataTable();
+                adapter.Fill(table); // Daten aus Datenbank holen
+
+                // Bestehende Daten in der originalen DataTable löschen und mit neuen Daten füllen
+                originalDataTable.Clear();
+                originalDataTable.Merge(table);
+
+                // DataGridView mit den neuen Daten befüllen
+                DgvFarbauswertung.DataSource = table;
+
+                // Nach der ersten Spalte (vermutlich ID) absteigend sortieren
+                DgvFarbauswertung.Sort(DgvFarbauswertung.Columns[0], ListSortDirection.Descending);
+
+                // Konfiguration der Sichtbarkeit und Spaltenbreite
+                // Format: (Spaltenindex, Sichtbar?, Breite)
+                var columnSettings = new (int Index, bool Visible, int Width)[]
+                {
+                    (0, false, 60),  (1, false, 0),   (2, false, 0),
+                    (3, true, 60),   (4, true, 140),  (5, true, 65),
+                    (6, false, 0),   (7, true, 65),   (8, true, 65),
+                    (9, true, 65),   (10, true, 97),  (11, true, 60),
+                    (12, true, 60),  (13, true, 60),  (14, true, 60),
+                    (15, true, 60),  (16, true, 70),  (17, false, 0),
+                    (18, false, 0),  (19, false, 0),  (20, false, 0),
+                    (21, true, 60),  (22, true, 80),  (23, true, 60),
+                    (24, true, 60),  (25, true, 60),  (26, true, 75),
+                    (27, false, 0),  (28, false, 0),  (29, false, 0),
+                    (30, false, 0),  (31, true, 65),  (32, true, 80),
+                    (33, false, 0),  (34, false, 0),  (35, true, 110),
+                    (36, false, 0)
+                };
+
+                // Anwenden der Spalteneinstellungen auf das DataGridView
+                foreach (var (Index, Visible, Width) in columnSettings)
+                {
+                    if (Index < DgvFarbauswertung.Columns.Count)
+                    {
+                        DgvFarbauswertung.Columns[Index].Visible = Visible;
+                        if (Visible)
+                            DgvFarbauswertung.Columns[Index].Width = Width;
+                    }
+                }
+
+                // Formatierung der Spaltenüberschriften: Fett und zentriert
                 DgvFarbauswertung.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font(DataGridView.DefaultFont, FontStyle.Bold);
                 DgvFarbauswertung.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                // Aktualisiere ggf. eine Anzeige für die Gesamtanzahl der Zeilen
                 UpdateTotalRowCount();
-                sqlConnection.Close(); // Datenbankverbindung schließen
+
+                // Verbindung zur Datenbank wieder schließen
+                sqlConnection.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
+                // Zeigt eine Fehlermeldung an, wenn ein Fehler während der Ausführung auftritt
+                MessageBox.Show(ex.Message);
             }
         }
+
 
         // Methode zur Ausführung einer SQL-Abfrage
         public void ExecuteQuery(string query)

@@ -10,6 +10,7 @@ using VerwaltungKST1127.EingabeSerienartikelPrototyp;
 using VerwaltungKST1127.Farbauswertung;
 using VerwaltungKST1127.GlasWaschDaten;
 using VerwaltungKST1127.Personal;
+using VerwaltungKST1127.Produktionsauswertung;
 using VerwaltungKST1127.RingSpannzange;
 
 namespace VerwaltungKST1127
@@ -115,7 +116,7 @@ namespace VerwaltungKST1127
                 }
             }
 
-            lblOberflaechenHeute.Text = $"{ totalSum} Stk.";
+            lblOberflaechenHeute.Text = $"{totalSum} Stk.";
         }
 
         // Funktion zum Berechnen und Anzeigen der Oberflächen gestern
@@ -341,7 +342,7 @@ namespace VerwaltungKST1127
         // Button Event, wenn man darauf klickt
         private void BtnLupe_Click(object sender, EventArgs e)
         {
-            string url = "http://lupe.swarovskioptik.at/";
+            string url = "https://swarovskioptik.sharepoint.com/";
             Process.Start(url);
         }
 
@@ -371,7 +372,7 @@ namespace VerwaltungKST1127
             {"Messarten", @"P:\TEDuTOZ\Beläge\Vorlage Messen Lambda 1050\Messarten für Lambda 1050 und L650.xlsx"},
             {"Messzellen", @"P:\TEDuTOZ\Formulare\Arbeitsanweisungen\Messzellen Übersicht.Xlsx"},
             {"Thermofühler", @"P:\TEDuTOZ\Beschichtungsanlagen\Anlagendaten Betriebstemperaturen Schaltschrank Schauglas-Dm usw..xlsx"},
-            {"Ausschussliste", @"P:\TEDuTOZ\Verschiedenes\Alte Dateien\Fehlerliste für Produktionschargen 2008.xls"},
+            {"Ausschussliste", @"P:\TEDuTOZ\Verschiedenes\Fehlerliste.xlsx"},
             {" ", @"C:\"},
             {"Ordner - Beläge", @"P:\TEDuTOZ\Beläge"},
             {"Ordner - Anlagen", @"P:\TEDuTOZ\Beschichtungsanlagen"},
@@ -493,5 +494,81 @@ namespace VerwaltungKST1127
             Form_VerwaltungHauptansicht form_VerwaltungHauptansicht = new Form_VerwaltungHauptansicht();
             form_VerwaltungHauptansicht.Show();
         }
+
+        // Event-Handler: Wird aufgerufen, wenn der Button "Produktionsauswertung" geklickt wird
+        private void btnProduktionsauswertung_Click(object sender, EventArgs e)
+        {
+            Form_AnsichtProduktionsauswertung form_AnsichtProduktionsauswertung = new Form_AnsichtProduktionsauswertung();
+            form_AnsichtProduktionsauswertung.Show();
+        }
+
+        // Event-Handler: Wird aufgerufen, wenn der Button "Prämienbewertung" geklickt wird
+        private void btnPraemienbewertung_Click(object sender, EventArgs e)
+        {
+            // Öffne ein einfaches Passwort-Eingabefenster (selbst gebaut)
+            string passwort = ZeigePasswortDialog();
+
+            // Prüfe das eingegebene Passwort
+            if (passwort == "verguetung")
+            {
+                // Korrektes Passwort: Excel-Datei öffnen
+                string dateipfad = @"K:\\Kst_127\\Personal\\Lohntabelle\\PrämieSageAuflistung.xlsx";
+
+                try
+                {
+                    // Öffne die Datei mit dem Standardprogramm (normalerweise Excel)
+                    Process.Start(new ProcessStartInfo()
+                    {
+                        FileName = dateipfad,
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    // Fehler beim Öffnen behandeln
+                    MessageBox.Show($"Fehler beim Öffnen der Datei: {ex.Message}");
+                }
+            }
+            else if (passwort != null)
+            {
+                // Falsches Passwort eingegeben (Benutzer hat nicht abgebrochen)
+                MessageBox.Show("Falsches Passwort.");
+            }
+        }
+
+        // Methode zeigt einen kleinen Dialog zur Passwort-Eingabe an
+        private string ZeigePasswortDialog()
+        {
+            using (Form prompt = new Form())
+            {
+                // Grundlegende Eigenschaften des Fensters festlegen
+                prompt.Width = 250;
+                prompt.Height = 150;
+                prompt.FormBorderStyle = FormBorderStyle.FixedDialog;
+                prompt.Text = "Passwort eingeben";
+                prompt.StartPosition = FormStartPosition.CenterParent;
+
+                // Label für den Hinweistext
+                Label textLabel = new Label() { Left = 10, Top = 10, Text = "Passwort:" };
+
+                // TextBox für die Passworteingabe (mit Maskierung)
+                TextBox textBox = new TextBox() { Left = 10, Top = 30, Width = 200, PasswordChar = '*' };
+
+                // OK-Button, der das DialogResult.OK zurückliefert
+                Button confirmation = new Button() { Text = "OK", Left = 10, Width = 100, Top = 60, DialogResult = DialogResult.OK };
+
+                // Steuerelemente zum Formular hinzufügen
+                prompt.Controls.Add(textBox);
+                prompt.Controls.Add(confirmation);
+                prompt.Controls.Add(textLabel);
+
+                // Enter-Taste auf den OK-Button legen
+                prompt.AcceptButton = confirmation;
+
+                // Dialog anzeigen und zurückgeben, was der Benutzer eingegeben hat
+                return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : null;
+            }
+        }
     }
 }
+

@@ -306,6 +306,12 @@
     </Compile>
     <Compile Include="Personal\Mitarbeiter.cs" />
     <Compile Include="Personal\MitarbeiterService.cs" />
+    <Compile Include="Produktionsauswertung\Form_AnsichtProduktionsauswertung.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Produktionsauswertung\Form_AnsichtProduktionsauswertung.Designer.cs">
+      <DependentUpon>Form_AnsichtProduktionsauswertung.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RingSpannzange\Form_NeuerArtikelZuRing.cs">
@@ -376,6 +382,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Personal\Form_Personalliste.resx">
       <DependentUpon>Form_Personalliste.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Produktionsauswertung\Form_AnsichtProduktionsauswertung.resx">
+      <DependentUpon>Form_AnsichtProduktionsauswertung.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -11,6 +11,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
     {
         // Verbindungszeichenfolgen für die SQL Server-Datenbanken
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
+
         private readonly SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True");
 
         public Form_ArtikelPrototypAendern(string artikelNr, string seite)
@@ -30,7 +31,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 // Wenn das Element vorhanden ist, wähle es aus
                 ComboboxAuswahlArtikel.SelectedIndex = index;
             }
-
         }
 
         // Methode zum Füllen der ComboBox mit Artikelnummern und Seiteninformationen
@@ -89,7 +89,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 }
             }
         }
-
 
         // Event-Handler für das Auswählen eines Artikels in der ComboBox
         private void ComboboxAuswahlArtikel_SelectedIndexChanged(object sender, EventArgs e)
@@ -288,40 +287,40 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                     sqlConnectionVerwaltung.Open();
 
                     string query = @"
-            UPDATE Serienlinsen 
-            SET 
-                [BEZ] = @BEZ, 
-                [Status] = @Status, 
-                [GruppenName] = @GruppenName, 
-                [Zukauf] = @Zukauf, 
-                [Innen-Aussen] = @InnenAussen, 
-                [G_Nummer] = @G_Nummer, 
-                [GLASSORTE] = @GLASSORTE, 
-                [DM] = @DM, 
-                [Waschen_DM] = @Waschen_DM, 
-                [FREI] = @FREI, 
-                [DICKE] = @DICKE, 
+            UPDATE Serienlinsen
+            SET
+                [BEZ] = @BEZ,
+                [Status] = @Status,
+                [GruppenName] = @GruppenName,
+                [Zukauf] = @Zukauf,
+                [Innen-Aussen] = @InnenAussen,
+                [G_Nummer] = @G_Nummer,
+                [GLASSORTE] = @GLASSORTE,
+                [DM] = @DM,
+                [Waschen_DM] = @Waschen_DM,
+                [FREI] = @FREI,
+                [DICKE] = @DICKE,
                 [SEITE] = @SEITE,
-                [ND] = @ND, 
-                [Radius1] = @Radius1, 
-                [Radius2] = @Radius2, 
-                [Belag1] = @Belag1, 
-                [VERGBELAG] = @VERGBELAG, 
-                [MATERIAL] = @MATERIAL, 
-                [Belag2] = @Belag2, 
-                [RING] = @RING, 
-                [STK_SEGM] = @STK_SEGM, 
-                [STK_CHARGE] = @STK_CHARGE, 
-                [CHARGENZEIT] = @CHARGENZEIT, 
-                [Änderungsdatum] = @Änderungsdatum, 
+                [ND] = @ND,
+                [Radius1] = @Radius1,
+                [Radius2] = @Radius2,
+                [Belag1] = @Belag1,
+                [VERGBELAG] = @VERGBELAG,
+                [MATERIAL] = @MATERIAL,
+                [Belag2] = @Belag2,
+                [RING] = @RING,
+                [STK_SEGM] = @STK_SEGM,
+                [STK_CHARGE] = @STK_CHARGE,
+                [CHARGENZEIT] = @CHARGENZEIT,
+                [Änderungsdatum] = @Änderungsdatum,
                 [BEMERKUNG] = @BEMERKUNG,
-                [Vorreinigung] = @Vorreinigung, 
-                [HFE_Anlage] = @HFE_Anlage, 
-                [Aceton] = @Aceton, 
-                [Waschanmerkungen] = @Waschanmerkungen, 
-                [refo_avonr] = @refo_avonr, 
-                [Zeichnungspfad] = @Zeichnungspfad, 
-                [InfoZeichnung] = @InfoZeichnung, 
+                [Vorreinigung] = @Vorreinigung,
+                [HFE_Anlage] = @HFE_Anlage,
+                [Aceton] = @Aceton,
+                [Waschanmerkungen] = @Waschanmerkungen,
+                [refo_avonr] = @refo_avonr,
+                [Zeichnungspfad] = @Zeichnungspfad,
+                [InfoZeichnung] = @InfoZeichnung,
                 [InfoZeichnung_Bemerkungen] = @InfoZeichnung_Bemerkungen
             WHERE [ARTNR] = @ARTNR AND [SEITE] = @SEITE"; // Update-Kriterium mit der Seite ergänzt
 
@@ -378,7 +377,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 MessageBox.Show("Fehler: " + ex.Message);
             }
         }
-
 
         private void BtnArtikelUpdaten_Click(object sender, EventArgs e)
         {
@@ -467,9 +465,5 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 , belagRueckseite, ring, stkSegment, stkGesamt, zeitProzess, eanderungsDatum, bemerkungArtikel, vorreinigen, ucm, aceton
                 , bemerkungWaschen, revoNummer, pfadZeichnungAuflegen, pfadZusatzinfo, textZusatzinfo);
         }
-
     }
 }
-
-
-

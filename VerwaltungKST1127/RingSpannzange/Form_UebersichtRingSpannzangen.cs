@@ -510,5 +510,165 @@ namespace VerwaltungKST1127.RingSpannzange
                 }
             }
         }
+
+        // Wenn man auf den Button drückt, dann wird die Box auf den Ring gebucht
+        private void BtnNeueBoxSave_Click(object sender, EventArgs e)
+        {
+            // Eingabewerte aus den Textboxen lesen
+            string ringId = RingId; // Bereits vorhandene Ring-ID
+            string boxnummer = txtboxBoxname.Text;
+            string stueckText = txtboxStkBox.Text;
+            int stueck;
+
+            // Validierung: Boxnummer und Stück müssen angegeben sein
+            if (string.IsNullOrWhiteSpace(boxnummer) || string.IsNullOrWhiteSpace(stueckText))
+            {
+                MessageBox.Show("Boxnummer und Stückanzahl müssen ausgefüllt sein!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Validierung: Stückanzahl muss eine gültige ganze Zahl sein
+            if (!int.TryParse(stueckText, out stueck) || stueck <= 0)
+            {
+                MessageBox.Show("Stückanzahl muss eine gültige positive Zahl sein!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                using (SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True"))
+                {
+                    sqlConnectionShuttle.Open();
+
+                    // SQL-Befehl zum Einfügen eines neuen Datensatzes in Ring_Detail
+                    using (SqlCommand sqlCommand = new SqlCommand(
+                        "INSERT INTO Ring_Detail ([Ring_ID], [Boxnummer], [Stück], [Shuttle_ID]) " +
+                        "VALUES (@Ring_ID, @Boxnummer, @Stück, @Shuttle_ID)", sqlConnectionShuttle))
+                    {
+                        // Parameter setzen
+                        sqlCommand.Parameters.AddWithValue("@Ring_ID", ringId);
+                        sqlCommand.Parameters.AddWithValue("@Boxnummer", boxnummer);
+                        sqlCommand.Parameters.AddWithValue("@Stück", stueck);
+                        sqlCommand.Parameters.AddWithValue("@Shuttle_ID", 0); // Immer 0 wie gefordert
+
+                        sqlCommand.ExecuteNonQuery(); // SQL-Befehl ausführen
+                    }
+                }
+
+                // Erfolgsmeldung anzeigen
+                MessageBox.Show("Box erfolgreich gespeichert.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Optional: Textfelder leeren oder Formular schließen
+                txtboxBoxname.Clear();
+                txtboxStkBox.Clear();
+                LoadBoxen(); // Aktualisiert die Ansicht
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show("SQL-Fehler: " + sqlEx.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler: " + ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnDeleteBox_Click(object sender, EventArgs e)
+        {
+            // Prüfen, ob eine Zeile ausgewählt ist
+            if (DgvBoxen.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Bitte wählen Sie eine Zeile aus, die gelöscht werden soll.", "Hinweis", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Die erste ausgewählte Zeile holen
+            DataGridViewRow selectedRow = DgvBoxen.SelectedRows[0];
+
+            // Sicherstellen, dass die ID vorhanden ist (z. B. als unsichtbare Spalte)
+            if (selectedRow.Cells["Ring_Detail_ID"].Value == null)
+            {
+                MessageBox.Show("Die ausgewählte Zeile enthält keine gültige ID.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // ID auslesen und in int umwandeln
+            int ringDetailId = Convert.ToInt32(selectedRow.Cells["Ring_Detail_ID"].Value);
+
+            // Bestätigung vom Benutzer einholen
+            DialogResult result = MessageBox.Show("Möchten Sie die ausgewählte Box wirklich löschen?", "Löschen bestätigen", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result != DialogResult.Yes)
+            {
+                return; // Abbrechen, wenn nicht bestätigt
+            }
+
+            try
+            {
+                using (SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True"))
+                {
+                    sqlConnectionShuttle.Open();
+
+                    // SQL-Befehl zum Löschen vorbereiten
+                    using (SqlCommand sqlCommand = new SqlCommand("DELETE FROM Ring_Detail WHERE Ring_Detail_ID = @ID", sqlConnectionShuttle))
+                    {
+                        sqlCommand.Parameters.AddWithValue("@ID", ringDetailId);
+                        int affectedRows = sqlCommand.ExecuteNonQuery();
+
+                        if (affectedRows > 0)
+                        {
+                            MessageBox.Show("Box erfolgreich gelöscht.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            // Zeile auch im UI entfernen
+                            DgvBoxen.Rows.Remove(selectedRow);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Keine Zeile gelöscht. Möglicherweise existiert der Eintrag nicht mehr.", "Hinweis", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show("SQL-Fehler: " + sqlEx.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Fehler: " + ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadBoxen()
+        {
+            try
+            {
+                // Erstellen einer neuen SQL-Verbindung zur Datenbank "SOA127_Shuttle" mit integrierter Windows-Authentifizierung
+                using (SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True"))
+                {
+                    // Öffnen der Verbindung zur Datenbank
+                    sqlConnectionShuttle.Open();
+
+                    // Erstellen eines SQL-Befehls zum Abrufen von Ring-Details anhand der Ring_ID
+                    using (SqlCommand sqlCommand = new SqlCommand("SELECT Ring_Detail_ID, Ring_ID, Boxnummer, Stück FROM Ring_Detail WHERE Ring_ID = @Ring_ID", sqlConnectionShuttle))
+                    {
+                        // Hinzufügen des Parameters Ring_ID mit dem Wert der RingId-Variable
+                        sqlCommand.Parameters.AddWithValue("@Ring_ID", RingId);
+
+                        // Erstellen eines Adapters zum Ausführen des Befehls und Laden der Daten in ein DataTable-Objekt
+                        SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand);
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable); // Füllen des DataTables mit den geladenen Daten
+
+                        // Setzen der geladenen Daten als Datenquelle für das DataGridView-Steuerelement "DgvBoxen"
+                        DgvBoxen.DataSource = dataTable;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fehlerbehandlung: Anzeigen einer Fehlermeldung im Fall einer Ausnahme
+                MessageBox.Show("Fehler beim Laden der Boxen: " + ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

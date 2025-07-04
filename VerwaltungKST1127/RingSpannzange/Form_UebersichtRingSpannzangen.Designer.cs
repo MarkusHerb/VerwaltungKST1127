@@ -66,6 +66,12 @@
             this.txtBoxSucheArtikelRingNummer = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
+            this.txtboxBoxname = new System.Windows.Forms.TextBox();
+            this.txtboxStkBox = new System.Windows.Forms.TextBox();
+            this.BtnNeueBoxSave = new System.Windows.Forms.Button();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.BtnDeleteBox = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DgvAnsichtAlleRingeSpannzangen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvBoxen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvArtikel)).BeginInit();
@@ -327,6 +333,7 @@
             this.DgvBoxen.Location = new System.Drawing.Point(55, 610);
             this.DgvBoxen.Name = "DgvBoxen";
             this.DgvBoxen.RowHeadersVisible = false;
+            this.DgvBoxen.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DgvBoxen.Size = new System.Drawing.Size(297, 150);
             this.DgvBoxen.TabIndex = 25;
             // 
@@ -446,11 +453,71 @@
             this.label17.TabIndex = 37;
             this.label17.Text = "z.B R625 o. Z500\r\nDanach klick auf Ring für Info Boxen + Artikelzuordnung";
             // 
+            // txtboxBoxname
+            // 
+            this.txtboxBoxname.Location = new System.Drawing.Point(55, 766);
+            this.txtboxBoxname.Name = "txtboxBoxname";
+            this.txtboxBoxname.Size = new System.Drawing.Size(100, 20);
+            this.txtboxBoxname.TabIndex = 38;
+            // 
+            // txtboxStkBox
+            // 
+            this.txtboxStkBox.Location = new System.Drawing.Point(161, 766);
+            this.txtboxStkBox.Name = "txtboxStkBox";
+            this.txtboxStkBox.Size = new System.Drawing.Size(100, 20);
+            this.txtboxStkBox.TabIndex = 39;
+            // 
+            // BtnNeueBoxSave
+            // 
+            this.BtnNeueBoxSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.BtnNeueBoxSave.Location = new System.Drawing.Point(267, 766);
+            this.BtnNeueBoxSave.Name = "BtnNeueBoxSave";
+            this.BtnNeueBoxSave.Size = new System.Drawing.Size(85, 23);
+            this.BtnNeueBoxSave.TabIndex = 40;
+            this.BtnNeueBoxSave.Text = "Box speichern";
+            this.BtnNeueBoxSave.UseVisualStyleBackColor = false;
+            this.BtnNeueBoxSave.Click += new System.EventHandler(this.BtnNeueBoxSave_Click);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(52, 788);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(51, 13);
+            this.label18.TabIndex = 41;
+            this.label18.Text = "Boxname";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(158, 788);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(67, 13);
+            this.label19.TabIndex = 42;
+            this.label19.Text = "Stück in Box";
+            // 
+            // BtnDeleteBox
+            // 
+            this.BtnDeleteBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.BtnDeleteBox.Location = new System.Drawing.Point(267, 788);
+            this.BtnDeleteBox.Name = "BtnDeleteBox";
+            this.BtnDeleteBox.Size = new System.Drawing.Size(85, 23);
+            this.BtnDeleteBox.TabIndex = 43;
+            this.BtnDeleteBox.Text = "Lösche Box";
+            this.BtnDeleteBox.UseVisualStyleBackColor = false;
+            this.BtnDeleteBox.Click += new System.EventHandler(this.BtnDeleteBox_Click);
+            // 
             // DgvZuordnungArtikel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(705, 824);
+            this.Controls.Add(this.BtnDeleteBox);
+            this.Controls.Add(this.label19);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.BtnNeueBoxSave);
+            this.Controls.Add(this.txtboxStkBox);
+            this.Controls.Add(this.txtboxBoxname);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.txtBoxSucheArtikelRingNummer);
@@ -540,5 +607,11 @@
         private System.Windows.Forms.TextBox txtBoxSucheArtikelRingNummer;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox txtboxBoxname;
+        private System.Windows.Forms.TextBox txtboxStkBox;
+        private System.Windows.Forms.Button BtnNeueBoxSave;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Button BtnDeleteBox;
     }
 }

@@ -1,16 +1,15 @@
-﻿using Newtonsoft.Json;
-using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
+﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
 using System.Collections.Generic; // Importieren des System.Collections.Generic-Namespace für die Arbeit mit generischen Sammlungen (z.B. List<T>, Dictionary<TKey, TValue>)
 using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
 using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
 using System.Drawing.Imaging; // Importieren des System.Drawing.Imaging-Namespace für die Arbeit mit Bildformaten und -konvertierungen
+using System.IO;
 using System.Runtime.InteropServices; // Importieren des System.Runtime.InteropServices-Namespace für die Interoperabilität zwischen verwalteten und nicht verwalteten Codes
+using System.Text.Json;
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Windows-Formularanwendungen
 using ZXing; // Importieren des ZXing-Namespace für die Erstellung von Barcodes
 using Excel = Microsoft.Office.Interop.Excel; // Importieren des Microsoft.Office.Interop.Excel-Namespace für die Arbeit mit Excel-Dateien
-using System.Text.Json;
-using System.IO;
 
 namespace VerwaltungKST1127.Auftragsverwaltung
 {
@@ -21,12 +20,13 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
         // Klassenvariablen zum Speichern der übergebenen Werte
         private string enddatum;
+
         private string teilebez;
         private string auftragsNr;
         private string artikel;
         private string status;
         private string avoInfo;
-        private string material; 
+        private string material;
         private string seite;
         private string sollStk;
         private string istStk;
@@ -86,7 +86,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             {
                 lblZukauf.Text = "Eigenfertigung";
             }
-            // Belag + Prozess 
+            // Belag + Prozess
             lblProzess.Text = selectedBelagValue + " - " + material;
             lblProzess.ForeColor = Color.Red;
 
@@ -200,16 +200,16 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                         // Wenn das Position-Label leer ist, wird das Strichcode-Label ebenfalls leer gesetzt
 
                         // Für PositionVorbereiten
-                        lblStrichcodeZuPositionVorbereiten1.Text = string.IsNullOrEmpty(lblPositionVorbereiten1.Text) ? "" : $"{auftragsNr}_{lblPositionVorbereiten1.Text}";
-                        lblStrichcodeZuPositionVorbereiten2.Text = string.IsNullOrEmpty(lblPositionVorbereiten2.Text) ? "" : $"{auftragsNr}_{lblPositionVorbereiten2.Text}";
-                        lblStrichcodeZuPositionVorbereiten3.Text = string.IsNullOrEmpty(lblPositionVorbereiten3.Text) ? "" : $"{auftragsNr}_{lblPositionVorbereiten3.Text}";
-                        lblStrichcodeZuPositionVorbereiten4.Text = string.IsNullOrEmpty(lblPositionVorbereiten4.Text) ? "" : $"{auftragsNr}_{lblPositionVorbereiten4.Text}";
+                        lblStrichcodeZuPositionVorbereiten1.Text = string.IsNullOrEmpty(lblPositionVorbereiten1.Text) ? "" : $"{auftragsNr}{lblPositionVorbereiten1.Text}";
+                        lblStrichcodeZuPositionVorbereiten2.Text = string.IsNullOrEmpty(lblPositionVorbereiten2.Text) ? "" : $"{auftragsNr}{lblPositionVorbereiten2.Text}";
+                        lblStrichcodeZuPositionVorbereiten3.Text = string.IsNullOrEmpty(lblPositionVorbereiten3.Text) ? "" : $"{auftragsNr}{lblPositionVorbereiten3.Text}";
+                        lblStrichcodeZuPositionVorbereiten4.Text = string.IsNullOrEmpty(lblPositionVorbereiten4.Text) ? "" : $"{auftragsNr}{lblPositionVorbereiten4.Text}";
 
                         // Für PositionVergueten
-                        lblStrichcodeZuPositionVergueten1.Text = string.IsNullOrEmpty(lblPositionVergueten1.Text) ? "" : $"{auftragsNr}_{lblPositionVergueten1.Text}";
-                        lblStrichcodeZuPositionVergueten2.Text = string.IsNullOrEmpty(lblPositionVergueten2.Text) ? "" : $"{auftragsNr}_{lblPositionVergueten2.Text}";
-                        lblStrichcodeZuPositionVergueten3.Text = string.IsNullOrEmpty(lblPositionVergueten3.Text) ? "" : $"{auftragsNr}_{lblPositionVergueten3.Text}";
-                        lblStrichcodeZuPositionVergueten4.Text = string.IsNullOrEmpty(lblPositionVergueten4.Text) ? "" : $"{auftragsNr}_{lblPositionVergueten4.Text}";
+                        lblStrichcodeZuPositionVergueten1.Text = string.IsNullOrEmpty(lblPositionVergueten1.Text) ? "" : $"{auftragsNr}{lblPositionVergueten1.Text}";
+                        lblStrichcodeZuPositionVergueten2.Text = string.IsNullOrEmpty(lblPositionVergueten2.Text) ? "" : $"{auftragsNr}{lblPositionVergueten2.Text}";
+                        lblStrichcodeZuPositionVergueten3.Text = string.IsNullOrEmpty(lblPositionVergueten3.Text) ? "" : $"{auftragsNr}{lblPositionVergueten3.Text}";
+                        lblStrichcodeZuPositionVergueten4.Text = string.IsNullOrEmpty(lblPositionVergueten4.Text) ? "" : $"{auftragsNr}{lblPositionVergueten4.Text}";
                     }
                     sqlConnectionVerwaltung.Close(); // Schließt die Verbindung zur Datenbank
                 }
@@ -439,7 +439,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                                 string tempPath = System.IO.Path.GetTempFileName(); // Temporäre Datei erstellen
                                 barcodeImage.Save(tempPath, ImageFormat.Png); // Barcode-Bild speichern
                                 Excel.Worksheet currentWorksheet = workbook.Sheets[sheetNames[i]]; // Aktuelles Arbeitsblatt
-                                Excel.Range barcodeRange = currentWorksheet.get_Range("C27"); // Zelle C27
+                                Excel.Range barcodeRange = currentWorksheet.get_Range("B27"); // Zelle B27
 
                                 // Löschen vorhandener Bilder in der Zelle
                                 List<Excel.Shape> shapesToDelete = new List<Excel.Shape>();
@@ -478,7 +478,6 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     // Auftragsnummer in JSON-Datei speichern
                     FügeAuftragsnummerZurJsonDateiHinzu(auftragsNr);
                 }
-
 
                 // Funktion zum Abrufen des Enddatums aus der SQL-Tabelle
                 string GetEnddatum(string auftragsNr, string arbeitsvorgang)
@@ -576,13 +575,17 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // Änderungen speichern und Arbeitsmappe schließen
                 workbook.Save();
 
-                ////// Geänderte Sheets drucken und nur die erste Seite davon
-                ////foreach (string sheetName in modifiedSheets)
-                ////{
-                ////    Excel.Worksheet worksheet = workbook.Sheets[sheetName];
-                ////    worksheet.PrintOutEx(1, 1, 1, false);
-                ////}
+                // ############### Druckübersicht Ein/Ausschalten ######################
+
+                // Geänderte Sheets drucken und nur die erste Seite davon
+                foreach (string sheetName in modifiedSheets)
+                {
+                    Excel.Worksheet worksheet = workbook.Sheets[sheetName];
+                    worksheet.PrintOutEx(1, 1, 1, false);
+                }
+                this.Close(); // Formular schließen wenn etwas gedruckt wurde
             }
+            // ##########################################################################
             catch (Exception ex)
             {
                 // Fehlerbehandlung, falls ein Fehler auftritt
@@ -604,36 +607,50 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        // Funktion um die Auftragsnummer in der JsonDatei zu speichern
+        // Funktion zum Hinzufügen einer neuen Auftragsnummer in eine JSON-Datei
         private void FügeAuftragsnummerZurJsonDateiHinzu(string neueAuftragsnummer)
         {
-            string jsonPfad = "letzteAuftragsnummern.json"; // Datei im aktuellen Verzeichnis
+            string jsonPfad = "letzteAuftragsnummern.json"; // Pfad zur JSON-Datei im aktuellen Verzeichnis
 
             try
             {
+                // Liste zur Speicherung der bisherigen Auftragsnummern
                 List<string> auftragsnummern = new List<string>();
 
+                // Prüfen, ob die Datei bereits existiert
                 if (File.Exists(jsonPfad))
                 {
+                    // Inhalt der existierenden Datei einlesen
                     string vorhandenerJsonInhalt = File.ReadAllText(jsonPfad);
+
+                    // Prüfen, ob der Inhalt nicht leer oder nur Leerzeichen ist
                     if (!string.IsNullOrWhiteSpace(vorhandenerJsonInhalt))
                     {
-                        auftragsnummern = System.Text.Json.JsonSerializer.Deserialize<List<string>>(vorhandenerJsonInhalt) ?? new List<string>();
+                        // Deserialisieren des JSON-Inhalts in eine Liste von Auftragsnummern
+                        auftragsnummern = JsonSerializer.Deserialize<List<string>>(vorhandenerJsonInhalt) ?? new List<string>();
                     }
                 }
 
+                // Nur hinzufügen, wenn die neue Auftragsnummer noch nicht enthalten ist
                 if (!auftragsnummern.Contains(neueAuftragsnummer))
                 {
+                    // Neue Auftragsnummer zur Liste hinzufügen
                     auftragsnummern.Add(neueAuftragsnummer);
-                    string neuerJsonInhalt = System.Text.Json.JsonSerializer.Serialize(auftragsnummern, new JsonSerializerOptions { WriteIndented = true });
+
+                    // Liste als formatierten JSON-Text serialisieren
+                    string neuerJsonInhalt = JsonSerializer.Serialize(auftragsnummern, new JsonSerializerOptions { WriteIndented = true });
+
+                    // Den neuen JSON-Inhalt in die Datei schreiben (überschreibt die alte Version)
                     File.WriteAllText(jsonPfad, neuerJsonInhalt);
                 }
             }
             catch (Exception ex)
             {
+                // Fehlermeldung anzeigen, wenn etwas schiefgeht
                 MessageBox.Show($"Fehler beim Schreiben der JSON-Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         // Funktion zum Generieren eines Barcodes
         private Image GenerateBarcode(string text)
@@ -641,7 +658,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             var barcodeWriter = new BarcodeWriter
             {
                 Format = BarcodeFormat.CODE_128, // Barcode-Format
-                Options = new ZXing.Common.EncodingOptions 
+                Options = new ZXing.Common.EncodingOptions
                 {
                     Height = 32, // Höhe des Barcodes
                     Width = 150 // Breite des Barcodes

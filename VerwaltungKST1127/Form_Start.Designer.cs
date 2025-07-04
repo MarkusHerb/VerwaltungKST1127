@@ -75,6 +75,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.lblOberflaechenGesamt = new System.Windows.Forms.Label();
             this.lblAngemeldet = new System.Windows.Forms.Label();
+            this.btnPraemienbewertung = new System.Windows.Forms.Button();
+            this.btnProduktionsauswertung = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -525,12 +527,42 @@
             this.lblAngemeldet.TabIndex = 39;
             this.lblAngemeldet.Text = "Angemeldet: ";
             // 
+            // btnPraemienbewertung
+            // 
+            this.btnPraemienbewertung.BackColor = System.Drawing.Color.Silver;
+            this.btnPraemienbewertung.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnPraemienbewertung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnPraemienbewertung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnPraemienbewertung.Location = new System.Drawing.Point(637, 355);
+            this.btnPraemienbewertung.Name = "btnPraemienbewertung";
+            this.btnPraemienbewertung.Size = new System.Drawing.Size(239, 66);
+            this.btnPraemienbewertung.TabIndex = 40;
+            this.btnPraemienbewertung.Text = "Prämienbewertung\r\nExcelfile auf \"K\"";
+            this.btnPraemienbewertung.UseVisualStyleBackColor = false;
+            this.btnPraemienbewertung.Click += new System.EventHandler(this.btnPraemienbewertung_Click);
+            // 
+            // btnProduktionsauswertung
+            // 
+            this.btnProduktionsauswertung.BackColor = System.Drawing.Color.Silver;
+            this.btnProduktionsauswertung.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnProduktionsauswertung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnProduktionsauswertung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnProduktionsauswertung.Location = new System.Drawing.Point(36, 571);
+            this.btnProduktionsauswertung.Name = "btnProduktionsauswertung";
+            this.btnProduktionsauswertung.Size = new System.Drawing.Size(239, 66);
+            this.btnProduktionsauswertung.TabIndex = 41;
+            this.btnProduktionsauswertung.Text = "Produktionsauswertung";
+            this.btnProduktionsauswertung.UseVisualStyleBackColor = false;
+            this.btnProduktionsauswertung.Click += new System.EventHandler(this.btnProduktionsauswertung_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.btnProduktionsauswertung);
+            this.Controls.Add(this.btnPraemienbewertung);
             this.Controls.Add(this.lblAngemeldet);
             this.Controls.Add(this.lblOberflaechenGesamt);
             this.Controls.Add(this.label4);
@@ -622,6 +654,8 @@
         private System.Windows.Forms.Label lblOberflaechenGesamt;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblAngemeldet;
+        private System.Windows.Forms.Button btnPraemienbewertung;
+        private System.Windows.Forms.Button btnProduktionsauswertung;
     }
 }
 

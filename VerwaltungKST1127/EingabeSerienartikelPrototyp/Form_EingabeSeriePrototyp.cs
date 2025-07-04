@@ -6,13 +6,13 @@ using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken 
 using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
 using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
 
-
 namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 {
     public partial class Form_EingabeSeriePrototyp : Form
     {
         // Verbindungszeichenfolge für die SQL Server-Datenbank Verwaltung
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
+
         // SOA127 Shuttle
         private readonly SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True");
 
@@ -147,7 +147,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-
         // Funktion um die ComboboxGNummer mit eindeutigen GNummer-Werten zu befüllen
         private void FillComboBoxGNummer()
         {
@@ -247,7 +246,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
                 // Sortiere die Einträge in der ComboBox alphabetisch
                 ComboboxGlassorte.Sorted = true;
-
             }
             catch (Exception ex)
             {
@@ -343,6 +341,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 ComboboxRing.Items.Add(displayValue);
             }
         }
+
         // Wenn der index der ComboboxRing geändert wird
         // Aktualisierte Methode zur Auswahländerung in der Combobox
         private void ComboboxRing_SelectedIndexChanged(object sender, EventArgs e)
@@ -366,7 +365,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             // SQL-Abfrage, um die Werte der Spalten Gerundet_SegmentDM und AnzahlRing für den ausgewählten Ring in Ring_Stamm zu finden
             string query = @"
     SELECT Gerundet_SegmentDM, AnzahlRing
-    FROM Ring_Stamm 
+    FROM Ring_Stamm
     WHERE Vorrichtungsnummer = @RingName"; // Filtere die Zeilen, die genau mit dem Ringnamen übereinstimmen
 
             try
@@ -464,8 +463,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 }
             }
         }
-
-
 
         private void SpeichereDatenInDatenbank(string artikelnummer, string bezeichnung, string status, string gruppenname, string zukauf, string flaeche
             , string gNummer, string glassorte, decimal durchmesser, string durchmesserWaschen, decimal freibereich, decimal dicke, string seite, decimal brechwert
@@ -638,8 +635,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             // Info für Bildeingabe wieder auf visible setzten
             lblWichtig1.Visible = true;
             lblWichtig2.Visible = true;
-
         }
+
         // Funktion um die felder zu leeren wenn eine weiter seite eingegeben werden soll
         private void SetPlaceholders()
         {
@@ -687,8 +684,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 // Rufe die Methode auf, um die ComboboxProzess zu befüllen
                 FillComboboxProzess(selectedBelagVerguetung);
             }
-
         }
+
         // Eventhandler für die Änderung der Auswahl in der ComboboxGNummer
         private void ComboboxGNummer_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -707,6 +704,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 FillComboboxGlassorte(null);
             }
         }
+
         // Eventhandler wenn auf die PB doppelt geklickt wird
         private void PictureboxAuflegenLinsenPrismen_DoubleClick(object sender, EventArgs e)
         {
@@ -856,7 +854,5 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             form_ArtikelPrototypAendern.Show(); // Zeigt das neue Formular an
             form_ArtikelPrototypAendern.BringToFront(); // Bringt das neue Formular in den Vordergrund
         }
-
-        
     }
 }
