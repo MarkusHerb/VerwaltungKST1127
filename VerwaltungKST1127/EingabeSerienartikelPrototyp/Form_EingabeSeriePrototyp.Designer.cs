@@ -789,9 +789,9 @@
             // 
             this.BtnArtikelSpeichern.BackColor = System.Drawing.Color.Lime;
             this.BtnArtikelSpeichern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnArtikelSpeichern.Location = new System.Drawing.Point(350, 682);
+            this.BtnArtikelSpeichern.Location = new System.Drawing.Point(21, 682);
             this.BtnArtikelSpeichern.Name = "BtnArtikelSpeichern";
-            this.BtnArtikelSpeichern.Size = new System.Drawing.Size(313, 49);
+            this.BtnArtikelSpeichern.Size = new System.Drawing.Size(643, 49);
             this.BtnArtikelSpeichern.TabIndex = 100;
             this.BtnArtikelSpeichern.Text = "Artikel in Serienlinsentabelle aufnehmen";
             this.BtnArtikelSpeichern.UseVisualStyleBackColor = false;
@@ -838,9 +838,9 @@
             // 
             this.BtnArtikelAendern.BackColor = System.Drawing.Color.LightSeaGreen;
             this.BtnArtikelAendern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnArtikelAendern.Location = new System.Drawing.Point(14, 682);
+            this.BtnArtikelAendern.Location = new System.Drawing.Point(890, 682);
             this.BtnArtikelAendern.Name = "BtnArtikelAendern";
-            this.BtnArtikelAendern.Size = new System.Drawing.Size(330, 49);
+            this.BtnArtikelAendern.Size = new System.Drawing.Size(187, 49);
             this.BtnArtikelAendern.TabIndex = 110;
             this.BtnArtikelAendern.Text = "Einen Artikel ändern";
             this.BtnArtikelAendern.UseVisualStyleBackColor = false;

@@ -37,7 +37,6 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
         // ############## Selbst erstellte Funktionen ################
         // Funktion um die ComboboxBelagVerguetung/Rueckseite mit eindeutigen GNummer-Werten zu befüllen
-        // Methode zum Füllen der ComboBox mit eindeutigen Werten aus der Datenbank
         private void FillComboBoxBelagVerguetungRueckseite()
         {
             // SQL-Abfrage, um alle eindeutigen Werte aus der Spalte 'Belag' zu erhalten
@@ -464,6 +463,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
+        // Funktion um die Daten in die Datenbank zu speichern
         private void SpeichereDatenInDatenbank(string artikelnummer, string bezeichnung, string status, string gruppenname, string zukauf, string flaeche
             , string gNummer, string glassorte, decimal durchmesser, string durchmesserWaschen, decimal freibereich, decimal dicke, string seite, decimal brechwert
             , string radiusVerguetung, string radiusRueckseite, string belagVerguetung, string prozess, string belagRueckseite, string ring, string stkSegment
@@ -596,6 +596,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             DateTimePickerAufgenommenLinsePrisma.Value = DateTime.Now;
         }
 
+        // Funktion um die felder zu leeren wenn eine weiter seite eingegeben werden soll
         private void ClearFildsForSecoundThird()
         {
             // Setze alle TextBoxen auf String.Empty
@@ -648,6 +649,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             SetPlaceholder(TxtboxBrechwert, "x,xx");
         }
 
+        // Funktion um Platzhalter in TextBoxen zu setzen
         private void SetPlaceholder(TextBox textBox, string placeholderText)
         {
             textBox.ForeColor = Color.Gray;

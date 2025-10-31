@@ -577,13 +577,13 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
                 // ############### Druckübersicht Ein/Ausschalten ######################
 
-                // Geänderte Sheets drucken und nur die erste Seite davon
-                foreach (string sheetName in modifiedSheets)
-                {
-                    Excel.Worksheet worksheet = workbook.Sheets[sheetName];
-                    worksheet.PrintOutEx(1, 1, 1, false);
-                }
-                this.Close(); // Formular schließen wenn etwas gedruckt wurde
+                ////// Geänderte Sheets drucken und nur die erste Seite davon
+                ////foreach (string sheetName in modifiedSheets)
+                ////{
+                ////    Excel.Worksheet worksheet = workbook.Sheets[sheetName];
+                ////    worksheet.PrintOutEx(1, 1, 1, false);
+                ////}
+                ////this.Close(); // Formular schließen wenn etwas gedruckt wurde
             }
             // ##########################################################################
             catch (Exception ex)

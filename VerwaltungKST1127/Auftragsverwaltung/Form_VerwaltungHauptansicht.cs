@@ -412,6 +412,15 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                         }
                     }
                 }
+
+                // Wenn der Column Name VorStk. , IstStk. , SollStk. ist, dann soll die Schriftart fett sein
+                if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "VorStk." ||
+                    DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "IstStk." ||
+                    DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "SollStk.")
+                {
+                    e.CellStyle.Font = new Font(DgvAnsichtAuftraege.Font, FontStyle.Bold);
+                }
+
             }
 
             // --- Auftragsnummern hervorheben, die in der JSON-Datei gespeichert sind ---
@@ -772,6 +781,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                         // Optional: Nachricht anzeigen, dass die Auftragsnummer gelöscht wurde
                         MessageBox.Show($"Auftragsnummer {auftragsNummer} wurde aus der gestarteten Auftragsliste gelöscht.", "Auftrag abgeschlossen", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         UpdateDgvAnsichtAuftraege2();
+                        // Label aktualisieren
+                        ZaehleGestarteteAuftraege();
                     }
                     else
                     {
@@ -1004,40 +1015,49 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // SQL-Abfrage anpassen: Suche nach beiden Varianten (Bindestrich und ohne Bindestrich) und case-insensitive (durch COLLATE)
                 string query = $@"
 SELECT
-    CONVERT(date, trdf_enddate) AS Enddatum,
-    dsca_teilebez AS [Teilebez.],
-    pdno_prodnr AS [Auftragsnr.],
-    mitm_teilenr AS Artikel,
-    opsta_avostat AS Status,
-    txta_avoinfo AS AVOinfo,
-    '' AS Material, -- Spalte Material bleibt leer
+    CONVERT(date, a.trdf_enddate) AS Enddatum,
+        a.dsca_teilebez AS [Teilebez.],
+        a.pdno_prodnr AS [Auftragsnr.],
+        a.mitm_teilenr AS Artikel,
+        a.opsta_avostat AS Status,
+        a.txta_avoinfo AS AVOinfo,
+        '' AS Material,
     CASE
-        WHEN txta_avoinfo LIKE '%III%' OR txta_avoinfo LIKE '%Iii%' OR txta_avoinfo LIKE '%IIi%' OR txta_avoinfo LIKE '%iii%' OR txta_avoinfo LIKE '%iII%' THEN '0'
-        WHEN txta_avoinfo LIKE '%Ii%' OR txta_avoinfo LIKE '%iI%' OR txta_avoinfo LIKE '%ii%' OR txta_avoinfo LIKE '%II%' THEN '2'
-        WHEN txta_avoinfo LIKE '%i%' OR txta_avoinfo LIKE '%I%' THEN '1'
+        WHEN a.txta_avoinfo LIKE '%III%' OR a.txta_avoinfo LIKE '%Iii%' OR a.txta_avoinfo LIKE '%IIi%' OR a.txta_avoinfo LIKE '%iii%' OR a.txta_avoinfo LIKE '%iII%' THEN '0' 
+        WHEN a.txta_avoinfo LIKE '%Ii%' OR a.txta_avoinfo LIKE '%iI%' OR a.txta_avoinfo LIKE '%ii%' OR a.txta_avoinfo LIKE '%II%' THEN '2'
+        WHEN a.txta_avoinfo LIKE '%i%' OR a.txta_avoinfo LIKE '%I%' THEN '1'
         ELSE '0'
     END AS Seite,
-    qplo_sollstk AS [SollStk.],
-    qcmp_iststk AS [IstStk.],
-    qcmp2_vorstk AS [VorStk.],
-    qhnd1_stk_teilelager AS Teilelager,
-    qana_bereitstellbestand AS Bereitstell,
-    demand_jahresbedarf AS Jahresbedarf,
-    '' AS Zukauf, -- aktuell leer
-    '' AS Dringend, -- aktuell leer
-    CONVERT(date, import_date) AS Aktualisiert
-FROM
-    LN_ProdOrders_PRD
-WHERE
-    opsta_avostat IN ('Active', 'Planned', 'Released')
+        a.qplo_sollstk AS [SollStk.],
+        a.qcmp_iststk AS [IstStk.],
+        passendVorbereiten.qcmp2_vorstk AS [VorStk.],
+        a.qhnd1_stk_teilelager AS Teilelager,
+        a.qana_bereitstellbestand AS Bereitstell,
+        a.demand_jahresbedarf AS Jahresbedarf,
+            '' AS Zukauf,
+            '' AS Dringend,
+        CONVERT(date, a.import_date) AS Aktualisiert
+    FROM
+        LN_ProdOrders_PRD a
+    OUTER APPLY (
+    SELECT TOP 1 b.qcmp2_vorstk
+    FROM LN_ProdOrders_PRD b
+    WHERE b.pdno_prodnr = a.pdno_prodnr
+      AND b.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vorbereiten%'
+      AND b.trdf_enddate < a.trdf_enddate
+    ORDER BY b.trdf_enddate DESC
+    ) AS passendVorbereiten
+    WHERE
+        a.opsta_avostat IN ('Active', 'Planned', 'Released')
     AND (
-         txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue1
-         OR
-         txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue2
-    )
-    AND txta_avoinfo LIKE '%Vergüten%'
-ORDER BY
-    trdf_enddate ASC;";
+        a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue1
+        OR
+        a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue2
+        )
+    AND a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vergüten%'
+    ORDER BY
+    a.trdf_enddate ASC;";
+
 
                 // SQL-Befehl vorbereiten
                 SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung);

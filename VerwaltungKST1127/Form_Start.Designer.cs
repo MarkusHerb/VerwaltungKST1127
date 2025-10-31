@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -77,6 +77,8 @@
             this.lblAngemeldet = new System.Windows.Forms.Label();
             this.btnPraemienbewertung = new System.Windows.Forms.Button();
             this.btnProduktionsauswertung = new System.Windows.Forms.Button();
+            this.BtnArtikelAendern = new System.Windows.Forms.Button();
+            this.BtnRFIDAnischtWaschen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -126,9 +128,9 @@
             this.BtnSerienartikelPrototyp.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnSerienartikelPrototyp.Location = new System.Drawing.Point(36, 283);
             this.BtnSerienartikelPrototyp.Name = "BtnSerienartikelPrototyp";
-            this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(239, 66);
+            this.BtnSerienartikelPrototyp.Size = new System.Drawing.Size(111, 66);
             this.BtnSerienartikelPrototyp.TabIndex = 5;
-            this.BtnSerienartikelPrototyp.Text = "Neuen Artikel anlegen/ändern";
+            this.BtnSerienartikelPrototyp.Text = "Neuer Artikl";
             this.BtnSerienartikelPrototyp.UseVisualStyleBackColor = false;
             this.BtnSerienartikelPrototyp.Click += new System.EventHandler(this.BtnSerienartikelPrototyp_Click);
             // 
@@ -260,7 +262,7 @@
             this.BtnLupe.Name = "BtnLupe";
             this.BtnLupe.Size = new System.Drawing.Size(105, 56);
             this.BtnLupe.TabIndex = 17;
-            this.BtnLupe.Text = "OptikLupe";
+            this.BtnLupe.Text = "Intranet";
             this.BtnLupe.UseVisualStyleBackColor = false;
             this.BtnLupe.Click += new System.EventHandler(this.BtnLupe_Click);
             // 
@@ -281,6 +283,7 @@
             // ListBoxDocuments
             // 
             this.ListBoxDocuments.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.ListBoxDocuments.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ListBoxDocuments.Font = new System.Drawing.Font("Segoe Condensed", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ListBoxDocuments.ForeColor = System.Drawing.Color.Black;
             this.ListBoxDocuments.FormattingEnabled = true;
@@ -368,17 +371,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea1.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea1);
-            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend1.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend1);
+            chartArea3.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea3);
+            legend3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend3.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend3);
             this.chartPerformance.Location = new System.Drawing.Point(602, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartPerformance.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chartPerformance.Series.Add(series3);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -555,12 +558,42 @@
             this.btnProduktionsauswertung.UseVisualStyleBackColor = false;
             this.btnProduktionsauswertung.Click += new System.EventHandler(this.btnProduktionsauswertung_Click);
             // 
+            // BtnArtikelAendern
+            // 
+            this.BtnArtikelAendern.BackColor = System.Drawing.Color.Silver;
+            this.BtnArtikelAendern.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnArtikelAendern.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnArtikelAendern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnArtikelAendern.Location = new System.Drawing.Point(163, 283);
+            this.BtnArtikelAendern.Name = "BtnArtikelAendern";
+            this.BtnArtikelAendern.Size = new System.Drawing.Size(112, 66);
+            this.BtnArtikelAendern.TabIndex = 42;
+            this.BtnArtikelAendern.Text = "Artikel ändern";
+            this.BtnArtikelAendern.UseVisualStyleBackColor = false;
+            this.BtnArtikelAendern.Click += new System.EventHandler(this.BtnArtikelAendern_Click);
+            // 
+            // BtnRFIDAnischtWaschen
+            // 
+            this.BtnRFIDAnischtWaschen.BackColor = System.Drawing.Color.Silver;
+            this.BtnRFIDAnischtWaschen.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnRFIDAnischtWaschen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnRFIDAnischtWaschen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnRFIDAnischtWaschen.Location = new System.Drawing.Point(36, 427);
+            this.BtnRFIDAnischtWaschen.Name = "BtnRFIDAnischtWaschen";
+            this.BtnRFIDAnischtWaschen.Size = new System.Drawing.Size(239, 66);
+            this.BtnRFIDAnischtWaschen.TabIndex = 43;
+            this.BtnRFIDAnischtWaschen.Text = "RFID Waschanlagen";
+            this.BtnRFIDAnischtWaschen.UseVisualStyleBackColor = false;
+            this.BtnRFIDAnischtWaschen.Click += new System.EventHandler(this.BtnRFIDAnischtWaschen_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.BtnRFIDAnischtWaschen);
+            this.Controls.Add(this.BtnArtikelAendern);
             this.Controls.Add(this.btnProduktionsauswertung);
             this.Controls.Add(this.btnPraemienbewertung);
             this.Controls.Add(this.lblAngemeldet);
@@ -656,6 +689,8 @@
         private System.Windows.Forms.Label lblAngemeldet;
         private System.Windows.Forms.Button btnPraemienbewertung;
         private System.Windows.Forms.Button btnProduktionsauswertung;
+        private System.Windows.Forms.Button BtnArtikelAendern;
+        private System.Windows.Forms.Button BtnRFIDAnischtWaschen;
     }
 }
 

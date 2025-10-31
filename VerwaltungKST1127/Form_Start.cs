@@ -360,6 +360,14 @@ namespace VerwaltungKST1127
             form_Personalliste.Show();
         }
 
+        // Button Even, wenn man darauf klickt
+        private void BtnArtikelAendern_Click(object sender, EventArgs e)
+        {
+            Form_ArtikelPrototypAendern form_ArtikelAender = new Form_ArtikelPrototypAendern("12-2044", "1");
+            form_ArtikelAender.Show();
+            form_ArtikelAender.BringToFront(); // Bringt das neue Formular in den Vordergrund
+        }
+
         // #### ListBox ####
         // Array zur Speicherung der Dokumentnamen und Dateipfade
         private readonly string[,] documents = {
@@ -502,6 +510,13 @@ namespace VerwaltungKST1127
             form_AnsichtProduktionsauswertung.Show();
         }
 
+        // Event-Handler: Wird aufgerufen, wenn der Button "RFID Ansicht Waschen" geklickt wird
+        private void BtnRFIDAnischtWaschen_Click(object sender, EventArgs e)
+        {
+            Form_RFIDAnsichtWaschanlagen form_RFIDWaschen = new Form_RFIDAnsichtWaschanlagen();
+            form_RFIDWaschen.Show();
+        }
+
         // Event-Handler: Wird aufgerufen, wenn der Button "Prämienbewertung" geklickt wird
         private void btnPraemienbewertung_Click(object sender, EventArgs e)
         {
@@ -569,6 +584,8 @@ namespace VerwaltungKST1127
                 return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : null;
             }
         }
+
+        
     }
 }
 

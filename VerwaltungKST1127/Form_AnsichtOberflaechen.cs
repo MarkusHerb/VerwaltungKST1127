@@ -59,7 +59,7 @@ namespace VerwaltungKST1127
                                 }
                                 else
                                 {
-                                    monthlySums[yearMonth] = sum;
+                                    monthlySums[yearMonth] = sum; 
                                 }
                             }
                         }

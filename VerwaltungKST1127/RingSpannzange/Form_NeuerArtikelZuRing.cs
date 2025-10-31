@@ -47,12 +47,22 @@ namespace VerwaltungKST1127.RingSpannzange
             // Kommentartextfeld übernehmen
             string bemerkung = txtBoxBemerkung.Text;
 
-            // Pflichtfeldprüfung: Artikelnummer, Seite und Belag müssen ausgefüllt sein
-            if (string.IsNullOrWhiteSpace(artikelNummer) || string.IsNullOrWhiteSpace(seite) || string.IsNullOrWhiteSpace(belag))
+            // Pflichtfeldprüfung: Wenn Artikelnummer mit "Z" beginnt, reicht nur die Artikelnummer.
+            // Sonst müssen Artikelnummer, Seite und Belag ausgefüllt sein.
+            if (string.IsNullOrWhiteSpace(artikelNummer) ||
+                (!artikelNummer.StartsWith("Z", StringComparison.OrdinalIgnoreCase) &&
+                 (string.IsNullOrWhiteSpace(seite) || string.IsNullOrWhiteSpace(belag))))
             {
-                MessageBox.Show("Artikelnummer, Seite und Belag muss ausgefüllt sein!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    artikelNummer.StartsWith("Z", StringComparison.OrdinalIgnoreCase)
+                        ? "Artikelnummer muss ausgefüllt sein!"
+                        : "Artikelnummer, Seite und Belag muss ausgefüllt sein!",
+                    "Fehler",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return; // Abbruch, wenn Pflichtfelder fehlen
             }
+
 
             try
             {
