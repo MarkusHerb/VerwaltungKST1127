@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_InfoProduktionsauswertung));
             this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -37,21 +38,19 @@
             this.label1.Location = new System.Drawing.Point(17, 16);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(470, 68);
+            this.label1.Size = new System.Drawing.Size(491, 119);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Daten für die Produktivstunden sowie Fehlerzeiten werden direkt aus der \r\nMDE (P:" +
-    "\\TEDuTOZ\\MDE\\AnlageXX) eingelsen und dargestellt.\r\n\r\nStückzahlen kommen aus den " +
-    "SQL-Tabellen der Chargenprotokollen.\r\n";
+            this.label1.Text = resources.GetString("label1.Text");
             // 
             // Form_InfoProduktionsauswertung
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(497, 95);
+            this.ClientSize = new System.Drawing.Size(516, 149);
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form_InfoProduktionsauswertung";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Information Produktionsauswertung";

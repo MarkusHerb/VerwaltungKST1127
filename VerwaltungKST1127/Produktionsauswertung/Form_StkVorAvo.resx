@@ -117,13 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label1.Text" xml:space="preserve">
-    <value>1.) Daten für die Produktivstunden sowie Fehlerzeiten werden direkt aus der 
-MDE (P:\TEDuTOZ\MDE\AnlageXX) eingelsen und dargestellt.
-
-2.) Stückzahlen kommen aus den SQL-Tabellen der Chargenprotokollen.
-
-3.) Letzte Charge: Zeit, wann die Anlage von Produktion auf Betriebsbereit 
-umstellt = Tatsächliches Ende ohne Belüftungszeit</value>
-  </data>
 </root>

@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -282,7 +282,7 @@
             // 
             // ListBoxDocuments
             // 
-            this.ListBoxDocuments.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.ListBoxDocuments.BackColor = System.Drawing.Color.White;
             this.ListBoxDocuments.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ListBoxDocuments.Font = new System.Drawing.Font("Segoe Condensed", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ListBoxDocuments.ForeColor = System.Drawing.Color.Black;
@@ -344,7 +344,7 @@
             // LblCpu
             // 
             this.LblCpu.AutoSize = true;
-            this.LblCpu.Location = new System.Drawing.Point(919, 98);
+            this.LblCpu.Location = new System.Drawing.Point(626, 98);
             this.LblCpu.Name = "LblCpu";
             this.LblCpu.Size = new System.Drawing.Size(26, 13);
             this.LblCpu.TabIndex = 23;
@@ -353,7 +353,7 @@
             // LblRam
             // 
             this.LblRam.AutoSize = true;
-            this.LblRam.Location = new System.Drawing.Point(919, 111);
+            this.LblRam.Location = new System.Drawing.Point(626, 111);
             this.LblRam.Name = "LblRam";
             this.LblRam.Size = new System.Drawing.Size(31, 13);
             this.LblRam.TabIndex = 24;
@@ -371,17 +371,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            chartArea3.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea3);
-            legend3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend3.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend3);
-            this.chartPerformance.Location = new System.Drawing.Point(602, 77);
+            chartArea1.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea1);
+            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend1.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend1);
+            this.chartPerformance.Location = new System.Drawing.Point(309, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.chartPerformance.Series.Add(series3);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartPerformance.Series.Add(series1);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";

@@ -172,6 +172,38 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
                         // --- 9) das Label lblEingeleseneWaschkörbe nach anzahl der eingelesenen Spalten im Dgv aktualisieren
                         lblEingeleseneWaschkoerbe.Text = $"Eingelesene Waschträger: {_rfidView.Count}";
+
+                        // --- 10) das Label lblEingeleseneWaschkoerbeVerguetung (127 oder 1127), lblEingeleseneWaschkoerbeRundoptik (124 oder 1124), lblEingeleseneWaschkoerbeMontagen (sonstige Zahlen), lblEingeleseneWaschkoerbeKitterei, lblEingeleseneWaschkoerbeQS, Ohne zuordnung aktualisieren
+                        int count127 = 0;
+                        int count126 = 0;
+                        int count124 = 0;
+                        int countMontage = 0;
+                        int countEmptyKST = 0;
+
+                        foreach (DataRow row in _rfidView.ToTable().Rows)
+                        {
+                            if (row["DB22"] != DBNull.Value)
+                            {
+                                string kst = row["DB22"].ToString();
+                                if (kst == "127" || kst == "1127" || kst == "0127")
+                                    count127++;
+                                else if (kst == "126" || kst == "1126" || kst == "0126")
+                                    count126++;
+                                else if (kst == "124" || kst == "1124" || kst == "0124")
+                                    count124++;                                
+                                // wenn nichts in der Zelle steht countEmtyKst ++
+                                else if (string.IsNullOrWhiteSpace(kst))
+                                    countEmptyKST++;
+                                else
+                                    countMontage++;
+                            }
+                        }
+                        // Labels aktualisieren
+                        lblEingeleseneWaschkoerbeVerguetung.Text = $"Waschträger Vergütung: {count127}";
+                        lblEingeleseneWaschkoerbeKitterei.Text = $"Waschträger Kitterei: {count126}";
+                        lblEingeleseneWaschkoerbeRundoptik.Text = $"Waschträger Rundoptik: {count124}";                       
+                        lblEingeleseneWaschkoerbeMontagen.Text = $"Waschträger Montagen: {countMontage}";
+                        lblEingelesenOhneZuordnung.Text = $"Ohne KST: {countEmptyKST}";
                     }
                 }
             }

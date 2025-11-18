@@ -199,7 +199,7 @@ namespace VerwaltungKST1127
             Series seriesRam = new Series("RAM")
             {
                 ChartType = SeriesChartType.Line,
-                Color = Color.DarkOrange
+                Color = Color.DarkOrange 
             };
             chartPerformance.Series.Add(seriesRam);
 

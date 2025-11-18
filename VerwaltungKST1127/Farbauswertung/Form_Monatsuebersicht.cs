@@ -172,43 +172,86 @@ namespace VerwaltungKST1127.Farbauswertung
             LblAverage.Text = $"Ø Chargen/Monat: {average:F2}";  // Durchschnitt mit 2 Dezimalstellen anzeigen
 
             // Trenlinie für den Durchschnittswert zeichnen
-            // --- Trendlinie hinzufügen ---
-            Series trendLine = new Series("Trend")
-            {
-                ChartType = SeriesChartType.Line, // Trendlinie
-                BorderWidth = 1, // Dicke der Linie
-                Color = Color.LightGray, // Farbe der Linie
-                IsVisibleInLegend = false, // Legende ausblenden
-                IsValueShownAsLabel = false, // Werte nicht anzeigen              
-                BorderDashStyle = ChartDashStyle.Dash // gestrichelte Linie
-            };
-
-            // Berechnung der Trendlinie (lineare Regression)
-            double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            // --- Trendlinie als Polynom 2. Grades (Parabel) ---
+            // Werte sammeln
             int n = ChartMonatsuebersicht.Series[0].Points.Count;
-
+            double[] x = new double[n];
+            double[] y = new double[n];
             for (int i = 0; i < n; i++)
             {
-                double x = i + 1; // Monat als numerischer Wert
-                double y = ChartMonatsuebersicht.Series[0].Points[i].YValues[0];
-
-                sumX += x;
-                sumY += y;
-                sumXY += x * y;
-                sumX2 += x * x;
+                x[i] = i + 1;
+                y[i] = ChartMonatsuebersicht.Series[0].Points[i].YValues[0];
             }
 
-            double slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-            double intercept = (sumY - slope * sumX) / n;
+            // Polynome berechnen (Least Squares, 2. Grades)
+            double sumX = 0, sumX2 = 0, sumX3 = 0, sumX4 = 0;
+            double sumY = 0, sumXY = 0, sumX2Y = 0;
+            for (int i = 0; i < n; i++)
+            {
+                sumX += x[i];
+                sumX2 += x[i] * x[i];
+                sumX3 += x[i] * x[i] * x[i];
+                sumX4 += x[i] * x[i] * x[i] * x[i];
+                sumY += y[i];
+                sumXY += x[i] * y[i];
+                sumX2Y += x[i] * x[i] * y[i];
+            }
+
+            // Gleichungssystem lösen (Matrix-Formel für a, b, c)
+            double[,] matA = {
+                { n,    sumX,   sumX2 },
+                { sumX, sumX2,  sumX3 },
+                { sumX2, sumX3, sumX4 }
+            };
+            double[] vecB = { sumY, sumXY, sumX2Y };
+
+            // Gauß-Algorithmus für 3x3-System
+            double[] coeff = Solve3x3(matA, vecB); // coeff[0]=a, coeff[1]=b, coeff[2]=c
+
+            Series trendLine = new Series("Trend")
+            {
+                ChartType = SeriesChartType.Line,
+                BorderWidth = 2,
+                Color = Color.MediumPurple,
+                IsVisibleInLegend = false,
+                IsValueShownAsLabel = false,
+                BorderDashStyle = ChartDashStyle.Solid
+            };
 
             for (int i = 0; i < n; i++)
             {
-                double x = i + 1;
-                double y = slope * x + intercept;
-                trendLine.Points.AddXY(ChartMonatsuebersicht.Series[0].Points[i].AxisLabel, y);
+                double xi = x[i];
+                double yi = coeff[0] + coeff[1] * xi + coeff[2] * xi * xi;
+                trendLine.Points.AddXY(ChartMonatsuebersicht.Series[0].Points[i].AxisLabel, yi);
             }
 
             ChartMonatsuebersicht.Series.Add(trendLine);
+
+            // --- Hilfsfunktion für 3x3 Gleichungssystem ---
+            double[] Solve3x3(double[,] A, double[] B)
+            {
+                // Cramer's Rule
+                double detA =
+                    A[0, 0] * (A[1, 1] * A[2, 2] - A[1, 2] * A[2, 1]) -
+                    A[0, 1] * (A[1, 0] * A[2, 2] - A[1, 2] * A[2, 0]) +
+                    A[0, 2] * (A[1, 0] * A[2, 1] - A[1, 1] * A[2, 0]);
+
+                double[] result = new double[3];
+                for (int i = 0; i < 3; i++)
+                {
+                    double[,] Ai = (double[,])A.Clone();
+                    for (int j = 0; j < 3; j++)
+                        Ai[j, i] = B[j];
+
+                    double detAi =
+                        Ai[0, 0] * (Ai[1, 1] * Ai[2, 2] - Ai[1, 2] * Ai[2, 1]) -
+                        Ai[0, 1] * (Ai[1, 0] * Ai[2, 2] - Ai[1, 2] * Ai[2, 0]) +
+                        Ai[0, 2] * (Ai[1, 0] * Ai[2, 1] - Ai[1, 1] * Ai[2, 0]);
+
+                    result[i] = detAi / detA;
+                }
+                return result;
+            }
             // --- Ende der Trendlinie ---
 
             // --- Diagramm: Belagsübersicht ---

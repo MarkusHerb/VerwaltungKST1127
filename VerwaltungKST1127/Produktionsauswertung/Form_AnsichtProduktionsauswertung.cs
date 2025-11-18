@@ -978,5 +978,12 @@ namespace VerwaltungKST1127.Produktionsauswertung
             Form_InfoProduktionsauswertung infoForm = new Form_InfoProduktionsauswertung();
             infoForm.ShowDialog();
         }
+
+        // Öffnet das Fenster für die Stückzahlen
+        private void btnStkVorAvo_Click(object sender, EventArgs e)
+        {
+            Form_StkVorAvo frmStkVorAvo = new Form_StkVorAvo();
+            frmStkVorAvo.ShowDialog();
+        }
     }
 }

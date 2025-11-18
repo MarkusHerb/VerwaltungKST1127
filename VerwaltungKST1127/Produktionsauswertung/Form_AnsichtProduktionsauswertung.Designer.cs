@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.dateTimePickerLastProduction = new System.Windows.Forms.DateTimePicker();
@@ -103,6 +103,7 @@
             this.label19 = new System.Windows.Forms.Label();
             this.lblGesamtProduktiv = new System.Windows.Forms.Label();
             this.lblGesamtChargen = new System.Windows.Forms.Label();
+            this.btnStkVorAvo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chartGesamtProduktiv)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvArtikelStueck)).BeginInit();
             this.SuspendLayout();
@@ -390,17 +391,17 @@
             // 
             // chartGesamtProduktiv
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chartGesamtProduktiv.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chartGesamtProduktiv.Legends.Add(legend1);
+            chartArea2.Name = "ChartArea1";
+            this.chartGesamtProduktiv.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.chartGesamtProduktiv.Legends.Add(legend2);
             this.chartGesamtProduktiv.Location = new System.Drawing.Point(19, 453);
             this.chartGesamtProduktiv.Name = "chartGesamtProduktiv";
             this.chartGesamtProduktiv.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Excel;
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartGesamtProduktiv.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chartGesamtProduktiv.Series.Add(series2);
             this.chartGesamtProduktiv.Size = new System.Drawing.Size(603, 262);
             this.chartGesamtProduktiv.TabIndex = 32;
             this.chartGesamtProduktiv.Text = "chart1";
@@ -600,14 +601,14 @@
             // dgvArtikelStueck
             // 
             this.dgvArtikelStueck.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvArtikelStueck.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvArtikelStueck.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvArtikelStueck.Location = new System.Drawing.Point(643, 130);
             this.dgvArtikelStueck.Name = "dgvArtikelStueck";
             this.dgvArtikelStueck.RowHeadersVisible = false;
@@ -648,6 +649,7 @@
             // 
             this.Btn_InfoProduction.BackColor = System.Drawing.SystemColors.Info;
             this.Btn_InfoProduction.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.Btn_InfoProduction.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Btn_InfoProduction.Location = new System.Drawing.Point(1078, 9);
             this.Btn_InfoProduction.Name = "Btn_InfoProduction";
             this.Btn_InfoProduction.Size = new System.Drawing.Size(86, 31);
@@ -796,11 +798,25 @@
             this.lblGesamtChargen.TabIndex = 72;
             this.lblGesamtChargen.Text = "0";
             // 
+            // btnStkVorAvo
+            // 
+            this.btnStkVorAvo.BackColor = System.Drawing.Color.Khaki;
+            this.btnStkVorAvo.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnStkVorAvo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnStkVorAvo.Location = new System.Drawing.Point(1078, 46);
+            this.btnStkVorAvo.Name = "btnStkVorAvo";
+            this.btnStkVorAvo.Size = new System.Drawing.Size(86, 31);
+            this.btnStkVorAvo.TabIndex = 73;
+            this.btnStkVorAvo.Text = "Stk. vor Avo";
+            this.btnStkVorAvo.UseVisualStyleBackColor = false;
+            this.btnStkVorAvo.Click += new System.EventHandler(this.btnStkVorAvo_Click);
+            // 
             // Form_AnsichtProduktionsauswertung
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1176, 727);
+            this.Controls.Add(this.btnStkVorAvo);
             this.Controls.Add(this.lblGesamtChargen);
             this.Controls.Add(this.lblGesamtProduktiv);
             this.Controls.Add(this.label19);
@@ -955,5 +971,6 @@
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label lblGesamtProduktiv;
         private System.Windows.Forms.Label lblGesamtChargen;
+        private System.Windows.Forms.Button btnStkVorAvo;
     }
 }
