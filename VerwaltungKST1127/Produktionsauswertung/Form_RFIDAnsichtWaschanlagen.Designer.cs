@@ -59,6 +59,7 @@
             this.txtBoxWaschprogrammAceton = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
+            this.cListBoxWaschanlage = new System.Windows.Forms.CheckedListBox();
             ((System.ComponentModel.ISupportInitialize)(this.dGvRFID)).BeginInit();
             this.SuspendLayout();
             // 
@@ -229,12 +230,12 @@
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.ForeColor = System.Drawing.Color.Red;
-            this.label9.Location = new System.Drawing.Point(332, 77);
+            this.label9.Location = new System.Drawing.Point(332, 70);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(312, 39);
+            this.label9.Size = new System.Drawing.Size(223, 52);
             this.label9.TabIndex = 17;
-            this.label9.Text = "Es werden immer die vergangenen 30 Tag eingelesen\r\nWenn Datum Ab über mehrere Mon" +
-    "ate eingestellt wird\r\n--> Aktualisierung dauert etwas!";
+            this.label9.Text = "Es werden immer die vergangenen 30 \r\nTag eingelesen. Wenn Datum Ab über\r\nmehrere " +
+    "Monate eingestellt wird\r\n--> Aktualisierung dauert etwas!\r\n";
             // 
             // lblEingeleseneWaschkoerbe
             // 
@@ -339,12 +340,26 @@
             this.label11.TabIndex = 29;
             this.label11.Text = "Aceton";
             // 
+            // cListBoxWaschanlage
+            // 
+            this.cListBoxWaschanlage.CheckOnClick = true;
+            this.cListBoxWaschanlage.FormattingEnabled = true;
+            this.cListBoxWaschanlage.Items.AddRange(new object[] {
+            "UCM497",
+            "Aceton"});
+            this.cListBoxWaschanlage.Location = new System.Drawing.Point(557, 71);
+            this.cListBoxWaschanlage.Name = "cListBoxWaschanlage";
+            this.cListBoxWaschanlage.Size = new System.Drawing.Size(74, 34);
+            this.cListBoxWaschanlage.TabIndex = 30;
+            this.cListBoxWaschanlage.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.cListBoxWaschanlage_ItemCheck);
+            // 
             // Form_RFIDAnsichtWaschanlagen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1532, 794);
+            this.Controls.Add(this.cListBoxWaschanlage);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.txtBoxWaschprogrammAceton);
@@ -415,5 +430,6 @@
         private System.Windows.Forms.TextBox txtBoxWaschprogrammAceton;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.CheckedListBox cListBoxWaschanlage;
     }
 }

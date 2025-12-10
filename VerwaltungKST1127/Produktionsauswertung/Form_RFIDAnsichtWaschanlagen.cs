@@ -279,6 +279,30 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 parts.Add($"(CONVERT(UID, 'System.String') LIKE '%{v}%')");
             }
 
+            // 7) Waschanlage über CheckedListBox (DB27)
+            if (_rfidTable.Columns.Contains("DB27") && cListBoxWaschanlage.CheckedItems.Count > 0)
+            {
+                var waschanlagen = new List<string>();
+
+                foreach (var item in cListBoxWaschanlage.CheckedItems)
+                {
+                    switch (item.ToString())
+                    {
+                        case "UCM497":
+                            waschanlagen.Add("'FCD1'");
+                            break;
+                        case "Aceton":
+                            waschanlagen.Add("'ACET'");
+                            break;
+                    }
+                }
+
+                if (waschanlagen.Count > 0)
+                {
+                    parts.Add($"(DB27 IN ({string.Join(",", waschanlagen)}))");
+                }
+            }
+
             _rfidView.RowFilter = parts.Count > 0 ? string.Join(" AND ", parts) : string.Empty;
 
             lblEingeleseneWaschkoerbe.Text = $"Eingelesene Waschträger: {_rfidView.Count}";
@@ -303,9 +327,19 @@ namespace VerwaltungKST1127.Produktionsauswertung
             txtBoxWaschprogramm.Clear();
             txtBoxWaschprogrammAceton.Clear();
             txtBoxUID.Clear();
+            for (int i = 0; i < cListBoxWaschanlage.Items.Count; i++)
+            {
+                cListBoxWaschanlage.SetItemChecked(i, false);
+            }
             dateTimePickerDatumAb.Value = DateTime.Today.AddDays(-30);
             dateTimePickerDatumBis.Value = DateTime.Now;
             LoadRFIDData();
+        }
+
+        // 
+        private void cListBoxWaschanlage_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            BeginInvoke(new Action(ApplyCombinedFilter));
         }
     }
 }
