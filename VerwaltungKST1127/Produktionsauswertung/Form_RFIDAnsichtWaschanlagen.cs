@@ -13,7 +13,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
     public partial class Form_RFIDAnsichtWaschanlagen : Form
     {
         // SQL-Verbindung
-        private const string ConnectionString = @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Waschtragerl;Integrated Security=True;Encrypt=False";
+        private readonly SqlConnection sqlConnectionWaschtragerl = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Waschtragerl;Integrated Security=True;Encrypt=False");
 
         // Zwischenspeicher für Grid
         private DataTable _rfidTable;
@@ -62,66 +62,60 @@ namespace VerwaltungKST1127.Produktionsauswertung
         {
             try
             {
-                using (var sqlConnectionWaschtragerl = new SqlConnection(ConnectionString))
+                sqlConnectionWaschtragerl.Open();
+
+                string query = "SELECT * FROM RFID_Aufzeichnung WHERE Datum BETWEEN @DatumAb AND @DatumBis";
+                using (SqlCommand command = new SqlCommand(query, sqlConnectionWaschtragerl))
                 {
-                    sqlConnectionWaschtragerl.Open();
+                    command.Parameters.AddWithValue("@DatumAb", dateTimePickerDatumAb.Value.Date);
+                    command.Parameters.AddWithValue("@DatumBis", dateTimePickerDatumBis.Value.Date.AddDays(1).AddSeconds(-1));
 
-                    string query = "SELECT * FROM RFID_Aufzeichnung WHERE Datum BETWEEN @DatumAb AND @DatumBis";
-                    using (SqlCommand command = new SqlCommand(query, sqlConnectionWaschtragerl))
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
                     {
-                        command.Parameters.AddWithValue("@DatumAb", dateTimePickerDatumAb.Value.Date);
-                        command.Parameters.AddWithValue("@DatumBis", dateTimePickerDatumBis.Value.Date.AddDays(1).AddSeconds(-1));
+                        var dataTable = new DataTable();
+                        adapter.Fill(dataTable);
 
-                        using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                        // --- 1) DB4 + DB5 => Artikelnummer
+                        int db4Ordinal = dataTable.Columns.Contains("DB4") ? dataTable.Columns["DB4"].Ordinal : dataTable.Columns.Count;
+                        if (!dataTable.Columns.Contains("Artikelnummer"))
+                            dataTable.Columns.Add("Artikelnummer", typeof(string));
+                        foreach (DataRow row in dataTable.Rows)
                         {
-                            var dataTable = new DataTable();
-                            adapter.Fill(dataTable);
+                            string db4 = dataTable.Columns.Contains("DB4") && row["DB4"] != DBNull.Value ? row["DB4"].ToString() : string.Empty;
+                            string db5 = dataTable.Columns.Contains("DB5") && row["DB5"] != DBNull.Value ? row["DB5"].ToString() : string.Empty;
+                            row["Artikelnummer"] = db4 + db5;
+                        }
+                        dataTable.Columns["Artikelnummer"].SetOrdinal(Math.Min(db4Ordinal, dataTable.Columns.Count - 1));
 
-                            // --- 1) DB4 + DB5 => Artikelnummer & DB28 + DB29 + DB30 => Auftragsnummer
-                            bool hasDb4 = dataTable.Columns.Contains("DB4");
-                            bool hasDb5 = dataTable.Columns.Contains("DB5");
-                            bool hasDb28 = dataTable.Columns.Contains("DB28");
-                            bool hasDb29 = dataTable.Columns.Contains("DB29");
-                            bool hasDb30 = dataTable.Columns.Contains("DB30");
+                        // --- 2) DB28 + DB29 + DB30 => Auftragsnummer
+                        int db28Ordinal = dataTable.Columns.Contains("DB28") ? dataTable.Columns["DB28"].Ordinal : dataTable.Columns.Count;
+                        if (!dataTable.Columns.Contains("Auftragsnummer"))
+                            dataTable.Columns.Add("Auftragsnummer", typeof(string));
+                        foreach (DataRow row in dataTable.Rows)
+                        {
+                            string db28 = dataTable.Columns.Contains("DB28") && row["DB28"] != DBNull.Value ? row["DB28"].ToString() : string.Empty;
+                            string db29 = dataTable.Columns.Contains("DB29") && row["DB29"] != DBNull.Value ? row["DB29"].ToString() : string.Empty;
+                            string db30 = dataTable.Columns.Contains("DB30") && row["DB30"] != DBNull.Value ? row["DB30"].ToString() : string.Empty;
+                            row["Auftragsnummer"] = db28 + db29 + db30;
+                        }
+                        dataTable.Columns["Auftragsnummer"].SetOrdinal(Math.Min(db28Ordinal, dataTable.Columns.Count - 1));
 
-                            int db4Ordinal = hasDb4 ? dataTable.Columns["DB4"].Ordinal : dataTable.Columns.Count;
-                            if (!dataTable.Columns.Contains("Artikelnummer"))
-                                dataTable.Columns.Add("Artikelnummer", typeof(string));
+                        // --- 3) Grid-Bindung über DataView
+                        _rfidTable = dataTable;
+                        _rfidView = new DataView(_rfidTable);
+                        dGvRFID.AutoGenerateColumns = true;
+                        dGvRFID.DataSource = _rfidView;
 
-                            int db28Ordinal = hasDb28 ? dataTable.Columns["DB28"].Ordinal : dataTable.Columns.Count;
-                            if (!dataTable.Columns.Contains("Auftragsnummer"))
-                                dataTable.Columns.Add("Auftragsnummer", typeof(string));
-
-                            foreach (DataRow row in dataTable.Rows)
-                            {
-                                string db4 = hasDb4 && row["DB4"] != DBNull.Value ? row["DB4"].ToString() : string.Empty;
-                                string db5 = hasDb5 && row["DB5"] != DBNull.Value ? row["DB5"].ToString() : string.Empty;
-                                row["Artikelnummer"] = db4 + db5;
-
-                                string db28 = hasDb28 && row["DB28"] != DBNull.Value ? row["DB28"].ToString() : string.Empty;
-                                string db29 = hasDb29 && row["DB29"] != DBNull.Value ? row["DB29"].ToString() : string.Empty;
-                                string db30 = hasDb30 && row["DB30"] != DBNull.Value ? row["DB30"].ToString() : string.Empty;
-                                row["Auftragsnummer"] = db28 + db29 + db30;
-                            }
-                            dataTable.Columns["Artikelnummer"].SetOrdinal(Math.Min(db4Ordinal, dataTable.Columns.Count - 1));
-                            dataTable.Columns["Auftragsnummer"].SetOrdinal(Math.Min(db28Ordinal, dataTable.Columns.Count - 1));
-
-                            // --- 3) Grid-Bindung über DataView
-                            _rfidTable = dataTable;
-                            _rfidView = new DataView(_rfidTable);
-                            dGvRFID.AutoGenerateColumns = true;
-                            dGvRFID.DataSource = _rfidView;
-
-                            // --- 4) Spalten ausblenden
-                            string[] toHide =
-                            {
-                                "ID","DB6","DB7","DB8","DB9","DB10","DB12","DB13","DB24",
-                                "DB20","DB21","Gesendet","DB4","DB5","DB28","DB29","DB30"
-                            };
-                            foreach (var colName in toHide)
-                            {
-                                if (dGvRFID.Columns.Contains(colName)) dGvRFID.Columns[colName].Visible = false;
-                            }
+                        // --- 4) Spalten ausblenden
+                        string[] toHide =
+                        {
+                            "ID","DB6","DB7","DB8","DB9","DB10","DB12","DB13","DB24",
+                            "DB20","DB21","Gesendet","DB4","DB5","DB28","DB29","DB30"
+                        };
+                        foreach (var colName in toHide)
+                        {
+                            if (dGvRFID.Columns.Contains(colName)) dGvRFID.Columns[colName].Visible = false;
+                        }
 
                         // --- 5) Spalten für Anzeige umbenennen
                         var renameMap = new Dictionary<string, string>
@@ -187,30 +181,28 @@ namespace VerwaltungKST1127.Produktionsauswertung
                         int countMontage = 0;
                         int countEmptyKST = 0;
 
-                        if (_rfidTable.Columns.Contains("DB22"))
+                        foreach (DataRow row in _rfidView.ToTable().Rows)
                         {
-                            foreach (DataRowView rowView in _rfidView)
+                            if (row["DB22"] != DBNull.Value)
                             {
-                                if (rowView["DB22"] != DBNull.Value)
-                                {
-                                    string kst = rowView["DB22"].ToString();
-                                    if (kst == "127" || kst == "1127" || kst == "0127")
-                                        count127++;
-                                    else if (kst == "126" || kst == "1126" || kst == "0126")
-                                        count126++;
-                                    else if (kst == "124" || kst == "1124" || kst == "0124")
-                                        count124++;
-                                    else if (string.IsNullOrWhiteSpace(kst))
-                                        countEmptyKST++;
-                                    else
-                                        countMontage++;
-                                }
+                                string kst = row["DB22"].ToString();
+                                if (kst == "127" || kst == "1127" || kst == "0127")
+                                    count127++;
+                                else if (kst == "126" || kst == "1126" || kst == "0126")
+                                    count126++;
+                                else if (kst == "124" || kst == "1124" || kst == "0124")
+                                    count124++;                                
+                                // wenn nichts in der Zelle steht countEmtyKst ++
+                                else if (string.IsNullOrWhiteSpace(kst))
+                                    countEmptyKST++;
+                                else
+                                    countMontage++;
                             }
                         }
                         // Labels aktualisieren
                         lblEingeleseneWaschkoerbeVerguetung.Text = $"Waschträger Vergütung: {count127}";
                         lblEingeleseneWaschkoerbeKitterei.Text = $"Waschträger Kitterei: {count126}";
-                        lblEingeleseneWaschkoerbeRundoptik.Text = $"Waschträger Rundoptik: {count124}";
+                        lblEingeleseneWaschkoerbeRundoptik.Text = $"Waschträger Rundoptik: {count124}";                       
                         lblEingeleseneWaschkoerbeMontagen.Text = $"Waschträger Montagen: {countMontage}";
                         lblEingelesenOhneZuordnung.Text = $"Ohne KST: {countEmptyKST}";
                     }
@@ -219,6 +211,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
             catch (Exception ex)
             {
                 MessageBox.Show("Fehler beim Laden der RFID-Daten: " + ex.Message);
+            }
+            finally
+            {
+                sqlConnectionWaschtragerl.Close();
             }
         }
 
