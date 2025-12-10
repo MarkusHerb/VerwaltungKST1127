@@ -732,6 +732,17 @@
             this.ComboboxAceton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ComboboxAceton.FormattingEnabled = true;
             this.ComboboxAceton.ItemHeight = 20;
+            this.ComboboxAceton.Items.AddRange(new object[] {
+            "0103",
+            "0201",
+            "0203",
+            "0301",
+            "0303",
+            "0601",
+            "0701",
+            "0801",
+            "0903",
+            "3603"});
             this.ComboboxAceton.Location = new System.Drawing.Point(158, 584);
             this.ComboboxAceton.Name = "ComboboxAceton";
             this.ComboboxAceton.Size = new System.Drawing.Size(160, 28);

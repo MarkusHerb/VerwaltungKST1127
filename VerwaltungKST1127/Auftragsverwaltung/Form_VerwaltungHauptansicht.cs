@@ -8,6 +8,7 @@ using System.IO; // Für File-Operationen
 using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
 using System.Windows.Forms;
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
+using VerwaltungKST1127.Produktionsauswertung;
 
 namespace VerwaltungKST1127.Auftragsverwaltung
 {
@@ -31,128 +32,119 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             ZaehleGestarteteAuftraege(); // Funktion aufrufen
         }
 
-        // Filter des Zukaufes
+        // Funktion zum Zählen der "Gestartet" Aufträge
         private void ApplyFilterAndDisplayData()
         {
-            int activeCount = 0; // Zähler für "Active" Status initialisieren
+            // Ignorierte Auftragsnummern aus JSON laden
+            List<string> ignorierteNummern = new List<string>();
+            string jsonPfad = "IgnorierteAuftragsnummern.json";
+            if (File.Exists(jsonPfad))
+            {
+                try
+                {
+                    string jsonInhalt = File.ReadAllText(jsonPfad);
+                    ignorierteNummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
+                }
+                catch { /* Fehler ignorieren, falls Datei defekt */ }
+            }
+
+            int activeCount = 0; // Zähler für "Active" Status
 
             try
             {
+                // Überprüfen, ob die Datenquelle null ist
                 if (_auftraegeDataTable == null)
                 {
-                    DgvAnsichtAuftraege.DataSource = null; // Keine Daten zum Anzeigen
+                    DgvAnsichtAuftraege.DataSource = null;
+                    lblGestartet.Text = "0";
                     return;
                 }
 
-                // Prüfen, ob gefiltert werden soll
-                if (checkBoxShowZukauf.Checked) // Annahme: Deine CheckBox heißt checkBoxShowZukauf
+                // --- Kombinierter Filter für Zukauf und ignorierte Nummern ---
+                DataView dv = new DataView(_auftraegeDataTable);
+                
+                string filter = "";
+
+                // Wenn die CheckBox aktiviert ist, nur Zukauf-Aufträge anzeigen
+                if (checkBoxShowZukauf.Checked)
                 {
-                    // Erstelle eine DataView für die Filterung
-                    DataView dv = new DataView(_auftraegeDataTable);
-                    // Filter anwenden: Zeige nur Zeilen, bei denen 'Zukauf' nicht leer oder null ist
-                    dv.RowFilter = "[Zukauf] IS NOT NULL AND [Zukauf] <> ''";
-                    DgvAnsichtAuftraege.DataSource = dv;
-                }
-                else
-                {
-                    // Zeige alle Daten an
-                    DgvAnsichtAuftraege.DataSource = _auftraegeDataTable;
+                    filter = "[Zukauf] IS NOT NULL AND [Zukauf] <> ''";
                 }
 
-                // ----- Formatierungscode (aus deinem Original übernommen) -----
+                // Ignorierte Auftragsnummern aus dem Filter entfernen
+                if (ignorierteNummern.Count > 0)
+                {
+                    string ignoreFilter = string.Join("','", ignorierteNummern.Select(x => x.Replace("'", "''")));
+                    if (!string.IsNullOrEmpty(filter))
+                        filter += " AND ";
+                    filter += $"NOT [Auftragsnr.] IN ('{ignoreFilter}')";
+                }
+    
+                dv.RowFilter = filter;
+                DgvAnsichtAuftraege.DataSource = dv;
+
+                // --- Formatierung und Zählung ---
                 if (DgvAnsichtAuftraege.DataSource != null && DgvAnsichtAuftraege.Columns.Count > 0)
                 {
-                    // Spalten anpassen, sodass sie das DataGridView ausfüllen
                     DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-                    // Sicherstellen, dass die Spalten existieren, bevor darauf zugegriffen wird
-                    if (DgvAnsichtAuftraege.Columns.Contains("SollStk."))
-                        DgvAnsichtAuftraege.Columns["SollStk."].DefaultCellStyle.Format = "N0";
-                    if (DgvAnsichtAuftraege.Columns.Contains("IstStk."))
-                        DgvAnsichtAuftraege.Columns["IstStk."].DefaultCellStyle.Format = "N0";
-                    if (DgvAnsichtAuftraege.Columns.Contains("VorStk."))
-                        DgvAnsichtAuftraege.Columns["VorStk."].DefaultCellStyle.Format = "N0";
-                    if (DgvAnsichtAuftraege.Columns.Contains("Teilelager"))
-                        DgvAnsichtAuftraege.Columns["Teilelager"].DefaultCellStyle.Format = "N0";
-                    if (DgvAnsichtAuftraege.Columns.Contains("Bereitstell"))
-                        DgvAnsichtAuftraege.Columns["Bereitstell"].DefaultCellStyle.Format = "N0";
-                    if (DgvAnsichtAuftraege.Columns.Contains("Jahresbedarf"))
-                        DgvAnsichtAuftraege.Columns["Jahresbedarf"].DefaultCellStyle.Format = "N0";
-
-                    // Werte in bestimmten Spalten mittig ausrichten
-                    if (DgvAnsichtAuftraege.Columns.Contains("SollStk."))
-                        DgvAnsichtAuftraege.Columns["SollStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    if (DgvAnsichtAuftraege.Columns.Contains("IstStk."))
-                        DgvAnsichtAuftraege.Columns["IstStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    if (DgvAnsichtAuftraege.Columns.Contains("VorStk."))
-                        DgvAnsichtAuftraege.Columns["VorStk."].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    if (DgvAnsichtAuftraege.Columns.Contains("Teilelager"))
-                        DgvAnsichtAuftraege.Columns["Teilelager"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    if (DgvAnsichtAuftraege.Columns.Contains("Bereitstell"))
-                        DgvAnsichtAuftraege.Columns["Bereitstell"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    if (DgvAnsichtAuftraege.Columns.Contains("Jahresbedarf"))
-                        DgvAnsichtAuftraege.Columns["Jahresbedarf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    string[] zahlenSpalten = { "SollStk.", "IstStk.", "VorStk.", "Teilelager", "Bereitstell", "Jahresbedarf" };
+                    foreach (var spalte in zahlenSpalten)
+                    {
+                        if (DgvAnsichtAuftraege.Columns.Contains(spalte))
+                        {
+                            DgvAnsichtAuftraege.Columns[spalte].DefaultCellStyle.Format = "N0";
+                            DgvAnsichtAuftraege.Columns[spalte].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                        }
+                    }
+                    // Spezielle Ausrichtung für Zukauf und Dringend Spalten
                     if (DgvAnsichtAuftraege.Columns.Contains("Zukauf"))
                         DgvAnsichtAuftraege.Columns["Zukauf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     if (DgvAnsichtAuftraege.Columns.Contains("Dringend"))
                         DgvAnsichtAuftraege.Columns["Dringend"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                    // Headertexte der Spalten mittig ausrichten
+                    // Zentrierung der Header-Texte
                     foreach (DataGridViewColumn column in DgvAnsichtAuftraege.Columns)
                     {
                         column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
 
-                    // Optional: Spalten automatisch anpassen (erneut, falls Fill nicht reicht)
-                    // DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells; // Alternative probieren
-                    DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Zurück zu Fill
-
-                    // Reihenbreite anpassen (ggf. erst nach AutoSize prüfen)
                     if (DgvAnsichtAuftraege.Columns.Contains("Teilebez."))
-                        DgvAnsichtAuftraege.Columns["Teilebez."].Width = 170; // Ggf. anpassen oder FillWeight verwenden
+                        DgvAnsichtAuftraege.Columns["Teilebez."].Width = 170;
                     if (DgvAnsichtAuftraege.Columns.Contains("Seite"))
                         DgvAnsichtAuftraege.Columns["Seite"].Width = 60;
                     if (DgvAnsichtAuftraege.Columns.Contains("AVOinfo"))
                         DgvAnsichtAuftraege.Columns["AVOinfo"].Width = 140;
 
-                    // ----- NEU: Zählung der 'Active' Status -----
-                    // Sicherstellen, dass die Spalte "Status" existiert
+                    // Zählung der "Active"-Status
                     if (DgvAnsichtAuftraege.Columns.Contains("Status"))
                     {
-                        // Iteriere durch die tatsächlich angezeigten Zeilen im DataGridView
                         foreach (DataGridViewRow row in DgvAnsichtAuftraege.Rows)
                         {
-                            // Zugriff auf den Wert der Zelle in der Spalte "Status"
-                            // Verwende ?.Value für Null-Sicherheit
                             object cellValue = row.Cells["Status"]?.Value;
-
-                            // Prüfen, ob der Wert nicht null ist und "Active" entspricht (Groß/Klein ignorieren)
                             if (cellValue != null && cellValue.ToString().Equals("Active", StringComparison.OrdinalIgnoreCase))
                             {
-                                activeCount++; // Zähler erhöhen
+                                activeCount++;
                             }
                         }
                     }
-                    // ----- Ende Zählung -----
                 }
                 else
                 {
-                    // Wenn keine Datenquelle gesetzt ist, gibt es auch nichts zu formatieren
+                    // Keine Datenquelle gesetzt
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Fehler beim Anzeigen/Formatieren/Zählen der Daten: " + ex.Message);
-                // Auch im Fehlerfall das Label auf 0 setzen oder letzte bekannte Zahl? Hier 0:
                 activeCount = 0;
             }
-            finally // Der finally-Block wird immer ausgeführt, auch nach einem Fehler im try
+            finally
             {
-                // Aktualisiere das Label mit dem gezählten Wert
-                // Das Format kannst du anpassen (z.B. nur die Zahl oder mit Text)
                 lblGestartet.Text = activeCount.ToString();
             }
         }
+
 
         // Event-Handler für das Klicken auf den Button BtnZukauf
         private void BtnZukauf_Click(object sender, EventArgs e)
@@ -491,15 +483,19 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     ToolStripMenuItem resettDringend = new ToolStripMenuItem("Resett Dringend");
                     ToolStripMenuItem serienlinse = new ToolStripMenuItem("Serienlinse");
                     ToolStripMenuItem resettAuftrag = new ToolStripMenuItem("Auftrag abschließen");
+                    ToolStripMenuItem ignoreAuftrag = new ToolStripMenuItem("Auftrag ignorieren");
+                    ToolStripMenuItem copyAuftragsNr = new ToolStripMenuItem("Auftragsnummer kopieren");
                     // Event-Handler für die Menüeinträge hinzufügen
                     setzeDringend1.Click += SetzeDringend1_Click;
                     setzeDringend2.Click += SetzeDringend2_Click;
                     resettDringend.Click += ResettDringend_Click;
                     serienlinse.Click += Serienlinse_Click;
                     resettAuftrag.Click += ResettAuftrag_Click;
+                    ignoreAuftrag.Click += IgnoreAuftrag_Click;
+                    copyAuftragsNr.Click += CopyAuftragsNr_Click;
                     // Verknüpfen Sie die anderen Menüeinträge mit ihren entsprechenden Methoden, falls erforderlich
                     // Menüeinträge zum Kontextmenü hinzufügen
-                    contextMenu.Items.AddRange(new ToolStripItem[] { setzeDringend1, setzeDringend2, resettDringend, serienlinse, resettAuftrag });
+                    contextMenu.Items.AddRange(new ToolStripItem[] { setzeDringend1, setzeDringend2, resettDringend, serienlinse, resettAuftrag, ignoreAuftrag, copyAuftragsNr });
                     // Kontextmenü an der Position des Mauszeigers anzeigen
                     contextMenu.Show(DgvAnsichtAuftraege, e.Location);
                 }
@@ -830,10 +826,10 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             {
                 // SQL-Abfrage, um die Daten aus der Serienlinsen-Tabelle abzurufen
                 string query = @"
-        SELECT SEITE, Belag1
-        FROM Serienlinsen
-        WHERE ARTNR = @Artikel
-        AND Status = 'Serie'";
+                    SELECT SEITE, Belag1
+                    FROM Serienlinsen
+                    WHERE ARTNR = @Artikel
+                    AND Status = 'Serie'";
 
                 // Dictionary zum Speichern der abgerufenen Daten
                 Dictionary<int, string> belagDict = new Dictionary<int, string>();
@@ -941,6 +937,78 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
+        // Wenn auf ignoreAuftrag geklickt wird, dann wird der Auftrag in einer JSON-Datei gespeichert und nicht mehr in der Tabelle angezeigt
+        private void IgnoreAuftrag_Click(object sender, EventArgs e)
+        {
+            // Die ausgewählte Zeile aus dem DataGridView holen
+            var selectedRow = DgvAnsichtAuftraege.SelectedRows[0];
+            // Die Auftragsnummer aus der Zelle "Auftragsnr." holen
+            string auftragsNummer = selectedRow.Cells["Auftragsnr."].Value.ToString();
+            string jsonPfad = "IgnorierteAuftragsnummern.json";
+            List<string> ignorierteNummern = new List<string>();
+            // Überprüfen, ob die JSON-Datei existiert
+            if (File.Exists(jsonPfad))
+            {
+                try
+                {
+                    // Den Inhalt der JSON-Datei lesen
+                    string jsonInhalt = File.ReadAllText(jsonPfad);
+                    // Die Auftragsnummern aus der JSON-Datei deserialisieren
+                    ignorierteNummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
+                }
+                catch (Exception ex)
+                {
+                    // Fehlerbehandlung
+                    MessageBox.Show($"Fehler beim Lesen der JSON-Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            // Prüfen, ob die Auftragsnummer bereits in der Liste ist
+            if (!ignorierteNummern.Contains(auftragsNummer))
+            {
+                // Die Auftragsnummer zur Liste hinzufügen
+                ignorierteNummern.Add(auftragsNummer);
+                try
+                {
+                    // Die aktualisierte Liste wieder in die JSON-Datei schreiben
+                    string neuerJsonInhalt = JsonConvert.SerializeObject(ignorierteNummern, Formatting.Indented);
+                    File.WriteAllText(jsonPfad, neuerJsonInhalt);
+                    // Optional: Nachricht anzeigen, dass die Auftragsnummer ignoriert wurde
+                    MessageBox.Show($"Auftragsnummer {auftragsNummer} wurde zur Ignorierliste hinzugefügt.", "Auftrag ignoriert", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    UpdateDgvAnsichtAuftraege2();
+                }
+                catch (Exception ex)
+                {
+                    // Fehlerbehandlung
+                    MessageBox.Show($"Fehler beim Schreiben der JSON-Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                // Optional: Nachricht anzeigen, dass diese Auftragsnummer nun ignoriert wird
+                MessageBox.Show($"Auftragsnummer {auftragsNummer} ist bereits in der Ignorierliste.", "Auftrag bereits ignoriert", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        // Wenn ich mit Rechtsklick auf Copy AuftragsNr klicke, dann wird die Auftragsnummer in die Zwischenablage kopiert
+        private void CopyAuftragsNr_Click(object sender, EventArgs e)
+        {
+            // Überprüfen, ob eine Zeile im DataGridView ausgewählt ist
+            if (DgvAnsichtAuftraege.CurrentRow != null)
+            {
+                // Auftragsnummer aus der ausgewählten Zeile abrufen
+                string auftragsNr = DgvAnsichtAuftraege.CurrentRow.Cells["Auftragsnr."].Value?.ToString();
+                // Überprüfen, ob die Auftragsnummer nicht null oder leer ist
+                if (!string.IsNullOrEmpty(auftragsNr))
+                {
+                    // Auftragsnummer in die Zwischenablage kopieren
+                    Clipboard.SetText(auftragsNr);
+                    // Optional: Nachricht anzeigen, dass die Auftragsnummer kopiert wurde
+                    MessageBox.Show($"Auftragsnummer {auftragsNr} wurde in die Zwischenablage kopiert.", "Kopiert", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
         // Wenn auf Setze Dringend 1 geklickt wird
         private void SetzeDringend1_Click(object sender, EventArgs e)
         {
@@ -1014,49 +1082,49 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
                 // SQL-Abfrage anpassen: Suche nach beiden Varianten (Bindestrich und ohne Bindestrich) und case-insensitive (durch COLLATE)
                 string query = $@"
-SELECT
-    CONVERT(date, a.trdf_enddate) AS Enddatum,
-        a.dsca_teilebez AS [Teilebez.],
-        a.pdno_prodnr AS [Auftragsnr.],
-        a.mitm_teilenr AS Artikel,
-        a.opsta_avostat AS Status,
-        a.txta_avoinfo AS AVOinfo,
-        '' AS Material,
-    CASE
-        WHEN a.txta_avoinfo LIKE '%III%' OR a.txta_avoinfo LIKE '%Iii%' OR a.txta_avoinfo LIKE '%IIi%' OR a.txta_avoinfo LIKE '%iii%' OR a.txta_avoinfo LIKE '%iII%' THEN '0' 
-        WHEN a.txta_avoinfo LIKE '%Ii%' OR a.txta_avoinfo LIKE '%iI%' OR a.txta_avoinfo LIKE '%ii%' OR a.txta_avoinfo LIKE '%II%' THEN '2'
-        WHEN a.txta_avoinfo LIKE '%i%' OR a.txta_avoinfo LIKE '%I%' THEN '1'
-        ELSE '0'
-    END AS Seite,
-        a.qplo_sollstk AS [SollStk.],
-        a.qcmp_iststk AS [IstStk.],
-        passendVorbereiten.qcmp2_vorstk AS [VorStk.],
-        a.qhnd1_stk_teilelager AS Teilelager,
-        a.qana_bereitstellbestand AS Bereitstell,
-        a.demand_jahresbedarf AS Jahresbedarf,
-            '' AS Zukauf,
-            '' AS Dringend,
-        CONVERT(date, a.import_date) AS Aktualisiert
-    FROM
-        LN_ProdOrders_PRD a
-    OUTER APPLY (
-    SELECT TOP 1 b.qcmp2_vorstk
-    FROM LN_ProdOrders_PRD b
-    WHERE b.pdno_prodnr = a.pdno_prodnr
-      AND b.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vorbereiten%'
-      AND b.trdf_enddate < a.trdf_enddate
-    ORDER BY b.trdf_enddate DESC
-    ) AS passendVorbereiten
-    WHERE
-        a.opsta_avostat IN ('Active', 'Planned', 'Released')
-    AND (
-        a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue1
-        OR
-        a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue2
-        )
-    AND a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vergüten%'
-    ORDER BY
-    a.trdf_enddate ASC;";
+                    SELECT
+                        CONVERT(date, a.trdf_enddate) AS Enddatum,
+                            a.dsca_teilebez AS [Teilebez.],
+                            a.pdno_prodnr AS [Auftragsnr.],
+                            a.mitm_teilenr AS Artikel,
+                            a.opsta_avostat AS Status,
+                            a.txta_avoinfo AS AVOinfo,
+                            '' AS Material,
+                        CASE
+                            WHEN a.txta_avoinfo LIKE '%III%' OR a.txta_avoinfo LIKE '%Iii%' OR a.txta_avoinfo LIKE '%IIi%' OR a.txta_avoinfo LIKE '%iii%' OR a.txta_avoinfo LIKE '%iII%' THEN '0' 
+                            WHEN a.txta_avoinfo LIKE '%Ii%' OR a.txta_avoinfo LIKE '%iI%' OR a.txta_avoinfo LIKE '%ii%' OR a.txta_avoinfo LIKE '%II%' THEN '2'
+                            WHEN a.txta_avoinfo LIKE '%i%' OR a.txta_avoinfo LIKE '%I%' THEN '1'
+                            ELSE '0'
+                        END AS Seite,
+                            a.qplo_sollstk AS [SollStk.],
+                            a.qcmp_iststk AS [IstStk.],
+                            passendVorbereiten.qcmp2_vorstk AS [VorStk.],
+                            a.qhnd1_stk_teilelager AS Teilelager,
+                            a.qana_bereitstellbestand AS Bereitstell,
+                            a.demand_jahresbedarf AS Jahresbedarf,
+                                '' AS Zukauf,
+                                '' AS Dringend,
+                            CONVERT(date, a.import_date) AS Aktualisiert
+                        FROM
+                            LN_ProdOrders_PRD a
+                        OUTER APPLY (
+                        SELECT TOP 1 b.qcmp2_vorstk
+                        FROM LN_ProdOrders_PRD b
+                        WHERE b.pdno_prodnr = a.pdno_prodnr
+                          AND b.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vorbereiten%'
+                          AND b.trdf_enddate < a.trdf_enddate
+                        ORDER BY b.trdf_enddate DESC
+                        ) AS passendVorbereiten
+                        WHERE
+                            a.opsta_avostat IN ('Active', 'Planned', 'Released')
+                        AND (
+                            a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue1
+                            OR
+                            a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue2
+                            )
+                        AND a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vergüten%'
+                        ORDER BY
+                        a.trdf_enddate ASC;";
 
 
                 // SQL-Befehl vorbereiten
@@ -1290,6 +1358,13 @@ SELECT
             {
                 lblGestarteAuftraege.Text = "Keine JSON-Datei vorhanden.";
             }
+        }
+
+        // Wenn auf den Button geklickt wird, dann öffnet sich das Fenster mit den offenen Stückzahlen
+        private void btnShowStkOffen_Click(object sender, EventArgs e)
+        {
+            Form_StkVorAvo form_StkVorAvo = new Form_StkVorAvo();
+            form_StkVorAvo.ShowDialog();
         }
     }
 }

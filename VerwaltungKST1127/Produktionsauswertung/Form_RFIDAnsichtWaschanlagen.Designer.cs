@@ -56,6 +56,9 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblEingelesenOhneZuordnung = new System.Windows.Forms.Label();
+            this.txtBoxWaschprogrammAceton = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dGvRFID)).BeginInit();
             this.SuspendLayout();
             // 
@@ -194,9 +197,9 @@
             // 
             // txtBoxWaschprogramm
             // 
-            this.txtBoxWaschprogramm.Location = new System.Drawing.Point(909, 70);
+            this.txtBoxWaschprogramm.Location = new System.Drawing.Point(932, 70);
             this.txtBoxWaschprogramm.Name = "txtBoxWaschprogramm";
-            this.txtBoxWaschprogramm.Size = new System.Drawing.Size(189, 20);
+            this.txtBoxWaschprogramm.Size = new System.Drawing.Size(65, 20);
             this.txtBoxWaschprogramm.TabIndex = 14;
             // 
             // btnLoescheFilter
@@ -205,7 +208,7 @@
             this.btnLoescheFilter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLoescheFilter.Location = new System.Drawing.Point(12, 77);
             this.btnLoescheFilter.Name = "btnLoescheFilter";
-            this.btnLoescheFilter.Size = new System.Drawing.Size(232, 63);
+            this.btnLoescheFilter.Size = new System.Drawing.Size(232, 55);
             this.btnLoescheFilter.TabIndex = 15;
             this.btnLoescheFilter.Text = "Filter löschen";
             this.btnLoescheFilter.UseVisualStyleBackColor = false;
@@ -309,12 +312,42 @@
             this.lblEingelesenOhneZuordnung.TabIndex = 26;
             this.lblEingelesenOhneZuordnung.Text = "Ohne Zuordnung:";
             // 
+            // txtBoxWaschprogrammAceton
+            // 
+            this.txtBoxWaschprogrammAceton.Location = new System.Drawing.Point(1033, 70);
+            this.txtBoxWaschprogrammAceton.Name = "txtBoxWaschprogrammAceton";
+            this.txtBoxWaschprogrammAceton.Size = new System.Drawing.Size(65, 20);
+            this.txtBoxWaschprogrammAceton.TabIndex = 27;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(907, 75);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(24, 9);
+            this.label10.TabIndex = 28;
+            this.label10.Text = "UCM";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(1003, 75);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(28, 9);
+            this.label11.TabIndex = 29;
+            this.label11.Text = "Aceton";
+            // 
             // Form_RFIDAnsichtWaschanlagen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1532, 794);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.txtBoxWaschprogrammAceton);
             this.Controls.Add(this.lblEingelesenOhneZuordnung);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -379,5 +412,8 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label lblEingelesenOhneZuordnung;
+        private System.Windows.Forms.TextBox txtBoxWaschprogrammAceton;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
     }
 }

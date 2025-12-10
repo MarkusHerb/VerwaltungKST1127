@@ -39,6 +39,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             txtBoxArtikelnummer.KeyDown += TextFilter_KeyDown;
             txtBoxAuftragsnummer.KeyDown += TextFilter_KeyDown;
             txtBoxWaschprogramm.KeyDown += TextFilter_KeyDown;
+            txtBoxWaschprogrammAceton.KeyDown += TextFilter_KeyDown;
             txtBoxUID.KeyDown += TextFilter_KeyDown;
 
             // Erstes Laden
@@ -264,7 +265,14 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 parts.Add($"(CONVERT(DB17, 'System.String') LIKE '%{v}%')");
             }
 
-            // 5) UID – ggf. numerisch -> als String vergleichen
+            // 5) WaschprogrammAceton - DB14 kann numerisch sein -> in String wandeln
+            if (!string.IsNullOrWhiteSpace(txtBoxWaschprogrammAceton.Text))
+            {
+                string v = EscapeForRowFilter(txtBoxWaschprogrammAceton.Text.Trim());
+                parts.Add($"(CONVERT(DB14, 'System.String') LIKE '%{v}%')");
+            }
+
+            // 6) UID – ggf. numerisch -> als String vergleichen
             if (!string.IsNullOrWhiteSpace(txtBoxUID.Text) && _rfidTable.Columns.Contains("UID"))
             {
                 string v = EscapeForRowFilter(txtBoxUID.Text.Trim());
@@ -293,6 +301,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             txtBoxArtikelnummer.Clear();
             txtBoxAuftragsnummer.Clear();
             txtBoxWaschprogramm.Clear();
+            txtBoxWaschprogrammAceton.Clear();
             txtBoxUID.Clear();
             dateTimePickerDatumAb.Value = DateTime.Today.AddDays(-30);
             dateTimePickerDatumBis.Value = DateTime.Now;
