@@ -53,7 +53,6 @@ namespace VerwaltungKST1127
             lblAngemeldet.Text = "Angemeldet: " + Environment.UserName;
             // Icon für die Taskleiste
             this.Icon = new Icon("electromagnetic_spectrum_icon.ico");
-            ApplyModernTheme();
         }
 
         // ############## Selbst erstellte Funktionen 
@@ -200,7 +199,7 @@ namespace VerwaltungKST1127
             Series seriesRam = new Series("RAM")
             {
                 ChartType = SeriesChartType.Line,
-                Color = Color.DarkOrange
+                Color = Color.DarkOrange 
             };
             chartPerformance.Series.Add(seriesRam);
 
@@ -208,18 +207,11 @@ namespace VerwaltungKST1127
             chartPerformance.ChartAreas[0].AxisX.Minimum = 0;
             chartPerformance.ChartAreas[0].AxisX.Maximum = 100;
 
-            // Legendenbeschriftung ändern
+            // Legendenbeschriftung ändern  
             chartPerformance.Series[0].Name = "Legende";
 
             // Setze die Hintergrundfarbe des ChartArea
-            chartPerformance.ChartAreas[0].BackColor = Color.White;
-            chartPerformance.ChartAreas[0].AxisX.LabelStyle.ForeColor = Color.FromArgb(96, 108, 118);
-            chartPerformance.ChartAreas[0].AxisY.LabelStyle.ForeColor = Color.FromArgb(96, 108, 118);
-            chartPerformance.BackColor = Color.White;
-            chartPerformance.BorderlineColor = Color.White;
-            chartPerformance.Legends[0].Enabled = true;
-            chartPerformance.Legends[0].Docking = Docking.Bottom;
-            chartPerformance.Legends[0].Font = new Font("Segoe UI", 8F);
+            chartPerformance.ChartAreas[0].BackColor = Color.FromArgb(224, 224, 224);
 
         }
 
@@ -591,78 +583,6 @@ namespace VerwaltungKST1127
                 // Dialog anzeigen und zurückgeben, was der Benutzer eingegeben hat
                 return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : null;
             }
-        }
-
-        private void ApplyModernTheme()
-        {
-            Color background = Color.FromArgb(245, 248, 250);
-            Color panelAccent = Color.FromArgb(225, 232, 239);
-            Color primaryButton = Color.FromArgb(57, 126, 232);
-            Color secondaryButton = Color.FromArgb(88, 182, 88);
-            Color neutralButton = Color.FromArgb(67, 80, 96);
-            Color warningButton = Color.FromArgb(247, 183, 49);
-
-            BackColor = background;
-            panel1.BackColor = panelAccent;
-            panel2.BackColor = panelAccent;
-            panel3.BackColor = panelAccent;
-            panel4.BackColor = panelAccent;
-
-            LblUeberschrift.Font = new Font("Segoe UI Semibold", 26F, FontStyle.Bold);
-            LblUeberschrift.ForeColor = Color.FromArgb(33, 37, 41);
-            LblUhrzeitDatum.Font = new Font("Segoe UI", 18F, FontStyle.Regular);
-            LblUhrzeitDatum.ForeColor = Color.FromArgb(57, 126, 232);
-            lblAngemeldet.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
-            lblAngemeldet.ForeColor = Color.FromArgb(67, 80, 96);
-
-            LblInfo1.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold);
-            LblQualitaet.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold);
-            Organisation.Font = new Font("Segoe UI Semibold", 15F, FontStyle.Bold);
-
-            StyleButton(BtnVerwaltung, primaryButton);
-            StyleButton(BtnSerienartikelPrototyp, primaryButton);
-            StyleButton(BtnEingabeRingSpannzange, primaryButton);
-            StyleButton(BtnRFIDAnischtWaschen, primaryButton);
-            StyleButton(BtnPrototypenAuftragErstellen, primaryButton);
-
-            StyleButton(BtnFarbwerte, neutralButton);
-            StyleButton(BtnGlasWaschDaten, neutralButton);
-            StyleButton(BtnPersonalliste, neutralButton);
-            StyleButton(BtnMateriallager, neutralButton);
-            StyleButton(BtnArtikelAendern, neutralButton);
-            StyleButton(btnProduktionsauswertung, neutralButton);
-            StyleButton(btnPraemienbewertung, neutralButton);
-
-            StyleButton(BtngesamtOberflaechen, warningButton, Color.FromArgb(33, 37, 41));
-            StyleButton(BtnHomepage, secondaryButton);
-            StyleButton(BtnLupe, secondaryButton);
-            StyleButton(BtnInformation, secondaryButton);
-
-            ListBoxDocuments.BackColor = Color.White;
-            ListBoxDocuments.ForeColor = Color.FromArgb(67, 80, 96);
-            ListBoxDocuments.BorderStyle = BorderStyle.FixedSingle;
-
-            label1.ForeColor = Color.FromArgb(96, 108, 118);
-            label2.ForeColor = Color.FromArgb(96, 108, 118);
-            label3.ForeColor = Color.FromArgb(96, 108, 118);
-            label4.ForeColor = Color.FromArgb(96, 108, 118);
-            lblOberflaechenHeute.ForeColor = Color.FromArgb(57, 126, 232);
-            lblOberflaechenGestern.ForeColor = Color.FromArgb(57, 126, 232);
-            lblOberflaechenGesamt.ForeColor = Color.FromArgb(57, 126, 232);
-            LblCpu.ForeColor = Color.FromArgb(96, 108, 118);
-            LblRam.ForeColor = Color.FromArgb(96, 108, 118);
-        }
-
-        private void StyleButton(Button button, Color background, Color? foreColor = null)
-        {
-            button.BackColor = background;
-            button.ForeColor = foreColor ?? Color.White;
-            button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.FlatAppearance.MouseOverBackColor = ControlPaint.Light(background);
-            button.FlatAppearance.MouseDownBackColor = ControlPaint.Dark(background);
-            button.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
-            button.Cursor = Cursors.Hand;
         }
 
         
