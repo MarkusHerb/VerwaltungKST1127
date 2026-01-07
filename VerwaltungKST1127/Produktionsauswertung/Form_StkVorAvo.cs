@@ -18,6 +18,8 @@ using System.Xml.Serialization;    // Chart/Diagramm-Komponenten für WinForms
 
 namespace VerwaltungKST1127.Produktionsauswertung
 {
+    // Formular für die Stück-Vorbereitung/AVOR-Liste inklusive berechneter Offen-Spalte.
+    // Die Offen-Spalte wird nach jeder Sortierung neu berechnet, sodass die Werte nicht verloren gehen.
     public partial class Form_StkVorAvo : Form
     {
         private readonly SqlConnection sqlConnectionVerwaltung =
@@ -38,7 +40,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
         public Form_StkVorAvo()
         {
             InitializeComponent();
+
+            // Daten laden und Offen-Spalte bei jeder Sortierung neu berechnen.
             this.Load += Form_StkVorAvo_Load;
+            dGvStkVorKst.ColumnHeaderMouseClick += dGvStkVorKst_ColumnHeaderMouseClick;
+            dGvStkVorKst.Sorted += dGvStkVorKst_Sorted;
         }
 
         private void Form_StkVorAvo_Load(object sender, EventArgs e)
@@ -87,6 +93,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 }
 
                 // SORTIERUNG: Belag ↑, Art-Nr. ↓, Seite ↑
+                // VORBESETZTE SORTIERUNG: Belag ↑, Art-Nr. ↓, Seite ↑
                 dt.DefaultView.Sort = "Belag ASC, mitm_teilenr DESC, Seite ASC";
                 var sorted = dt.DefaultView.ToTable();
 
@@ -98,6 +105,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 var colOffen = new DataGridViewTextBoxColumn { Name = "Offen", HeaderText = "Offen", ReadOnly = true };
                 dGvStkVorKst.Columns.Add(colOffen);
 
+                // Offen-Werte berechnen und formatieren
                 foreach (DataGridViewRow row in dGvStkVorKst.Rows)
                 {
                     if (row.IsNewRow) continue;
@@ -111,6 +119,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                         continue;
                     }
 
+                    // Werte extrahieren
                     decimal ist = SafeToDecimal(istCell.Value);
                     decimal vor = SafeToDecimal(vorCell.Value);
                     decimal soll = SafeToDecimal(sollCell.Value);
@@ -118,7 +127,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     if (vor == 0 && ist > 0)
                     {
                         row.Cells["Offen"].Value = "Zukauf"; // warum: Sonderfall hervorheben
- 
+
                         //Wenn Zukauf in Spalte Offen geschrieben wird, gleich folgende formartierung: Wert aus qplo_sollstk - ist in green und bold; Zukauf löschen und die Summe in Offen schreiben
                         if ((string)row.Cells["Offen"].Value == "Zukauf")
                         {
@@ -127,7 +136,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                             row.Cells["Offen"].Style.Font = new Font(dGvStkVorKst.Font, FontStyle.Bold);
                         }
                     }
-                    else 
+                    else
                     {
                         decimal offen = vor - ist;
                         row.Cells["Offen"].Value = offen;
@@ -149,6 +158,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
                         }
                     }
                 }
+                EnsureOffenColumn();
+                RecalculateOffenColumn();
 
                 // Sichtbarkeit
                 foreach (DataGridViewColumn col in dGvStkVorKst.Columns)
@@ -179,9 +190,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 // Reihenfolge Zusatzspalten
                 dGvStkVorKst.Columns["Offen"].DisplayIndex = dGvStkVorKst.Columns.Count - 1;
                 dGvStkVorKst.Columns["Seite"].DisplayIndex = dGvStkVorKst.Columns["Offen"].DisplayIndex - 1;
-                dGvStkVorKst.Columns["Belag"].DisplayIndex = dGvStkVorKst.Columns["Seite"].DisplayIndex - 1;           
-                
+                dGvStkVorKst.Columns["Belag"].DisplayIndex = dGvStkVorKst.Columns["Seite"].DisplayIndex - 1;
+
                 loadLabels();
+                dGvStkVorKst.Columns["Belag"].DisplayIndex = dGvStkVorKst.Columns["Seite"].DisplayIndex - 1;
             }
             catch (Exception ex)
             {
@@ -190,6 +202,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
         }
 
+        // Extrahiert Belag und Seite aus dem AVOR-Text.
         private static void ParseBelagUndSeite(string text, out string belag, out int seite)
         {
             belag = "";
@@ -215,10 +228,106 @@ namespace VerwaltungKST1127.Produktionsauswertung
             try { return Convert.ToDecimal(value); } catch { return 0m; }
         }
 
+        // Stellt sicher, dass die Offen-Spalte existiert.
+        private void EnsureOffenColumn()
+        {
+            // Stellt sicher, dass die berechnete Offen-Spalte existiert, egal ob das Grid bereits Spalten generiert hat.
+            var offenColumn = dGvStkVorKst.Columns["Offen"] as DataGridViewTextBoxColumn;
+            if (offenColumn == null)
+            {
+                offenColumn = new DataGridViewTextBoxColumn { Name = "Offen" };
+                dGvStkVorKst.Columns.Add(offenColumn);
+            }
+
+            offenColumn.HeaderText = "Offen";
+            offenColumn.ReadOnly = true;
+        }
+
+        // Berechnet die Offen-Spalte neu und passt die Formatierung an.
+        private void RecalculateOffenColumn()
+        {
+            // Berechnet die Offen-Spalte je Zeile neu und passt die Formatierung an, damit Sortierungen keine leeren Werte hinterlassen.
+            if (!dGvStkVorKst.Columns.Contains("Offen")) return;
+
+            foreach (DataGridViewRow row in dGvStkVorKst.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                var offenCell = row.Cells["Offen"];
+                var istCell = row.Cells["qcmp_iststk"];
+                var vorCell = row.Cells["qcmp2_vorstk"];
+                var sollCell = row.Cells["qplo_sollstk"];
+
+                if (istCell == null || vorCell == null || istCell.Value == null || vorCell.Value == null)
+                {
+                    // Unvollständige Daten: keine Berechnung möglich.
+                    offenCell.Value = "";
+                    offenCell.Style.ForeColor = Color.Black;
+                    offenCell.Style.Font = dGvStkVorKst.Font;
+                    continue;
+                }
+
+                decimal ist = SafeToDecimal(istCell.Value);
+                decimal vor = SafeToDecimal(vorCell.Value);
+                decimal soll = SafeToDecimal(sollCell.Value);
+
+                if (vor == 0 && ist > 0)
+                {
+                    // Sonderfall: Zukauf. Offen = Soll - Ist, hervorheben in Grün.
+                    offenCell.Value = soll - ist;
+                    offenCell.Style.ForeColor = Color.Green;
+                    offenCell.Style.Font = new Font(dGvStkVorKst.Font, FontStyle.Bold);
+                }
+                else
+                {
+                    // Standardfall: Vorhandene Menge minus Ist-Menge.
+                    decimal offen = vor - ist;
+                    offenCell.Value = offen;
+
+                    if (offen < 0)
+                    {
+                        // Negative Bestände rot markieren.
+                        offenCell.Style.ForeColor = Color.Red;
+                        offenCell.Style.Font = new Font(dGvStkVorKst.Font, FontStyle.Bold);
+                    }
+                    else if (offen > 0)
+                    {
+                        // Positive Restmengen grün markieren.
+                        offenCell.Style.ForeColor = Color.Green;
+                        offenCell.Style.Font = new Font(dGvStkVorKst.Font, FontStyle.Bold);
+                    }
+                    else
+                    {
+                        // 0 = ausgeglichen.
+                        offenCell.Style.ForeColor = Color.Black;
+                        offenCell.Style.Font = dGvStkVorKst.Font;
+                    }
+                }
+            }
+
+            loadLabels();
+        }
+
+        // Ereignishandler für Klick auf Spaltenheader.
+        private void dGvStkVorKst_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            // Nach Klick auf den Header neu berechnen, damit die Anzeige stabil bleibt.
+            RecalculateOffenColumn();
+        }
+
+        // Ereignishandler für Sortierung.
+        private void dGvStkVorKst_Sorted(object sender, EventArgs e)
+        {
+            // Auch nach der Sortierung (z. B. durch Programm oder Benutzer) neu berechnen.
+            RecalculateOffenColumn();
+        }
+
+        // Lädt und aktualisiert die Labels unter dem DataGridView.
         private void loadLabels()
         {
             // eingefügte Labels aktualisieren
             // das lblOffenStk soll Summe aus allen Positivien Zahlen summieren und dann anzeigen
+            // Eingefügte Labels aktualisieren: Summen nur aus positiven Offen-Werten bilden.
             decimal gesamtOffen = 0m;
             foreach (DataGridViewRow row in dGvStkVorKst.Rows)
             {
@@ -243,6 +352,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             lblOffenStk.Text = $"Gesamt offen: {gesamtOffen:N0} Stk";
 
             // das lblOffen1 soll aktualisiert werden mit der gesamten gutmenge, wenn bei der Spalte "Seite " eine 1 steht
+            // Summe für Seite 1.
             decimal gesamtOffenSeite1 = 0m;
             foreach (DataGridViewRow row in dGvStkVorKst.Rows)
             {
@@ -272,6 +382,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             lblOffen1.Text = $"Offen Seite 1: {gesamtOffenSeite1:N0} Stk";
 
             // das lblOffen2 soll aktualisiert werden mit der gesamten gutmenge, wenn bei der Spalte "Seite " eine 2 steht
+            // Summe für Seite 2.
             decimal gesamtOffenSeite2 = 0m;
             foreach (DataGridViewRow row in dGvStkVorKst.Rows)
             {
@@ -301,6 +412,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             lblOffen2.Text = $"Offen Seite 2: {gesamtOffenSeite2:N0} Stk";
 
             // das lblOffen0 soll aktualisiert werden mit der gesamten gutmenge, wenn bei der Spalte "Seite " eine 0 steht
+            // Summe für Seite 0 (ohne eindeutige Seitenangabe).
             decimal gesamtOffenSeite0 = 0m;
             foreach (DataGridViewRow row in dGvStkVorKst.Rows)
             {
@@ -327,9 +439,6 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     }
                 }
             }
-            lblOffen0.Text = $"Offen Seite 0: {gesamtOffenSeite0:N0} Stk";                      
         }
-
-
     }
 }

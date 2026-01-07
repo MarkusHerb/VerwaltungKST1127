@@ -1366,5 +1366,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             Form_StkVorAvo form_StkVorAvo = new Form_StkVorAvo();
             form_StkVorAvo.ShowDialog();
         }
+
+        // Wenn auf den Rückstand Button geklickt wird, dann öffnet sich das Fenster mit dem Rückstand
+        private void btnRueckstand_Click(object sender, EventArgs e)
+        {
+            Form_Rueckstand form_Rueckstand = new Form_Rueckstand();
+            form_Rueckstand.ShowDialog();
+        }
     }
 }
