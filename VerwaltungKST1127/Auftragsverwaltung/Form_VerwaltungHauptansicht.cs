@@ -1360,6 +1360,38 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
+        private DataTable BuildBelagTableFromGrid()
+        {
+            DataTable belagTable = new DataTable();
+            belagTable.Columns.Add("Belag", typeof(string));
+            belagTable.Columns.Add("AVOs", typeof(int));
+
+            if (!DgvLadeBelaege.Columns.Contains("Belag") || !DgvLadeBelaege.Columns.Contains("AVOs"))
+            {
+                return belagTable;
+            }
+
+            foreach (DataGridViewRow row in DgvLadeBelaege.Rows)
+            {
+                if (row.IsNewRow)
+                {
+                    continue;
+                }
+
+                string belag = row.Cells["Belag"].Value?.ToString();
+                if (string.IsNullOrWhiteSpace(belag))
+                {
+                    continue;
+                }
+
+                int avos = 0;
+                int.TryParse(row.Cells["AVOs"].Value?.ToString(), out avos);
+                belagTable.Rows.Add(belag, avos);
+            }
+
+            return belagTable;
+        }
+
         // Wenn auf den Button geklickt wird, dann öffnet sich das Fenster mit den offenen Stückzahlen
         private void btnShowStkOffen_Click(object sender, EventArgs e)
         {
@@ -1370,7 +1402,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // Wenn auf den Rückstand Button geklickt wird, dann öffnet sich das Fenster mit dem Rückstand
         private void btnRueckstand_Click(object sender, EventArgs e)
         {
-            Form_Rueckstand form_Rueckstand = new Form_Rueckstand();
+            DataTable belagTable = (DgvLadeBelaege.DataSource as DataTable)?.Copy() ?? BuildBelagTableFromGrid();
+            Form_Rueckstand form_Rueckstand = new Form_Rueckstand(belagTable);
             form_Rueckstand.ShowDialog();
         }
     }
