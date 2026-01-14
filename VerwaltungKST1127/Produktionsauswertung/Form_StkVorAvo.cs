@@ -439,6 +439,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     }
                 }
             }
+            lblOffen0.Text = $"Offen Seite 0: {gesamtOffenSeite0:N0} Stk";
         }
     }
 }

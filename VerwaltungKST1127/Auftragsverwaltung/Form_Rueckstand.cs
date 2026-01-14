@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.ComponentModel.Design.Serialization;
 
 namespace VerwaltungKST1127.Auftragsverwaltung
 {
@@ -36,6 +37,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         {
             LoadBelagData();
             dateTimePickerRueckstandAb.Value = DateTime.Today;
+            UpdateGesamtRueckstand();
         }
 
         private void LoadBelagData()
@@ -87,6 +89,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
         private void dateTimePickerRueckstandAb_ValueChanged(object sender, EventArgs e)
         {
+            UpdateGesamtRueckstand();
+
             if (string.IsNullOrWhiteSpace(selectedBelag))
             {
                 return;
@@ -102,6 +106,14 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
             Dictionary<DateTime, decimal> rueckstandByDate = CalculateRueckstandVerguetenByDate(selectedBelag, selectedDate);
             UpdateVerguetenChart(selectedBelag, rueckstandByDate, singleDay, selectedDate);
+        }
+
+        private void UpdateGesamtRueckstand()
+        {
+            DateTime selectedDate = dateTimePickerRueckstandAb.Value.Date;
+            Dictionary<DateTime, decimal> rueckstandByDate = CalculateRueckstandVerguetenByDateAllBelags(selectedDate);
+            decimal total = rueckstandByDate.Values.Sum();
+            lblGesamt.Text = $"{total:0.00}h";
         }
 
         private Dictionary<DateTime, decimal> CalculateRueckstandVerguetenByDate(string belag, DateTime endDate)
@@ -214,6 +226,134 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             return rueckstandByDate;
         }
 
+        private Dictionary<DateTime, decimal> CalculateRueckstandVerguetenByDateAllBelags(DateTime endDate)
+        {
+            Dictionary<DateTime, decimal> rueckstandByDate = new Dictionary<DateTime, decimal>();
+
+            string query = @"
+                SELECT
+                    CONVERT(date, a.trdf_enddate) AS Enddatum,
+                    a.mitm_teilenr AS Artikel,
+                    a.qplo_sollstk AS SollStk,
+                    a.qcmp_iststk AS IstStk,
+                    passendVorbereiten.qcmp2_vorstk AS VorStk,
+                    CASE
+                        WHEN a.txta_avoinfo LIKE '%III%' OR a.txta_avoinfo LIKE '%Iii%' OR a.txta_avoinfo LIKE '%IIi%' OR a.txta_avoinfo LIKE '%iii%' OR a.txta_avoinfo LIKE '%iII%' THEN 0
+                        WHEN a.txta_avoinfo LIKE '%Ii%' OR a.txta_avoinfo LIKE '%iI%' OR a.txta_avoinfo LIKE '%ii%' OR a.txta_avoinfo LIKE '%II%' THEN 2
+                        WHEN a.txta_avoinfo LIKE '%i%' OR a.txta_avoinfo LIKE '%I%' THEN 1
+                        ELSE 0
+                    END AS Seite,
+                    a.txta_avoinfo AS AVOinfo
+                FROM
+                    LN_ProdOrders_PRD a
+                OUTER APPLY (
+                    SELECT TOP 1 b.qcmp2_vorstk
+                    FROM LN_ProdOrders_PRD b
+                    WHERE b.pdno_prodnr = a.pdno_prodnr
+                      AND b.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vorbereiten%'
+                      AND b.trdf_enddate < a.trdf_enddate
+                    ORDER BY b.trdf_enddate DESC
+                ) AS passendVorbereiten
+                WHERE
+                    a.opsta_avostat IN ('Active', 'Planned', 'Released')
+                    AND a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vergüten%'
+                    AND CONVERT(date, a.trdf_enddate) <= @EndDate;";
+
+            using (SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung))
+            {
+                command.Parameters.AddWithValue("@EndDate", endDate);
+
+                DataTable dataTable = new DataTable();
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                try
+                {
+                    sqlConnectionVerwaltung.Open();
+                    adapter.Fill(dataTable);
+                }
+                finally
+                {
+                    if (sqlConnectionVerwaltung.State == ConnectionState.Open)
+                    {
+                        sqlConnectionVerwaltung.Close();
+                    }
+                }
+
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    if (row["Enddatum"] == DBNull.Value)
+                    {
+                        continue;
+                    }
+
+                    DateTime enddatum = Convert.ToDateTime(row["Enddatum"]).Date;
+                    string artikel = row["Artikel"]?.ToString() ?? string.Empty;
+                    int seite = Convert.ToInt32(row["Seite"]);
+                    decimal sollStk = row["SollStk"] == DBNull.Value ? 0m : Convert.ToDecimal(row["SollStk"]);
+                    decimal istStk = row["IstStk"] == DBNull.Value ? 0m : Convert.ToDecimal(row["IstStk"]);
+                    decimal vorStk = row["VorStk"] == DBNull.Value ? 0m : Convert.ToDecimal(row["VorStk"]);
+                    string avoInfo = row["AVOinfo"]?.ToString() ?? string.Empty;
+
+                    if (string.IsNullOrWhiteSpace(artikel))
+                    {
+                        continue;
+                    }
+
+                    if (vorStk <= istStk)
+                    {
+                        continue;
+                    }
+
+                    string belag = CleanBelag(avoInfo);
+                    if (string.IsNullOrWhiteSpace(belag))
+                    {
+                        continue;
+                    }
+
+                    (decimal stkCharge, decimal chargenzeit) = GetStkChargeUndChargenzeit(artikel, seite, belag);
+                    if (stkCharge <= 0 || chargenzeit <= 0)
+                    {
+                        continue;
+                    }
+
+                    decimal rueckstandStk = sollStk - istStk;
+                    if (rueckstandStk <= 0)
+                    {
+                        continue;
+                    }
+
+                    decimal rueckstandZeit = (rueckstandStk / stkCharge) * chargenzeit;
+
+                    if (!rueckstandByDate.ContainsKey(enddatum))
+                    {
+                        rueckstandByDate[enddatum] = 0m;
+                    }
+
+                    rueckstandByDate[enddatum] += rueckstandZeit;
+                }
+            }
+
+            return rueckstandByDate;
+        }
+
+        private string CleanBelag(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return "";
+            }
+
+            input = System.Text.RegularExpressions.Regex.Replace(input, "vergüten", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
+            var match = System.Text.RegularExpressions.Regex.Match(input, @"B-?\d+");
+
+            if (match.Success)
+            {
+                return match.Value.Replace("-", "").ToUpper();
+            }
+
+            return "";
+        }
+
         private (decimal stkCharge, decimal chargenzeit) GetStkChargeUndChargenzeit(string artikel, int seite, string belag)
         {
             string query = @"
@@ -267,6 +407,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             Series series = chartVergueten.Series[0];
             series.ChartType = SeriesChartType.Column;
             series.Points.Clear();
+            series.IsValueShownAsLabel = true;
+            series.LabelFormat = "0.00";   
+            series.SmartLabelStyle.Enabled = true;
+            // Linien von chart ausblenden
+            chartVergueten.ChartAreas[0].AxisX.MajorGrid.LineWidth = 0;
 
             if (singleDay)
             {
@@ -276,15 +421,9 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 return;
             }
 
-            DateTime rangeStart = rueckstandByDate.Count > 0
-                ? rueckstandByDate.Keys.Min().Date
-                : (selectedDate < DateTime.Today ? selectedDate : DateTime.Today);
-            DateTime rangeEnd = selectedDate;
-
-            for (DateTime date = rangeStart.Date; date <= rangeEnd.Date; date = date.AddDays(1))
+            foreach (DateTime date in rueckstandByDate.Keys.OrderBy(key => key))
             {
-                decimal value = rueckstandByDate.ContainsKey(date) ? rueckstandByDate[date] : 0m;
-                series.Points.AddXY(date.ToString("dd.MM"), Math.Round(value, 2));
+                series.Points.AddXY(date.ToString("dd.MM"), Math.Round(rueckstandByDate[date], 2));
             }
 
             decimal sum = rueckstandByDate.Values.Sum();
