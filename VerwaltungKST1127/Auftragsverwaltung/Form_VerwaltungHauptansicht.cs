@@ -518,48 +518,48 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        // Funktion zum Abrufen des Materials basierend auf mitm_teilenr und Seite
-        private string GetMaterialFromSerienlinsen(string mitmTeilenNr, int seite)
-        {
-            string material = string.Empty;
+        //////// Funktion zum Abrufen des Materials basierend auf mitm_teilenr und Seite
+        //////private string GetMaterialFromSerienlinsen(string mitmTeilenNr, int seite)
+        //////{
+        //////    string material = string.Empty;
 
-            try
-            {
-                string query = @"
-                    SELECT MATERIAL
-                    FROM Serienlinsen
-                    WHERE ARTNR = @MitmTeilenNr
-                    AND SEITE = @Seite";
+        //////    try
+        //////    {
+        //////        string query = @"
+        //////            SELECT MATERIAL
+        //////            FROM Serienlinsen
+        //////            WHERE ARTNR = @MitmTeilenNr
+        //////            AND SEITE = @Seite";
 
-                using (SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung))
-                {
-                    command.Parameters.AddWithValue("@MitmTeilenNr", mitmTeilenNr);
-                    command.Parameters.AddWithValue("@Seite", seite);
+        //////        using (SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung))
+        //////        {
+        //////            command.Parameters.AddWithValue("@MitmTeilenNr", mitmTeilenNr);
+        //////            command.Parameters.AddWithValue("@Seite", seite);
 
-                    sqlConnectionVerwaltung.Open();
-                    object result = command.ExecuteScalar();
-                    sqlConnectionVerwaltung.Close();
+        //////            sqlConnectionVerwaltung.Open();
+        //////            object result = command.ExecuteScalar();
+        //////            sqlConnectionVerwaltung.Close();
 
-                    if (result != null)
-                    {
-                        material = result.ToString();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Fehler beim Abrufen des Materials: {ex.Message}");
-            }
-            finally
-            {
-                if (sqlConnectionVerwaltung.State == ConnectionState.Open)
-                {
-                    sqlConnectionVerwaltung.Close();
-                }
-            }
+        //////            if (result != null)
+        //////            {
+        //////                material = result.ToString();
+        //////            }
+        //////        }
+        //////    }
+        //////    catch (Exception ex)
+        //////    {
+        //////        MessageBox.Show($"Fehler beim Abrufen des Materials: {ex.Message}");
+        //////    }
+        //////    finally
+        //////    {
+        //////        if (sqlConnectionVerwaltung.State == ConnectionState.Open)
+        //////        {
+        //////            sqlConnectionVerwaltung.Close();
+        //////        }
+        //////    }
 
-            return material;
-        }
+        //////    return material;
+        //////}             !!!!!!!!!   Aktuell nicht in Verwendung !!!!!!!!!
 
         // Methode, um den Zeichnungspfad zu erhalten
         private string GetZeichnungspfad(string artikelNr, int seite)
@@ -1074,170 +1074,141 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         {
             try
             {
-                // Zuerst die mögliche Varianten des Belags vorbereiten: mit und ohne Bindestrich, Groß- und Kleinschreibung ignorieren
-                // Beispiel: selectedBelagValue = "B103"
-                // Gesuchte Varianten: '%B103%', '%B-103%', '%b103%', '%b-103%'
-                string belagOhneBindestrich = selectedBelagValue.ToUpper();
-                string belagMitBindestrich = belagOhneBindestrich.Insert(1, "-");
-
-                // SQL-Abfrage anpassen: Suche nach beiden Varianten (Bindestrich und ohne Bindestrich) und case-insensitive (durch COLLATE)
-                string query = $@"
-                    SELECT
-                        CONVERT(date, a.trdf_enddate) AS Enddatum,
-                            a.dsca_teilebez AS [Teilebez.],
-                            a.pdno_prodnr AS [Auftragsnr.],
-                            a.mitm_teilenr AS Artikel,
-                            a.opsta_avostat AS Status,
-                            a.txta_avoinfo AS AVOinfo,
-                            '' AS Material,
-                        CASE
-                            WHEN a.txta_avoinfo LIKE '%III%' OR a.txta_avoinfo LIKE '%Iii%' OR a.txta_avoinfo LIKE '%IIi%' OR a.txta_avoinfo LIKE '%iii%' OR a.txta_avoinfo LIKE '%iII%' THEN '0' 
-                            WHEN a.txta_avoinfo LIKE '%Ii%' OR a.txta_avoinfo LIKE '%iI%' OR a.txta_avoinfo LIKE '%ii%' OR a.txta_avoinfo LIKE '%II%' THEN '2'
-                            WHEN a.txta_avoinfo LIKE '%i%' OR a.txta_avoinfo LIKE '%I%' THEN '1'
-                            ELSE '0'
-                        END AS Seite,
-                            a.qplo_sollstk AS [SollStk.],
-                            a.qcmp_iststk AS [IstStk.],
-                            passendVorbereiten.qcmp2_vorstk AS [VorStk.],
-                            a.qhnd1_stk_teilelager AS Teilelager,
-                            a.qana_bereitstellbestand AS Bereitstell,
-                            a.demand_jahresbedarf AS Jahresbedarf,
-                                '' AS Zukauf,
-                                '' AS Dringend,
-                            CONVERT(date, a.import_date) AS Aktualisiert
-                        FROM
-                            LN_ProdOrders_PRD a
-                        OUTER APPLY (
-                        SELECT TOP 1 b.qcmp2_vorstk
-                        FROM LN_ProdOrders_PRD b
-                        WHERE b.pdno_prodnr = a.pdno_prodnr
-                          AND b.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vorbereiten%'
-                          AND b.trdf_enddate < a.trdf_enddate
-                        ORDER BY b.trdf_enddate DESC
-                        ) AS passendVorbereiten
-                        WHERE
-                            a.opsta_avostat IN ('Active', 'Planned', 'Released')
-                        AND (
-                            a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue1
-                            OR
-                            a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE @BelagValue2
-                            )
-                        AND a.txta_avoinfo COLLATE Latin1_General_CI_AS LIKE '%Vergüten%'
-                        ORDER BY
-                        a.trdf_enddate ASC;";
-
-
-                // SQL-Befehl vorbereiten
-                SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung);
-
-                // Parameter befüllen
-                command.Parameters.AddWithValue("@BelagValue1", "%" + belagOhneBindestrich + "%");
-                command.Parameters.AddWithValue("@BelagValue2", "%" + belagMitBindestrich + "%");
-
-                // Datenadapter und DataTable initialisieren
-                SqlDataAdapter adapter = new SqlDataAdapter(command);
-                DataTable dataTable = new DataTable(); // Lokale DataTable zum Befüllen
-
-                // Verbindung öffnen und Daten laden
-                sqlConnectionVerwaltung.Open();
-                adapter.Fill(dataTable);
-                sqlConnectionVerwaltung.Close();
-
-                // Material für jede Zeile setzen
-                foreach (DataRow row in dataTable.Rows)
+                if (string.IsNullOrWhiteSpace(selectedBelagValue))
                 {
-                    string artikelNr = row["Artikel"].ToString();
-                    int seite = int.Parse(row["Seite"].ToString());
-                    string material = GetMaterialFromSerienlinsen(artikelNr, seite); // eigene Funktion
-                    row["Material"] = material;
+                    _auftraegeDataTable = null;
+                    DgvAnsichtAuftraege.DataSource = null;
+                    return;
                 }
 
-                // RL/TL Zukauf-Daten aus JSON laden
+                // Belag-Muster vorbereiten: z. B. "B103" -> suchen nach "%B103%" und "%B-103%"
+                var belagOhneBindestrich = selectedBelagValue.ToUpperInvariant();
+                var belagMitBindestrich = belagOhneBindestrich.Insert(1, "-");
+
+                // EINZIGE Abfrage: Lädt Hauptdaten + VorStk (via APPLY) + Material (JOIN Serienlinsen) + Dringend (JOIN Ansicht_Bildschirm)
+                // Wichtig: Parameter-Typen explizit setzen (bessere Planqualität als AddWithValue)
+                const string sql = @"
+                ;WITH base AS (
+                    SELECT
+                        CONVERT(date, a.trdf_enddate)         AS Enddatum,
+                        a.dsca_teilebez                       AS [Teilebez.],
+                        a.pdno_prodnr                         AS [Auftragsnr.],
+                        a.mitm_teilenr                        AS Artikel,
+                        a.opsta_avostat                       AS Status,
+                        a.txta_avoinfo                        AS AVOinfo,
+                        /* Seite wie in deiner bisherigen Logik */
+                        CASE
+                            WHEN a.txta_avoinfo LIKE '%III%' OR a.txta_avoinfo LIKE '%Iii%' OR a.txta_avoinfo LIKE '%IIi%' OR a.txta_avoinfo LIKE '%iii%' OR a.txta_avoinfo LIKE '%iII%' THEN '0'
+                            WHEN a.txta_avoinfo LIKE '%Ii%'  OR a.txta_avoinfo LIKE '%iI%'  OR a.txta_avoinfo LIKE '%ii%'  OR a.txta_avoinfo LIKE '%II%'  THEN '2'
+                            WHEN a.txta_avoinfo LIKE '%i%'   OR a.txta_avoinfo LIKE '%I%'   THEN '1'
+                            ELSE '0'
+                        END                                    AS Seite,
+                        a.qplo_sollstk                         AS [SollStk.],
+                        a.qcmp_iststk                          AS [IstStk.],
+                        pv.qcmp2_vorstk                        AS [VorStk.],
+                        a.qhnd1_stk_teilelager                 AS Teilelager,
+                        a.qana_bereitstellbestand              AS Bereitstell,
+                        a.demand_jahresbedarf                  AS Jahresbedarf,
+                        CONVERT(date, a.import_date)           AS Aktualisiert
+                    FROM LN_ProdOrders_PRD a
+                    OUTER APPLY (
+                        SELECT TOP (1) b.qcmp2_vorstk
+                        FROM LN_ProdOrders_PRD b
+                        WHERE b.pdno_prodnr = a.pdno_prodnr
+                          AND b.txta_avoinfo LIKE '%Vorbereiten%'
+                          AND b.trdf_enddate < a.trdf_enddate
+                        ORDER BY b.trdf_enddate DESC
+                    ) AS pv
+                    WHERE a.opsta_avostat IN ('Active','Planned','Released')
+                      AND (a.txta_avoinfo LIKE @BelagPattern1 OR a.txta_avoinfo LIKE @BelagPattern2)
+                      AND a.txta_avoinfo LIKE '%Vergüten%'
+                )
+                SELECT
+                    base.Enddatum,
+                    base.[Teilebez.],
+                    base.[Auftragsnr.],
+                    base.Artikel,
+                    base.Status,
+                    base.AVOinfo,
+                    ISNULL(sl.MATERIAL, '')    AS Material,
+                    base.Seite,
+                    base.[SollStk.],
+                    base.[IstStk.],
+                    base.[VorStk.],
+                    base.Teilelager,
+                    base.Bereitstell,
+                    base.Jahresbedarf,
+                    CAST('' AS nvarchar(20))   AS Zukauf,   -- wird danach im Code gesetzt (RL/TL)
+                    ISNULL(ab.Dringend, '')    AS Dringend,
+                    base.Aktualisiert
+                FROM base
+                LEFT JOIN Serienlinsen sl
+                    ON sl.ARTNR = base.Artikel AND sl.Seite = base.Seite
+                LEFT JOIN Ansicht_Bildschirm ab
+                    ON ab.Auftrag = base.[Auftragsnr.]
+                ORDER BY base.Enddatum ASC;";
+
+                var dt = new DataTable();
+
+                // Lokale Connection (ConnectionString aus deinem vorhandenen Feld)
+                using (var conn = new SqlConnection(sqlConnectionVerwaltung.ConnectionString))
+                using (var cmd = new SqlCommand(sql, conn))
+                {
+                    // Parameter mit Typ/Länge – vermeidet Suboptimalität durch AddWithValue
+                    var p1 = cmd.Parameters.Add("@BelagPattern1", SqlDbType.NVarChar, 200);
+                    p1.Value = "%" + belagOhneBindestrich + "%";
+                    var p2 = cmd.Parameters.Add("@BelagPattern2", SqlDbType.NVarChar, 200);
+                    p2.Value = "%" + belagMitBindestrich + "%";
+
+                    using (var da = new SqlDataAdapter(cmd))
+                    {
+                        conn.Open();
+                        da.Fill(dt);
+                    }
+                }
+
+                // RL/TL (Zukauf) aus JSON nachtragen – wie bisher
                 RLTLData rltlData;
-                string jsonFilePath2 = "rltl_data.json";
+                var jsonFilePath2 = "rltl_data.json";
                 if (File.Exists(jsonFilePath2))
                 {
                     var json = File.ReadAllText(jsonFilePath2);
-                    rltlData = JsonConvert.DeserializeObject<RLTLData>(json);
+                    rltlData = JsonConvert.DeserializeObject<RLTLData>(json) ?? new RLTLData();
                 }
                 else
                 {
-                    rltlData = new RLTLData(); // Leeres Objekt
+                    rltlData = new RLTLData();
                 }
 
-                // Zukauf-Spalte basierend auf RL/TL-Liste setzen
-                foreach (DataRow row in dataTable.Rows)
+                foreach (DataRow row in dt.Rows)
                 {
-                    string artikelNr = row["Artikel"]?.ToString() ?? "";
-                    if (!string.IsNullOrEmpty(artikelNr))
-                    {
-                        if (rltlData.RL != null && rltlData.RL.Contains(artikelNr))
-                        {
-                            row["Zukauf"] = "R-Lager";
-                        }
-                        else if (rltlData.TL != null && rltlData.TL.Contains(artikelNr))
-                        {
-                            row["Zukauf"] = "T-Lager";
-                        }
-                    }
+                    var artikelNr = row["Artikel"]?.ToString() ?? string.Empty;
+                    if (artikelNr.Length == 0) continue;
+
+                    if (rltlData.RL != null && rltlData.RL.Contains(artikelNr))
+                        row["Zukauf"] = "R-Lager";
+                    else if (rltlData.TL != null && rltlData.TL.Contains(artikelNr))
+                        row["Zukauf"] = "T-Lager";
                 }
 
-                // Dringend-Informationen laden
-                string dringendQuery = @"SELECT Auftrag, Dringend FROM Ansicht_Bildschirm";
-                SqlCommand dringendCommand = new SqlCommand(dringendQuery, sqlConnectionVerwaltung);
-                SqlDataAdapter dringendAdapter = new SqlDataAdapter(dringendCommand);
-                DataTable dringendTable = new DataTable();
+                // Ergebnis im Formular übernehmen
+                _auftraegeDataTable = dt;
 
-                sqlConnectionVerwaltung.Open();
-                dringendAdapter.Fill(dringendTable);
-                sqlConnectionVerwaltung.Close();
+                // (Optional) JSON-Dump nur wenn du es brauchst – sonst auskommentieren:
+                // File.WriteAllText("AnsichtAuftraege.json", JsonConvert.SerializeObject(_auftraegeDataTable, Formatting.Indented));
 
-                var dringendDict = dringendTable.AsEnumerable()
-                    .ToDictionary(row => row.Field<string>("Auftrag"),
-                                  row => row.Field<string>("Dringend"));
-
-                // Dringend-Wert in DataTable setzen
-                foreach (DataRow row in dataTable.Rows)
-                {
-                    string auftragsNr = row["Auftragsnr."].ToString();
-                    if (dringendDict.TryGetValue(auftragsNr, out string dringendWert))
-                    {
-                        row["Dringend"] = dringendWert;
-                    }
-                    else
-                    {
-                        row["Dringend"] = string.Empty;
-                    }
-                }
-
-                // Aufbereitete Daten speichern
-                _auftraegeDataTable = dataTable;
-
-                // JSON speichern (optional)
-                string jsonFilePath = "AnsichtAuftraege.json";
-                string jsonData = JsonConvert.SerializeObject(_auftraegeDataTable, Formatting.Indented);
-                File.WriteAllText(jsonFilePath, jsonData);
-
-                // Zeige die Daten im DataGridView
+                // Anzeigen & formatieren
                 ApplyFilterAndDisplayData();
-
-                // Bildbox resetten
                 PictureBoxZeichnung.Image = null;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Fehler in UpdateDgvAnsichtAuftraege: " + ex.Message);
+                MessageBox.Show("Fehler in UpdateDgvAnsichtAuftraege (optimiert): " + ex.Message);
                 _auftraegeDataTable = null;
                 DgvAnsichtAuftraege.DataSource = null;
             }
-            finally
-            {
-                if (sqlConnectionVerwaltung != null && sqlConnectionVerwaltung.State == ConnectionState.Open)
-                {
-                    sqlConnectionVerwaltung.Close();
-                }
-            }
         }
+
 
         // Hilfsfunktion um das DgvAnsichtAuftraege zu aktualisieren
         private void UpdateDgvAnsichtAuftraege2()

@@ -52,6 +52,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             LoadDataIntoGrid();
         }
 
+        // Lädt die Daten aus der Datenbank und füllt das DataGridView.
         private void LoadDataIntoGrid()
         {
             try

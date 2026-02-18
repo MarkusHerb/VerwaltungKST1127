@@ -166,7 +166,8 @@
             "Serie",
             "Prototyp",
             "Kitterei",
-            "Zentriert"});
+            "Zentriert",
+            "Zukauf"});
             this.ComboboxStatus.Location = new System.Drawing.Point(158, 76);
             this.ComboboxStatus.Name = "ComboboxStatus";
             this.ComboboxStatus.Size = new System.Drawing.Size(160, 28);
