@@ -433,6 +433,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="RingSpannzange\Form_NeuerArtikelZuRing.resx">
       <DependentUpon>Form_NeuerArtikelZuRing.cs</DependentUpon>
@@ -501,6 +502,8 @@
     <Content Include="Bilder\SwarovskiOptikLogo.png" />
     <Content Include="Bilder\Wavelength.png" />
     <Content Include="Bilder\Wavelength2.png" />
+    <None Include="Resources\StartHintergrund2.png" />
+    <None Include="Resources\StartseiteHintergrund.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

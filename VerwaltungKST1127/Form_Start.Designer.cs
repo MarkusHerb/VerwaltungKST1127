@@ -101,6 +101,7 @@
             // LblUeberschrift
             // 
             this.LblUeberschrift.AutoSize = true;
+            this.LblUeberschrift.BackColor = System.Drawing.Color.Transparent;
             this.LblUeberschrift.Font = new System.Drawing.Font("Rockwell", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUeberschrift.ForeColor = System.Drawing.Color.Black;
             this.LblUeberschrift.Location = new System.Drawing.Point(28, 12);
@@ -112,9 +113,10 @@
             // LblUhrzeitDatum
             // 
             this.LblUhrzeitDatum.AutoSize = true;
+            this.LblUhrzeitDatum.BackColor = System.Drawing.Color.Transparent;
             this.LblUhrzeitDatum.Font = new System.Drawing.Font("Rockwell", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblUhrzeitDatum.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.LblUhrzeitDatum.Location = new System.Drawing.Point(30, 84);
+            this.LblUhrzeitDatum.Location = new System.Drawing.Point(30, 77);
             this.LblUhrzeitDatum.Name = "LblUhrzeitDatum";
             this.LblUhrzeitDatum.Size = new System.Drawing.Size(213, 31);
             this.LblUhrzeitDatum.TabIndex = 4;
@@ -167,6 +169,7 @@
             // LblInfo1
             // 
             this.LblInfo1.AutoSize = true;
+            this.LblInfo1.BackColor = System.Drawing.Color.Transparent;
             this.LblInfo1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblInfo1.Location = new System.Drawing.Point(95, 166);
             this.LblInfo1.Name = "LblInfo1";
@@ -199,6 +202,7 @@
             // LblQualitaet
             // 
             this.LblQualitaet.AutoSize = true;
+            this.LblQualitaet.BackColor = System.Drawing.Color.Transparent;
             this.LblQualitaet.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LblQualitaet.Location = new System.Drawing.Point(405, 166);
             this.LblQualitaet.Name = "LblQualitaet";
@@ -217,6 +221,7 @@
             // Organisation
             // 
             this.Organisation.AutoSize = true;
+            this.Organisation.BackColor = System.Drawing.Color.Transparent;
             this.Organisation.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Organisation.Location = new System.Drawing.Point(700, 166);
             this.Organisation.Name = "Organisation";
@@ -344,6 +349,7 @@
             // LblCpu
             // 
             this.LblCpu.AutoSize = true;
+            this.LblCpu.BackColor = System.Drawing.Color.Transparent;
             this.LblCpu.Location = new System.Drawing.Point(626, 98);
             this.LblCpu.Name = "LblCpu";
             this.LblCpu.Size = new System.Drawing.Size(26, 13);
@@ -353,6 +359,7 @@
             // LblRam
             // 
             this.LblRam.AutoSize = true;
+            this.LblRam.BackColor = System.Drawing.Color.Transparent;
             this.LblRam.Location = new System.Drawing.Point(626, 111);
             this.LblRam.Name = "LblRam";
             this.LblRam.Size = new System.Drawing.Size(31, 13);
@@ -369,8 +376,8 @@
             // 
             // chartPerformance
             // 
-            this.chartPerformance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.chartPerformance.BorderlineColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.chartPerformance.BackColor = System.Drawing.Color.Transparent;
+            this.chartPerformance.BorderlineColor = System.Drawing.Color.Transparent;
             chartArea1.Name = "ChartArea1";
             this.chartPerformance.ChartAreas.Add(chartArea1);
             legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
@@ -389,6 +396,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(942, 170);
             this.label1.Name = "label1";
@@ -413,6 +421,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(942, 424);
             this.label2.Name = "label2";
@@ -423,6 +432,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(942, 463);
             this.label3.Name = "label3";
@@ -433,6 +443,7 @@
             // lblOberflaechenHeute
             // 
             this.lblOberflaechenHeute.AutoSize = true;
+            this.lblOberflaechenHeute.BackColor = System.Drawing.Color.Transparent;
             this.lblOberflaechenHeute.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOberflaechenHeute.ForeColor = System.Drawing.Color.Blue;
             this.lblOberflaechenHeute.Location = new System.Drawing.Point(946, 442);
@@ -444,6 +455,7 @@
             // lblOberflaechenGestern
             // 
             this.lblOberflaechenGestern.AutoSize = true;
+            this.lblOberflaechenGestern.BackColor = System.Drawing.Color.Transparent;
             this.lblOberflaechenGestern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOberflaechenGestern.ForeColor = System.Drawing.Color.Blue;
             this.lblOberflaechenGestern.Location = new System.Drawing.Point(946, 480);
@@ -502,6 +514,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
+            this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(942, 502);
             this.label4.Name = "label4";
@@ -512,6 +525,7 @@
             // lblOberflaechenGesamt
             // 
             this.lblOberflaechenGesamt.AutoSize = true;
+            this.lblOberflaechenGesamt.BackColor = System.Drawing.Color.Transparent;
             this.lblOberflaechenGesamt.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOberflaechenGesamt.ForeColor = System.Drawing.Color.Blue;
             this.lblOberflaechenGesamt.Location = new System.Drawing.Point(946, 519);
@@ -523,8 +537,9 @@
             // lblAngemeldet
             // 
             this.lblAngemeldet.AutoSize = true;
+            this.lblAngemeldet.BackColor = System.Drawing.Color.Transparent;
             this.lblAngemeldet.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAngemeldet.Location = new System.Drawing.Point(36, 119);
+            this.lblAngemeldet.Location = new System.Drawing.Point(33, 111);
             this.lblAngemeldet.Name = "lblAngemeldet";
             this.lblAngemeldet.Size = new System.Drawing.Size(81, 13);
             this.lblAngemeldet.TabIndex = 39;
@@ -591,6 +606,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BackgroundImage = global::VerwaltungKST1127.Properties.Resources.StartHintergrund2;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1197, 721);
             this.Controls.Add(this.BtnRFIDAnischtWaschen);
             this.Controls.Add(this.BtnArtikelAendern);
@@ -632,6 +649,7 @@
             this.Controls.Add(this.LblUhrzeitDatum);
             this.Controls.Add(this.LblUeberschrift);
             this.Controls.Add(this.pictureBoxLinsenPrismen);
+            this.DoubleBuffered = true;
             this.Name = "Form_Start";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Hauptmenü";

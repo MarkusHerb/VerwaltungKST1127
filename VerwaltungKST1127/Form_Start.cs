@@ -209,9 +209,11 @@ namespace VerwaltungKST1127
 
             // Legendenbeschriftung ändern  
             chartPerformance.Series[0].Name = "Legende";
+            // Hintergrund der Legende verändern
+            chartPerformance.Legends[0].BackColor = Color.FromArgb(0, 0, 0, 0); // Transparent
 
             // Setze die Hintergrundfarbe des ChartArea
-            chartPerformance.ChartAreas[0].BackColor = Color.FromArgb(224, 224, 224);
+            chartPerformance.ChartAreas[0].BackColor = Color.FromArgb(0, 0, 0, 0);
 
         }
 
