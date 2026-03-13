@@ -12,7 +12,8 @@ using System.Linq;                                        // LINQ-Erweiterungsme
 using System.Text;                                        // Encoding, StringBuilder
 using System.Threading.Tasks;                             // Tasks/Parallelisierung (Task, Task.Run, async/await)
 using System.Windows.Forms;                               // WinForms-Basis (Form, Controls, Events, ...)
-using System.Windows.Forms.DataVisualization.Charting;    // Chart/Diagramm-Komponenten für WinForms
+using System.Windows.Forms.DataVisualization.Charting;
+
 
 namespace VerwaltungKST1127.Produktionsauswertung
 {
@@ -970,20 +971,18 @@ namespace VerwaltungKST1127.Produktionsauswertung
             }
         }
 
-
-
         // Öffnet ein Informationsfenster zur Produktionsübersicht.
         private void Btn_InfoProduction_Click(object sender, EventArgs e)
         {
             Form_InfoProduktionsauswertung infoForm = new Form_InfoProduktionsauswertung();
-            infoForm.ShowDialog();
+            infoForm.Show();
         }
 
         // Öffnet das Fenster für die Stückzahlen
         private void btnStkVorAvo_Click(object sender, EventArgs e)
         {
             Form_StkVorAvo frmStkVorAvo = new Form_StkVorAvo();
-            frmStkVorAvo.ShowDialog();
-        }
+            frmStkVorAvo.Show();
+        }       
     }
 }

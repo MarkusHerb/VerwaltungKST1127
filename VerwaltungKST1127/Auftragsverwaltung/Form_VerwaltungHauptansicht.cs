@@ -1331,24 +1331,25 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        private DataTable BuildBelagTableFromGrid()
+        // Hilfsmethode zum Bereinigen des Belag-Textes
+        public DataTable BuildBelagTableFromGrid()
         {
-            DataTable belagTable = new DataTable();
-            belagTable.Columns.Add("Belag", typeof(string));
-            belagTable.Columns.Add("AVOs", typeof(int));
-
+            DataTable belagTable = new DataTable(); // Neue DataTable erstellen
+            belagTable.Columns.Add("Belag", typeof(string)); // Spalte für Belag hinzufügen
+            belagTable.Columns.Add("AVOs", typeof(int)); // Spalte für AVOs hinzufügen
+            // Überprüfen, ob die erforderlichen Spalten im DataGridView vorhanden sind
             if (!DgvLadeBelaege.Columns.Contains("Belag") || !DgvLadeBelaege.Columns.Contains("AVOs"))
             {
                 return belagTable;
             }
-
+            // Daten aus dem DataGridView in die DataTable übertragen
             foreach (DataGridViewRow row in DgvLadeBelaege.Rows)
             {
                 if (row.IsNewRow)
                 {
                     continue;
                 }
-
+                // Belag-Text aus der Zelle "Belag" abrufen und bereinigen
                 string belag = row.Cells["Belag"].Value?.ToString();
                 if (string.IsNullOrWhiteSpace(belag))
                 {
@@ -1359,7 +1360,6 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 int.TryParse(row.Cells["AVOs"].Value?.ToString(), out avos);
                 belagTable.Rows.Add(belag, avos);
             }
-
             return belagTable;
         }
 
@@ -1375,7 +1375,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         {
             DataTable belagTable = (DgvLadeBelaege.DataSource as DataTable)?.Copy() ?? BuildBelagTableFromGrid();
             Form_Rueckstand form_Rueckstand = new Form_Rueckstand(belagTable);
-            form_Rueckstand.ShowDialog();
+            form_Rueckstand.Show();
         }
     }
 }

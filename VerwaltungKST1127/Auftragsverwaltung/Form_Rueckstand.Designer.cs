@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea11 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend11 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea12 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend12 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dGv_AuswahlBelag = new System.Windows.Forms.DataGridView();
             this.dateTimePickerRueckstandAb = new System.Windows.Forms.DateTimePicker();
             this.chartVergueten = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -46,6 +46,11 @@
             this.lblRueckstandPlusMinusFourtyDays = new System.Windows.Forms.Label();
             this.lblGesamtRueckstandAbteilung = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.btnEineWocheZurueck = new System.Windows.Forms.Button();
+            this.btnEineWocheVor = new System.Windows.Forms.Button();
+            this.btnZweiWochenZurueck = new System.Windows.Forms.Button();
+            this.btnZweiWochenVor = new System.Windows.Forms.Button();
+            this.btnResett = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGv_AuswahlBelag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartVergueten)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPlusMinusTwoMonths)).BeginInit();
@@ -68,16 +73,16 @@
             // 
             // chartVergueten
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chartVergueten.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chartVergueten.Legends.Add(legend1);
+            chartArea11.Name = "ChartArea1";
+            this.chartVergueten.ChartAreas.Add(chartArea11);
+            legend11.Name = "Legend1";
+            this.chartVergueten.Legends.Add(legend11);
             this.chartVergueten.Location = new System.Drawing.Point(289, 147);
             this.chartVergueten.Name = "chartVergueten";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartVergueten.Series.Add(series1);
+            series11.ChartArea = "ChartArea1";
+            series11.Legend = "Legend1";
+            series11.Name = "Series1";
+            this.chartVergueten.Series.Add(series11);
             this.chartVergueten.Size = new System.Drawing.Size(998, 248);
             this.chartVergueten.TabIndex = 3;
             this.chartVergueten.Text = "chart2";
@@ -124,16 +129,16 @@
             // 
             // chartPlusMinusTwoMonths
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chartPlusMinusTwoMonths.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chartPlusMinusTwoMonths.Legends.Add(legend2);
+            chartArea12.Name = "ChartArea1";
+            this.chartPlusMinusTwoMonths.ChartAreas.Add(chartArea12);
+            legend12.Name = "Legend1";
+            this.chartPlusMinusTwoMonths.Legends.Add(legend12);
             this.chartPlusMinusTwoMonths.Location = new System.Drawing.Point(289, 428);
             this.chartPlusMinusTwoMonths.Name = "chartPlusMinusTwoMonths";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartPlusMinusTwoMonths.Series.Add(series2);
+            series12.ChartArea = "ChartArea1";
+            series12.Legend = "Legend1";
+            series12.Name = "Series1";
+            this.chartPlusMinusTwoMonths.Series.Add(series12);
             this.chartPlusMinusTwoMonths.Size = new System.Drawing.Size(998, 243);
             this.chartPlusMinusTwoMonths.TabIndex = 10;
             this.chartPlusMinusTwoMonths.Text = "chart2";
@@ -177,11 +182,76 @@
             this.label4.TabIndex = 14;
             this.label4.Text = "Wenn Datum ausgewählt: Vergangenheit - Heute oder Heute - Zukunft ";
             // 
+            // btnEineWocheZurueck
+            // 
+            this.btnEineWocheZurueck.BackColor = System.Drawing.SystemColors.Info;
+            this.btnEineWocheZurueck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEineWocheZurueck.Location = new System.Drawing.Point(685, 28);
+            this.btnEineWocheZurueck.Name = "btnEineWocheZurueck";
+            this.btnEineWocheZurueck.Size = new System.Drawing.Size(75, 23);
+            this.btnEineWocheZurueck.TabIndex = 15;
+            this.btnEineWocheZurueck.Text = "-1 Woche";
+            this.btnEineWocheZurueck.UseVisualStyleBackColor = false;
+            this.btnEineWocheZurueck.Click += new System.EventHandler(this.btnEineWocheZurueck_Click);
+            // 
+            // btnEineWocheVor
+            // 
+            this.btnEineWocheVor.BackColor = System.Drawing.SystemColors.Info;
+            this.btnEineWocheVor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEineWocheVor.Location = new System.Drawing.Point(766, 28);
+            this.btnEineWocheVor.Name = "btnEineWocheVor";
+            this.btnEineWocheVor.Size = new System.Drawing.Size(75, 23);
+            this.btnEineWocheVor.TabIndex = 16;
+            this.btnEineWocheVor.Text = "+1 Woche";
+            this.btnEineWocheVor.UseVisualStyleBackColor = false;
+            this.btnEineWocheVor.Click += new System.EventHandler(this.btnEineWocheVor_Click);
+            // 
+            // btnZweiWochenZurueck
+            // 
+            this.btnZweiWochenZurueck.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.btnZweiWochenZurueck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnZweiWochenZurueck.Location = new System.Drawing.Point(685, 57);
+            this.btnZweiWochenZurueck.Name = "btnZweiWochenZurueck";
+            this.btnZweiWochenZurueck.Size = new System.Drawing.Size(75, 23);
+            this.btnZweiWochenZurueck.TabIndex = 17;
+            this.btnZweiWochenZurueck.Text = "-2 Woche";
+            this.btnZweiWochenZurueck.UseVisualStyleBackColor = false;
+            this.btnZweiWochenZurueck.Click += new System.EventHandler(this.btnZweiWochenZurueck_Click);
+            // 
+            // btnZweiWochenVor
+            // 
+            this.btnZweiWochenVor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.btnZweiWochenVor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnZweiWochenVor.Location = new System.Drawing.Point(766, 57);
+            this.btnZweiWochenVor.Name = "btnZweiWochenVor";
+            this.btnZweiWochenVor.Size = new System.Drawing.Size(75, 23);
+            this.btnZweiWochenVor.TabIndex = 18;
+            this.btnZweiWochenVor.Text = "+2 Woche";
+            this.btnZweiWochenVor.UseVisualStyleBackColor = false;
+            this.btnZweiWochenVor.Click += new System.EventHandler(this.btnZweiWochenVor_Click);
+            // 
+            // btnResett
+            // 
+            this.btnResett.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.btnResett.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnResett.Location = new System.Drawing.Point(847, 28);
+            this.btnResett.Name = "btnResett";
+            this.btnResett.Size = new System.Drawing.Size(75, 52);
+            this.btnResett.TabIndex = 19;
+            this.btnResett.Text = "Resett";
+            this.btnResett.UseVisualStyleBackColor = false;
+            this.btnResett.Click += new System.EventHandler(this.btnResett_Click);
+            // 
             // Form_Rueckstand
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1299, 684);
+            this.Controls.Add(this.btnResett);
+            this.Controls.Add(this.btnZweiWochenVor);
+            this.Controls.Add(this.btnZweiWochenZurueck);
+            this.Controls.Add(this.btnEineWocheVor);
+            this.Controls.Add(this.btnEineWocheZurueck);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.lblGesamtRueckstandAbteilung);
             this.Controls.Add(this.lblRueckstandPlusMinusFourtyDays);
@@ -195,6 +265,7 @@
             this.Controls.Add(this.dateTimePickerRueckstandAb);
             this.Controls.Add(this.dGv_AuswahlBelag);
             this.Name = "Form_Rueckstand";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form_Rueckstand";
             ((System.ComponentModel.ISupportInitialize)(this.dGv_AuswahlBelag)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartVergueten)).EndInit();
@@ -218,5 +289,10 @@
         private System.Windows.Forms.Label lblRueckstandPlusMinusFourtyDays;
         private System.Windows.Forms.Label lblGesamtRueckstandAbteilung;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button btnEineWocheZurueck;
+        private System.Windows.Forms.Button btnEineWocheVor;
+        private System.Windows.Forms.Button btnZweiWochenZurueck;
+        private System.Windows.Forms.Button btnZweiWochenVor;
+        private System.Windows.Forms.Button btnResett;
     }
 }

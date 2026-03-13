@@ -163,7 +163,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 col.ReadOnly = true;
                 col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
-                // RICHTIG: Style EINZELN setzen
+                // Style EINZELN setzen
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 col.DefaultCellStyle.Format = "N2";
 
@@ -829,6 +829,40 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 return match.Value.Replace("-", "").ToUpper();
 
             return "";
-        }       
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Event-Handler für die ±1 Woche und ±2 Wochen Buttons (optional, je nach UI-Design)
+        // -----------------------------------------------------------------------------------------------------------------
+
+        private void btnEineWocheZurueck_Click(object sender, EventArgs e)
+        {
+            // den DatePicker um 7 Tage zurücksetzen
+            dateTimePickerRueckstandAb.Value = dateTimePickerRueckstandAb.Value.AddDays(-7);
+        }
+
+        private void btnEineWocheVor_Click(object sender, EventArgs e)
+        {
+            // den DatePicker um 7 Tage vorwärts setzen
+            dateTimePickerRueckstandAb.Value = dateTimePickerRueckstandAb.Value.AddDays(7);
+        }
+
+        private void btnZweiWochenZurueck_Click(object sender, EventArgs e)
+        {
+            // den DatePicker um 14 Tage zurücksetzen
+            dateTimePickerRueckstandAb.Value = dateTimePickerRueckstandAb.Value.AddDays(-14);
+        }
+
+        private void btnZweiWochenVor_Click(object sender, EventArgs e)
+        {
+            // den DatePicker um 14 Tage vorwärts setzen
+            dateTimePickerRueckstandAb.Value = dateTimePickerRueckstandAb.Value.AddDays(14);
+        }
+
+        private void btnResett_Click(object sender, EventArgs e)
+        {
+            // DatePicker auf heute zurücksetzen
+            dateTimePickerRueckstandAb.Value = DateTime.Today;
+        }
     }
 }
