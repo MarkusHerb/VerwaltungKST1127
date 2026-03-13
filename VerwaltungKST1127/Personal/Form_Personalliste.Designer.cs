@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.DgvPersonalliste = new System.Windows.Forms.DataGridView();
             this.lblUeberschrift = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -70,6 +70,8 @@
             this.lblProduktivstunden = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.lblKarenz = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPersonalliste)).BeginInit();
             this.SuspendLayout();
             // 
@@ -82,14 +84,14 @@
             this.DgvPersonalliste.AllowUserToResizeRows = false;
             this.DgvPersonalliste.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Raised;
             this.DgvPersonalliste.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.Desktop;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DgvPersonalliste.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.Desktop;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DgvPersonalliste.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.DgvPersonalliste.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgvPersonalliste.Location = new System.Drawing.Point(13, 210);
             this.DgvPersonalliste.MultiSelect = false;
@@ -363,7 +365,8 @@
             "Aufleger:in",
             "Anlagentechniker:in",
             "Werkzeugwart:in",
-            "US-Bediener:in"});
+            "US-Bediener:in",
+            "Karenz/Mutterschutz"});
             this.comboBoxPosition.Location = new System.Drawing.Point(134, 152);
             this.comboBoxPosition.Name = "comboBoxPosition";
             this.comboBoxPosition.Size = new System.Drawing.Size(132, 21);
@@ -441,7 +444,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.Black;
-            this.panel2.Location = new System.Drawing.Point(972, 121);
+            this.panel2.Location = new System.Drawing.Point(972, 130);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(500, 1);
             this.panel2.TabIndex = 76;
@@ -507,11 +510,33 @@
             this.label19.TabIndex = 77;
             this.label19.Text = "Davon Produktiv:";
             // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(1069, 100);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(57, 17);
+            this.label14.TabIndex = 83;
+            this.label14.Text = "Karenz:";
+            // 
+            // lblKarenz
+            // 
+            this.lblKarenz.AutoSize = true;
+            this.lblKarenz.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblKarenz.Location = new System.Drawing.Point(1132, 100);
+            this.lblKarenz.Name = "lblKarenz";
+            this.lblKarenz.Size = new System.Drawing.Size(16, 17);
+            this.lblKarenz.TabIndex = 84;
+            this.lblKarenz.Text = "0";
+            // 
             // Form_Personalliste
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1490, 905);
+            this.Controls.Add(this.lblKarenz);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.lblAlgemein);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.lblVollzeitAequivalent);
@@ -607,5 +632,7 @@
         private System.Windows.Forms.Label lblProduktivstunden;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label lblKarenz;
     }
 }

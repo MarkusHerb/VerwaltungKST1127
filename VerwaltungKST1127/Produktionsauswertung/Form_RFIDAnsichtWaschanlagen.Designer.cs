@@ -60,6 +60,7 @@
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.cListBoxWaschanlage = new System.Windows.Forms.CheckedListBox();
+            this.lblEingeleseneWaschkoerbePlanoptik = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dGvRFID)).BeginInit();
             this.SuspendLayout();
             // 
@@ -271,7 +272,7 @@
             // 
             this.lblEingeleseneWaschkoerbeMontagen.AutoSize = true;
             this.lblEingeleseneWaschkoerbeMontagen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblEingeleseneWaschkoerbeMontagen.Location = new System.Drawing.Point(1174, 85);
+            this.lblEingeleseneWaschkoerbeMontagen.Location = new System.Drawing.Point(1174, 104);
             this.lblEingeleseneWaschkoerbeMontagen.Name = "lblEingeleseneWaschkoerbeMontagen";
             this.lblEingeleseneWaschkoerbeMontagen.Size = new System.Drawing.Size(108, 13);
             this.lblEingeleseneWaschkoerbeMontagen.TabIndex = 21;
@@ -353,12 +354,23 @@
             this.cListBoxWaschanlage.TabIndex = 30;
             this.cListBoxWaschanlage.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.cListBoxWaschanlage_ItemCheck);
             // 
+            // lblEingeleseneWaschkoerbePlanoptik
+            // 
+            this.lblEingeleseneWaschkoerbePlanoptik.AutoSize = true;
+            this.lblEingeleseneWaschkoerbePlanoptik.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblEingeleseneWaschkoerbePlanoptik.Location = new System.Drawing.Point(1174, 85);
+            this.lblEingeleseneWaschkoerbePlanoptik.Name = "lblEingeleseneWaschkoerbePlanoptik";
+            this.lblEingeleseneWaschkoerbePlanoptik.Size = new System.Drawing.Size(105, 13);
+            this.lblEingeleseneWaschkoerbePlanoptik.TabIndex = 31;
+            this.lblEingeleseneWaschkoerbePlanoptik.Text = "Davon Planoptik:";
+            // 
             // Form_RFIDAnsichtWaschanlagen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1532, 794);
+            this.Controls.Add(this.lblEingeleseneWaschkoerbePlanoptik);
             this.Controls.Add(this.cListBoxWaschanlage);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
@@ -431,5 +443,6 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.CheckedListBox cListBoxWaschanlage;
+        private System.Windows.Forms.Label lblEingeleseneWaschkoerbePlanoptik;
     }
 }

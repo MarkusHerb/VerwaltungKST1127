@@ -191,15 +191,16 @@
             this.ComboboxAceton.ItemHeight = 20;
             this.ComboboxAceton.Items.AddRange(new object[] {
             "0103",
-            "0201",
             "0203",
-            "0301",
-            "0303",
-            "0601",
-            "0701",
-            "0801",
-            "0903",
-            "3603"});
+            "0703",
+            "0803",
+            "1403",
+            "1503",
+            "2003",
+            "3503",
+            "3603",
+            "4503",
+            "4603"});
             this.ComboboxAceton.Location = new System.Drawing.Point(157, 639);
             this.ComboboxAceton.Name = "ComboboxAceton";
             this.ComboboxAceton.Size = new System.Drawing.Size(160, 28);

@@ -181,38 +181,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                             lblEingeleseneWaschkoerbe.Text = $"Eingelesene Waschträger: {_rfidView.Count}";
 
                             // --- 10) das Label lblEingeleseneWaschkoerbeVerguetung (127 oder 1127), lblEingeleseneWaschkoerbeRundoptik (124 oder 1124), lblEingeleseneWaschkoerbeMontagen (sonstige Zahlen), lblEingeleseneWaschkoerbeKitterei, lblEingeleseneWaschkoerbeQS, Ohne zuordnung aktualisieren
-                            int count127 = 0;
-                            int count126 = 0;
-                            int count124 = 0;
-                            int countMontage = 0;
-                            int countEmptyKST = 0;
-
-                            if (_rfidTable.Columns.Contains("DB22"))
-                            {
-                                foreach (DataRowView rowView in _rfidView)
-                                {
-                                    if (rowView["DB22"] != DBNull.Value)
-                                    {
-                                        string kst = rowView["DB22"].ToString();
-                                        if (kst == "127" || kst == "1127" || kst == "0127")
-                                            count127++;
-                                        else if (kst == "126" || kst == "1126" || kst == "0126")
-                                            count126++;
-                                        else if (kst == "124" || kst == "1124" || kst == "0124")
-                                            count124++;
-                                        else if (string.IsNullOrWhiteSpace(kst))
-                                            countEmptyKST++;
-                                        else
-                                            countMontage++;
-                                    }
-                                }
-                            }
-                            // Labels aktualisieren
-                            lblEingeleseneWaschkoerbeVerguetung.Text = $"Waschträger Vergütung: {count127}";
-                            lblEingeleseneWaschkoerbeKitterei.Text = $"Waschträger Kitterei: {count126}";
-                            lblEingeleseneWaschkoerbeRundoptik.Text = $"Waschträger Rundoptik: {count124}";
-                            lblEingeleseneWaschkoerbeMontagen.Text = $"Waschträger Montagen: {countMontage}";
-                            lblEingelesenOhneZuordnung.Text = $"Ohne KST: {countEmptyKST}";
+                            UpdateLabels();
                         }
                     }
                 }
@@ -311,6 +280,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
             _rfidView.RowFilter = parts.Count > 0 ? string.Join(" AND ", parts) : string.Empty;
 
             lblEingeleseneWaschkoerbe.Text = $"Eingelesene Waschträger: {_rfidView.Count}";
+            // Wenn gefiltert wir, auch die ganzen anderen Labels aktualisieren
+            UpdateLabels();
         }
 
         private static string EscapeForRowFilter(string input)
@@ -345,6 +316,47 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private void cListBoxWaschanlage_ItemCheck(object sender, ItemCheckEventArgs e)
         {
             BeginInvoke(new Action(ApplyCombinedFilter));
+        }
+
+        // Methode, dass die labels aktualisiert werden
+        private void UpdateLabels()
+        {
+            int count127 = 0;
+            int count126 = 0;
+            int count124 = 0;
+            int count125 = 0;
+            int countMontage = 0;
+            int countEmptyKST = 0;
+
+            if (_rfidTable.Columns.Contains("DB22"))
+            {
+                foreach (DataRowView rowView in _rfidView)
+                {
+                    if (rowView["DB22"] != DBNull.Value)
+                    {
+                        string kst = rowView["DB22"].ToString();
+                        if (kst == "127" || kst == "1127" || kst == "0127")
+                            count127++;
+                        else if (kst == "126" || kst == "1126" || kst == "0126")
+                            count126++;
+                        else if (kst == "124" || kst == "1124" || kst == "0124")
+                            count124++;
+                        else if (kst == "125" || kst == "1125" || kst == "0125")
+                            count125++;
+                        else if (string.IsNullOrWhiteSpace(kst))
+                            countEmptyKST++;
+                        else
+                            countMontage++;
+                    }
+                }
+            }
+            // Labels aktualisieren
+            lblEingeleseneWaschkoerbeVerguetung.Text = $"Waschträger Vergütung: {count127}";
+            lblEingeleseneWaschkoerbeKitterei.Text = $"Waschträger Kitterei: {count126}";
+            lblEingeleseneWaschkoerbePlanoptik.Text = $"Waschträger Planoptik: {count124}";
+            lblEingeleseneWaschkoerbeRundoptik.Text = $"Waschträger Rundoptik: {count125}";
+            lblEingeleseneWaschkoerbeMontagen.Text = $"Waschträger Montagen: {countMontage}";
+            lblEingelesenOhneZuordnung.Text = $"Ohne KST: {countEmptyKST}";
         }
     }
 }

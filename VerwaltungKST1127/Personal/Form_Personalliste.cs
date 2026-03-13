@@ -55,7 +55,8 @@ namespace VerwaltungKST1127.Personal
                 "Anlagentechniker:in",
                 "Aufleger:in",
                 "US-Bediener:in",
-                "Werkzeugwart:in"
+                "Werkzeugwart:in",
+                "Karenz/Mutterschutz"
             };
 
             // Sortiere die Liste nach Team aufsteigend und dann nach Position in der gewünschten Reihenfolge
@@ -457,7 +458,7 @@ namespace VerwaltungKST1127.Personal
                                 DgvPersonalliste.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGray; // Farbe für Team 159
                                 break;
                             case 160:
-                                DgvPersonalliste.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGreen; // Farbe für Team 160
+                                DgvPersonalliste.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGoldenrodYellow; // Farbe für Team 160
                                 break;
                             default:
                                 DgvPersonalliste.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.White; // Standardfarbe
@@ -475,6 +476,7 @@ namespace VerwaltungKST1127.Personal
             int mitarbeiterzahl = 0;
             int vollzeit = 0;
             int teilzeit = 0;
+            int karenz = 0;
             double vollzeitAequivalent = 0.0;
             double produktiv = 0.0;
 
@@ -494,7 +496,8 @@ namespace VerwaltungKST1127.Personal
         { "Stv. Teamleiter:in", 0.75 },
         { "Anlagentechniker:in", 1.0 },
         { "US-Bediener:in", 1.0 },
-        { "Werkzeugwart:in", 1.0 }
+        { "Werkzeugwart:in", 1.0 },
+        {"Karenz/Mutterschutz", 0.0 }
     };
 
             // Schleife durch alle Zeilen der DataGridView
@@ -510,6 +513,12 @@ namespace VerwaltungKST1127.Personal
                     vollzeit++; // Zählt die Vollzeitmitarbeiter
                     lblVollzeit.Text = vollzeit.ToString();
                     vollzeitAequivalent += 1; // Erhöht das Vollzeitäquivalent um 1
+                }
+                // Überprüfung ob in der Reihe Position Karenz/Mutterschutz steht
+                else if (row.Cells["Position"].Value != null && row.Cells["Position"].Value.ToString() == "Karenz/Mutterschutz" && wochenstunden == "0")
+                {
+                    karenz++; // Zählt die Mitarbeiter in Karenz/Mutterschutz
+                    lblKarenz.Text = karenz.ToString();
                 }
                 else
                 {
@@ -539,6 +548,7 @@ namespace VerwaltungKST1127.Personal
             lblVollzeitAequivalent.Text = vollzeitAequivalent.ToString();
             lblProduktivstunden.Text = produktiv.ToString();
             lblAlgemein.Text = (vollzeitAequivalent - produktiv).ToString();
+            lblKarenz.Text = karenz.ToString();
         }
 
     }
