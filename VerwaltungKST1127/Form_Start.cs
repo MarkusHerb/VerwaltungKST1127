@@ -12,6 +12,7 @@ using VerwaltungKST1127.Farbauswertung;
 using VerwaltungKST1127.GlasWaschDaten;
 using VerwaltungKST1127.Personal;
 using VerwaltungKST1127.Produktionsauswertung;
+using VerwaltungKST1127.RFID;
 using VerwaltungKST1127.RingSpannzange;
 
 namespace VerwaltungKST1127
@@ -426,6 +427,13 @@ namespace VerwaltungKST1127
             form_ArtikelAender.BringToFront(); // Bringt das neue Formular direkt in den Vordergrund
         }
 
+        // ############ TEST RFID
+        private void btnRFID_Click(object sender, EventArgs e)
+        {
+            Form_RFID_Test form_RFID_Test = new Form_RFID_Test();
+            form_RFID_Test.Show();
+        }
+
         // #### ListBox Dokumentenverwaltung ####
 
         // Array zur Speicherung der Dokumentnamen und Dateipfade
@@ -643,5 +651,7 @@ namespace VerwaltungKST1127
                 return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : null;
             }
         }
+
+        
     }
 }

@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -79,6 +79,7 @@
             this.btnProduktionsauswertung = new System.Windows.Forms.Button();
             this.BtnArtikelAendern = new System.Windows.Forms.Button();
             this.BtnRFIDAnischtWaschen = new System.Windows.Forms.Button();
+            this.btnRFID = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -378,17 +379,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.Transparent;
             this.chartPerformance.BorderlineColor = System.Drawing.Color.Transparent;
-            chartArea2.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea2);
-            legend2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend2.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend2);
+            chartArea1.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea1);
+            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend1.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend1);
             this.chartPerformance.Location = new System.Drawing.Point(309, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartPerformance.Series.Add(series2);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartPerformance.Series.Add(series1);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -601,6 +602,20 @@
             this.BtnRFIDAnischtWaschen.UseVisualStyleBackColor = false;
             this.BtnRFIDAnischtWaschen.Click += new System.EventHandler(this.BtnRFIDAnischtWaschen_Click);
             // 
+            // btnRFID
+            // 
+            this.btnRFID.BackColor = System.Drawing.Color.Silver;
+            this.btnRFID.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnRFID.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnRFID.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRFID.Location = new System.Drawing.Point(336, 499);
+            this.btnRFID.Name = "btnRFID";
+            this.btnRFID.Size = new System.Drawing.Size(239, 66);
+            this.btnRFID.TabIndex = 44;
+            this.btnRFID.Text = "RFID_TEST";
+            this.btnRFID.UseVisualStyleBackColor = false;
+            this.btnRFID.Click += new System.EventHandler(this.btnRFID_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -609,6 +624,7 @@
             this.BackgroundImage = global::VerwaltungKST1127.Properties.Resources.StartHintergrund2;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.btnRFID);
             this.Controls.Add(this.BtnRFIDAnischtWaschen);
             this.Controls.Add(this.BtnArtikelAendern);
             this.Controls.Add(this.btnProduktionsauswertung);
@@ -709,6 +725,7 @@
         private System.Windows.Forms.Button btnProduktionsauswertung;
         private System.Windows.Forms.Button BtnArtikelAendern;
         private System.Windows.Forms.Button BtnRFIDAnischtWaschen;
+        private System.Windows.Forms.Button btnRFID;
     }
 }
 

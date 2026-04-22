@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dGv_AuswahlBelag = new System.Windows.Forms.DataGridView();
             this.dateTimePickerRueckstandAb = new System.Windows.Forms.DateTimePicker();
             this.chartVergueten = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -51,6 +51,7 @@
             this.btnZweiWochenZurueck = new System.Windows.Forms.Button();
             this.btnZweiWochenVor = new System.Windows.Forms.Button();
             this.btnResett = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dGv_AuswahlBelag)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartVergueten)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPlusMinusTwoMonths)).BeginInit();
@@ -61,28 +62,28 @@
             this.dGv_AuswahlBelag.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dGv_AuswahlBelag.Location = new System.Drawing.Point(12, 12);
             this.dGv_AuswahlBelag.Name = "dGv_AuswahlBelag";
-            this.dGv_AuswahlBelag.Size = new System.Drawing.Size(271, 628);
+            this.dGv_AuswahlBelag.Size = new System.Drawing.Size(290, 628);
             this.dGv_AuswahlBelag.TabIndex = 0;
             // 
             // dateTimePickerRueckstandAb
             // 
-            this.dateTimePickerRueckstandAb.Location = new System.Drawing.Point(294, 44);
+            this.dateTimePickerRueckstandAb.Location = new System.Drawing.Point(313, 44);
             this.dateTimePickerRueckstandAb.Name = "dateTimePickerRueckstandAb";
             this.dateTimePickerRueckstandAb.Size = new System.Drawing.Size(195, 20);
             this.dateTimePickerRueckstandAb.TabIndex = 1;
             // 
             // chartVergueten
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chartVergueten.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chartVergueten.Legends.Add(legend1);
-            this.chartVergueten.Location = new System.Drawing.Point(289, 147);
+            chartArea3.Name = "ChartArea1";
+            this.chartVergueten.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.chartVergueten.Legends.Add(legend3);
+            this.chartVergueten.Location = new System.Drawing.Point(308, 147);
             this.chartVergueten.Name = "chartVergueten";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartVergueten.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chartVergueten.Series.Add(series3);
             this.chartVergueten.Size = new System.Drawing.Size(1180, 248);
             this.chartVergueten.TabIndex = 3;
             this.chartVergueten.Text = "chart2";
@@ -91,7 +92,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(289, 120);
+            this.label1.Location = new System.Drawing.Point(308, 120);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(273, 24);
             this.label1.TabIndex = 5;
@@ -101,7 +102,7 @@
             // 
             this.lblVergueten.AutoSize = true;
             this.lblVergueten.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVergueten.Location = new System.Drawing.Point(568, 120);
+            this.lblVergueten.Location = new System.Drawing.Point(587, 120);
             this.lblVergueten.Name = "lblVergueten";
             this.lblVergueten.Size = new System.Drawing.Size(56, 24);
             this.lblVergueten.TabIndex = 7;
@@ -111,7 +112,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(289, 67);
+            this.label2.Location = new System.Drawing.Point(308, 67);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(237, 26);
             this.label2.TabIndex = 8;
@@ -121,7 +122,7 @@
             // 
             this.lblGesamt.AutoSize = true;
             this.lblGesamt.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGesamt.Location = new System.Drawing.Point(532, 67);
+            this.lblGesamt.Location = new System.Drawing.Point(551, 67);
             this.lblGesamt.Name = "lblGesamt";
             this.lblGesamt.Size = new System.Drawing.Size(66, 26);
             this.lblGesamt.TabIndex = 9;
@@ -129,16 +130,16 @@
             // 
             // chartPlusMinusTwoMonths
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chartPlusMinusTwoMonths.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.chartPlusMinusTwoMonths.Legends.Add(legend2);
-            this.chartPlusMinusTwoMonths.Location = new System.Drawing.Point(289, 428);
+            chartArea4.Name = "ChartArea1";
+            this.chartPlusMinusTwoMonths.ChartAreas.Add(chartArea4);
+            legend4.Name = "Legend1";
+            this.chartPlusMinusTwoMonths.Legends.Add(legend4);
+            this.chartPlusMinusTwoMonths.Location = new System.Drawing.Point(308, 428);
             this.chartPlusMinusTwoMonths.Name = "chartPlusMinusTwoMonths";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartPlusMinusTwoMonths.Series.Add(series2);
+            series4.ChartArea = "ChartArea1";
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chartPlusMinusTwoMonths.Series.Add(series4);
             this.chartPlusMinusTwoMonths.Size = new System.Drawing.Size(1180, 397);
             this.chartPlusMinusTwoMonths.TabIndex = 10;
             this.chartPlusMinusTwoMonths.Text = "chart2";
@@ -147,7 +148,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(289, 401);
+            this.label3.Location = new System.Drawing.Point(308, 401);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(204, 24);
             this.label3.TabIndex = 11;
@@ -157,7 +158,7 @@
             // 
             this.lblRueckstandPlusMinusFourtyDays.AutoSize = true;
             this.lblRueckstandPlusMinusFourtyDays.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblRueckstandPlusMinusFourtyDays.Location = new System.Drawing.Point(515, 401);
+            this.lblRueckstandPlusMinusFourtyDays.Location = new System.Drawing.Point(534, 401);
             this.lblRueckstandPlusMinusFourtyDays.Name = "lblRueckstandPlusMinusFourtyDays";
             this.lblRueckstandPlusMinusFourtyDays.Size = new System.Drawing.Size(61, 24);
             this.lblRueckstandPlusMinusFourtyDays.TabIndex = 12;
@@ -167,7 +168,7 @@
             // 
             this.lblGesamtRueckstandAbteilung.AutoSize = true;
             this.lblGesamtRueckstandAbteilung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGesamtRueckstandAbteilung.Location = new System.Drawing.Point(210, 643);
+            this.lblGesamtRueckstandAbteilung.Location = new System.Drawing.Point(229, 643);
             this.lblGesamtRueckstandAbteilung.Name = "lblGesamtRueckstandAbteilung";
             this.lblGesamtRueckstandAbteilung.Size = new System.Drawing.Size(73, 17);
             this.lblGesamtRueckstandAbteilung.TabIndex = 13;
@@ -176,7 +177,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(291, 28);
+            this.label4.Location = new System.Drawing.Point(310, 28);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(345, 13);
             this.label4.TabIndex = 14;
@@ -186,7 +187,7 @@
             // 
             this.btnEineWocheZurueck.BackColor = System.Drawing.SystemColors.Info;
             this.btnEineWocheZurueck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnEineWocheZurueck.Location = new System.Drawing.Point(685, 28);
+            this.btnEineWocheZurueck.Location = new System.Drawing.Point(704, 28);
             this.btnEineWocheZurueck.Name = "btnEineWocheZurueck";
             this.btnEineWocheZurueck.Size = new System.Drawing.Size(75, 23);
             this.btnEineWocheZurueck.TabIndex = 15;
@@ -198,7 +199,7 @@
             // 
             this.btnEineWocheVor.BackColor = System.Drawing.SystemColors.Info;
             this.btnEineWocheVor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnEineWocheVor.Location = new System.Drawing.Point(766, 28);
+            this.btnEineWocheVor.Location = new System.Drawing.Point(785, 28);
             this.btnEineWocheVor.Name = "btnEineWocheVor";
             this.btnEineWocheVor.Size = new System.Drawing.Size(75, 23);
             this.btnEineWocheVor.TabIndex = 16;
@@ -210,7 +211,7 @@
             // 
             this.btnZweiWochenZurueck.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.btnZweiWochenZurueck.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnZweiWochenZurueck.Location = new System.Drawing.Point(685, 57);
+            this.btnZweiWochenZurueck.Location = new System.Drawing.Point(704, 57);
             this.btnZweiWochenZurueck.Name = "btnZweiWochenZurueck";
             this.btnZweiWochenZurueck.Size = new System.Drawing.Size(75, 23);
             this.btnZweiWochenZurueck.TabIndex = 17;
@@ -222,7 +223,7 @@
             // 
             this.btnZweiWochenVor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.btnZweiWochenVor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnZweiWochenVor.Location = new System.Drawing.Point(766, 57);
+            this.btnZweiWochenVor.Location = new System.Drawing.Point(785, 57);
             this.btnZweiWochenVor.Name = "btnZweiWochenVor";
             this.btnZweiWochenVor.Size = new System.Drawing.Size(75, 23);
             this.btnZweiWochenVor.TabIndex = 18;
@@ -234,7 +235,7 @@
             // 
             this.btnResett.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
             this.btnResett.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnResett.Location = new System.Drawing.Point(847, 28);
+            this.btnResett.Location = new System.Drawing.Point(866, 28);
             this.btnResett.Name = "btnResett";
             this.btnResett.Size = new System.Drawing.Size(75, 52);
             this.btnResett.TabIndex = 19;
@@ -242,11 +243,23 @@
             this.btnResett.UseVisualStyleBackColor = false;
             this.btnResett.Click += new System.EventHandler(this.btnResett_Click);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(12, 764);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(285, 51);
+            this.label5.TabIndex = 20;
+            this.label5.Text = "Rücks. Brutto: Würden alle Auftrage mit den\r\ngesamten Stück bei uns liegen, dann " +
+    "wäre \r\ndas der Rückstand";
+            // 
             // Form_Rueckstand
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1481, 837);
+            this.ClientSize = new System.Drawing.Size(1500, 837);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.btnResett);
             this.Controls.Add(this.btnZweiWochenVor);
             this.Controls.Add(this.btnZweiWochenZurueck);
@@ -294,5 +307,6 @@
         private System.Windows.Forms.Button btnZweiWochenZurueck;
         private System.Windows.Forms.Button btnZweiWochenVor;
         private System.Windows.Forms.Button btnResett;
+        private System.Windows.Forms.Label label5;
     }
 }

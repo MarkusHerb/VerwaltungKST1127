@@ -592,7 +592,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             series.LabelForeColor = Color.Black;
             series.LabelFormat = "0.00";
             series.LegendText = "Tagerückstand";
-            series.ToolTip = "#VALX: #VAL h";
+            series.ToolTip = "#AXISLABEL: #VAL{N2} h";
 
             ChartArea area = chart.ChartAreas[0];
             area.AxisX.MajorGrid.LineWidth = 0;
@@ -679,7 +679,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             series.Color = Color.FromArgb(100, 150, 240);
             series.BorderWidth = 0;
             series.IsValueShownAsLabel = false;
-            series.ToolTip = "#VALX: #VAL";
+            series.ToolTip = "#AXISLABEL: #VAL{N2} h";
             series.LegendText = "Tagerückstand";
 
             ChartArea area = chart.ChartAreas[0];
@@ -718,8 +718,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             int w1 = 3; // 7-Punkte-Fenster
             for (int i = 0; i < vals.Length; i++)
             {
-                decimal avg = 0; int cnt = 0;
-                for (int w = i - w1; w <= i + w1; w++)
+                decimal avg = 0; int cnt = 0; 
+                for (int w = i - w1; w <= i + w1; w++) 
                     if (w >= 0 && w < vals.Length) { avg += vals[w]; cnt++; }
 
                 avg /= Math.Max(1, cnt);

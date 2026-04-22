@@ -95,6 +95,12 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PCSC, Version=7.0.1.0, Culture=neutral, PublicKeyToken=13b76e54a2ee80a7, processorArchitecture=MSIL">
+      <HintPath>..\packages\PCSC.7.0.1\lib\netstandard2.0\PCSC.dll</HintPath>
+    </Reference>
+    <Reference Include="PCSC.Iso7816, Version=7.0.1.0, Culture=neutral, PublicKeyToken=13b76e54a2ee80a7, processorArchitecture=MSIL">
+      <HintPath>..\packages\PCSC.Iso7816.7.0.1\lib\netstandard2.0\PCSC.Iso7816.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -341,6 +347,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RFID\Form_RFID_Test.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RFID\Form_RFID_Test.Designer.cs">
+      <DependentUpon>Form_RFID_Test.cs</DependentUpon>
+    </Compile>
     <Compile Include="RingSpannzange\Form_NeuerArtikelZuRing.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -435,6 +447,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="RFID\Form_RFID_Test.resx">
+      <DependentUpon>Form_RFID_Test.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RingSpannzange\Form_NeuerArtikelZuRing.resx">
       <DependentUpon>Form_NeuerArtikelZuRing.cs</DependentUpon>
     </EmbeddedResource>
