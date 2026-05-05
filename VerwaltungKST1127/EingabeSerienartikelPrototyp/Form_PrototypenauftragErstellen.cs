@@ -1,27 +1,45 @@
-﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
-using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
-using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften und Bildern in der GUI)
-using System.Drawing.Printing; // Importieren des System.Drawing.Printing-Namespace für Druckfunktionen (z.B. zum Drucken von Dokumenten und zur Verwaltung von Druckereinstellungen)
-using System.IO; // Importieren des System.IO-Namespace für die Ein- und Ausgabefunktionen (z.B. zum Lesen und Schreiben von Dateien und Datenströmen)
-using System.Runtime.InteropServices;
-using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
-using Excel = Microsoft.Office.Interop.Excel;
+﻿// ===================================================================================================
+// "using"-Anweisungen importieren fertige Funktionen aus den .NET-Bibliotheken,
+// damit wir z. B. statt "System.Windows.Forms.Form" einfach "Form" schreiben können.
+// ===================================================================================================
+using System;                                           // Basis-Typen (string, int, DateTime, EventArgs, Exception ...)
+using System.Data.SqlClient;                            // SQL-Server-Zugriff (SqlConnection, SqlCommand, SqlDataReader)
+using System.Drawing;                                   // Grafische Typen (Color, Font, Bitmap, Image, Brushes ...)
+using System.Drawing.Printing;                          // Druckklassen (PrintDocument, PrintPageEventArgs, PrintDialog ...)
+using System.IO;                                        // Datei-/Pfad-Operationen (File, Path ...)
+using System.Runtime.InteropServices;                   // Marshal.ReleaseComObject (für Excel-COM-Interop)
+using System.Windows.Forms;                             // Windows-Forms (Form, Button, ComboBox, Clipboard ...)
+using Excel = Microsoft.Office.Interop.Excel;           // Alias "Excel" für den Excel-Namespace (kürzere Schreibweise)
 
+// "namespace" gruppiert Klassen logisch (wie ein Ordner) und vermeidet Namenskonflikte.
 namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 {
+    // public partial class ... : Form
+    //   public  = von außen sichtbar
+    //   partial = der Klassen-Code darf auf mehrere Dateien aufgeteilt sein (z. B. ...Designer.cs)
+    //   : Form  = erbt von "Form" → diese Klasse IST ein Windows-Fenster
     public partial class Form_PrototypenauftragErstellen : Form
     {
-        //private Excel.Application excelApp; // Speichern der Excel-Anwendung
+        // (Optional gewesene Felder – aktuell auskommentiert.)
+        //private Excel.Application excelApp;
         //private Excel.Workbook workbook;
 
-        // Verbindungszeichenfolgen für die SQL Server-Datenbanken
-        private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
+        // -----------------------------------------------------------------------------------------------------------------
+        // Felder ("Variablen der Klasse"). private = nur in dieser Klasse sichtbar.
+        // readonly = darf nur einmal (hier oder im Konstruktor) gesetzt werden.
+        // -----------------------------------------------------------------------------------------------------------------
 
-        private PrintDocument printDocument;  // Deklarieren eines PrintDocument-Objekts für den Druckprozess
+        // Verbindung zur Verwaltungs-Datenbank.
+        private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(
+            @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
 
-        // Instanzvariablen
+        // PrintDocument repräsentiert das, was gedruckt werden soll.
+        // Wir hängen ihm das PrintPage-Event an und sagen damit, WAS auf jeder Seite erscheint.
+        private PrintDocument printDocument;
+
+        // Instanzvariablen: speichern die zuletzt geladenen Artikel-Werte
+        // (werden später beim Druck und beim Excel-Export benötigt).
         private string Auftragsnummer;
-
         private string artikel;
         private string seiteArtikel;
         private string bezeichnung;
@@ -40,27 +58,40 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
         private string handreinigung;
         private string bildPfad;
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Konstruktor: läuft beim "new Form_PrototypenauftragErstellen()" automatisch.
+        // -----------------------------------------------------------------------------------------------------------------
         public Form_PrototypenauftragErstellen()
         {
-            InitializeComponent();
-            this.FormBorderStyle = FormBorderStyle.None; // Entfernt die Titelleiste und die Rahmen des Formulars
-            UpdateZeitDatum();
-            FillComboBoxArtikel();
-            ComboboxArtikel.SelectedIndexChanged += ComboboxArtikel_SelectedIndexChanged; // Event-Handler registrieren
-            // Initialisieren des PrintDocument-Objekts und Registrieren des PrintPage-Event-Handlers
+            InitializeComponent();                  // erzeugt alle UI-Steuerelemente (definiert in der Designer-Datei)
+
+            // Fensterrahmen + Titelleiste komplett entfernen → Vollflächige eigene Optik.
+            this.FormBorderStyle = FormBorderStyle.None;
+
+            UpdateZeitDatum();                       // "Erstellt am"-Label setzen
+            FillComboBoxArtikel();                   // ComboBox mit allen Artikeln + Seiten befüllen
+
+            // Event-Handler verbinden → reagiert auf Auswahländerungen in der ComboBox.
+            ComboboxArtikel.SelectedIndexChanged += ComboboxArtikel_SelectedIndexChanged;
+
+            // PrintDocument vorbereiten:
+            // - PrintPage-Event verbinden (dort zeichnen wir den Inhalt der gedruckten Seite)
+            // - Querformat aktivieren
             printDocument = new PrintDocument();
-            printDocument.PrintPage += new PrintPageEventHandler(PrintDocument_PrintPage);  // Event-Handler für die Druckseite hinzufügen
-            printDocument.DefaultPageSettings.Landscape = true;  // Querformat aktivieren
-            SetPlaceholders();
+            printDocument.PrintPage += new PrintPageEventHandler(PrintDocument_PrintPage);
+            printDocument.DefaultPageSettings.Landscape = true;
+
+            SetPlaceholders();                       // Platzhaltertexte (graue Beispiel-Eingaben) setzen
         }
 
-        // Methode zum Füllen der ComboBox mit Artikelnummern und Seiteninformationen
+        // -----------------------------------------------------------------------------------------------------------------
+        // Befüllt die Artikel-ComboBox mit eindeutigen Artikel-/Seiten-Kombinationen aus der DB.
+        // -----------------------------------------------------------------------------------------------------------------
         private void FillComboBoxArtikel()
         {
-            // Öffnet die Verbindung zur Datenbank
             sqlConnectionVerwaltung.Open();
 
-            // SQL-Abfrage, um eindeutige Artikelnummern (ARTNR) und Seiten (SEITE) aus der Tabelle 'Serienlinsen' zu erhalten
+            // SQL: DISTINCT entfernt Duplikate; ORDER BY sortiert aufsteigend nach ARTNR.
             string query = @"
                 SELECT DISTINCT ARTNR, SEITE
                 FROM Serienlinsen
@@ -68,42 +99,36 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
             try
             {
-                // Erstellt ein neues SqlCommand-Objekt, das die Abfrage und die Datenbankverbindung verwendet
+                // "using" sorgt dafür, dass das SqlCommand am Ende automatisch freigegeben wird.
                 using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
-                    // Führt die Abfrage aus und erhält einen SqlDataReader zum Lesen der Ergebnisse
                     using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
-                        // Löscht alle vorhandenen Einträge in der ComboBox, bevor sie mit neuen Daten befüllt wird
+                        // Erst leeren → keine Doppeleinträge bei erneutem Befüllen.
                         ComboboxArtikel.Items.Clear();
 
-                        // Iteriert durch die Ergebnisse der Abfrage
+                        // reader.Read() liefert true, solange noch eine Zeile übrig ist.
                         while (reader.Read())
                         {
-                            // Extrahiert die Werte für Artikelnummer (ARTNR) und Seite (SEITE) aus dem aktuellen Datensatz
                             string artikelNummerValue = reader["ARTNR"].ToString();
                             string seiteValue = reader["SEITE"].ToString();
 
-                            // Kombiniert die Werte zu einem anzeigbaren String im Format "ARTNR / Seite: SEITE"
+                            // Anzeigeformat: "12-2044 / Seite: 1"
                             string displayValue = $"{artikelNummerValue} / Seite: {seiteValue}";
-
-                            // Fügt den formatierten String zur ComboBox hinzu
                             ComboboxArtikel.Items.Add(displayValue);
                         }
                     }
                 }
 
-                // Deaktiviert die automatische Sortierung der ComboBox, da die Sortierung bereits durch die SQL-Abfrage erfolgt
+                // Sorted = false → Reihenfolge bleibt so wie via SQL ORDER BY geliefert.
                 ComboboxArtikel.Sorted = false;
             }
             catch (Exception ex)
             {
-                // Zeigt eine Fehlermeldung an, falls beim Laden der Artikel ein Fehler auftritt
                 MessageBox.Show("Fehler beim Laden der Artikel: " + ex.Message);
             }
             finally
             {
-                // Schließt die Datenbankverbindung, falls sie noch geöffnet ist, um Ressourcen freizugeben
                 if (sqlConnectionVerwaltung.State == System.Data.ConnectionState.Open)
                 {
                     sqlConnectionVerwaltung.Close();
@@ -111,14 +136,19 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-        // Uhrzeit und Datumsfunktion
+        // -----------------------------------------------------------------------------------------------------------------
+        // Aktualisiert das Label mit dem aktuellen Datum (Format "D" = lange Datumsschreibweise).
+        // -----------------------------------------------------------------------------------------------------------------
         private void UpdateZeitDatum()
         {
             DateTime aktuell = DateTime.Now;
             LblErstelltAm.Text = "Auftrag erstellt am: " + aktuell.ToString("D");
         }
 
-        // Hilfsmethode zum Clampen eines Wertes zwischen einem minimalen und maximalen Wert
+        // -----------------------------------------------------------------------------------------------------------------
+        // Hilfsfunktion: begrenzt einen Wert auf einen Bereich [min..max].
+        // (Aktuell ungenutzt, aber zur Sicherheit drin.)
+        // -----------------------------------------------------------------------------------------------------------------
         private static int Clamp(int value, int min, int max)
         {
             if (value < min) return min;
@@ -126,91 +156,121 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             return value;
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // PrintPage-Event: hier wird beschrieben, WAS auf einer gedruckten Seite gezeichnet werden soll.
+        // - rendert das Formular als Bitmap
+        // - schärft das Bild
+        // - skaliert es auf den Druckbereich
+        // - zeichnet zusätzlich Texte mit großen Schriftgrößen drüber
+        // -----------------------------------------------------------------------------------------------------------------
         private void PrintDocument_PrintPage(object sender, PrintPageEventArgs e)
         {
-            // Justierbare Ränder in Pixeln
-            int marginLeft = 20;    // Linker Rand
-            int marginRight = 30;   // Rechter Rand
-            int marginTop = 20;     // Oberer Rand
-            int marginBottom = -15;  // Unterer Rand
+            // ----- Ränder in Pixeln -----
+            int marginLeft = 20;
+            int marginRight = 30;
+            int marginTop = 20;
+            int marginBottom = -15;
 
-            int dpi = 600; // DPI für die Druckqualität
+            int dpi = 600; // hohe Druckauflösung
 
-            // Erstellen eines Bitmaps basierend auf der Größe des Formulars mit dem angegebenen DPI
+            // Bitmap in der Größe des Formulars erzeugen → DPI setzen → Formular hineinrendern.
             Bitmap bmp = new Bitmap(this.ClientRectangle.Width, this.ClientRectangle.Height);
             bmp.SetResolution(dpi, dpi);
             this.DrawToBitmap(bmp, new Rectangle(0, 0, this.ClientRectangle.Width, this.ClientRectangle.Height));
 
-            // Bild schärfen
+            // Bild schärfen (3x3-Filter, siehe Methode SharpenImage).
             Bitmap sharpenedBmp = SharpenImage(bmp);
 
-            // Temporären Speicherort für das PNG-Bild
+            // Geschärftes Bild als temporäre PNG-Datei zwischenspeichern.
             string tempPngPath = Path.Combine(Path.GetTempPath(), "tempPrintImage.png");
-
-            // PNG-Bild speichern
             sharpenedBmp.Save(tempPngPath, System.Drawing.Imaging.ImageFormat.Png);
 
-            // Berechnung der verfügbaren Breite und Höhe basierend auf den Rändern
+            // Verfügbare Druckfläche (Seitengröße minus Ränder) berechnen.
             int printWidth = e.PageBounds.Width - marginLeft - marginRight;
             int printHeight = e.PageBounds.Height - marginTop - marginBottom;
 
-            // Berechnung der Verhältnisse zur Anpassung des Bildes an die Druckfläche
+            // Skalierungsfaktor in X- und Y-Richtung berechnen.
             float scaleX = (float)printWidth / sharpenedBmp.Width;
             float scaleY = (float)printHeight / sharpenedBmp.Height;
-            float scale = Math.Min(scaleX, scaleY); // Verwenden des kleineren Skalierungsfaktors, um das Bild proportional zu halten
+            // Den kleineren Faktor verwenden → Bild bleibt proportional, ohne abgeschnitten zu werden.
+            float scale = Math.Min(scaleX, scaleY);
 
-            // Berechnung der neuen Größe des Bildes basierend auf dem Skalierungsfaktor
             int newWidth = (int)(sharpenedBmp.Width * scale);
             int newHeight = (int)(sharpenedBmp.Height * scale);
 
-            // Berechnung der Startpositionen unter Berücksichtigung der Ränder
+            // Bild zentriert in den Druckbereich legen.
             int posX = marginLeft + (printWidth - newWidth) / 2;
             int posY = marginTop + (printHeight - newHeight) / 2;
 
-            // Anti-Aliasing und TextRenderingHint aktivieren für eine bessere Druckqualität
+            // Render-Optionen für hohe Druckqualität.
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
             e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-            // Das PNG-Bild laden und zeichnen
+            // Bild aus der Temp-Datei laden und auf der Druckseite zeichnen.
             using (Image printImage = Image.FromFile(tempPngPath))
             {
                 e.Graphics.DrawImage(printImage, posX, posY, newWidth, newHeight);
             }
 
-            //////////////////////////////////////////Test
-            // Schriftarten definieren
-            Font fontProjektNr = new Font("Arial", 17, FontStyle.Bold); // Dicke Schriftart für lblProjektNr
-            Font fontAuftragsnummer = new Font("Arial", 16); // Schriftart für txtboxAuftragsnummer
-            Font fontBezeichnungBold = new Font("Arial", 15, FontStyle.Bold); // Schriftart für mehrere elemente
-            // Font fontBezeichnungBoldUnderlined = new Font("Arial", 15, FontStyle.Bold | FontStyle.Underline);
-            Font fontBezeichnung = new Font("Arial", 15); // Schriftart für mehrere elemente
+            //////////////////////////////////////////
+            // Zusätzliche Texte direkt auf die Seite zeichnen (für gute Lesbarkeit beim Druck)
+            //////////////////////////////////////////
+
+            // Schriftarten anlegen (nur einmal definieren, dann oft verwenden).
+            Font fontProjektNr = new Font("Arial", 17, FontStyle.Bold);
+            Font fontAuftragsnummer = new Font("Arial", 16);
+            Font fontBezeichnungBold = new Font("Arial", 15, FontStyle.Bold);
+            Font fontBezeichnung = new Font("Arial", 15);
             Font fonBezeichnungKlein = new Font("Arial", 10);
 
-            float xProjektNr = 39; float yProjektNr = 50; float xAuftragsnummer = 350; float yAuftragsnummer = 55;
-            float xArtikelnummerLabel = 39; float yArtikelnummerLabel = 90; float xArtikelnummerBox = 195; float yArtikelnummerBox = 90;
-            float xBezeichnungLabel = 39; float yBezeichnungLabel = 165; float xBezeichnungBox = 195; float yBezeichnungerBox = 165;
-            float xMengeLabel = 39; float yMengeLabel = 200; float xMengeBox = 195; float yMengeBox = 200;
-            float xBelagLabel = 39; float yBelagLabel = 235; float xBelagBox = 195; float yBelagBox = 235;
-            float xProzessLabel = 350; float yProzessLabel = 235; float xProzessBox = 495; float yProzessBox = 235;
-            float xInfoAuflegen = 720; float yInfoAulegen = 60; float xDatenArtikel = 39; float yDatenArtikel = 295;
-            float xDurchmesser = 39; float yDurchmesser = 340; float xDurchmesserBox = 195; float yDurchmesserBox = 340;
-            float xRadiusVerguetung = 39; float yRadiusVerguetung = 375; float xRadiusVerguetungBox = 195; float yRadiusVerguetungBox = 375;
-            float xGnummer = 39; float yGnummer = 410; float xGnummerBox = 195; float yGnummerBox = 410;
-            float xDicke = 350; float yDicke = 305; float xDickeBox = 495; float yDickeBox = 305;
-            float xBrechwert = 350; float yBrechwert = 340; float xBrechwertBox = 495; float yBrechwertBox = 340;
-            float xRadiusRueckseite = 350; float yRadiusRueckseite = 375; float xRadiusRueckseiteBox = 495; float yRadiusRueckseiteBox = 375;
-            float xGlassorte = 350; float yGlassorte = 410; float xGlassorteBox = 495; float yGlassorteBox = 410;
-            float xZusatzInfo = 720; float yZusatzInfo = 430; float xVorbehandlung = 39; float yVorbehandlung = 465;
-            float xVorreinigen = 39; float yVorreinigen = 515; float xVorreinigenBox = 185; float yVorreinigenBox = 515;
-            float xHandreinigung = 350; float yHandreinigung = 515; float xHandreinigungBox = 495; float yHandreinigungBox = 515;
-            float xBearbeitung = 39; float yBearbeitung = 570; float xDatum = 120; float yDatum = 615;
-            float xName = 265; float yName = 615; float xStueck = 393; float yStueck = 615;
-            float xStueckGes = 475; float yStueckGes = 615; float xZeit = 598; float yZeit = 615;
-            float xDatumAktuell = 39; float yDatumAktuell = 753; float xDokument = 730; float yDokument = 753;
+            // ----- Positionen der einzelnen Beschriftungen / Werte (X, Y) -----
+            float xProjektNr = 39; float yProjektNr = 50;
+            float xAuftragsnummer = 350; float yAuftragsnummer = 55;
+            float xArtikelnummerLabel = 39; float yArtikelnummerLabel = 90;
+            float xArtikelnummerBox = 195; float yArtikelnummerBox = 90;
+            float xBezeichnungLabel = 39; float yBezeichnungLabel = 165;
+            float xBezeichnungBox = 195; float yBezeichnungerBox = 165;
+            float xMengeLabel = 39; float yMengeLabel = 200;
+            float xMengeBox = 195; float yMengeBox = 200;
+            float xBelagLabel = 39; float yBelagLabel = 235;
+            float xBelagBox = 195; float yBelagBox = 235;
+            float xProzessLabel = 350; float yProzessLabel = 235;
+            float xProzessBox = 495; float yProzessBox = 235;
+            float xInfoAuflegen = 720; float yInfoAulegen = 60;
+            float xDatenArtikel = 39; float yDatenArtikel = 295;
+            float xDurchmesser = 39; float yDurchmesser = 340;
+            float xDurchmesserBox = 195; float yDurchmesserBox = 340;
+            float xRadiusVerguetung = 39; float yRadiusVerguetung = 375;
+            float xRadiusVerguetungBox = 195; float yRadiusVerguetungBox = 375;
+            float xGnummer = 39; float yGnummer = 410;
+            float xGnummerBox = 195; float yGnummerBox = 410;
+            float xDicke = 350; float yDicke = 305;
+            float xDickeBox = 495; float yDickeBox = 305;
+            float xBrechwert = 350; float yBrechwert = 340;
+            float xBrechwertBox = 495; float yBrechwertBox = 340;
+            float xRadiusRueckseite = 350; float yRadiusRueckseite = 375;
+            float xRadiusRueckseiteBox = 495; float yRadiusRueckseiteBox = 375;
+            float xGlassorte = 350; float yGlassorte = 410;
+            float xGlassorteBox = 495; float yGlassorteBox = 410;
+            float xZusatzInfo = 720; float yZusatzInfo = 430;
+            float xVorbehandlung = 39; float yVorbehandlung = 465;
+            float xVorreinigen = 39; float yVorreinigen = 515;
+            float xVorreinigenBox = 185; float yVorreinigenBox = 515;
+            float xHandreinigung = 350; float yHandreinigung = 515;
+            float xHandreinigungBox = 495; float yHandreinigungBox = 515;
+            float xBearbeitung = 39; float yBearbeitung = 570;
+            float xDatum = 120; float yDatum = 615;
+            float xName = 265; float yName = 615;
+            float xStueck = 393; float yStueck = 615;
+            float xStueckGes = 475; float yStueckGes = 615;
+            float xZeit = 598; float yZeit = 615;
+            float xDatumAktuell = 39; float yDatumAktuell = 753;
+            float xDokument = 730; float yDokument = 753;
 
-            // Texte zeichnen
+            // DrawString(text, font, brush, x, y) malt einen Text auf die Druckseite.
+            // Brushes.Black/Blue/Red sind vordefinierte Pinsel mit fester Farbe.
             e.Graphics.DrawString(lblNrProjekt.Text, fontProjektNr, Brushes.DarkGreen, xProjektNr, yProjektNr);
             e.Graphics.DrawString(txtboxAuftragsnummer.Text, fontAuftragsnummer, Brushes.Black, xAuftragsnummer, yAuftragsnummer);
             e.Graphics.DrawString(lblArtikelnummer.Text, fontProjektNr, Brushes.Black, xArtikelnummerLabel, yArtikelnummerLabel);
@@ -254,29 +314,37 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             e.Graphics.DrawString(LblErstelltAm.Text, fonBezeichnungKlein, Brushes.Black, xDatumAktuell, yDatumAktuell);
             e.Graphics.DrawString(lblDokument.Text, fonBezeichnungKlein, Brushes.Black, xDokument, yDokument);
 
-            // Aufräumen
+            // ----- Aufräumen: Bitmaps freigeben + temporäre Datei löschen -----
+            // Dispose() gibt unmanaged Ressourcen (Speicher des Bildes) sofort frei.
             bmp.Dispose();
-            sharpenedBmp.Dispose(); // Freigabe der scharfen Bitmap
-
-            File.Delete(tempPngPath); // Temporäre Datei löschen
+            sharpenedBmp.Dispose();
+            File.Delete(tempPngPath);
         }
 
-        // Wenn auf den Button Drucken gedrückt wird
+        // -----------------------------------------------------------------------------------------------------------------
+        // Klick auf "Drucken":
+        //  - Texte für den Druck vorbereiten (Einheiten anhängen, Auftragsnummer merken)
+        //  - UI-Elemente ausblenden (damit nur das Druckbild erscheint)
+        //  - Druck-Dialog öffnen → bei OK drucken
+        //  - Anschließend Excel-Datei mit den Daten füllen + drucken
+        // -----------------------------------------------------------------------------------------------------------------
         private void BtnDrucken_Click_1(object sender, EventArgs e)
         {
-            // Setze die Texte für den Druck
-            //ComboboxArtikel.Text = "PR " + ComboboxArtikel.Text;
+            // Einheiten an Anzeigetexte anhängen.
             TxtboxMenge.Text = TxtboxMenge.Text + " Stk.";
             txtboxDurchmesser.Text = txtboxDurchmesser.Text + " mm";
             txtboxDicke.Text = txtboxDicke.Text + " mm";
+
+            // Auftragsnummer in Klassenvariable speichern (wird später für Excel gebraucht).
             Auftragsnummer = txtboxAuftragsnummer.Text.ToString();
 
-            // Elemente unsichtbar machen
+            // Alle UI-Elemente unsichtbar machen, damit das Drucken sauber verläuft.
             VisibleFalse();
 
-            // Fokus auf ein anderes Steuerelement setzen
+            // Fokus von allen Steuerelementen entfernen (kein Cursor-Strich auf dem Druck).
             this.ActiveControl = null;
 
+            // PrintDialog: zeigt das Standard-Druckerauswahl-Fenster.
             PrintDialog printDialog = new PrintDialog
             {
                 Document = printDocument
@@ -284,9 +352,12 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 
             if (printDialog.ShowDialog() == DialogResult.OK)
             {
+                // Druck starten → ruft im Hintergrund das PrintPage-Event auf.
                 printDocument.Print();
+
                 BtnClose.Visible = true;
-                // "Stk." aus der Menge-Textbox entfernen
+
+                // " Stk." wieder aus der Menge entfernen, falls sie nochmals editiert werden soll.
                 if (!string.IsNullOrEmpty(TxtboxMenge.Text) && TxtboxMenge.Text.Contains(" Stk."))
                 {
                     TxtboxMenge.Text = TxtboxMenge.Text.Replace(" Stk.", "");
@@ -294,18 +365,25 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
             else
             {
+                // Druck abgebrochen → Schließen + Drucken-Button wieder einblenden, dann zurück.
                 BtnClose.Visible = true;
                 BtnDrucken.Visible = true;
                 return;
             }
 
-            // Optional: Setze die Sichtbarkeit der Elemente zurück, wenn der Druck abgeschlossen ist
+            // Nach dem Drucken: alle UI-Elemente wieder sichtbar machen.
             VisibleTrue();
-            // Bild in die Zwischenablage kopieren
+
+            // Bild aus der oberen PictureBox in die Zwischenablage legen → wird später von Excel eingefügt.
             CopyImageToClipboard();
+
+            // Excel-Datei (Chargenbegleitblatt) mit den Daten füllen + drucken.
             CopyDataToExcel(@"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Chargenbegleitblatt.xlsx");
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Blendet alle relevanten UI-Steuerelemente aus (für den "Druckmodus" der Form).
+        // -----------------------------------------------------------------------------------------------------------------
         private void VisibleFalse()
         {
             lblNrProjekt.Visible = false;
@@ -354,6 +432,9 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             BtnClose.Visible = false;
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Setzt alle UI-Steuerelemente nach dem Drucken wieder sichtbar.
+        // -----------------------------------------------------------------------------------------------------------------
         private void VisibleTrue()
         {
             lblNrProjekt.Visible = true;
@@ -402,58 +483,67 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             BtnClose.Visible = true;
         }
 
-        // Druckformular beenden
+        // Schließt das Formular.
         private void BtnClose_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Wird aufgerufen, sobald in der Artikel-ComboBox ein Eintrag gewählt wird.
+        // Trennt den Anzeige-String "ARTNR / Seite: SEITE" und lädt die Detaildaten dazu.
+        // -----------------------------------------------------------------------------------------------------------------
         private void ComboboxArtikel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Artikelnummer und Seite extrahieren
             string selectedValue = ComboboxArtikel.SelectedItem.ToString();
+
+            // Split mit String-Separator: zerlegt am Trennzeichen " / Seite: ".
             string[] parts = selectedValue.Split(new[] { " / Seite: " }, StringSplitOptions.None);
 
-            // Überprüfen, ob beide Teile extrahiert werden konnten
             if (parts.Length == 2)
             {
-                string artikelNummer = parts[0]; // Artikelnummer extrahieren
-                string seite = parts[1]; // Seite extrahieren
+                string artikelNummer = parts[0];
+                string seite = parts[1];
 
-                // Zusätzliche Informationen basierend auf Artikelnummer und Seite laden
                 LoadAdditionalInfo(artikelNummer, seite);
-                lblZuzerstAuswaehlen.Visible = false;
+                lblZuzerstAuswaehlen.Visible = false; // Hinweis "Bitte zuerst auswählen" ausblenden
             }
             else
             {
-                // Fehlerbehandlung oder Logik für den Fall, dass die Extraktion fehlschlägt
                 MessageBox.Show("Bitte wählen Sie einen gültigen Artikel.");
             }
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Holt für die übergebene Artikelnummer + Seite alle Daten aus der DB
+        // und schreibt sie in die Felder + in die Klassenvariablen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void LoadAdditionalInfo(string artikelNummer, string seite)
         {
             sqlConnectionVerwaltung.Open();
+
+            // SELECT * holt alle Spalten – praktisch hier, weil wir viele Werte brauchen.
             string query = @"
                 SELECT *
                 FROM Serienlinsen
-                WHERE ARTNR = @artikelNummer AND SEITE = @seite"; // Seite in die Abfrage einbeziehen
+                WHERE ARTNR = @artikelNummer AND SEITE = @seite";
 
             try
             {
                 using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
-                    sqlCommand.Parameters.AddWithValue("@artikelNummer", artikelNummer); // Parameter für die Artikelnummer
-                    sqlCommand.Parameters.AddWithValue("@seite", seite); // Parameter für die Seite
+                    // Parameter sicher übergeben (SQL-Injection-Schutz).
+                    sqlCommand.Parameters.AddWithValue("@artikelNummer", artikelNummer);
+                    sqlCommand.Parameters.AddWithValue("@seite", seite);
 
                     using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            // Werte aus dem Reader lesen und in die entsprechenden TextBoxen/ComboBoxen setzen
+                            // ----- Felder in die UI-Steuerelemente schreiben -----
                             txtboxBezeichnung.Text = reader["BEZ"].ToString();
-                            txtboxBelag.Text = reader["VERGBELAG"].ToString(); // Beispiel für eine TextBox
-                            txtboxProzess.Text = reader["MATERIAL"].ToString(); // Beispiel für eine TextBox
+                            txtboxBelag.Text = reader["VERGBELAG"].ToString();
+                            txtboxProzess.Text = reader["MATERIAL"].ToString();
                             txtboxDurchmesser.Text = reader["DM"].ToString();
                             txtboxBrechwert.Text = reader["ND"].ToString();
                             txtboxRadiusVerguetung.Text = reader["Radius1"].ToString();
@@ -466,8 +556,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                             txtboxVorreinigung.Text = reader["Vorreinigung"].ToString();
                             txtboxHandreinigung.Text = reader["Handreinigung"].ToString();
 
-                            //Öffentlich zugänglich machen
-                            //Auftragsnummer = txtboxAuftragsnummer.Text.ToString();
+                            // ----- Werte zusätzlich in Klassenvariablen ablegen (für Druck/Excel-Export) -----
                             artikel = reader["ARTNR"].ToString();
                             seiteArtikel = reader["SEITE"].ToString();
                             bezeichnung = reader["BEZ"].ToString();
@@ -486,30 +575,30 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                             handreinigung = reader["Handreinigung"].ToString();
                             bildPfad = reader["Zeichnungspfad"].ToString();
 
-                            // Bildpfad aus der Datenbank abfragen
+                            // ----- Bilder anhand der Pfade aus der DB laden -----
                             string bildPfadInfoZeichnung = reader["Zeichnungspfad"].ToString();
                             string bildPfadInfoZeichnungBemerkung = reader["InfoZeichnung"].ToString();
-                            // Überprüfen, ob der Pfad gültig ist und das Bild existiert
+
+                            // Bild "Auflegen" – nur laden, wenn Pfad existiert und Datei vorhanden ist.
                             if (!string.IsNullOrEmpty(bildPfadInfoZeichnung) && System.IO.File.Exists(bildPfadInfoZeichnung))
                             {
-                                // Bild in der PictureBox anzeigen
                                 PictureboxAuflegenLinsenPrismen.Image = Image.FromFile(bildPfadInfoZeichnung);
                             }
                             else
                             {
-                                // Fehlerbehandlung, wenn das Bild nicht gefunden wird
                                 MessageBox.Show("Das Bild konnte nicht gefunden werden.");
-                                PictureboxAuflegenLinsenPrismen.Image = null; // Bild zurücksetzen
+                                PictureboxAuflegenLinsenPrismen.Image = null;
                             }
+
+                            // Bild "Zusatzinfo" – analog.
                             if (!string.IsNullOrEmpty(bildPfadInfoZeichnungBemerkung) && System.IO.File.Exists(bildPfadInfoZeichnungBemerkung))
                             {
                                 PictureboxZusatzinfo.Image = Image.FromFile(bildPfadInfoZeichnungBemerkung);
                             }
                             else
                             {
-                                // Fehlerbehandlung, wenn das Bild nicht gefunden wird
                                 MessageBox.Show("Das Bild InfoZeichnungBemerkungen konnte nicht gefunden werden.");
-                                PictureboxAuflegenLinsenPrismen.Image = null; // Bild zurücksetzen
+                                PictureboxAuflegenLinsenPrismen.Image = null; // (im Original wird hier dieselbe PB zurückgesetzt)
                             }
                         }
                     }
@@ -528,93 +617,101 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-        // Funktion um die felder zu leeren wenn eine weiter seite eingegeben werden soll
+        // -----------------------------------------------------------------------------------------------------------------
+        // Setzt für ausgewählte Eingabefelder graue Beispiel-Texte (Platzhalter / "Wasserzeichen").
+        // -----------------------------------------------------------------------------------------------------------------
         private void SetPlaceholders()
         {
             SetPlaceholder(txtboxAuftragsnummer, "XXXXXXXXXXX");
         }
 
-        // Waserzeichen setzten
+        // -----------------------------------------------------------------------------------------------------------------
+        // Generischer Helfer:
+        // - schreibt graunen Beispieltext in eine TextBox
+        // - beim Hineinklicken (GotFocus) wird er gelöscht
+        // - beim Verlassen leerer Box (LostFocus) wird er wieder gesetzt
+        // -----------------------------------------------------------------------------------------------------------------
         private void SetPlaceholder(TextBox textBox, string placeholderText)
         {
-            // Setzt die Textfarbe auf Grau und zeigt den Platzhaltertext an
             textBox.ForeColor = Color.Gray;
             textBox.Text = placeholderText;
 
-            // Ereignis-Handler für den GotFocus (wenn das Textfeld den Fokus erhält)
+            // Lambda-Ausdruck "(sender, e) => { ... }" = anonyme Methode, die wir an das Event hängen.
             textBox.GotFocus += (sender, e) =>
             {
-                // Überprüft, ob der aktuelle Text der Platzhalter ist
                 if (textBox.Text == placeholderText)
                 {
-                    // Löscht den Platzhaltertext und setzt die Textfarbe auf die Standardfarbe
                     textBox.Text = "";
-                    textBox.ForeColor = SystemColors.WindowText;
+                    textBox.ForeColor = SystemColors.WindowText; // schwarze Standardfarbe
                 }
             };
 
-            // Ereignis-Handler für den LostFocus (wenn das Textfeld den Fokus verliert)
             textBox.LostFocus += (sender, e) =>
             {
-                // Überprüft, ob das Textfeld leer ist
                 if (string.IsNullOrEmpty(textBox.Text))
                 {
-                    // Setzt den Platzhaltertext zurück und die Textfarbe auf Grau
                     textBox.Text = placeholderText;
                     textBox.ForeColor = Color.Gray;
                 }
             };
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Bildschärfung mit einem 3x3-Faltungsfilter (Kernel).
+        // Pixel für Pixel werden die Nachbarn gewichtet zusammengezählt → schärferes Ergebnis.
+        // ACHTUNG: GetPixel/SetPixel ist langsam, aber für gelegentliche Drucke akzeptabel.
+        // -----------------------------------------------------------------------------------------------------------------
         private Bitmap SharpenImage(Bitmap image)
         {
-            // Erstellt eine neue Bitmap mit der gleichen Größe wie das Originalbild
             Bitmap sharpenedImage = new Bitmap(image.Width, image.Height);
 
-            // Definiert einen milderen Schärfungsfilter mit einem 3x3-Kernel
+            // Schärfungs-Kernel (3x3). Mitte = 1,8 (verstärkt sich selbst), Nachbarn = -0,2 (ziehen ab).
             float[,] kernel = new float[,]
             {
-                { 0, -0.2f, 0 },
+                { 0,    -0.2f,  0    },
                 { -0.2f, 1.8f, -0.2f },
-                { 0, -0.2f, 0 }
+                { 0,    -0.2f,  0    }
             };
 
-            // Wendet den Schärfungsfilter auf jedes Pixel des Bildes an (ausgenommen Randpixel)
+            // Über jedes Pixel laufen (außer Randpixel, die haben keine vollen Nachbarn).
             for (int x = 1; x < image.Width - 1; x++)
             {
                 for (int y = 1; y < image.Height - 1; y++)
                 {
-                    // Initialisiert die Variablen für die RGB-Kanäle
                     float r = 0, g = 0, b = 0;
 
-                    // Schleife über die Nachbarpixel zur Anwendung des Schärfungsfilters
+                    // 3x3-Nachbarschaft durchlaufen.
                     for (int i = -1; i <= 1; i++)
                     {
                         for (int j = -1; j <= 1; j++)
                         {
-                            // Holt den Farbwert des Nachbarpixels
                             Color pixel = image.GetPixel(x + i, y + j);
-                            // Wendet den Kernelwert auf die RGB-Kanäle an
+
+                            // Pro Farbkanal mit dem Kernel-Gewicht multiplizieren und aufsummieren.
                             r += pixel.R * kernel[i + 1, j + 1];
                             g += pixel.G * kernel[i + 1, j + 1];
                             b += pixel.B * kernel[i + 1, j + 1];
                         }
                     }
 
-                    // Normalisiert die RGB-Werte, um sicherzustellen, dass sie im Bereich 0-255 liegen
+                    // Werte in den gültigen Farbbereich [0..255] zwingen.
                     r = Math.Max(0, Math.Min(255, r));
                     g = Math.Max(0, Math.Min(255, g));
                     b = Math.Max(0, Math.Min(255, b));
 
-                    // Setzt den neuen Farbwert in der geschärften Bitmap
+                    // Neues Pixel setzen.
                     Color newColor = Color.FromArgb((int)r, (int)g, (int)b);
                     sharpenedImage.SetPixel(x, y, newColor);
                 }
             }
-            // Gibt das geschärfte Bild zurück
+
             return sharpenedImage;
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Kopiert das Bild aus PictureboxAuflegenLinsenPrismen in die System-Zwischenablage.
+        // (Wird später in Excel als Bild eingefügt.)
+        // -----------------------------------------------------------------------------------------------------------------
         private void CopyImageToClipboard()
         {
             if (PictureboxAuflegenLinsenPrismen.Image != null)
@@ -627,27 +724,33 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-        // Funktion zum Kopieren der Daten in Excel
+        // -----------------------------------------------------------------------------------------------------------------
+        // Öffnet die Excel-Datei "Chargenbegleitblatt", trägt die Werte in vorgegebene Zellen ein,
+        // fügt das Bild aus der Zwischenablage in zwei Zellen ein, druckt die erste Seite und schließt Excel sauber.
+        // -----------------------------------------------------------------------------------------------------------------
         public void CopyDataToExcel(string filePath)
         {
-            // Zellenzuweisungen
+            // Dictionary "Zelle -> Wert": dadurch kompakter Code und einfache Erweiterbarkeit.
             var cellAssignments = new System.Collections.Generic.Dictionary<string, string>
             {
-                { "H1", Auftragsnummer },{"H24", Auftragsnummer},
-                { "D2", artikel }, { "D25", artikel },
-                { "F2", bezeichnung }, { "F25", bezeichnung },
-                { "D3", seiteArtikel }, { "D26", seiteArtikel },
-                { "C8", belag }, { "C31", belag },
-                { "E8", prozess }, { "E31", prozess },
-                { "G11", radiusVerguetung }, { "G34", radiusVerguetung },
-                { "G5", radiusRueckseite }, { "G28", radiusRueckseite },
-                { "I14", gNummer }, { "I37", gNummer },
-                { "I15", glassorte }, { "I38", glassorte },
-                { "I16", durchmesser + " mm" }, { "I39", durchmesser + " mm" },
-                { "I17", dicke + " mm" }, { "I40", dicke + " mm" },
-                { "B15", bemerkung }, {"B38", bemerkung },
+                { "H1", Auftragsnummer },        { "H24", Auftragsnummer },
+                { "D2", artikel },               { "D25", artikel },
+                { "F2", bezeichnung },           { "F25", bezeichnung },
+                { "D3", seiteArtikel },          { "D26", seiteArtikel },
+                { "C8", belag },                 { "C31", belag },
+                { "E8", prozess },               { "E31", prozess },
+                { "G11", radiusVerguetung },     { "G34", radiusVerguetung },
+                { "G5", radiusRueckseite },      { "G28", radiusRueckseite },
+                { "I14", gNummer },              { "I37", gNummer },
+                { "I15", glassorte },            { "I38", glassorte },
+                { "I16", durchmesser + " mm" },  { "I39", durchmesser + " mm" },
+                { "I17", dicke + " mm" },        { "I40", dicke + " mm" },
+                { "B15", bemerkung },            { "B38", bemerkung },
             };
 
+            // COM-Interop-Objekte für Excel.
+            // Diese MÜSSEN am Ende mit Marshal.ReleaseComObject freigegeben werden,
+            // sonst bleibt EXCEL.EXE im Hintergrund laufen.
             Excel.Application excelApp = new Excel.Application();
             Excel.Workbook workbook = null;
             Excel.Worksheet worksheet = null;
@@ -662,47 +765,49 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                     return;
                 }
 
+                // Vorlage öffnen.
                 workbook = excelApp.Workbooks.Open(filePath);
                 excelApp.Visible = true;
+
+                // Erstes Tabellenblatt holen (Index 1, NICHT 0!).
                 worksheet = (Excel.Worksheet)workbook.Sheets[1];
 
+                // Alle Werte aus dem Dictionary in die Zellen schreiben.
                 foreach (var assignment in cellAssignments)
                 {
                     Console.WriteLine($"Schreibe in Zelle {assignment.Key}: {assignment.Value}");
                     worksheet.Range[assignment.Key].Value = assignment.Value;
                 }
 
-                // Bild aus der Zwischenablage einfügen
                 Console.WriteLine("Füge Bild aus der Zwischenablage ein...");
 
-                // Füge das Bild in die Zelle G6 ein
-                Excel.Range targetCell = worksheet.Cells[6, 7]; // Zelle G6
-                targetCell.Select(); // Wähle die Zielzelle aus
-                excelApp.ActiveSheet.Paste(); // Füge das Bild ein
+                // ----- Bild in Zelle G6 einfügen -----
+                Excel.Range targetCell = worksheet.Cells[6, 7]; // Reihe 6, Spalte 7 = G6
+                targetCell.Select();
+                excelApp.ActiveSheet.Paste();
 
-                // Größe des Bildes anpassen
-                var picture = worksheet.Shapes.Item(worksheet.Shapes.Count); // Das zuletzt eingefügte Bild
-                picture.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue; // Seitenverhältnis beibehalten
-                picture.Width = 140; // Hier die Breite anpassen
-                picture.Height = 90; // Hier die Höhe anpassen
+                // Letztes (= gerade eingefügtes) Shape holen und Größe setzen.
+                var picture = worksheet.Shapes.Item(worksheet.Shapes.Count);
+                picture.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue; // Seitenverhältnis halten
+                picture.Width = 140;
+                picture.Height = 90;
 
-                // Füge das Bild in die Zelle G29 ein
-                Excel.Range targetCell1 = worksheet.Cells[29, 7]; // Zelle G29
-                targetCell1.Select(); // Wähle die Zielzelle aus
-                excelApp.ActiveSheet.Paste(); // Füge das Bild ein
+                // ----- Dasselbe Bild zusätzlich in Zelle G29 einfügen -----
+                Excel.Range targetCell1 = worksheet.Cells[29, 7]; // G29
+                targetCell1.Select();
+                excelApp.ActiveSheet.Paste();
 
-                // Größe des zweiten Bildes anpassen
-                var picture1 = worksheet.Shapes.Item(worksheet.Shapes.Count); // Das zuletzt eingefügte Bild
-                picture1.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue; // Seitenverhältnis beibehalten
-                picture1.Width = 140; // Hier die Breite anpassen
-                picture1.Height = 90; // Hier die Höhe anpassen
+                var picture1 = worksheet.Shapes.Item(worksheet.Shapes.Count);
+                picture1.LockAspectRatio = Microsoft.Office.Core.MsoTriState.msoTrue;
+                picture1.Width = 140;
+                picture1.Height = 90;
 
-                // Drucken der ersten Seite
+                // Erste Seite drucken (von Seite 1 bis Seite 1).
                 Console.WriteLine("Drucke die erste Seite der Excel-Datei...");
-                worksheet.PrintOut(From: 1, To: 1); // Drucken nur der ersten Seite
+                worksheet.PrintOut(From: 1, To: 1);
 
-                // Optional: Warte einige Sekunden, um sicherzustellen, dass der Druckauftrag verarbeitet wird
-                System.Threading.Thread.Sleep(4000); // Pause für 2 Sekunden
+                // Kurz warten, damit der Druckauftrag intern verarbeitet werden kann.
+                System.Threading.Thread.Sleep(4000);
             }
             catch (Exception ex)
             {
@@ -710,19 +815,22 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
             finally
             {
-                try // Versuche, die Excel-Objekte zu schließen und freizugeben
+                // ----- Excel-Objekte sauber schließen und freigeben -----
+                try
                 {
                     if (workbook != null)
                     {
-                        workbook.Close(false); // Schließe die Arbeitsmappe ohne zu speichern
+                        workbook.Close(false); // false = Änderungen NICHT speichern
                         Marshal.ReleaseComObject(workbook);
+
+                        // Garbage Collector zwingen, Speicher freizugeben.
                         GC.Collect();
                         GC.WaitForPendingFinalizers();
                     }
 
                     if (excelApp != null)
                     {
-                        excelApp.Quit(); // Schließe die Excel-Anwendung
+                        excelApp.Quit();
                         Marshal.ReleaseComObject(excelApp);
                         GC.Collect();
                         GC.WaitForPendingFinalizers();
@@ -734,6 +842,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 }
                 finally
                 {
+                    // Referenzen entfernen, damit die GC sie aufräumen kann.
                     worksheet = null;
                     workbook = null;
                     excelApp = null;
@@ -741,9 +850,12 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                 }
+
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }
+
+            // Sicherheitshalber nochmal aufräumen.
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }

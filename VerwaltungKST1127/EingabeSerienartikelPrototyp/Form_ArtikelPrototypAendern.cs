@@ -1,88 +1,108 @@
-﻿using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
-using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
-using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
-using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
-using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
-using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
+﻿// ===================================================================================================
+// "using"-Anweisungen importieren fertige Funktionen aus den .NET-Bibliotheken,
+// damit wir z. B. statt "System.Windows.Forms.Form" einfach "Form" schreiben können.
+// ===================================================================================================
+using System;                                  // Basis-Typen (string, int, DateTime, EventArgs, Exception ...)
+using System.Data;                             // DataTable, ConnectionState, SqlDbType, ...
+using System.Data.SqlClient;                   // SQL-Server-Zugriff (SqlConnection, SqlCommand, SqlDataReader)
+using System.Drawing;                          // Image, Color, Font (für Bilder/Grafik)
+using System.Linq;                             // LINQ-Methoden (Select, Take, Last, ToArray ...)
+using System.Windows.Forms;                    // Windows-Forms (Form, ComboBox, MessageBox, OpenFileDialog ...)
 
+// "namespace" gruppiert Klassen logisch (wie ein Ordner) und vermeidet Namenskonflikte.
 namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
 {
+    // public partial class ... : Form
+    //   public  = von außen sichtbar
+    //   partial = der Klassen-Code darf auf mehrere Dateien verteilt sein (z. B. ...Designer.cs)
+    //   : Form  = erbt von "Form" → diese Klasse IST ein Windows-Fenster
     public partial class Form_ArtikelPrototypAendern : Form
     {
-        // Verbindungszeichenfolgen für die SQL Server-Datenbanken
-        private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
+        // -----------------------------------------------------------------------------------------------------------------
+        // Felder ("Variablen der Klasse"). private = nur innerhalb dieser Klasse sichtbar.
+        // readonly = darf nur einmal (hier oder im Konstruktor) gesetzt werden.
+        // -----------------------------------------------------------------------------------------------------------------
 
-        private readonly SqlConnection sqlConnectionShuttle = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True");
+        // Verbindung zur Verwaltungs-Datenbank.
+        private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(
+            @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
 
+        // Zweite Verbindung zur Shuttle-Datenbank (wird angelegt, falls später benötigt).
+        private readonly SqlConnection sqlConnectionShuttle = new SqlConnection(
+            @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True");
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Konstruktor: läuft beim "new Form_ArtikelPrototypAendern(artikelNr, seite)" automatisch.
+        // Bekommt eine Artikelnummer + Seite, um die ComboBox direkt vorzubelegen.
+        // -----------------------------------------------------------------------------------------------------------------
         public Form_ArtikelPrototypAendern(string artikelNr, string seite)
         {
-            InitializeComponent();
-            FillComboBoxArtikel();
+            InitializeComponent();          // erzeugt alle UI-Steuerelemente (definiert in der Designer-Datei)
+            FillComboBoxArtikel();          // ComboBox mit allen Artikel-Seite-Kombinationen befüllen
+
+            // Event-Handler ans ComboBox-Auswahlereignis hängen.
             ComboboxAuswahlArtikel.SelectedIndexChanged += ComboboxAuswahlArtikel_SelectedIndexChanged;
 
-            // Setze die Artikelnummer und die Seite in der ComboBox wenn in der Auftragsverwaltung ein Artikel ausgewählt wurde
+            // Anzeigeformat der ComboBox-Einträge ist "Artikel - Seite" → den passenden Eintrag zusammenbauen.
             string artikelSeite = $"{artikelNr} - {seite}";
 
-            // Überprüfen, ob das Element bereits in der ComboBox vorhanden ist
+            // Index dieses Eintrags in der Liste suchen (-1 = nicht gefunden).
             int index = ComboboxAuswahlArtikel.Items.IndexOf(artikelSeite);
 
             if (index != -1)
             {
-                // Wenn das Element vorhanden ist, wähle es aus
+                // Wenn der Eintrag existiert, ihn auswählen → das löst SelectedIndexChanged automatisch aus.
                 ComboboxAuswahlArtikel.SelectedIndex = index;
             }
         }
 
-        // Methode zum Füllen der ComboBox mit Artikelnummern und Seiteninformationen
+        // -----------------------------------------------------------------------------------------------------------------
+        // Holt aus der Tabelle "Serienlinsen" alle Artikel + Seiten und füllt die ComboBox damit.
+        // -----------------------------------------------------------------------------------------------------------------
         private void FillComboBoxArtikel()
         {
-            // Öffnen der Datenbankverbindung
             sqlConnectionVerwaltung.Open();
 
-            // SQL-Abfrage, um die eindeutigen Artikelnummern (ARTNR) und Seiteninformationen (SEITE) aus der Tabelle 'Serienlinsen' abzurufen
+            // SQL: DISTINCT = Duplikate weglassen, ORDER BY = aufsteigend nach Artikelnummer sortieren.
             string query = @"
         SELECT DISTINCT ARTNR, SEITE
         FROM Serienlinsen
-        ORDER BY ARTNR ASC"; // Sortiert die Ergebnisse aufsteigend nach ARTNR
+        ORDER BY ARTNR ASC";
 
             try
             {
-                // Erstellen des SqlCommand-Objekts mit der Abfrage und der geöffneten Verbindung
+                // "using" sorgt dafür, dass das SqlCommand am Ende automatisch freigegeben wird.
                 using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
-                    // Ausführen der Abfrage und Abrufen der Ergebnisse mit einem SqlDataReader
+                    // Reader liest die Ergebnisse Zeile für Zeile.
                     using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
-                        // Leeren der ComboBox, um sicherzustellen, dass keine doppelten Einträge vorhanden sind
+                        // ComboBox vorher leeren → keine Doppeleinträge bei erneutem Laden.
                         ComboboxAuswahlArtikel.Items.Clear();
 
-                        // Durchlaufen der Ergebnisse aus der Abfrage
                         while (reader.Read())
                         {
-                            // Abrufen der Werte für Artikelnummer und Seite aus dem aktuellen Datensatz
                             string artikelNummerValue = reader["ARTNR"].ToString();
                             string seiteValue = reader["SEITE"].ToString();
 
-                            // Zusammenfügen der Artikelnummer und der Seite zu einem Anzeigeformat, z.B. "12345 - links"
+                            // Anzeigeformat: "12-2044 - 1"
                             string displayValue = $"{artikelNummerValue} - {seiteValue}";
 
-                            // Hinzufügen des Anzeigeformats zur ComboBox
                             ComboboxAuswahlArtikel.Items.Add(displayValue);
                         }
                     }
                 }
 
-                // Sicherstellen, dass die ComboBox nicht automatisch sortiert wird, da dies durch die SQL-Abfrage gesteuert wird
+                // Sorted = false → die ComboBox sortiert nicht selbst, wir vertrauen der SQL-Sortierung.
                 ComboboxAuswahlArtikel.Sorted = false;
             }
             catch (Exception ex)
             {
-                // Fehlerbehandlung: Zeigt eine Meldung an, falls beim Laden der Artikel ein Fehler auftritt
                 MessageBox.Show("Fehler beim Laden der Artikel: " + ex.Message);
             }
             finally
             {
-                // Überprüfen, ob die Datenbankverbindung noch geöffnet ist, und sie bei Bedarf schließen
+                // Verbindung in jedem Fall (auch im Fehlerfall) schließen.
                 if (sqlConnectionVerwaltung.State == System.Data.ConnectionState.Open)
                 {
                     sqlConnectionVerwaltung.Close();
@@ -90,27 +110,38 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
-        // Event-Handler für das Auswählen eines Artikels in der ComboBox
+        // -----------------------------------------------------------------------------------------------------------------
+        // Wird aufgerufen, sobald in der ComboBox ein Eintrag gewählt wird.
+        // Zerlegt den Anzeige-String "Artikel-Teil1-Teil2 - Seite" in Artikelnummer + Seite und lädt die Details.
+        // -----------------------------------------------------------------------------------------------------------------
         private void ComboboxAuswahlArtikel_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ComboboxAuswahlArtikel.SelectedItem != null)
             {
                 string selectedValue = ComboboxAuswahlArtikel.SelectedItem.ToString();
+
+                // Beispiel: "12-2044 - 1" → Split('-') liefert ["12", "2044 ", " 1"]
+                // .Select(s => s.Trim()) entfernt Leerzeichen → ["12", "2044", "1"]
                 string[] values = selectedValue.Split('-').Select(s => s.Trim()).ToArray();
 
-                if (values.Length >= 3) // Überprüfen, ob wir mindestens 3 Teile haben
+                // Mindestens 3 Teile? (Artikel kann selbst Bindestriche enthalten, z. B. "12-2044", plus die Seite hinten.)
+                if (values.Length >= 3)
                 {
-                    // Die letzten zwei Teile sind die Seite und der Rest die Artikelnummer
-                    string artikelnummer = string.Join("-", values.Take(values.Length - 1)); // Alle bis auf das letzte Element als Artikelnummer
-                    string seite = values.Last(); // Letztes Element als Seite
+                    // Alle Teile bis auf den letzten = Artikelnummer (mit "-" zusammenfügen).
+                    // Take(n)  → erste n Elemente einer Sequenz.
+                    string artikelnummer = string.Join("-", values.Take(values.Length - 1));
 
-                    // Lade die Artikel-Details
+                    // Last() = letztes Element = Seite.
+                    string seite = values.Last();
+
                     LadeArtikelDetails(artikelnummer, seite);
                 }
             }
         }
 
-        // Lade die Artikel-Details aus der Datenbank
+        // -----------------------------------------------------------------------------------------------------------------
+        // Lädt für (Artikelnummer, Seite) die Artikeldetails aus der DB und füllt damit die UI-Felder.
+        // -----------------------------------------------------------------------------------------------------------------
         private void LadeArtikelDetails(string artikelnummer, string seite)
         {
             string query = @"
@@ -121,27 +152,27 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 FROM Serienlinsen
                 WHERE ARTNR = @ARTNR AND SEITE = @SEITE";
 
-            // Verwende einen using-Block für die Verbindung, um sicherzustellen, dass die Ressourcen korrekt freigegeben werden
-            using (SqlConnection sqlConnection = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False"))
+            // Eigene Verbindung lokal aufmachen (nicht das Klassenfeld) – sauberer Lebenszyklus pro Aufruf.
+            using (SqlConnection sqlConnection = new SqlConnection(
+                @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False"))
             {
                 try
                 {
-                    // Öffne die Verbindung
                     sqlConnection.Open();
 
-                    // Verwende einen using-Block für das SqlCommand-Objekt
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection))
                     {
-                        // Füge Parameter mit spezifischen Typen hinzu, um die Abfrage effizienter zu gestalten
+                        // Parameter mit explizitem Typ → schützt vor SQL-Injection und ist performanter als AddWithValue.
                         sqlCommand.Parameters.Add(new SqlParameter("@ARTNR", SqlDbType.NVarChar) { Value = artikelnummer });
                         sqlCommand.Parameters.Add(new SqlParameter("@SEITE", SqlDbType.NVarChar) { Value = seite });
 
-                        // Verwende einen SqlDataReader in einem using-Block, um die Daten sicher zu lesen
                         using (SqlDataReader reader = sqlCommand.ExecuteReader())
                         {
+                            // Wir erwarten höchstens eine Zeile → einfacher if statt while.
                             if (reader.Read())
                             {
-                                // Fülle die Textfelder mit den geladenen Daten oder setze sie auf Standardwerte
+                                // Felder mit den Werten aus der DB befüllen.
+                                // .ToString() funktioniert auch für DBNull → liefert dann einen leeren String.
                                 TxtboxArtikelnummer.Text = reader["ARTNR"].ToString();
                                 TxtboxBezeichnung.Text = reader["BEZ"].ToString();
                                 ComboboxStatus.Text = reader["Status"].ToString();
@@ -163,9 +194,14 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                                 TxtboxStkSegment.Text = reader["STK_SEGM"].ToString();
                                 TxtboxStkCharge.Text = reader["STK_CHARGE"].ToString();
                                 TxtboxZeitProzess.Text = reader["CHARGENZEIT"].ToString();
-                                // Überprüfen auf Nullwerte und setze auf einen leeren String, falls notwendig
+
+                                // "as string" = sicherer Cast – liefert null statt einer Exception, wenn der Cast nicht passt.
+                                // "?? string.Empty" = Fallback: wenn null, dann leerer String.
                                 TxtboxRing.Text = reader["RING"] as string ?? string.Empty;
+
+                                // "as DateTime?" = nullable DateTime; "?? DateTime.Now" = wenn kein Datum, nimm aktuelles.
                                 DateTimePickerGeaendertLinsePrisma.Value = reader["Anmerkungsdatum"] as DateTime? ?? DateTime.Now;
+
                                 RichtxtboxBemerkung.Text = reader["BEMERKUNG"] as string ?? string.Empty;
                                 ComboboxVorreinigen.Text = reader["Vorreinigung"] as string ?? string.Empty;
                                 ComboboxUCM497.Text = reader["HFE_Anlage"] as string ?? string.Empty;
@@ -175,7 +211,8 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                                 LblPfadAuflegenLinsenPrismen.Text = reader["Zeichnungspfad"] as string ?? string.Empty;
                                 LblPfadZusatzinfo.Text = reader["InfoZeichnung"] as string ?? string.Empty;
                                 RichtxtboxZusatzinfo.Text = reader["InfoZeichnung_Bemerkungen"] as string ?? string.Empty;
-                                // Bilder in PictureBoxen laden
+
+                                // Bilder anhand der gerade gesetzten Pfad-Labels nachladen.
                                 LoadImages();
                             }
                         }
@@ -183,18 +220,20 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 }
                 catch (Exception ex)
                 {
-                    // Fehlerbehandlung mit einer detaillierten Fehlermeldung
                     MessageBox.Show("Fehler beim Abrufen der Artikel-Details: " + ex.Message);
                 }
-            }
+            } // Verbindung wird hier automatisch geschlossen
         }
 
-        // Methode zum Laden der Bilder in die PictureBoxen
+        // -----------------------------------------------------------------------------------------------------------------
+        // Lädt die zwei Bilder aus den im Label gespeicherten Pfaden.
+        // Wenn Datei nicht existiert: Hinweis + Bild = null.
+        // -----------------------------------------------------------------------------------------------------------------
         private void LoadImages()
         {
             try
             {
-                // Bild für die erste PictureBox laden
+                // Bild 1: Auflegeinformation
                 string pathAuflegen = LblPfadAuflegenLinsenPrismen.Text;
                 if (System.IO.File.Exists(pathAuflegen))
                 {
@@ -203,10 +242,10 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 else
                 {
                     MessageBox.Show("Das Bild für Auflegen Linsen Prismen existiert nicht: " + pathAuflegen);
-                    PictureboxAuflegenLinsenPrismen.Image = null; // Setze das Bild auf null, wenn die Datei nicht existiert
+                    PictureboxAuflegenLinsenPrismen.Image = null;
                 }
 
-                // Bild für die zweite PictureBox laden
+                // Bild 2: Zusatzinfo
                 string pathZusatzinfo = LblPfadZusatzinfo.Text;
                 if (System.IO.File.Exists(pathZusatzinfo))
                 {
@@ -215,7 +254,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 else
                 {
                     MessageBox.Show("Das Bild für Zusatzinfo existiert nicht: " + pathZusatzinfo);
-                    PictureboxZusatzinfo.Image = null; // Setze das Bild auf null, wenn die Datei nicht existiert
+                    PictureboxZusatzinfo.Image = null;
                 }
             }
             catch (Exception ex)
@@ -224,34 +263,39 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Doppelklick auf "AuflegenLinsenPrismen"-PictureBox → Datei-Dialog öffnen, Bild laden, Pfad-Label aktualisieren.
+        // -----------------------------------------------------------------------------------------------------------------
         private void PictureboxAuflegenLinsenPrismen_DoubleClick_1(object sender, EventArgs e)
         {
-            // Erstelle und konfiguriere den OpenFileDialog
+            // OpenFileDialog wird in "using" gepackt → wird sicher freigegeben.
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
+                // Startverzeichnis und Filteroptionen vorbelegen.
                 openFileDialog.InitialDirectory = @"P:\TEDuTOZ\Auftragsverwaltung Daten\Zeichnung";
                 openFileDialog.Filter = "Alle Dateien (*.*)|*.*";
                 openFileDialog.FilterIndex = 1;
                 openFileDialog.RestoreDirectory = true;
 
-                // Zeige den Dialog an und überprüfe, ob der Benutzer eine Datei ausgewählt hat
+                // ShowDialog() blockiert, bis der Benutzer OK oder Abbrechen klickt.
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    // Hole den ausgewählten Dateipfad
                     string selectedFilePath = openFileDialog.FileName;
 
-                    // Lade das Bild in die PictureBox
+                    // Bild aus der gewählten Datei laden und im PictureBox anzeigen.
                     PictureboxAuflegenLinsenPrismen.Image = Image.FromFile(selectedFilePath);
 
-                    // Aktualisiere das Label mit dem vollständigen Pfad
+                    // Pfad im Label merken (wird später beim Update in die DB geschrieben).
                     LblPfadAuflegenLinsenPrismen.Text = selectedFilePath;
                 }
             }
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Doppelklick auf "Zusatzinfo"-PictureBox → analog zu oben.
+        // -----------------------------------------------------------------------------------------------------------------
         private void PictureboxZusatzinfo_DoubleClick_1(object sender, EventArgs e)
         {
-            // Erstelle und konfiguriere den OpenFileDialog
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.InitialDirectory = @"P:\TEDuTOZ\Auftragsverwaltung Daten\Zeichnung\InfoZeichnung";
@@ -259,33 +303,35 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 openFileDialog.FilterIndex = 1;
                 openFileDialog.RestoreDirectory = true;
 
-                // Zeige den Dialog an und überprüfe, ob der Benutzer eine Datei ausgewählt hat
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    // Hole den ausgewählten Dateipfad
                     string selectedFilePath = openFileDialog.FileName;
-
-                    // Lade das Bild in die PictureBox
                     PictureboxZusatzinfo.Image = Image.FromFile(selectedFilePath);
-
-                    // Aktualisiere das Label mit dem vollständigen Pfad
                     LblPfadZusatzinfo.Text = selectedFilePath;
                 }
             }
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Schreibt alle Felder als UPDATE in die Tabelle "Serienlinsen".
+        // (Sehr viele Parameter – pro Spalte einer.)
+        // -----------------------------------------------------------------------------------------------------------------
         private void AktualisiereDatenInDatenbank(string artikelnummer, string bezeichnung, string status, string gruppenname, string zukauf, string flaeche
-    , string gNummer, string glassorte, decimal durchmesser, string durchmesserWaschen, decimal freibereich, decimal dicke, string seite, decimal brechwert
-    , string radiusVerguetung, string radiusRueckseite, string belagVerguetung, string prozess, string belagRueckseite, string ring, string stkSegment
-    , string stkGesamt, decimal zeitProzess, DateTime eaenderungsDatum, string bemerkungArtikel, string vorreinigen, string ucm, string aceton, string bemerkungWaschen
-    , string revoNummer, string pfadZeichnungAuflegen, string pfadZusatzinfo, string textZusatzinfo)
+            , string gNummer, string glassorte, decimal durchmesser, string durchmesserWaschen, decimal freibereich, decimal dicke, string seite, decimal brechwert
+            , string radiusVerguetung, string radiusRueckseite, string belagVerguetung, string prozess, string belagRueckseite, string ring, string stkSegment
+            , string stkGesamt, decimal zeitProzess, DateTime eaenderungsDatum, string bemerkungArtikel, string vorreinigen, string ucm, string aceton, string bemerkungWaschen
+            , string revoNummer, string pfadZeichnungAuflegen, string pfadZusatzinfo, string textZusatzinfo)
         {
             try
             {
-                using (SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False"))
+                // Eigene lokale Verbindung pro Aufruf.
+                using (SqlConnection sqlConnectionVerwaltung = new SqlConnection(
+                    @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False"))
                 {
                     sqlConnectionVerwaltung.Open();
 
+                    // UPDATE: setzt alle aufgelisteten Spalten gleichzeitig.
+                    // [BEZ] in eckigen Klammern → Schutz für Spaltennamen mit Sonderzeichen oder reservierten Wörtern.
                     string query = @"
             UPDATE Serienlinsen
             SET
@@ -322,11 +368,11 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                 [Zeichnungspfad] = @Zeichnungspfad,
                 [InfoZeichnung] = @InfoZeichnung,
                 [InfoZeichnung_Bemerkungen] = @InfoZeichnung_Bemerkungen
-            WHERE [ARTNR] = @ARTNR AND [SEITE] = @SEITE"; // Update-Kriterium mit der Seite ergänzt
+            WHERE [ARTNR] = @ARTNR AND [SEITE] = @SEITE";
 
                     using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnectionVerwaltung))
                     {
-                        // Parameter hinzufügen
+                        // Alle Parameter befüllen (AddWithValue ist bequem, aber Typ wird automatisch erraten).
                         sqlCommand.Parameters.AddWithValue("@ARTNR", artikelnummer);
                         sqlCommand.Parameters.AddWithValue("@BEZ", bezeichnung);
                         sqlCommand.Parameters.AddWithValue("@Status", status);
@@ -339,7 +385,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                         sqlCommand.Parameters.AddWithValue("@Waschen_DM", durchmesserWaschen);
                         sqlCommand.Parameters.AddWithValue("@FREI", freibereich);
                         sqlCommand.Parameters.AddWithValue("@DICKE", dicke);
-                        sqlCommand.Parameters.AddWithValue("@SEITE", seite); // Seite als Parameter hinzugefügt
+                        sqlCommand.Parameters.AddWithValue("@SEITE", seite);
                         sqlCommand.Parameters.AddWithValue("@ND", brechwert);
                         sqlCommand.Parameters.AddWithValue("@Radius1", radiusVerguetung);
                         sqlCommand.Parameters.AddWithValue("@Radius2", radiusRueckseite);
@@ -362,6 +408,7 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
                         sqlCommand.Parameters.AddWithValue("@InfoZeichnung", pfadZusatzinfo);
                         sqlCommand.Parameters.AddWithValue("@InfoZeichnung_Bemerkungen", textZusatzinfo);
 
+                        // ExecuteNonQuery → für INSERT/UPDATE/DELETE; liefert die Anzahl betroffener Zeilen zurück.
                         sqlCommand.ExecuteNonQuery();
                     }
                 }
@@ -370,34 +417,47 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
             catch (SqlException sqlEx)
             {
+                // SQL-spezifischer Fehler (Tabelle fehlt, Constraint-Verletzung etc.)
                 MessageBox.Show("SQL-Fehler: " + sqlEx.Message);
             }
             catch (Exception ex)
             {
+                // Alle anderen Fehler.
                 MessageBox.Show("Fehler: " + ex.Message);
             }
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Klick auf "Artikel updaten":
+        //  - Werte aus den UI-Feldern lesen
+        //  - Zahlen sicher parsen (TryParse) und runden
+        //  - Schließlich AktualisiereDatenInDatenbank(...) aufrufen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void BtnArtikelUpdaten_Click(object sender, EventArgs e)
         {
-            // Werte aus den Steuerelementen holen
+            // ----- String-Werte direkt aus den Steuerelementen holen -----
             string artikelnummer = TxtboxArtikelnummer.Text;
             string bezeichnung = TxtboxBezeichnung.Text;
             string status = ComboboxStatus.Text;
+
+            // Den vorderen Teil der Artikelnummer (vor dem ersten "-") als Gruppennamen extrahieren.
+            // Beispiel: "12-2044" → ["12", "2044"] → "12".
             string[] gruppennameArray = artikelnummer.Split('-').Select(s => s.Trim()).ToArray();
             string gruppenname = gruppennameArray[0];
+
             string zukauf = ComboBoxZukauf.Text;
             string flaeche = ComboBoxFlaeche.Text;
             string gNummer = TxtboxGNummer.Text;
             string glassorte = TxtboxGlassorte.Text;
 
-            // Konvertiere Strings zu Decimals und runde auf zwei Nachkommastellen
+            // ----- Zahlen aus Textboxen sicher in decimal umwandeln -----
+            // TryParse: liefert true, wenn die Konvertierung klappt; bei false → Fehlermeldung + return.
             if (!decimal.TryParse(TxtboxDurchmesser.Text, out decimal durchmesser))
             {
                 MessageBox.Show("Ungültiger Wert für Durchmesser. Bitte überprüfen Sie das Format oder eine 0 eingebenoder.");
                 return;
             }
-            durchmesser = Math.Round(durchmesser, 2);
+            durchmesser = Math.Round(durchmesser, 2); // auf 2 Nachkommastellen runden
 
             if (!decimal.TryParse(TxtboxFreibereich.Text, out decimal freibereich))
             {
@@ -427,28 +487,36 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             }
             zeitProzess = Math.Round(zeitProzess, 2);
 
+            // ----- Restliche Werte aus den Eingabefeldern -----
             string durchmesserWaschen = TxtboxDmWaschen.Text;
             string seite = TxtboxSeite.Text;
             string radiusVerguetung = TxtboxRadiusVerguetung.Text;
             string radiusRueckseite = TxtboxRadiusRueckseite.Text;
             string belagVerguetung = TxtboxBelagVerguetung.Text;
             string belagRueckseite = TxtboxBelagRueckseite.Text;
+
+            // (Auskommentiert: alternative Variante, den Prozess vom Belag-String abzuleiten.)
             //string[] prozessArray = belagVerguetung.Split(' ').Select(s => s.Trim()).ToArray();
             //string prozess = prozessArray[0];
             string prozess = TxtboxBelagProzess.Text;
+
+            // Vom Ring-Eingabefeld nur den Teil vor dem ersten "-" verwenden.
             string ringeingabe = TxtboxRing.Text;
             string[] ringnameArray = ringeingabe.Split('-').Select(x => x.Trim()).ToArray();
             string ring = ringnameArray[0];
+
             string stkSegment = TxtboxStkSegment.Text;
             string stkGesamt = TxtboxStkCharge.Text;
 
-            // Datum vom DateTimePicker
+            // ----- Datum aus DateTimePicker parsen -----
             DateTime eanderungsDatum;
             if (!DateTime.TryParse(DateTimePickerGeändert.Text, out eanderungsDatum))
             {
                 MessageBox.Show("Ungültiges Datum. Bitte überprüfen Sie das Format.");
-                return; // Beende die Methode, wenn das Datum ungültig ist
+                return;
             }
+
+            // ----- Restliche Felder -----
             string bemerkungArtikel = RichtxtboxBemerkung.Text;
             string vorreinigen = ComboboxVorreinigen.Text;
             string ucm = ComboboxUCM497.Text;
@@ -459,11 +527,15 @@ namespace VerwaltungKST1127.EingabeSerienartikelPrototyp
             string pfadZusatzinfo = LblPfadZusatzinfo.Text;
             string textZusatzinfo = RichtxtboxZusatzinfo.Text;
 
-            // Funktion zum Speichern der Daten aufrufen
-            AktualisiereDatenInDatenbank(artikelnummer, bezeichnung, status, gruppenname, zukauf, flaeche, gNummer, glassorte, durchmesser
-                , durchmesserWaschen, freibereich, dicke, seite, brechwert, radiusVerguetung, radiusRueckseite, belagVerguetung, prozess
-                , belagRueckseite, ring, stkSegment, stkGesamt, zeitProzess, eanderungsDatum, bemerkungArtikel, vorreinigen, ucm, aceton
-                , bemerkungWaschen, revoNummer, pfadZeichnungAuflegen, pfadZusatzinfo, textZusatzinfo);
+            // ----- Update tatsächlich ausführen -----
+            AktualisiereDatenInDatenbank(
+                artikelnummer, bezeichnung, status, gruppenname, zukauf, flaeche,
+                gNummer, glassorte, durchmesser, durchmesserWaschen, freibereich,
+                dicke, seite, brechwert, radiusVerguetung, radiusRueckseite,
+                belagVerguetung, prozess, belagRueckseite, ring, stkSegment,
+                stkGesamt, zeitProzess, eanderungsDatum, bemerkungArtikel,
+                vorreinigen, ucm, aceton, bemerkungWaschen, revoNummer,
+                pfadZeichnungAuflegen, pfadZusatzinfo, textZusatzinfo);
         }
     }
 }

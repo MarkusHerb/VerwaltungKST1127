@@ -35,7 +35,7 @@
             // lblTestRfid
             // 
             this.lblTestRfid.AutoSize = true;
-            this.lblTestRfid.Location = new System.Drawing.Point(183, 167);
+            this.lblTestRfid.Location = new System.Drawing.Point(88, 128);
             this.lblTestRfid.Name = "lblTestRfid";
             this.lblTestRfid.Size = new System.Drawing.Size(35, 13);
             this.lblTestRfid.TabIndex = 0;

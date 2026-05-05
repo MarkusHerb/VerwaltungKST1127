@@ -788,6 +788,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
                 // 14) Balkendiagramm und Summen (Produktivstunden, effektive Chargen ohne Proben) aktualisieren
                 UpdateGesamtProduktivChart();
+        
             }
             catch (Exception ex)
             {
@@ -801,174 +802,184 @@ namespace VerwaltungKST1127.Produktionsauswertung
         // ------------------------------------------------------------
         private void UpdateGesamtProduktivChart()
         {
-            // Ausgangszustand herstellen: Wir bauen das Diagramm bei jedem Aufruf komplett neu auf,
-            // damit keine Artefakte (alte Serien, alte Achseneinstellungen) stehen bleiben.
-            chartGesamtProduktiv.Series.Clear();               // Entfernt alle vorhandenen Datenserien
-            chartGesamtProduktiv.ChartAreas.Clear();           // Entfernt alle ChartAreas (Achsen/Raster werden neu definiert)
-            chartGesamtProduktiv.Legends.Clear();              // Entfernt die Legende – Werte stehen direkt als Label am Balken
+            // Diagramm bei jedem Aufruf komplett neu aufbauen, damit keine
+            // Artefakte aus vorherigen Ladungen stehen bleiben.
+            chartGesamtProduktiv.Series.Clear();
+            chartGesamtProduktiv.ChartAreas.Clear();
+            chartGesamtProduktiv.Legends.Clear();
 
-            // Neue Zeichenfläche (ChartArea) anlegen und optisch/inhaltlich konfigurieren.
-            var ca = new ChartArea("main");                   // Eindeutiger Name hilft beim Debugging (z. B. wenn mehrere Areas geplant sind)
-            ca.AxisX.Title = "Anlage";                        // X-Achsentitel beschreibt die Kategorie: welche Anlage
-            ca.AxisY.Title = "Produktive Stunden";            // Y-Achsentitel beschreibt die Metrik: Stunden als Dezimalzahl
+            // ── Chart-Rahmen ────────────────────────────────────────────────
+            // Kein sichtbarer Außenrahmen, weißer Hintergrund, keine Farbpalette
+            // (Farben werden pro Datenpunkt individuell gesetzt).
+            chartGesamtProduktiv.BackColor = Color.White;
+            chartGesamtProduktiv.BorderlineWidth = 0;
+            chartGesamtProduktiv.BorderlineDashStyle = ChartDashStyle.NotSet;
+            chartGesamtProduktiv.Palette = ChartColorPalette.None;
 
-            // Rasterlinien ausschalten, damit das Diagramm ruhiger und fokussierter wirkt.
-            ca.AxisY.MajorGrid.Enabled = false;                // Keine horizontalen Rasterlinien
-            ca.AxisX.MajorGrid.Enabled = false;                // Keine vertikalen Rasterlinien
+            // ── Zeichenfläche (ChartArea) ────────────────────────────────────
+            var ca = new ChartArea("main");
+            ca.BackColor = Color.White;
+            ca.BorderColor = Color.Transparent;
+            ca.BorderWidth = 0;
 
-            // Lesbarkeit der Beschriftungen erhöhen (größere Schrift für Achsenlabels und -titel).
-            ca.AxisX.LabelStyle.Font = new Font("Segoe UI", 10, FontStyle.Regular);  // gut lesbare Größe für Kategorienamen
-            ca.AxisY.LabelStyle.Font = new Font("Segoe UI", 10, FontStyle.Regular);  // gut lesbare Größe für Skalenwerte
-            ca.AxisX.TitleFont = new Font("Segoe UI", 11, FontStyle.Bold);      // Achsentitel hervorheben (X)
-            ca.AxisY.TitleFont = new Font("Segoe UI", 11, FontStyle.Bold);      // Achsentitel hervorheben (Y)
+            // Achsentitel beschreiben Kategorie (X) und Metrik (Y).
+            ca.AxisX.Title = "Anlage";
+            ca.AxisY.Title = "Produktive Stunden";
 
-            // Automatische Intervallwahl: die Chart-Komponente wählt sinnvolle Y-Schrittweiten,
-            // je nachdem, wie groß die Werte sind. Das verhindert "krumme" oder unpraktische Skalen.
+            // ── Schriften ────────────────────────────────────────────────────
+            // Regular statt Bold – wirkt leichter und moderner.
+            ca.AxisX.LabelStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+            ca.AxisY.LabelStyle.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+            ca.AxisX.TitleFont = new Font("Segoe UI", 10, FontStyle.Regular);
+            ca.AxisY.TitleFont = new Font("Segoe UI", 10, FontStyle.Regular);
+
+            // ── Achsenfarben ─────────────────────────────────────────────────
+            // Mittleres Grau für Labels, etwas dunkler für Titel –
+            // vermeidet den harten Kontrast von reinem Schwarz.
+            ca.AxisX.LabelStyle.ForeColor = Color.FromArgb(110, 110, 110);
+            ca.AxisY.LabelStyle.ForeColor = Color.FromArgb(110, 110, 110);
+            ca.AxisX.TitleForeColor = Color.FromArgb(80, 80, 80);
+            ca.AxisY.TitleForeColor = Color.FromArgb(80, 80, 80);
+
+            // Achsenlinien und Tick-Marks in sehr hellem Grau –
+            // strukturieren das Diagramm, ohne zu dominieren.
+            ca.AxisX.LineColor = Color.FromArgb(210, 210, 210);
+            ca.AxisY.LineColor = Color.FromArgb(210, 210, 210);
+            ca.AxisX.MajorTickMark.LineColor = Color.FromArgb(210, 210, 210);
+            ca.AxisY.MajorTickMark.LineColor = Color.FromArgb(210, 210, 210);
+
+            // ── Rasterlinien ─────────────────────────────────────────────────
+            // Nur auf der Y-Achse: geben dem Auge Orientierung beim Ablesen
+            // der Stundenwerte, ohne das Bild zu überladen.
+            // X-Rasterlinien bleiben aus, da die Balken selbst die Kategorien trennen.
+            ca.AxisY.MajorGrid.Enabled = true;
+            ca.AxisY.MajorGrid.LineColor = Color.FromArgb(235, 235, 235);
+            ca.AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Solid;
+            ca.AxisX.MajorGrid.Enabled = false;
+
+            // Y-Skalierung automatisch – die Chart-Komponente wählt sinnvolle Schrittweiten.
             ca.AxisY.IntervalAutoMode = IntervalAutoMode.VariableCount;
 
-            // Die konfigurierte ChartArea dem Diagramm hinzufügen (erst jetzt wird sie aktiv).
             chartGesamtProduktiv.ChartAreas.Add(ca);
 
-            // Datenserie anlegen: Wir visualisieren Produktivstunden als stehende Balken.
+            // ── Datenserie ───────────────────────────────────────────────────
+            // Column = stehende Balken; Wert direkt am Balken als Label anzeigen,
+            // Legende wird nicht benötigt (Anlagenname steht bereits auf der X-Achse).
             var series = new Series("Produktivzeit")
             {
-                ChartType = SeriesChartType.Column,            // Balkendarstellung (säulenförmig/stehend)
-                IsValueShownAsLabel = true                     // Zahlenwert direkt am Balken anzeigen (kein Blick in Legende nötig)
+                ChartType = SeriesChartType.Column,
+                IsValueShownAsLabel = true,
+                BorderWidth = 0,               // kein Balkenrahmen
+                BorderColor = Color.Transparent,
             };
 
-            // Label-Optik: etwas größere, fette Schrift für unmittelbare Ablesbarkeit am Balken.
-            series.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            // PointWidth: 0 = volle Breite, 1 = kein Balken sichtbar.
+            // 0.55 lässt genug Luft zwischen den Säulen für einen luftigen Look.
+            series["PointWidth"] = "0.55";
 
-            // Automatische Label-Positionierung an – verhindert Überschneidungen, wenn Werte dicht beieinanderliegen.
+            // Label-Schrift: leicht und dezent, passend zum Gesamtdesign.
+            series.Font = new Font("Segoe UI", 9, FontStyle.Regular);
+            series.LabelForeColor = Color.FromArgb(70, 70, 70);
+
+            // SmartLabel verhindert, dass Labels sich bei ähnlichen Werten überschneiden.
+            // Partial erlaubt ein minimales Herausragen aus dem Plot-Bereich.
             series.SmartLabelStyle.Enabled = true;
-            series.SmartLabelStyle.AllowOutsidePlotArea = LabelOutsidePlotAreaStyle.Partial; // darf minimal außerhalb stehen, um Kollisionen zu vermeiden
+            series.SmartLabelStyle.AllowOutsidePlotArea = LabelOutsidePlotAreaStyle.Partial;
 
-            // Serie dem Chart hinzufügen (ab hier sind Datenpunkte sichtbar, sobald wir sie befüllen).
             chartGesamtProduktiv.Series.Add(series);
 
-            // Datenquelle für die Serie: Mapping von Anlagenbezeichnung (X-Wert) zu zugehöriger Produktiv-Textbox.
-            // Erwartetes TextBox-Format ist "HH:MM:SS h" oder leer – wir parsen das später in Stunden.
+            // ── Datenquelle ──────────────────────────────────────────────────
+            // Jede Anlage wird einer TextBox zugeordnet, die den Produktivzeitwert
+            // im Format "HH:MM:SS h" enthält (aus SQL befüllt).
             var felder = new Tuple<string, TextBox>[]
             {
-                Tuple.Create("A20", txtBoxProductivA20),
-                Tuple.Create("A25", txtBoxProductivA25),
-                Tuple.Create("A30", txtBoxProductivA30),
-                Tuple.Create("A35", txtBoxProductivA35),
-                Tuple.Create("A40", txtBoxProductivA40),
-                Tuple.Create("A45", txtBoxProductivA45),
-                Tuple.Create("A50", txtBoxProductivA50),
-                Tuple.Create("A60", txtBoxProductivA60),
-                Tuple.Create("A65", txtBoxProductivA65),
+        Tuple.Create("A20", txtBoxProductivA20),
+        Tuple.Create("A25", txtBoxProductivA25),
+        Tuple.Create("A30", txtBoxProductivA30),
+        Tuple.Create("A35", txtBoxProductivA35),
+        Tuple.Create("A40", txtBoxProductivA40),
+        Tuple.Create("A45", txtBoxProductivA45),
+        Tuple.Create("A50", txtBoxProductivA50),
+        Tuple.Create("A60", txtBoxProductivA60),
+        Tuple.Create("A65", txtBoxProductivA65),
             };
 
-            double totalHours = 0.0; // Laufende Summe über alle Anlagen – wird später im Summenlabel angezeigt
+            double totalHours = 0.0; // Summe aller Anlagen für lblGesamtProduktiv
 
-            // Jede Anlage in einen Datenpunkt übersetzen.
+            // ── Datenpunkte befüllen ─────────────────────────────────────────
             for (int i = 0; i < felder.Length; i++)
             {
-                string label = felder[i].Item1;                // X-Kategorie: Anlagenname (z. B. "A20")
-                TextBox box = felder[i].Item2;                 // Quelle des Rohwerts: Produktivzeit als Text
+                string label = felder[i].Item1;
+                TextBox box = felder[i].Item2;
 
-                // Textrobustheit: Leerstring tolerieren, Whitespace entfernen.
                 string raw = (box.Text ?? string.Empty).Trim();
 
-                // UI zeigt "HH:MM:SS h" – für das Parsing entfernen wir ein ggf. vorhandenes "h" am Ende,
-                // damit ParseZeitdauerToTimeSpan ausschließlich auf dem Zeitanteil arbeitet.
+                // "HH:MM:SS h" → "HH:MM:SS" – das "h"-Suffix stört den Parser.
                 if (raw.EndsWith("h", StringComparison.OrdinalIgnoreCase))
                     raw = raw.Substring(0, raw.Length - 1).Trim();
 
-                // Zeitstring in TimeSpan umwandeln (erlaubt: ss, mm:ss, hh:mm:ss). Ungültige Eingaben ergeben 0:00:00.
-                TimeSpan ts = ParseZeitdauerToTimeSpan(raw);
-
-                // Für das Diagramm und die Summenanzeige nutzen wir Dezimalstunden (z. B. 7,25 h statt 07:15:00 h).
-                // 2 Nachkommastellen sind gut ablesbar und reichen für die Genauigkeit hier aus.
+                TimeSpan ts = ParseZeitdauerToTimeSpan(raw); // ungültige Eingaben → 0:00:00
                 double hours = Math.Round(ts.TotalHours, 2);
-                totalHours += hours;                            // Summe fortschreiben
+                totalHours += hours;
 
-                // Datenpunkt erstellen: X = Anlagenlabel, Y = Stundenwert
                 int pointIndex = series.Points.AddXY(label, hours);
                 DataPoint point = series.Points[pointIndex];
 
-                // Direkt lesbares Zahlenlabel am Balken in der aktuellen UI-Kultur (Komma-/Punktformatierung wird respektiert).
+                // Label am Balken: kulturabhängige Dezimalformatierung (z. B. "7,25 h").
                 point.Label = hours.ToString("0.##", CultureInfo.CurrentCulture) + " h";
 
-                // Farblogik nach Stundenbereichen: ermöglicht eine schnelle visuelle Einordnung.
+                // ── Farbstufen nach Auslastung ───────────────────────────────
+                // Gedämpfte, desaturierte Töne statt knalliger Ampelfarben –
+                // gleiche Aussagekraft, aber ruhigere Optik.
                 if (hours < 3)
-                    point.Color = Color.Red;                    // sehr geringe Auslastung
-                else if (hours >= 3 && hours < 6)
-                    point.Color = Color.LightSalmon;           // gering
-                else if (hours >= 6 && hours < 9)
-                    point.Color = Color.Yellow;                // mittel
-                else if (hours >= 9 && hours < 12)
-                    point.Color = Color.LightSeaGreen;         // gut
+                    point.Color = Color.FromArgb(196, 107, 105);   // Rosa-Rot  → sehr geringe Auslastung
+                else if (hours < 6)
+                    point.Color = Color.FromArgb(210, 150, 100);   // Terrakotta → geringe Auslastung
+                else if (hours < 9)
+                    point.Color = Color.FromArgb(198, 188, 100);   // Sandgelb  → mittlere Auslastung
+                else if (hours < 12)
+                    point.Color = Color.FromArgb(100, 168, 182);   // Stahlblau → gute Auslastung
                 else
-                    point.Color = Color.Green;                 // sehr gut
+                    point.Color = Color.FromArgb(100, 158, 124);   // Salbeigrün → sehr gute Auslastung
             }
 
-            // Gesamt-Summe der Produktivstunden als Text im Label anzeigen (falls vorhanden).
+            // Gesamtstunden aller Anlagen im Summary-Label anzeigen.
             if (lblGesamtProduktiv != null)
-            {
-                string sumText = totalHours.ToString("0.##", CultureInfo.CurrentCulture) + " h"; // z. B. "34,5 h"
-                lblGesamtProduktiv.Text = sumText;             // UI-Update
-            }
+                lblGesamtProduktiv.Text = totalHours.ToString("0.##", CultureInfo.CurrentCulture) + " h";
 
-            // ------------------------------------------------------------
-            // Gesamtzahl der Chargen über alle Anlagen ermitteln (ohne Proben)
-            // Idee: Die TextBoxen enthalten die Chargen pro Anlage. Die Probe-Labels enthalten, wie viele
-            //       dieser Chargen Proben waren. Wir ziehen daher pro Anlage die Proben ab und summieren.
-            // ------------------------------------------------------------
+            // ── Chargen-Summe (exkl. Proben) ────────────────────────────────
+            // Pro Anlage: Gesamtchargen minus Probechargen = produktive Chargen.
+            // Beide Arrays sind index-synchron mit dem felder-Array oben.
+            int totalChargen = 0;
 
-            int totalChargen = 0;                               // Endsumme der produktiven Chargen (exkl. Proben)
-
-            // Reihenfolge der Arrays ist identisch, damit Index i die gleiche Anlage referenziert.
             var chargeTextBoxes = new TextBox[]
             {
-                txtBoxChargenA20,
-                txtBoxChargenA25,
-                txtBoxChargenA30,
-                txtBoxChargenA35,
-                txtBoxChargenA40,
-                txtBoxChargenA45,
-                txtBoxChargenA50,
-                txtBoxChargenA60,
-                txtBoxChargenA65,
+        txtBoxChargenA20, txtBoxChargenA25, txtBoxChargenA30,
+        txtBoxChargenA35, txtBoxChargenA40, txtBoxChargenA45,
+        txtBoxChargenA50, txtBoxChargenA60, txtBoxChargenA65,
             };
             var probeLabels = new Label[]
             {
-                lblProbeA20,
-                lblProbeA25,
-                lblProbeA30,
-                lblProbeA35,
-                lblProbeA40,
-                lblProbeA45,
-                lblProbeA50,
-                lblProbeA60,
-                lblProbeA65,
+        lblProbeA20, lblProbeA25, lblProbeA30,
+        lblProbeA35, lblProbeA40, lblProbeA45,
+        lblProbeA50, lblProbeA60, lblProbeA65,
             };
 
-            // Für jede Anlage: Text in Zahl umwandeln (leere Felder werden als 0 interpretiert),
-            // Proben abziehen, und zur Gesamtsumme addieren.
             for (int i = 0; i < chargeTextBoxes.Length; i++)
             {
-                TextBox chargeBox = chargeTextBoxes[i];        // Gesamtzahl der Chargen aus SQL (als Text)
-                Label probeLabel = probeLabels[i];           // Anzahl Proben (ebenfalls als Text)
-
-                int chargeCount = 0; // Default 0, wenn Feld leer oder ungültig
-                if (int.TryParse(chargeBox.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int c))
+                int chargeCount = 0;
+                if (int.TryParse(chargeTextBoxes[i].Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int c))
                     chargeCount = c;
 
-                int probeCount = 0;  // Default 0, wenn Feld leer oder ungültig
-                if (int.TryParse(probeLabel.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int p))
+                int probeCount = 0;
+                if (int.TryParse(probeLabels[i].Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int p))
                     probeCount = p;
 
-                totalChargen += (chargeCount - probeCount);    // effektive Chargen ohne Proben aufsummieren
+                totalChargen += (chargeCount - probeCount);
             }
 
-            // Gesamtzahl der Chargen (exkl. Proben) anzeigen, sofern Label existiert.
             if (lblGesamtChargen != null)
-            {
-                lblGesamtChargen.Text = totalChargen.ToString(CultureInfo.CurrentCulture); // kulturabhängige Zifferndarstellung
-            }
+                lblGesamtChargen.Text = totalChargen.ToString(CultureInfo.CurrentCulture);
         }
 
         // Öffnet ein Informationsfenster zur Produktionsübersicht.

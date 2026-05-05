@@ -1,41 +1,65 @@
-﻿using Newtonsoft.Json;
-using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
-using System.Collections.Generic;
-using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
-using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
-using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
-using System.IO; // Für File-Operationen
-using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
-using System.Windows.Forms;
-using VerwaltungKST1127.EingabeSerienartikelPrototyp;
-using VerwaltungKST1127.Produktionsauswertung;
+﻿// ===================================================================================================
+// "using"-Anweisungen importieren fertige Funktionen aus den .NET-Bibliotheken bzw. NuGet-Paketen.
+// Damit können wir z. B. statt "Newtonsoft.Json.JsonConvert" einfach "JsonConvert" schreiben.
+// ===================================================================================================
+using Newtonsoft.Json;                                       // JSON-Bibliothek (Objekt ↔ JSON umwandeln)
+using System;                                                // Basis-Typen (string, int, EventArgs, Exception ...)
+using System.Collections.Generic;                            // Sammlungen (List<T>, Dictionary<TKey,TValue>)
+using System.Data;                                           // DataTable, DataView, DataRow, ConnectionState
+using System.Data.SqlClient;                                 // SQL-Server (SqlConnection, SqlCommand, SqlDataAdapter)
+using System.Drawing;                                        // Farben, Schriften (Color, Font ...)
+using System.IO;                                             // Datei-Operationen (File.Exists, ReadAllText ...)
+using System.Linq;                                           // LINQ (Where, Select, Distinct, Count ...)
+using System.Windows.Forms;                                  // Windows-Forms (Form, DataGridView, MessageBox ...)
+using VerwaltungKST1127.EingabeSerienartikelPrototyp;        // Eigenes Sub-Projekt: Form_ArtikelPrototypAendern
+using VerwaltungKST1127.Produktionsauswertung;               // Eigenes Sub-Projekt: Form_StkVorAvo
 
+// "namespace" gruppiert Klassen logisch und vermeidet Namenskonflikte mit anderen Projekten.
 namespace VerwaltungKST1127.Auftragsverwaltung
 {
+    // "public partial class Form_VerwaltungHauptansicht : Form"
+    //   public  = von außen sichtbar
+    //   partial = der Klassen-Code darf auf mehrere Dateien aufgeteilt sein (eine ist die Designer-Datei)
+    //   : Form  = erbt von "Form" → diese Klasse IST ein Windows-Fenster
     public partial class Form_VerwaltungHauptansicht : Form
     {
-        // Verbindungszeichenfolge für die SQL Server-Datenbank Verwaltung
-        private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
+        // -----------------------------------------------------------------------------------------------------------------
+        // Felder ("Variablen der Klasse"). private = nur in dieser Klasse sichtbar.
+        // readonly = darf nur einmal (hier oder im Konstruktor) gesetzt werden.
+        // -----------------------------------------------------------------------------------------------------------------
 
-        private readonly SqlConnection sqlConnectionVerwaltungAlt = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung;Integrated Security=True;Encrypt=False");
+        // Verbindung zur "neuen" Verwaltungs-Datenbank.
+        private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(
+            @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
 
-        // Zum Speichern der vollständigen Daten
+        // Verbindung zur "alten" Verwaltungs-Datenbank (parallel verwendet).
+        private readonly SqlConnection sqlConnectionVerwaltungAlt = new SqlConnection(
+            @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung;Integrated Security=True;Encrypt=False");
+
+        // Hier merken wir uns die komplette Auftrags-Tabelle, damit wir filtern können
+        // ohne erneut die DB anzusprechen. "= null" → anfangs leer.
         private DataTable _auftraegeDataTable = null;
 
-        // Feld zum Speichern des ausgewählten Belag-Werts
+        // Aktuell ausgewählter Belag (z. B. "B103") – wird im Klick-Event gesetzt.
         private string selectedBelagValue;
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Konstruktor: läuft beim "new Form_VerwaltungHauptansicht()" automatisch.
+        // -----------------------------------------------------------------------------------------------------------------
         public Form_VerwaltungHauptansicht()
         {
-            InitializeComponent(); // Initialisierung der Komponenten des Formulars
-            LoadDataForDgvAuftragZuBelag(); // Laden der Daten für das DataGridView dGvLadeBelaeg
-            ZaehleGestarteteAuftraege(); // Funktion aufrufen
+            InitializeComponent();             // erzeugt alle UI-Steuerelemente (in der Designer-Datei definiert)
+            LoadDataForDgvAuftragZuBelag();    // Linkes Grid (Belag-Übersicht) befüllen
+            ZaehleGestarteteAuftraege();       // "Gestartete"-Label aktualisieren
         }
 
-        // Funktion zum Zählen der "Gestartet" Aufträge
+        // -----------------------------------------------------------------------------------------------------------------
+        // Wendet Filter (Zukauf-Checkbox + ignorierte Auftragsnummern) auf die geladene Tabelle an
+        // und zeigt das Ergebnis im DataGridView. Außerdem wird die Anzahl "Active" gezählt.
+        // -----------------------------------------------------------------------------------------------------------------
         private void ApplyFilterAndDisplayData()
         {
-            // Ignorierte Auftragsnummern aus JSON laden
+            // ----- 1) Ignorierte Auftragsnummern aus JSON-Datei laden -----
             List<string> ignorierteNummern = new List<string>();
             string jsonPfad = "IgnorierteAuftragsnummern.json";
             if (File.Exists(jsonPfad))
@@ -43,16 +67,17 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 try
                 {
                     string jsonInhalt = File.ReadAllText(jsonPfad);
+                    // Wenn JSON null/leer, leere Liste verwenden (?? = Fallback bei null).
                     ignorierteNummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
                 }
                 catch { /* Fehler ignorieren, falls Datei defekt */ }
             }
 
-            int activeCount = 0; // Zähler für "Active" Status
+            int activeCount = 0; // Zähler für Status "Active"
 
             try
             {
-                // Überprüfen, ob die Datenquelle null ist
+                // Wenn keine Daten geladen → Grid leeren und Methode beenden.
                 if (_auftraegeDataTable == null)
                 {
                     DgvAnsichtAuftraege.DataSource = null;
@@ -60,34 +85,35 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     return;
                 }
 
-                // --- Kombinierter Filter für Zukauf und ignorierte Nummern ---
+                // ----- 2) Filter zusammenbauen (DataView = "Sicht" auf eine DataTable, die filtern/sortieren kann) -----
                 DataView dv = new DataView(_auftraegeDataTable);
-                
                 string filter = "";
 
-                // Wenn die CheckBox aktiviert ist, nur Zukauf-Aufträge anzeigen
+                // Wenn Checkbox aktiv → nur Zukauf-Aufträge zeigen.
                 if (checkBoxShowZukauf.Checked)
                 {
                     filter = "[Zukauf] IS NOT NULL AND [Zukauf] <> ''";
                 }
 
-                // Ignorierte Auftragsnummern aus dem Filter entfernen
+                // Ignorierte Nummern in den Filter packen (NOT IN ('A','B',...)).
                 if (ignorierteNummern.Count > 0)
                 {
+                    // Apostroph in den Werten wird verdoppelt (SQL-Escape), dann mit "','" verbunden.
                     string ignoreFilter = string.Join("','", ignorierteNummern.Select(x => x.Replace("'", "''")));
                     if (!string.IsNullOrEmpty(filter))
                         filter += " AND ";
                     filter += $"NOT [Auftragsnr.] IN ('{ignoreFilter}')";
                 }
-    
+
                 dv.RowFilter = filter;
                 DgvAnsichtAuftraege.DataSource = dv;
 
-                // --- Formatierung und Zählung ---
+                // ----- 3) Optik & Spaltenformatierung -----
                 if (DgvAnsichtAuftraege.DataSource != null && DgvAnsichtAuftraege.Columns.Count > 0)
                 {
                     DgvAnsichtAuftraege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
+                    // Zahlen-Spalten zentrieren + ohne Nachkommastellen anzeigen.
                     string[] zahlenSpalten = { "SollStk.", "IstStk.", "VorStk.", "Teilelager", "Bereitstell", "Jahresbedarf" };
                     foreach (var spalte in zahlenSpalten)
                     {
@@ -97,18 +123,20 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                             DgvAnsichtAuftraege.Columns[spalte].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                         }
                     }
-                    // Spezielle Ausrichtung für Zukauf und Dringend Spalten
+
+                    // Zukauf + Dringend zentriert.
                     if (DgvAnsichtAuftraege.Columns.Contains("Zukauf"))
                         DgvAnsichtAuftraege.Columns["Zukauf"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     if (DgvAnsichtAuftraege.Columns.Contains("Dringend"))
                         DgvAnsichtAuftraege.Columns["Dringend"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                    // Zentrierung der Header-Texte
+                    // Alle Spaltenüberschriften zentrieren.
                     foreach (DataGridViewColumn column in DgvAnsichtAuftraege.Columns)
                     {
                         column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
 
+                    // Feste Breiten für bestimmte Spalten.
                     if (DgvAnsichtAuftraege.Columns.Contains("Teilebez."))
                         DgvAnsichtAuftraege.Columns["Teilebez."].Width = 170;
                     if (DgvAnsichtAuftraege.Columns.Contains("Seite"))
@@ -116,22 +144,19 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     if (DgvAnsichtAuftraege.Columns.Contains("AVOinfo"))
                         DgvAnsichtAuftraege.Columns["AVOinfo"].Width = 140;
 
-                    // Zählung der "Active"-Status
+                    // ----- 4) Aktive Aufträge zählen -----
                     if (DgvAnsichtAuftraege.Columns.Contains("Status"))
                     {
                         foreach (DataGridViewRow row in DgvAnsichtAuftraege.Rows)
                         {
                             object cellValue = row.Cells["Status"]?.Value;
+                            // Equals mit "OrdinalIgnoreCase" → Vergleich ohne Groß-/Kleinschreibung.
                             if (cellValue != null && cellValue.ToString().Equals("Active", StringComparison.OrdinalIgnoreCase))
                             {
                                 activeCount++;
                             }
                         }
                     }
-                }
-                else
-                {
-                    // Keine Datenquelle gesetzt
                 }
             }
             catch (Exception ex)
@@ -141,87 +166,91 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
             finally
             {
+                // finally läuft IMMER (auch im Fehlerfall) → Label wird zuverlässig gesetzt.
                 lblGestartet.Text = activeCount.ToString();
             }
         }
 
-
-        // Event-Handler für das Klicken auf den Button BtnZukauf
+        // -----------------------------------------------------------------------------------------------------------------
+        // Klick auf "Zukauf"-Button → eigenes Fenster zur Verwaltung von R-/T-Lager öffnen.
+        // ShowDialog() = modal (das Hauptfenster wartet, bis der Dialog geschlossen wird).
+        // -----------------------------------------------------------------------------------------------------------------
         private void BtnZukauf_Click(object sender, EventArgs e)
         {
             Form_RLTL rltlForm = new Form_RLTL();
             rltlForm.ShowDialog();
         }
 
+        // Checkbox geändert → Filter erneut anwenden.
         private void checkBoxShowZukauf_CheckedChanged(object sender, EventArgs e)
         {
-            // Rufe die Funktion auf, die die Daten basierend auf dem aktuellen CheckBox-Status filtert und anzeigt
             ApplyFilterAndDisplayData();
         }
 
-        // --- Hilfsfunktion zum Bereinigen der Belag-Bezeichnung ---
-        // Entfernt den Begriff "Vergüten" (unabhängig von Groß-/Kleinschreibung)
-        // und extrahiert nur die "Bxxx" Information (z.B. B103, B146 usw.)
+        // -----------------------------------------------------------------------------------------------------------------
+        // Hilfsfunktion: Belag-Bezeichnung normalisieren.
+        // Aus z. B. "Vergüten B-103" wird "B103". Mit Hilfe von Regex (Regular Expression).
+        // -----------------------------------------------------------------------------------------------------------------
         private string CleanBelag(string input)
         {
             if (string.IsNullOrEmpty(input))
                 return "";
 
-            // 1. "Vergüten" entfernen, egal wie geschrieben (Regex mit IgnoreCase)
-            input = System.Text.RegularExpressions.Regex.Replace(input, "vergüten", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
+            // 1) "Vergüten" entfernen (Groß-/Kleinschreibung egal).
+            input = System.Text.RegularExpressions.Regex.Replace(
+                input, "vergüten", "",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
 
-            // 2. Mit Regex nach einem Belag suchen:
-            // Suche nach "B" gefolgt von optional "-" und Ziffern, z.B. "B103", "B-103"
+            // 2) Suche "B" + optionalen "-" + Ziffern → z. B. "B103" oder "B-103".
+            //    @"..." = "verbatim string": Backslashes müssen nicht verdoppelt werden.
             var match = System.Text.RegularExpressions.Regex.Match(input, @"B-?\d+");
 
             if (match.Success)
             {
-                // Gefundenen Belag zurückgeben, Bindestrich entfernen, immer großschreiben
+                // Treffer ohne Bindestrich, in Großbuchstaben.
                 return match.Value.Replace("-", "").ToUpper();
             }
             else
             {
-                // Wenn kein passender Belag gefunden wurde, leeres Ergebnis zurückgeben
-                return "";
+                return ""; // nichts gefunden
             }
         }
 
-        // Methode zum Löschen von Einträgen aus der Ansicht_Bildschirm-Tabelle
+        // -----------------------------------------------------------------------------------------------------------------
+        // Löscht einen Auftrag aus den Bildschirm-Anzeigetabellen (in beiden Datenbanken parallel).
+        // -----------------------------------------------------------------------------------------------------------------
         private void DeleteFromAnsichtBildschirm(string auftragsNr, string artikel)
         {
             try
             {
-                // SQL-Abfrage zum Löschen der Daten aus der Ansicht_Bildschirm-Tabelle
+                // Erste DB: Spaltenname "Teilenummer".
                 string deleteQuery = @"
                     DELETE FROM Ansicht_Bildschirm
                     WHERE Auftrag = @Auftrag
                     AND Teilenummer = @Teilenummer";
 
-                // SQL-Befehl vorbereiten und Parameter hinzufügen
                 using (SqlCommand deleteCommand = new SqlCommand(deleteQuery, sqlConnectionVerwaltung))
                 {
+                    // Parameter ergänzen → schützt vor SQL-Injection.
                     deleteCommand.Parameters.AddWithValue("@Auftrag", auftragsNr);
                     deleteCommand.Parameters.AddWithValue("@Teilenummer", artikel);
 
-                    // Verbindung öffnen und Daten löschen
                     sqlConnectionVerwaltung.Open();
-                    deleteCommand.ExecuteNonQuery();
+                    deleteCommand.ExecuteNonQuery();   // ExecuteNonQuery → für INSERT/UPDATE/DELETE (kein Ergebnis-Set)
                     sqlConnectionVerwaltung.Close();
                 }
 
-                // SQL-Abfrage zum Löschen der Daten aus der Ainsicht_Bildschirm-Tabelle
+                // Zweite DB (alt): Spaltenname "Artikel" (statt "Teilenummer").
                 string deleteQueryAlt = @"
                     DELETE FROM Ainsicht_Bildschirm
                     WHERE Auftrag = @Auftrag
                     AND Artikel = @Artikel";
 
-                // SQL-Befehl vorbereiten und Parameter hinzufügen
                 using (SqlCommand deleteCommandAlt = new SqlCommand(deleteQueryAlt, sqlConnectionVerwaltungAlt))
                 {
                     deleteCommandAlt.Parameters.AddWithValue("@Auftrag", auftragsNr);
                     deleteCommandAlt.Parameters.AddWithValue("@Artikel", artikel);
 
-                    // Verbindung öffnen und Daten löschen
                     sqlConnectionVerwaltungAlt.Open();
                     deleteCommandAlt.ExecuteNonQuery();
                     sqlConnectionVerwaltungAlt.Close();
@@ -229,12 +258,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
             catch (Exception ex)
             {
-                // Fehlerbehandlung
                 MessageBox.Show($"Fehler beim Löschen der Daten: {ex.Message}");
             }
             finally
             {
-                // Sicherstellen, dass die Verbindungen geschlossen werden
+                // Sicherheitsnetz: beide Verbindungen schließen.
                 if (sqlConnectionVerwaltung.State == ConnectionState.Open)
                 {
                     sqlConnectionVerwaltung.Close();
@@ -246,65 +274,63 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        // Event-Handler für das Klicken auf eine Zelle im DataGridView dGvAnsichtAuftraege
+        // -----------------------------------------------------------------------------------------------------------------
+        // Klick auf eine Zelle im Auftragsgrid:
+        //  - Wenn Artikel + Seite gefüllt sind → zugehörigen Zeichnungs-Pfad holen und Bild anzeigen.
+        //  - Außerdem das Detail-Grid (DgvInformationZuAuftrag) für die Auftragsnummer aktualisieren.
+        // -----------------------------------------------------------------------------------------------------------------
         private void DgvAnsichtAuftraege_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Überprüfen, ob eine Zeile ausgewählt ist
             if (DgvAnsichtAuftraege.CurrentRow != null)
             {
-                // Die ausgewählte Zeile abrufen
                 DataGridViewRow selectedRow = DgvAnsichtAuftraege.CurrentRow;
 
-                // Überprüfen, ob die Zellen "Artikel" und "Seite" nicht null oder leer sind
+                // Sicherstellen, dass Artikel + Seite gesetzt sind.
                 if (selectedRow.Cells["Artikel"].Value != null && !string.IsNullOrEmpty(selectedRow.Cells["Artikel"].Value.ToString()) &&
                     selectedRow.Cells["Seite"].Value != null && !string.IsNullOrEmpty(selectedRow.Cells["Seite"].Value.ToString()))
                 {
-                    // Artikelnummer und Seite aus der ausgewählten Zeile abrufen
                     string artikelNr = selectedRow.Cells["Artikel"].Value.ToString();
                     int seite;
+
+                    // TryParse: liefert true, wenn die Konvertierung in int klappt.
                     if (int.TryParse(selectedRow.Cells["Seite"].Value.ToString(), out seite))
                     {
-                        // Zeichnungspfad abrufen
                         string zeichnungspfad = GetZeichnungspfad(artikelNr, seite);
 
-                        // Wenn der Zeichnungspfad nicht leer ist, das Bild in der PictureBox anzeigen
                         if (!string.IsNullOrEmpty(zeichnungspfad))
                         {
+                            // ImageLocation = Bild von einem Pfad/URL nachladen.
                             PictureBoxZeichnung.ImageLocation = zeichnungspfad;
                         }
                         else
                         {
-                            // Optional: Wenn kein Bild gefunden wird, ein Platzhalterbild oder eine Nachricht setzen
-                            PictureBoxZeichnung.Image = null; // oder ein Standardbild setzen
+                            PictureBoxZeichnung.Image = null;
                         }
                     }
                 }
             }
-            // Überprüfen, ob der Klick in einer gültigen Zeile stattgefunden hat
+
+            // Wenn ein gültiger Zeilen-Index angeklickt wurde → Detail-Grid aktualisieren.
             if (e.RowIndex >= 0)
             {
-                // Auftragsnummer aus der geklickten Zeile abrufen
                 var auftragsNummer = DgvAnsichtAuftraege.Rows[e.RowIndex].Cells["Auftragsnr."].Value?.ToString();
-
-                // Nur wenn die Auftragsnummer nicht null oder leer ist, die Datenbankabfrage starten
                 if (!string.IsNullOrEmpty(auftragsNummer))
                 {
-                    // Funktion aufrufen, die die SQL-Datenbank abfragt und das DataGridView aktualisiert
                     UpdateDgvInformationZuAuftrag(auftragsNummer);
                 }
             }
         }
 
-        // Wenn auf eine Reihe doppelt geklickt wird, öffnet sich das Formular Form_Druckuebersiht und gewisse Werte werden übergeben
+        // -----------------------------------------------------------------------------------------------------------------
+        // Doppelklick auf eine Auftragszeile → Druckübersichts-Fenster mit allen Werten öffnen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void DgvAnsichtAuftraege_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Überprüfen, ob eine gültige Zeile ausgewählt ist
             if (e.RowIndex >= 0)
             {
-                // Die ausgewählte Zeile abrufen
                 DataGridViewRow selectedRow = DgvAnsichtAuftraege.Rows[e.RowIndex];
 
-                // Werte aus der ausgewählten Zeile abrufen
+                // Werte aus der Zeile lesen. ?. = Null-bedingt → kein Crash, wenn Value null ist.
                 string enddatum = selectedRow.Cells["Enddatum"].Value?.ToString();
                 string teilebez = selectedRow.Cells["Teilebez."].Value?.ToString();
                 string auftragsNr = selectedRow.Cells["Auftragsnr."].Value?.ToString();
@@ -313,7 +339,10 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 string avoInfo = selectedRow.Cells["AVOinfo"].Value?.ToString();
                 string material = selectedRow.Cells["Material"].Value?.ToString();
                 string seite = selectedRow.Cells["Seite"].Value?.ToString();
+
+                // SollStk explizit als decimal parsen und ohne Nachkommastellen formatieren.
                 string sollStk = Convert.ToDecimal(selectedRow.Cells["SollStk."].Value).ToString("0");
+
                 string istStk = selectedRow.Cells["IstStk."].Value?.ToString();
                 string vorStk = selectedRow.Cells["VorStk."].Value?.ToString();
                 string teilelager = selectedRow.Cells["Teilelager"].Value?.ToString();
@@ -323,38 +352,40 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 string dringend = selectedRow.Cells["Dringend"].Value?.ToString();
                 string aktualisiert = selectedRow.Cells["Aktualisiert"].Value?.ToString();
 
-                // Neues Formular Form_Druckübersicht öffnen und Werte übergeben
+                // Druckübersicht öffnen (modal).
                 Form_Druckuebersicht druckuebersichtForm = new Form_Druckuebersicht(
-                    enddatum, teilebez, auftragsNr, artikel, status, avoInfo, material, seite, sollStk, istStk, vorStk, teilelager, bereitstell, jahresbedarf, zukauf, dringend, aktualisiert, selectedBelagValue);
+                    enddatum, teilebez, auftragsNr, artikel, status, avoInfo, material, seite,
+                    sollStk, istStk, vorStk, teilelager, bereitstell, jahresbedarf, zukauf,
+                    dringend, aktualisiert, selectedBelagValue);
                 druckuebersichtForm.ShowDialog();
             }
         }
 
-        // Grafische gestaltung des Dgvs
+        // -----------------------------------------------------------------------------------------------------------------
+        // CellFormatting: wird beim Zeichnen jeder Zelle aufgerufen.
+        // Hier setzen wir Hintergrundfarbe / Schriftfarbe / Schriftstil je nach Inhalt.
+        // -----------------------------------------------------------------------------------------------------------------
         private void DgvAnsichtAuftraege_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            // Wenn in der Reihe Status Active steht, dann soll die ganze Spalte blau hinterlegt werden
+            // ---- Status: "Active" → grün ----
             if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Status")
             {
                 if (e.Value != null && e.Value.ToString() == "Active")
                 {
                     e.CellStyle.BackColor = Color.LightGreen;
-                    //dGvAnsichtAuswahlAuftrag.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
                 }
             }
 
-            // Überprüfen, ob es sich um eine Spalte handelt
+            // ---- Status: "Gestartet" → hellblau ----
             if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Status")
             {
-                // Überprüfen, ob der Status "Gestartet" ist
                 if (e.Value != null && e.Value.ToString() == "Gestartet")
                 {
                     e.CellStyle.BackColor = Color.LightSkyBlue;
-                    //dGvAnsichtAuswahlAuftrag.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightYellow;
                 }
             }
 
-            // Überprüfe, ob in der Reihe ZU etwas steht
+            // ---- Zukauf: R-Lager (grün) / T-Lager (rot/lachs) ----
             if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Zukauf")
             {
                 if (e.Value != null && e.Value.ToString() == "R-Lager")
@@ -367,7 +398,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
 
-            // Überprüfe, ob in der Reihe dringend etwas steht
+            // ---- Dringend: 1 → orange, 2 → gelb ----
             if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Dringend")
             {
                 if (e.Value != null && e.Value.ToString() == "1")
@@ -380,42 +411,36 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
             }
 
-            // Sicherstellen, dass Zeile und Spalte gültig sind und der Wert nicht null ist
+            // ---- Enddatum in der Vergangenheit → grau ----
+            // Sonst zurück auf Standardfarbe (wichtig wegen "Cell Recycling": Zellen werden wiederverwendet).
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && e.Value != null)
             {
-                // Prüfen, ob es sich um die Spalte "Enddatum" handelt
-                if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Enddatum") // Oder .HeaderText je nach Konfiguration
+                if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Enddatum")
                 {
                     DateTime endDate;
-                    // Versuchen, den Zellwert als DateTime zu parsen
                     if (DateTime.TryParse(e.Value.ToString(), out endDate))
                     {
-                        // Datum der Zelle mit dem heutigen Datum vergleichen (nur das Datum, ohne Zeit)
                         if (endDate.Date < DateTime.Today)
                         {
-                            // Wenn das Datum in der Vergangenheit liegt, Hintergrundfarbe der Zelle auf Hellgrau setzen
                             e.CellStyle.BackColor = System.Drawing.Color.LightGray;
                         }
                         else
                         {
-                            // Wenn das Datum nicht in der Vergangenheit liegt, sicherstellen, dass die Hintergrundfarbe Standard ist
-                            // Dies ist wichtig, da Zellen wiederverwendet werden (Cell Recycling)
                             e.CellStyle.BackColor = DgvAnsichtAuftraege.DefaultCellStyle.BackColor;
                         }
                     }
                 }
 
-                // Wenn der Column Name VorStk. , IstStk. , SollStk. ist, dann soll die Schriftart fett sein
+                // ---- VorStk., IstStk., SollStk. → fett ----
                 if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "VorStk." ||
                     DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "IstStk." ||
                     DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "SollStk.")
                 {
                     e.CellStyle.Font = new Font(DgvAnsichtAuftraege.Font, FontStyle.Bold);
                 }
-
             }
 
-            // --- Auftragsnummern hervorheben, die in der JSON-Datei gespeichert sind ---
+            // ---- Auftragsnummer hervorheben, wenn sie in letzteAuftragsnummern.json steht ----
             if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Auftragsnr." && e.Value != null)
             {
                 string auftragsNummer = e.Value.ToString();
@@ -435,12 +460,13 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     }
                     catch (Exception ex)
                     {
+                        // Console.WriteLine schreibt in das Debug-/Konsole-Fenster, nicht in die UI.
                         Console.WriteLine($"Fehler beim Lesen der JSON-Datei: {ex.Message}");
                     }
                 }
             }
 
-            // --- Schriftfarbe in "Teilelager" ändern, wenn Wert kleiner als "Bereitstell" ---
+            // ---- Teilelager < Bereitstell → rote Schrift + lachsroter Hintergrund ----
             if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Teilelager")
             {
                 object teilelagerWertObj = e.Value;
@@ -459,25 +485,25 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
+        // -----------------------------------------------------------------------------------------------------------------
+        // Rechtsklick auf das Auftrags-Grid → Kontextmenü mit verschiedenen Aktionen aufbauen und anzeigen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void DgvAnsichtAuftraege_MouseDown(object sender, MouseEventArgs e)
         {
-            // Überprüfen, ob die rechte Maustaste gedrückt wurde
             if (e.Button == MouseButtons.Right)
             {
-                // Ermitteln, welche Zelle unter dem Mauszeiger liegt
+                // HitTest: liefert Info, welche Zelle/Zeile unter den Maus-Koordinaten liegt.
                 var hti = DgvAnsichtAuftraege.HitTest(e.X, e.Y);
 
-                // Auswahl im DataGridView löschen
-                DgvAnsichtAuftraege.ClearSelection();
+                DgvAnsichtAuftraege.ClearSelection(); // alte Selektion zurücksetzen
 
-                // Überprüfen, ob eine gültige Zeile getroffen wurde
                 if (hti.RowIndex >= 0)
                 {
-                    // Die getroffene Zeile auswählen
                     DgvAnsichtAuftraege.Rows[hti.RowIndex].Selected = true;
-                    // Kontextmenü erstellen
+
+                    // Kontextmenü zur Laufzeit erzeugen.
                     ContextMenuStrip contextMenu = new ContextMenuStrip();
-                    // Menüeinträge erstellen
+
                     ToolStripMenuItem setzeDringend1 = new ToolStripMenuItem("Setze Dringend 1");
                     ToolStripMenuItem setzeDringend2 = new ToolStripMenuItem("Setze Dringend 2");
                     ToolStripMenuItem resettDringend = new ToolStripMenuItem("Resett Dringend");
@@ -485,7 +511,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     ToolStripMenuItem resettAuftrag = new ToolStripMenuItem("Auftrag abschließen");
                     ToolStripMenuItem ignoreAuftrag = new ToolStripMenuItem("Auftrag ignorieren");
                     ToolStripMenuItem copyAuftragsNr = new ToolStripMenuItem("Auftragsnummer kopieren");
-                    // Event-Handler für die Menüeinträge hinzufügen
+
+                    // Klick-Events der Menüeinträge mit Methoden verbinden.
                     setzeDringend1.Click += SetzeDringend1_Click;
                     setzeDringend2.Click += SetzeDringend2_Click;
                     resettDringend.Click += ResettDringend_Click;
@@ -493,24 +520,28 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     resettAuftrag.Click += ResettAuftrag_Click;
                     ignoreAuftrag.Click += IgnoreAuftrag_Click;
                     copyAuftragsNr.Click += CopyAuftragsNr_Click;
-                    // Verknüpfen Sie die anderen Menüeinträge mit ihren entsprechenden Methoden, falls erforderlich
-                    // Menüeinträge zum Kontextmenü hinzufügen
-                    contextMenu.Items.AddRange(new ToolStripItem[] { setzeDringend1, setzeDringend2, resettDringend, serienlinse, resettAuftrag, ignoreAuftrag, copyAuftragsNr });
-                    // Kontextmenü an der Position des Mauszeigers anzeigen
+
+                    // Alle Einträge dem Menü zufügen.
+                    contextMenu.Items.AddRange(new ToolStripItem[]
+                    {
+                        setzeDringend1, setzeDringend2, resettDringend,
+                        serienlinse, resettAuftrag, ignoreAuftrag, copyAuftragsNr
+                    });
+
+                    // Menü an der Maus-Position öffnen.
                     contextMenu.Show(DgvAnsichtAuftraege, e.Location);
                 }
             }
         }
 
-        // Event-Handler für das Klicken auf eine Zelle im DataGridView dGvLadeBelaege
+        // -----------------------------------------------------------------------------------------------------------------
+        // Klick im linken Belag-Grid → ausgewählten Belag merken und das Auftragsgrid danach filtern/laden.
+        // -----------------------------------------------------------------------------------------------------------------
         private void DgvLadeBelaege_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Überprüfen, ob der Klick in einer gültigen Zeile stattgefunden hat
             if (e.RowIndex >= 0)
             {
-                // Wert, der bei Belag steht, abrufen
                 selectedBelagValue = DgvLadeBelaege.Rows[e.RowIndex].Cells["Belag"].Value?.ToString();
-                // Nur falls der Wert nicht null ist, wird er weiterverarbeitet
                 if (!string.IsNullOrEmpty(selectedBelagValue))
                 {
                     UpdateDgvAnsichtAuftraege(selectedBelagValue);
@@ -518,54 +549,19 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        //////// Funktion zum Abrufen des Materials basierend auf mitm_teilenr und Seite
-        //////private string GetMaterialFromSerienlinsen(string mitmTeilenNr, int seite)
-        //////{
-        //////    string material = string.Empty;
+        // -----------------------------------------------------------------------------------------------------------------
+        // (Auskommentierte Hilfs-Methode aus früherer Version – aktuell nicht in Verwendung.)
+        // Bewusst stehen gelassen, falls man sie wieder brauchen möchte.
+        // -----------------------------------------------------------------------------------------------------------------
+        //private string GetMaterialFromSerienlinsen(string mitmTeilenNr, int seite) { ... }
 
-        //////    try
-        //////    {
-        //////        string query = @"
-        //////            SELECT MATERIAL
-        //////            FROM Serienlinsen
-        //////            WHERE ARTNR = @MitmTeilenNr
-        //////            AND SEITE = @Seite";
-
-        //////        using (SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung))
-        //////        {
-        //////            command.Parameters.AddWithValue("@MitmTeilenNr", mitmTeilenNr);
-        //////            command.Parameters.AddWithValue("@Seite", seite);
-
-        //////            sqlConnectionVerwaltung.Open();
-        //////            object result = command.ExecuteScalar();
-        //////            sqlConnectionVerwaltung.Close();
-
-        //////            if (result != null)
-        //////            {
-        //////                material = result.ToString();
-        //////            }
-        //////        }
-        //////    }
-        //////    catch (Exception ex)
-        //////    {
-        //////        MessageBox.Show($"Fehler beim Abrufen des Materials: {ex.Message}");
-        //////    }
-        //////    finally
-        //////    {
-        //////        if (sqlConnectionVerwaltung.State == ConnectionState.Open)
-        //////        {
-        //////            sqlConnectionVerwaltung.Close();
-        //////        }
-        //////    }
-
-        //////    return material;
-        //////}             !!!!!!!!!   Aktuell nicht in Verwendung !!!!!!!!!
-
-        // Methode, um den Zeichnungspfad zu erhalten
+        // -----------------------------------------------------------------------------------------------------------------
+        // Holt für (Artikel, Seite) den Pfad zur Zeichnungsdatei aus der Tabelle "Serienlinsen".
+        // -----------------------------------------------------------------------------------------------------------------
         private string GetZeichnungspfad(string artikelNr, int seite)
         {
             string zeichnungspfad = string.Empty;
-            try // Versuche, den Zeichnungspfad aus der Datenbank abzurufen
+            try
             {
                 string query = @"
                     SELECT Zeichnungspfad
@@ -574,15 +570,17 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
                 using (SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
-                    command.Parameters.AddWithValue("@ArtikelNr", artikelNr); // Setze den Parameter für die Artikelnummer
-                    command.Parameters.AddWithValue("@Seite", seite); // Setze den Parameter für die Seite
+                    command.Parameters.AddWithValue("@ArtikelNr", artikelNr);
+                    command.Parameters.AddWithValue("@Seite", seite);
 
                     sqlConnectionVerwaltung.Open();
-                    var result = command.ExecuteScalar(); // Führe den SQL-Befehl aus und speichere das Ergebnis
-                    if (result != null) // Überprüfe, ob das Ergebnis nicht null ist
+
+                    // ExecuteScalar: holt den ersten Wert der ersten Zeile (oder null).
+                    var result = command.ExecuteScalar();
+                    if (result != null)
                     {
-                        zeichnungspfad = result.ToString(); // Setze den Zeichnungspfad auf den Wert aus der Datenbank
-                        lblPfad.Text = zeichnungspfad; // Setze den Text des Labels auf den Zeichnungspfad
+                        zeichnungspfad = result.ToString();
+                        lblPfad.Text = zeichnungspfad;
                     }
                 }
             }
@@ -600,27 +598,28 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             return zeichnungspfad;
         }
 
-        // Funktion, wenn die Auftragsverwaltung geöffnet wird
+        // -----------------------------------------------------------------------------------------------------------------
+        // Lädt die Belag-Übersicht (links) beim Start.
+        // 1) DB abfragen → 2) Beläge bereinigen/zusammenfassen → 3) JSON speichern → 4) JSON ins Grid laden.
+        // -----------------------------------------------------------------------------------------------------------------
         private void LoadDataForDgvAuftragZuBelag()
         {
             try
             {
-                // --- 1. SQL-Abfrage ---
-                // Hole aus der Datenbank alle Aufträge, deren AVO-Info "Vergüten" enthält,
-                // gruppiert nach txta_avoinfo, und zähle jeweils die Anzahl der Aufträge (AVOs).
+                // ----- 1. SQL: alle Vergüten-Beläge gruppiert mit Anzahl AVOs -----
                 string query = @"
                 SELECT
                     txta_avoinfo AS Belag,
-                COUNT(DISTINCT pdno_prodnr) AS AVOs
+                    COUNT(DISTINCT pdno_prodnr) AS AVOs
                 FROM
                     LN_ProdOrders_PRD
                 WHERE
                     opsta_avostat IN ('Active', 'Planned', 'Released')
-                AND txta_avoinfo LIKE '%Vergüten%'
+                    AND txta_avoinfo LIKE '%Vergüten%'
                 GROUP BY
                     txta_avoinfo
                 HAVING
-                COUNT(DISTINCT pdno_prodnr) > 0
+                    COUNT(DISTINCT pdno_prodnr) > 0
                 ORDER BY
                     Belag ASC;
                 ";
@@ -631,45 +630,35 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
                 try
                 {
-                    // Öffne die Datenbankverbindung und fülle das DataTable mit den Ergebnissen
                     sqlConnectionVerwaltung.Open();
                     adapter.Fill(dataTable);
                 }
                 catch (SqlException sqlEx)
                 {
-                    // Fehlerbehandlung bei Problemen mit der SQL-Abfrage
                     MessageBox.Show($"SQL Fehler beim Laden der Belag-Daten: {sqlEx.Message}", "Datenbankfehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
                 finally
                 {
-                    // Stelle sicher, dass die Verbindung am Ende wieder geschlossen wird
                     if (sqlConnectionVerwaltung != null && sqlConnectionVerwaltung.State == ConnectionState.Open)
                     {
                         sqlConnectionVerwaltung.Close();
                     }
                 }
 
-                // --- 2. Nachbearbeitung der Daten ---
-                // Ziel: Belag-Namen vereinheitlichen und gleiche Beläge zusammenfassen (z.B. B103 == B-103)
-
-                // Erzeuge ein Dictionary, um Beläge zu sammeln: Key = gereinigter Belag (z.B. "B103"), Value = Summe AVOs
+                // ----- 2. Bereinigung: gleiche Beläge zusammenfassen (B103 == B-103) -----
                 Dictionary<string, int> belagCounts = new Dictionary<string, int>();
 
                 foreach (DataRow row in dataTable.Rows)
                 {
-                    // Originaler Belag-Text aus der Datenbank
                     string originalBelag = row["Belag"].ToString();
                     int avos = Convert.ToInt32(row["AVOs"]);
 
-                    // Belag-Text bereinigen (siehe CleanBelag-Methode unten)
                     string cleanedBelag = CleanBelag(originalBelag);
-
-                    // Wenn kein gültiger Belag gefunden wurde, überspringen
                     if (string.IsNullOrEmpty(cleanedBelag))
                         continue;
 
-                    // Belag in Dictionary einfügen oder AVOs dazu addieren, falls schon vorhanden
+                    // Falls Belag noch nicht im Dictionary → mit 0 initialisieren, dann AVOs aufaddieren.
                     if (!belagCounts.ContainsKey(cleanedBelag))
                     {
                         belagCounts[cleanedBelag] = 0;
@@ -677,12 +666,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     belagCounts[cleanedBelag] += avos;
                 }
 
-                // --- 3. Neue bereinigte DataTable aufbauen ---
+                // ----- 3. Neue saubere DataTable bauen -----
                 DataTable cleanedTable = new DataTable();
-                cleanedTable.Columns.Add("Belag", typeof(string)); // Spalte für Belag (z.B. "B103")
-                cleanedTable.Columns.Add("AVOs", typeof(int));      // Spalte für Anzahl AVOs
+                cleanedTable.Columns.Add("Belag", typeof(string));
+                cleanedTable.Columns.Add("AVOs", typeof(int));
 
-                // Werte aus dem Dictionary in die neue Tabelle übernehmen
                 foreach (var item in belagCounts)
                 {
                     DataRow newRow = cleanedTable.NewRow();
@@ -691,13 +679,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     cleanedTable.Rows.Add(newRow);
                 }
 
-                // --- 4. Ergebnisse als JSON speichern ---
-                // Ziel: Die aufbereiteten Beläge in eine JSON-Datei schreiben
+                // ----- 4. Tabelle als JSON speichern (Zwischenablage / Debugging-Zweck) -----
                 string jsonFilePath = "GeladeneBelaege.json";
-                string jsonData = JsonConvert.SerializeObject(cleanedTable, Formatting.Indented); // JSON schön formatiert
+                string jsonData = JsonConvert.SerializeObject(cleanedTable, Formatting.Indented);
                 File.WriteAllText(jsonFilePath, jsonData);
 
-                // --- 5. JSON-Datei lesen und ins DataGridView laden ---
+                // ----- 5. JSON wieder einlesen und ins Grid binden -----
                 if (File.Exists(jsonFilePath))
                 {
                     string json = File.ReadAllText(jsonFilePath);
@@ -710,18 +697,17 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     MessageBox.Show($"JSON-Datei '{jsonFilePath}' nicht gefunden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
-                // --- 6. DataGridView-Optik einstellen ---
+                // ----- 6. Optik des Grids einstellen -----
                 if (DgvLadeBelaege.DataSource != null)
                 {
-                    DgvLadeBelaege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Spalten füllen automatisch die Breite
+                    DgvLadeBelaege.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
                     if (DgvLadeBelaege.Columns.Contains("AVOs"))
                     {
-                        DgvLadeBelaege.Columns["AVOs"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; // AVO-Zahlen zentrieren
-                        DgvLadeBelaege.Columns["AVOs"].DefaultCellStyle.Format = "N0"; // Zahlenformat ohne Dezimalstellen
+                        DgvLadeBelaege.Columns["AVOs"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                        DgvLadeBelaege.Columns["AVOs"].DefaultCellStyle.Format = "N0";
                     }
 
-                    // Alle Spaltenüberschriften zentrieren
                     foreach (DataGridViewColumn column in DgvLadeBelaege.Columns)
                     {
                         column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -730,139 +716,129 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
             catch (JsonException jsonEx)
             {
-                // Fehlerbehandlung bei Problemen mit JSON-Verarbeitung
                 MessageBox.Show($"JSON Fehler beim Laden der Belag-Daten: {jsonEx.Message}", "JSON Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 DgvLadeBelaege.DataSource = null;
             }
             catch (Exception ex)
             {
-                // Allgemeine Fehlerbehandlung
                 MessageBox.Show($"Allgemeiner Fehler in LoadDataForDgvAuftragZuBelag: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 DgvLadeBelaege.DataSource = null;
             }
         }
 
-        // Wenn auf Resett Auftrag geklickt wird, wird die Auftragsnummer aus der JSON-Datei gelöscht
+        // -----------------------------------------------------------------------------------------------------------------
+        // "Auftrag abschließen": Auftragsnummer aus letzteAuftragsnummern.json entfernen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void ResettAuftrag_Click(object sender, EventArgs e)
         {
-            // Die ausgewählte Zeile aus dem DataGridView holen
+            // [0] = erste markierte Zeile.
             var selectedRow = DgvAnsichtAuftraege.SelectedRows[0];
-
-            // Die Auftragsnummer aus der Zelle "Auftragsnr." holen
             string auftragsNummer = selectedRow.Cells["Auftragsnr."].Value.ToString();
 
             string jsonPfad = "letzteAuftragsnummern.json";
 
-            // Überprüfen, ob die JSON-Datei existiert
             if (File.Exists(jsonPfad))
             {
                 try
                 {
-                    // Den Inhalt der JSON-Datei lesen
                     string jsonInhalt = File.ReadAllText(jsonPfad);
-
-                    // Die Auftragsnummern aus der JSON-Datei deserialisieren
                     List<string> gespeicherteNummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
 
-                    // Prüfen, ob die Auftragsnummer in der Liste enthalten ist
                     if (gespeicherteNummern.Contains(auftragsNummer))
                     {
-                        // Die Auftragsnummer aus der Liste entfernen
                         gespeicherteNummern.Remove(auftragsNummer);
 
-                        // Die aktualisierte Liste wieder in die JSON-Datei schreiben
+                        // Aktualisierte Liste zurückschreiben.
                         string neuerJsonInhalt = JsonConvert.SerializeObject(gespeicherteNummern, Formatting.Indented);
                         File.WriteAllText(jsonPfad, neuerJsonInhalt);
 
-                        // Optional: Nachricht anzeigen, dass die Auftragsnummer gelöscht wurde
                         MessageBox.Show($"Auftragsnummer {auftragsNummer} wurde aus der gestarteten Auftragsliste gelöscht.", "Auftrag abgeschlossen", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // Anzeige aktualisieren.
                         UpdateDgvAnsichtAuftraege2();
-                        // Label aktualisieren
                         ZaehleGestarteteAuftraege();
                     }
                     else
                     {
-                        // Optional: Nachricht anzeigen, falls die Auftragsnummer nicht in der Datei gefunden wurde
                         MessageBox.Show($"Auftragsnummer {auftragsNummer} wurde nicht in der gestarteten Auftragsliste gefunden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Fehlerbehandlung
                     MessageBox.Show($"Fehler beim Bearbeiten der JSON-Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
-                // Optional: Nachricht anzeigen, falls die JSON-Datei nicht existiert
                 MessageBox.Show($"Die Datei '{jsonPfad}' existiert nicht.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        // Wenn auf Resett Dringend geklickt wird dann wird die ausgewählte Zeile aus Ainsicht_Bildschirm_Shopfloor und Ansicht_Bildschirm gelöscht
+        // -----------------------------------------------------------------------------------------------------------------
+        // "Resett Dringend": markierten Auftrag aus den Bildschirm-Anzeigetabellen löschen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void ResettDringend_Click(object sender, EventArgs e)
         {
-            // Überprüfen, ob eine Zeile im DataGridView ausgewählt ist
             if (DgvAnsichtAuftraege.CurrentRow != null)
             {
-                // Auftragsnummer aus der ausgewählten Zeile abrufen
                 string auftragsNr = DgvAnsichtAuftraege.CurrentRow.Cells["Auftragsnr."].Value?.ToString();
-                // Artikelnummer aus der ausgewählten Zeile abrufen
                 string artikel = DgvAnsichtAuftraege.CurrentRow.Cells["Artikel"].Value?.ToString();
-                // Überprüfen, ob Auftragsnummer und Artikelnummer nicht null oder leer sind
+
                 if (!string.IsNullOrEmpty(auftragsNr) && !string.IsNullOrEmpty(artikel))
                 {
-                    // Methode aufrufen, um die Daten in die Ansicht_Bildschirm-Tabelle zu speichern
                     DeleteFromAnsichtBildschirm(auftragsNr, artikel);
                     UpdateDgvAnsichtAuftraege2();
                 }
             }
         }
 
-        // Methode zum Speichern von Daten in die Ansicht_Bildschirm-Tabelle
+        // -----------------------------------------------------------------------------------------------------------------
+        // Speichert eine neue Bildschirm-Anzeige (Dringend 1 oder 2) in beide DBs:
+        //  - holt zuerst die Belag-Bezeichnungen aus Serienlinsen
+        //  - fügt dann je einen INSERT in beide Tabellen ein.
+        // -----------------------------------------------------------------------------------------------------------------
         private void SaveToAnsichtBildschirm(string auftragsNr, string artikel, string dringendWert)
         {
             try
             {
-                // SQL-Abfrage, um die Daten aus der Serienlinsen-Tabelle abzurufen
+                // --- 1) Beläge je Seite aus Serienlinsen abfragen ---
                 string query = @"
                     SELECT SEITE, Belag1
                     FROM Serienlinsen
                     WHERE ARTNR = @Artikel
                     AND Status = 'Serie'";
 
-                // Dictionary zum Speichern der abgerufenen Daten
                 Dictionary<int, string> belagDict = new Dictionary<int, string>();
 
-                // SQL-Befehl vorbereiten und Parameter hinzufügen
                 using (SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltungAlt))
                 {
                     command.Parameters.AddWithValue("@Artikel", artikel);
 
-                    // Verbindung öffnen und Daten abrufen
                     sqlConnectionVerwaltungAlt.Open();
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
+                        // Reader liefert Zeile für Zeile.
                         while (reader.Read())
                         {
-                            // Daten aus der Datenbank abrufen und im Dictionary speichern
                             string seite = reader.GetString(reader.GetOrdinal("SEITE"));
                             string belag1 = reader.GetString(reader.GetOrdinal("Belag1"));
+                            // Im Dictionary speichern (Schlüssel = Seite als int).
                             belagDict[int.Parse(seite)] = belag1;
                         }
                     }
                     sqlConnectionVerwaltungAlt.Close();
                 }
-                // Werte für die Seiten abrufen oder Standardwerte setzen
+
+                // Werte je Seite holen, mit Standard "-" wenn nicht vorhanden.
                 string seite1 = belagDict.ContainsKey(1) ? belagDict[1] : "-";
                 string seite2 = belagDict.ContainsKey(2) ? belagDict[2] : "-";
                 string seite0 = belagDict.ContainsKey(0) ? belagDict[0] : "-";
-                // SQL-Abfrage zum Einfügen der Daten in die Ainsicht_Bildschirm-Tabelle
-                string insertQueryAlt = @"
-        INSERT INTO Ainsicht_Bildschirm (Auftrag, Artikel, Seite_1, Seite_2, Seite_0, Dringend)
-        VALUES (@Auftrag, @Artikel, @Seite1, @Seite2, @Seite0, @Dringend)";
 
-                // SQL-Befehl vorbereiten und Parameter hinzufügen
+                // --- 2) INSERT in alte DB ---
+                string insertQueryAlt = @"
+                    INSERT INTO Ainsicht_Bildschirm (Auftrag, Artikel, Seite_1, Seite_2, Seite_0, Dringend)
+                    VALUES (@Auftrag, @Artikel, @Seite1, @Seite2, @Seite0, @Dringend)";
+
                 using (SqlCommand insertCommand = new SqlCommand(insertQueryAlt, sqlConnectionVerwaltungAlt))
                 {
                     insertCommand.Parameters.AddWithValue("@Auftrag", auftragsNr);
@@ -871,18 +847,17 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     insertCommand.Parameters.AddWithValue("@Seite2", seite2);
                     insertCommand.Parameters.AddWithValue("@Seite0", seite0);
                     insertCommand.Parameters.AddWithValue("@Dringend", dringendWert);
-                    // Verbindung öffnen und Daten einfügen
+
                     sqlConnectionVerwaltungAlt.Open();
                     insertCommand.ExecuteNonQuery();
                     sqlConnectionVerwaltungAlt.Close();
                 }
 
-                // SQL-Abfrage zum Einfügen der Daten in die Ansicht_Bildschirm-Tabelle
+                // --- 3) INSERT in neue DB (analog, Spalte heißt hier "Teilenummer") ---
                 string insertQuery = @"
-        INSERT INTO Ansicht_Bildschirm (Auftrag, Teilenummer, Seite_1, Seite_2, Seite_0, Dringend)
-        VALUES (@Auftrag, @Teilenummer, @Seite1, @Seite2, @Seite0, @Dringend)";
+                    INSERT INTO Ansicht_Bildschirm (Auftrag, Teilenummer, Seite_1, Seite_2, Seite_0, Dringend)
+                    VALUES (@Auftrag, @Teilenummer, @Seite1, @Seite2, @Seite0, @Dringend)";
 
-                // SQL-Befehl vorbereiten und Parameter hinzufügen
                 using (SqlCommand insertCommand = new SqlCommand(insertQuery, sqlConnectionVerwaltung))
                 {
                     insertCommand.Parameters.AddWithValue("@Auftrag", auftragsNr);
@@ -892,7 +867,6 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     insertCommand.Parameters.AddWithValue("@Seite0", seite0);
                     insertCommand.Parameters.AddWithValue("@Dringend", dringendWert);
 
-                    // Verbindung öffnen und Daten einfügen
                     sqlConnectionVerwaltung.Open();
                     insertCommand.ExecuteNonQuery();
                     sqlConnectionVerwaltung.Close();
@@ -900,168 +874,140 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
             catch (Exception ex)
             {
-                // Fehlerbehandlung
                 MessageBox.Show($"Fehler beim Speichern der Daten: {ex.Message}");
             }
             finally
             {
-                // Sicherstellen, dass die Verbindungen geschlossen werden
-                if (sqlConnectionVerwaltungAlt.State == ConnectionState.Open)
-                {
-                    sqlConnectionVerwaltungAlt.Close();
-                }
-                if (sqlConnectionVerwaltung.State == ConnectionState.Open)
-                {
-                    sqlConnectionVerwaltung.Close();
-                }
+                if (sqlConnectionVerwaltungAlt.State == ConnectionState.Open) sqlConnectionVerwaltungAlt.Close();
+                if (sqlConnectionVerwaltung.State == ConnectionState.Open) sqlConnectionVerwaltung.Close();
             }
         }
 
-        // Wenn auf Serienlinse geklickt wird geht das Fenster mit allen Informationen zu der Serienlinse auf
+        // -----------------------------------------------------------------------------------------------------------------
+        // "Serienlinse" im Kontextmenü → Stammdaten-Fenster für (Artikel, Seite) öffnen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void Serienlinse_Click(object sender, EventArgs e)
         {
-            // Überprüfen, ob eine Zeile im DataGridView ausgewählt ist
             if (DgvAnsichtAuftraege.CurrentRow != null)
             {
-                // Artikelnummer und Seite aus der ausgewählten Zeile abrufen
                 string artikelNr = DgvAnsichtAuftraege.CurrentRow.Cells["Artikel"].Value?.ToString();
                 string seite = DgvAnsichtAuftraege.CurrentRow.Cells["Seite"].Value?.ToString();
 
-                // Überprüfen, ob Artikelnummer und Seite nicht null oder leer sind
                 if (!string.IsNullOrEmpty(artikelNr) && !string.IsNullOrEmpty(seite))
                 {
-                    // Das Formular öffnen und die Artikelnummer und Seite übergeben
                     Form_ArtikelPrototypAendern artikelPrototypAendern = new Form_ArtikelPrototypAendern(artikelNr, seite);
                     artikelPrototypAendern.ShowDialog();
                 }
             }
         }
 
-        // Wenn auf ignoreAuftrag geklickt wird, dann wird der Auftrag in einer JSON-Datei gespeichert und nicht mehr in der Tabelle angezeigt
+        // -----------------------------------------------------------------------------------------------------------------
+        // "Auftrag ignorieren": Auftragsnummer in IgnorierteAuftragsnummern.json aufnehmen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void IgnoreAuftrag_Click(object sender, EventArgs e)
         {
-            // Die ausgewählte Zeile aus dem DataGridView holen
             var selectedRow = DgvAnsichtAuftraege.SelectedRows[0];
-            // Die Auftragsnummer aus der Zelle "Auftragsnr." holen
             string auftragsNummer = selectedRow.Cells["Auftragsnr."].Value.ToString();
+
             string jsonPfad = "IgnorierteAuftragsnummern.json";
             List<string> ignorierteNummern = new List<string>();
-            // Überprüfen, ob die JSON-Datei existiert
+
+            // Bestehende Liste laden, falls vorhanden.
             if (File.Exists(jsonPfad))
             {
                 try
                 {
-                    // Den Inhalt der JSON-Datei lesen
                     string jsonInhalt = File.ReadAllText(jsonPfad);
-                    // Die Auftragsnummern aus der JSON-Datei deserialisieren
                     ignorierteNummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
                 }
                 catch (Exception ex)
                 {
-                    // Fehlerbehandlung
                     MessageBox.Show($"Fehler beim Lesen der JSON-Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
-            // Prüfen, ob die Auftragsnummer bereits in der Liste ist
+
+            // Nur hinzufügen, wenn Nummer noch nicht in der Liste ist.
             if (!ignorierteNummern.Contains(auftragsNummer))
             {
-                // Die Auftragsnummer zur Liste hinzufügen
                 ignorierteNummern.Add(auftragsNummer);
                 try
                 {
-                    // Die aktualisierte Liste wieder in die JSON-Datei schreiben
                     string neuerJsonInhalt = JsonConvert.SerializeObject(ignorierteNummern, Formatting.Indented);
                     File.WriteAllText(jsonPfad, neuerJsonInhalt);
-                    // Optional: Nachricht anzeigen, dass die Auftragsnummer ignoriert wurde
+
                     MessageBox.Show($"Auftragsnummer {auftragsNummer} wurde zur Ignorierliste hinzugefügt.", "Auftrag ignoriert", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     UpdateDgvAnsichtAuftraege2();
                 }
                 catch (Exception ex)
                 {
-                    // Fehlerbehandlung
                     MessageBox.Show($"Fehler beim Schreiben der JSON-Datei: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else
             {
-                // Optional: Nachricht anzeigen, dass diese Auftragsnummer nun ignoriert wird
                 MessageBox.Show($"Auftragsnummer {auftragsNummer} ist bereits in der Ignorierliste.", "Auftrag bereits ignoriert", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
-        // Wenn ich mit Rechtsklick auf Copy AuftragsNr klicke, dann wird die Auftragsnummer in die Zwischenablage kopiert
+        // -----------------------------------------------------------------------------------------------------------------
+        // "Auftragsnummer kopieren" → Wert in die Zwischenablage legen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void CopyAuftragsNr_Click(object sender, EventArgs e)
         {
-            // Überprüfen, ob eine Zeile im DataGridView ausgewählt ist
             if (DgvAnsichtAuftraege.CurrentRow != null)
             {
-                // Auftragsnummer aus der ausgewählten Zeile abrufen
                 string auftragsNr = DgvAnsichtAuftraege.CurrentRow.Cells["Auftragsnr."].Value?.ToString();
-                // Überprüfen, ob die Auftragsnummer nicht null oder leer ist
                 if (!string.IsNullOrEmpty(auftragsNr))
                 {
-                    // Auftragsnummer in die Zwischenablage kopieren
-                    Clipboard.SetText(auftragsNr);
-                    // Optional: Nachricht anzeigen, dass die Auftragsnummer kopiert wurde
+                    Clipboard.SetText(auftragsNr); // Zwischenablage befüllen
                     MessageBox.Show($"Auftragsnummer {auftragsNr} wurde in die Zwischenablage kopiert.", "Kopiert", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
 
-        // Wenn auf Setze Dringend 1 geklickt wird
+        // -----------------------------------------------------------------------------------------------------------------
+        // "Setze Dringend 1": prüft, ob bereits 1/2 gesetzt ist – sonst Eintrag mit Wert "1" speichern.
+        // -----------------------------------------------------------------------------------------------------------------
         private void SetzeDringend1_Click(object sender, EventArgs e)
         {
-            // Auftragsnummer aus der ausgewählten Zeile abrufen
             string auftragsNr = DgvAnsichtAuftraege.CurrentRow.Cells["Auftragsnr."].Value?.ToString();
-            // Artikelnummer aus der ausgewählten Zeile abrufen
             string artikel = DgvAnsichtAuftraege.CurrentRow.Cells["Artikel"].Value?.ToString();
-            // Dringend-Status aus der ausgewählten Zeile abrufen
             string dringendStatus = DgvAnsichtAuftraege.CurrentRow.Cells["Dringend"].Value?.ToString();
 
-            // Überprüfen, ob Auftragsnummer und Artikelnummer nicht null oder leer sind
             if (!string.IsNullOrEmpty(auftragsNr) && !string.IsNullOrEmpty(artikel))
             {
-                // Überprüfen, ob bereits ein Dringend-Status gesetzt ist
                 if (dringendStatus == "1" || dringendStatus == "2")
                 {
-                    // Warnung anzeigen
                     MessageBox.Show("Es ist bereits ein Dringend-Status gesetzt. Bitte setzen Sie den Status zurück, bevor Sie einen neuen Dringend-Status setzen.", "Warnung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 else
                 {
-                    // Methode aufrufen, um die Daten in die Ansicht_Bildschirm-Tabelle zu speichern
                     SaveToAnsichtBildschirm(auftragsNr, artikel, "1");
                     UpdateDgvAnsichtAuftraege2();
                 }
             }
         }
 
-        // Wenn auf Setze Dringend 2 geklickt wird
+        // -----------------------------------------------------------------------------------------------------------------
+        // "Setze Dringend 2": analog zu Dringend 1, nur Wert "2".
+        // -----------------------------------------------------------------------------------------------------------------
         private void SetzeDringend2_Click(object sender, EventArgs e)
         {
-            // Überprüfen, ob eine Zeile im DataGridView ausgewählt ist
             if (DgvAnsichtAuftraege.CurrentRow != null)
             {
-                // Auftragsnummer aus der ausgewählten Zeile abrufen
                 string auftragsNr = DgvAnsichtAuftraege.CurrentRow.Cells["Auftragsnr."].Value?.ToString();
-                // Artikelnummer aus der ausgewählten Zeile abrufen
                 string artikel = DgvAnsichtAuftraege.CurrentRow.Cells["Artikel"].Value?.ToString();
-                // Dringend-Status aus der ausgewählten Zeile abrufen
                 string dringendStatus = DgvAnsichtAuftraege.CurrentRow.Cells["Dringend"].Value?.ToString();
 
-                // Überprüfen, ob Auftragsnummer und Artikelnummer nicht null oder leer sind
                 if (!string.IsNullOrEmpty(auftragsNr) && !string.IsNullOrEmpty(artikel))
                 {
-                    // Überprüfen, ob bereits ein Dringend-Status gesetzt ist
                     if (dringendStatus == "1" || dringendStatus == "2")
                     {
-                        // Warnung anzeigen
                         MessageBox.Show("Es ist bereits ein Dringend-Status gesetzt. Bitte setzen Sie den Status zurück, bevor Sie einen neuen Dringend-Status setzen.", "Warnung", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                     else
                     {
-                        // Methode aufrufen, um die Daten in die Ansicht_Bildschirm-Tabelle zu speichern
                         SaveToAnsichtBildschirm(auftragsNr, artikel, "2");
                         UpdateDgvAnsichtAuftraege2();
                     }
@@ -1069,11 +1015,17 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        // Funktion zum Aktualisieren des DataGridView dGvAnsichtAuftraege basierend auf der Auswahl in dGvLadeBelaege
+        // -----------------------------------------------------------------------------------------------------------------
+        // Lädt die Aufträge zum gewählten Belag aus der DB (große, optimierte Abfrage).
+        // - holt VorStk per OUTER APPLY
+        // - JOIN mit Serienlinsen (Material) und Ansicht_Bildschirm (Dringend)
+        // - ergänzt anschließend die Spalte "Zukauf" anhand einer JSON-Datei
+        // -----------------------------------------------------------------------------------------------------------------
         private void UpdateDgvAnsichtAuftraege(string selectedBelagValue)
         {
             try
             {
+                // Wenn kein Belag gewählt → Tabelle leeren.
                 if (string.IsNullOrWhiteSpace(selectedBelagValue))
                 {
                     _auftraegeDataTable = null;
@@ -1081,12 +1033,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     return;
                 }
 
-                // Belag-Muster vorbereiten: z. B. "B103" -> suchen nach "%B103%" und "%B-103%"
+                // Zwei Suchmuster: "B103" und "B-103". ToUpperInvariant = sprachunabhängige Großschreibung.
                 var belagOhneBindestrich = selectedBelagValue.ToUpperInvariant();
                 var belagMitBindestrich = belagOhneBindestrich.Insert(1, "-");
 
-                // EINZIGE Abfrage: Lädt Hauptdaten + VorStk (via APPLY) + Material (JOIN Serienlinsen) + Dringend (JOIN Ansicht_Bildschirm)
-                // Wichtig: Parameter-Typen explizit setzen (bessere Planqualität als AddWithValue)
+                // const string = SQL-Statement (mit Common Table Expression "WITH base").
+                // OUTER APPLY hängt zu jeder Zeile a den passenden Vorbereiten-VorStk-Wert dran.
                 const string sql = @"
                 ;WITH base AS (
                     SELECT
@@ -1096,7 +1048,6 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                         a.mitm_teilenr                        AS Artikel,
                         a.opsta_avostat                       AS Status,
                         a.txta_avoinfo                        AS AVOinfo,
-                        /* Seite wie in deiner bisherigen Logik */
                         CASE
                             WHEN a.txta_avoinfo LIKE '%III%' OR a.txta_avoinfo LIKE '%Iii%' OR a.txta_avoinfo LIKE '%IIi%' OR a.txta_avoinfo LIKE '%iii%' OR a.txta_avoinfo LIKE '%iII%' THEN '0'
                             WHEN a.txta_avoinfo LIKE '%Ii%'  OR a.txta_avoinfo LIKE '%iI%'  OR a.txta_avoinfo LIKE '%ii%'  OR a.txta_avoinfo LIKE '%II%'  THEN '2'
@@ -1150,11 +1101,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
                 var dt = new DataTable();
 
-                // Lokale Connection (ConnectionString aus deinem vorhandenen Feld)
+                // Eigene Connection (gleiche ConnectionString-Daten wie das Klassenfeld).
                 using (var conn = new SqlConnection(sqlConnectionVerwaltung.ConnectionString))
                 using (var cmd = new SqlCommand(sql, conn))
                 {
-                    // Parameter mit Typ/Länge – vermeidet Suboptimalität durch AddWithValue
+                    // Parameter mit explizitem Typ + Länge → bessere Performance/Indexnutzung als AddWithValue.
                     var p1 = cmd.Parameters.Add("@BelagPattern1", SqlDbType.NVarChar, 200);
                     p1.Value = "%" + belagOhneBindestrich + "%";
                     var p2 = cmd.Parameters.Add("@BelagPattern2", SqlDbType.NVarChar, 200);
@@ -1167,7 +1118,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     }
                 }
 
-                // RL/TL (Zukauf) aus JSON nachtragen – wie bisher
+                // ----- RL/TL aus JSON nachtragen → Spalte "Zukauf" -----
                 RLTLData rltlData;
                 var jsonFilePath2 = "rltl_data.json";
                 if (File.Exists(jsonFilePath2))
@@ -1191,13 +1142,13 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                         row["Zukauf"] = "T-Lager";
                 }
 
-                // Ergebnis im Formular übernehmen
+                // Tabelle merken (für Filterung).
                 _auftraegeDataTable = dt;
 
-                // (Optional) JSON-Dump nur wenn du es brauchst – sonst auskommentieren:
+                // (Optional) Daten als JSON dumpen – aktuell deaktiviert.
                 // File.WriteAllText("AnsichtAuftraege.json", JsonConvert.SerializeObject(_auftraegeDataTable, Formatting.Indented));
 
-                // Anzeigen & formatieren
+                // Anzeigen + altes Bild aus PictureBox entfernen.
                 ApplyFilterAndDisplayData();
                 PictureBoxZeichnung.Image = null;
             }
@@ -1209,15 +1160,14 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-
-        // Hilfsfunktion um das DgvAnsichtAuftraege zu aktualisieren
+        // -----------------------------------------------------------------------------------------------------------------
+        // Bequemlichkeits-Wrapper: nimmt den aktuell markierten Belag und ruft UpdateDgvAnsichtAuftraege damit auf.
+        // -----------------------------------------------------------------------------------------------------------------
         private void UpdateDgvAnsichtAuftraege2()
         {
             if (DgvLadeBelaege.CurrentRow != null)
             {
-                // Wert, der bei Belag steht, abrufen
                 selectedBelagValue = DgvLadeBelaege.CurrentRow.Cells["Belag"].Value?.ToString();
-                // Nur falls der Wert nicht null ist, wird er weiterverarbeitet
                 if (!string.IsNullOrEmpty(selectedBelagValue))
                 {
                     UpdateDgvAnsichtAuftraege(selectedBelagValue);
@@ -1225,37 +1175,34 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        // Methode zum Abrufen der Daten zu einem Auftrag und zur Aktualisierung des DataGridViews
+        // -----------------------------------------------------------------------------------------------------------------
+        // Detail-Grid (DgvInformationZuAuftrag) für eine Auftragsnummer befüllen + bestimmte Spalten ausblenden/formatieren.
+        // -----------------------------------------------------------------------------------------------------------------
         private void UpdateDgvInformationZuAuftrag(string auftragsNummer)
         {
-            // SQL-Abfrage zur Auswahl aller Datensätze mit passender Auftragsnummer
             string query = "SELECT * FROM LN_ProdOrders_PRD WHERE pdno_prodnr = @Auftragsnummer";
-
             DataTable dataTable = new DataTable();
 
             try
             {
-                // SQL-Befehl mit Parameter zum Schutz vor SQL-Injection
                 using (SqlCommand command = new SqlCommand(query, sqlConnectionVerwaltung))
                 {
                     command.Parameters.AddWithValue("@Auftragsnummer", auftragsNummer);
 
-                    // Adapter initialisieren und Daten abrufen
                     SqlDataAdapter adapter = new SqlDataAdapter(command);
-                    adapter.Fill(dataTable);
+                    adapter.Fill(dataTable); // SqlDataAdapter öffnet/schließt Verbindung automatisch
                 }
 
-                // Daten im DataGridView anzeigen
                 DgvInformationZuAuftrag.DataSource = dataTable;
 
-                // Nicht relevante Spalten ausblenden
+                // ---- Nicht relevante Spalten ausblenden ----
                 string[] auszublendendeSpalten = new string[]
                 {
-            "pdsta_prodstat", "refo_avotext", "mtyp_anlage", "trdt_startdate", "cwoc_kst",
-            "opno2_voravo", "rutm2_sollzeit", "sutm_sollruest", "rutm_vorgabezeit",
-            "dsca_teilebez", "srce_itemquelle", "goca_warentraeger", "pkdf_transportbehaelter",
-            "qhnd1_stk_teilelager", "qhnd2_lagerbestand", "qana_bereitstellbestand",
-            "demand_jahresbedarf", "created_date", "Last_modified", "import_date"
+                    "pdsta_prodstat", "refo_avotext", "mtyp_anlage", "trdt_startdate", "cwoc_kst",
+                    "opno2_voravo", "rutm2_sollzeit", "sutm_sollruest", "rutm_vorgabezeit",
+                    "dsca_teilebez", "srce_itemquelle", "goca_warentraeger", "pkdf_transportbehaelter",
+                    "qhnd1_stk_teilelager", "qhnd2_lagerbestand", "qana_bereitstellbestand",
+                    "demand_jahresbedarf", "created_date", "Last_modified", "import_date"
                 };
 
                 foreach (string spaltenName in auszublendendeSpalten)
@@ -1266,13 +1213,13 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     }
                 }
 
-                // Formatierung: Datum
+                // Datumsspalte formatieren.
                 if (DgvInformationZuAuftrag.Columns.Contains("trdf_enddate"))
                 {
                     DgvInformationZuAuftrag.Columns["trdf_enddate"].DefaultCellStyle.Format = "dd.MM.yyyy";
                 }
 
-                // Formatierung: Zahlen ohne Nachkommastellen
+                // Zahlen ohne Nachkommastellen.
                 string[] zahlenspalten = { "qplo_sollstk", "qcmp_iststk", "qcmp2_vorstk" };
                 foreach (string spalte in zahlenspalten)
                 {
@@ -1282,17 +1229,14 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     }
                 }
 
-                // Spaltenbreite automatisch an Inhalt anpassen
                 DgvInformationZuAuftrag.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             }
             catch (Exception ex)
             {
-                // Fehlerausgabe
                 MessageBox.Show("Fehler beim Abrufen der Daten: " + ex.Message);
             }
             finally
             {
-                // Verbindung sicher schließen
                 if (sqlConnectionVerwaltung.State == ConnectionState.Open)
                 {
                     sqlConnectionVerwaltung.Close();
@@ -1300,8 +1244,9 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-
-        // Zählt die gestarteten Aufträge die in der Json Datei stehen
+        // -----------------------------------------------------------------------------------------------------------------
+        // Zählt eindeutige Auftragsnummern in letzteAuftragsnummern.json und schreibt das Ergebnis ins Label.
+        // -----------------------------------------------------------------------------------------------------------------
         private void ZaehleGestarteteAuftraege()
         {
             string jsonPfad = "letzteAuftragsnummern.json";
@@ -1313,10 +1258,9 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     string jsonInhalt = File.ReadAllText(jsonPfad);
                     List<string> auftragsnummern = JsonConvert.DeserializeObject<List<string>>(jsonInhalt) ?? new List<string>();
 
-                    // Eindeutige Auftragsnummern zählen
+                    // .Distinct() entfernt Duplikate, .Count() zählt die übrigen.
                     int anzahlEindeutig = auftragsnummern.Distinct().Count();
 
-                    // Ergebnis im Label anzeigen
                     lblGestarteAuftraege.Text = anzahlEindeutig.ToString();
                 }
                 catch (Exception ex)
@@ -1331,30 +1275,28 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             }
         }
 
-        // Hilfsmethode zum Bereinigen des Belag-Textes
+        // -----------------------------------------------------------------------------------------------------------------
+        // Baut aus dem Belag-Grid eine kleine DataTable (Belag, AVOs) zusammen.
+        // Wird verwendet, wenn das Grid keine DataTable-DataSource hat (Fallback).
+        // -----------------------------------------------------------------------------------------------------------------
         public DataTable BuildBelagTableFromGrid()
         {
-            DataTable belagTable = new DataTable(); // Neue DataTable erstellen
-            belagTable.Columns.Add("Belag", typeof(string)); // Spalte für Belag hinzufügen
-            belagTable.Columns.Add("AVOs", typeof(int)); // Spalte für AVOs hinzufügen
-            // Überprüfen, ob die erforderlichen Spalten im DataGridView vorhanden sind
+            DataTable belagTable = new DataTable();
+            belagTable.Columns.Add("Belag", typeof(string));
+            belagTable.Columns.Add("AVOs", typeof(int));
+
+            // Wenn die nötigen Spalten fehlen → leere Tabelle zurückgeben.
             if (!DgvLadeBelaege.Columns.Contains("Belag") || !DgvLadeBelaege.Columns.Contains("AVOs"))
             {
                 return belagTable;
             }
-            // Daten aus dem DataGridView in die DataTable übertragen
+
             foreach (DataGridViewRow row in DgvLadeBelaege.Rows)
             {
-                if (row.IsNewRow)
-                {
-                    continue;
-                }
-                // Belag-Text aus der Zelle "Belag" abrufen und bereinigen
+                if (row.IsNewRow) continue; // letzte leere "Neue Zeile" überspringen
+
                 string belag = row.Cells["Belag"].Value?.ToString();
-                if (string.IsNullOrWhiteSpace(belag))
-                {
-                    continue;
-                }
+                if (string.IsNullOrWhiteSpace(belag)) continue;
 
                 int avos = 0;
                 int.TryParse(row.Cells["AVOs"].Value?.ToString(), out avos);
@@ -1363,17 +1305,28 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             return belagTable;
         }
 
-        // Wenn auf den Button geklickt wird, dann öffnet sich das Fenster mit den offenen Stückzahlen
+        // -----------------------------------------------------------------------------------------------------------------
+        // Klick auf Button "Stk. offen" → entsprechendes Fenster (modal) öffnen.
+        // -----------------------------------------------------------------------------------------------------------------
         private void btnShowStkOffen_Click(object sender, EventArgs e)
         {
             Form_StkVorAvo form_StkVorAvo = new Form_StkVorAvo();
             form_StkVorAvo.ShowDialog();
         }
 
-        // Wenn auf den Rückstand Button geklickt wird, dann öffnet sich das Fenster mit dem Rückstand
+        // -----------------------------------------------------------------------------------------------------------------
+        // Klick auf Button "Rückstand":
+        //  - DataSource versuchen als DataTable zu casten und kopieren
+        //  - falls das nicht klappt: Tabelle aus dem Grid rekonstruieren (Fallback)
+        //  - Form_Rueckstand öffnen (nicht modal, .Show() → Hauptfenster bleibt bedienbar)
+        // -----------------------------------------------------------------------------------------------------------------
         private void btnRueckstand_Click(object sender, EventArgs e)
         {
+            // "as DataTable" → Cast, der bei Fehlern null liefert (wirft keine Exception).
+            // "?.Copy()" → nur wenn nicht null, kopieren.
+            // "?? ..." → falls null, nutze stattdessen die Fallback-Tabelle.
             DataTable belagTable = (DgvLadeBelaege.DataSource as DataTable)?.Copy() ?? BuildBelagTableFromGrid();
+
             Form_Rueckstand form_Rueckstand = new Form_Rueckstand(belagTable);
             form_Rueckstand.Show();
         }
