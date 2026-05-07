@@ -41,6 +41,9 @@ namespace VerwaltungKST1127
         private readonly string connectionString =
             @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Chargenprotokoll;Integrated Security=True;Encrypt=False";
 
+        private const string ConnectionString =
+            @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False";
+
         // -----------------------------------------------------------------------------------------------------------------
         // Konstruktor: läuft beim "new Form_Start()" automatisch.
         // -----------------------------------------------------------------------------------------------------------------
@@ -650,6 +653,12 @@ namespace VerwaltungKST1127
             form_RFIDWaschen.Show();
         }
 
+        private void btnDatenExportTabellen_Click(object sender, EventArgs e)
+        {
+            Form_DatenExportExcel form_DatenExportExcel = new Form_DatenExportExcel();
+            form_DatenExportExcel.Show();
+        }
+
         // -----------------------------------------------------------------------------------------------------------------
         // "Prämienbewertung" → erst Passwort abfragen, dann Excel-Datei öffnen.
         // -----------------------------------------------------------------------------------------------------------------
@@ -728,5 +737,7 @@ namespace VerwaltungKST1127
                 return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : null;
             }
         }
+
+        
     }
 }

@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -80,6 +80,7 @@
             this.BtnArtikelAendern = new System.Windows.Forms.Button();
             this.BtnRFIDAnischtWaschen = new System.Windows.Forms.Button();
             this.btnRFID = new System.Windows.Forms.Button();
+            this.btnDatenExportTabellen = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -264,7 +265,7 @@
             this.BtnLupe.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnLupe.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnLupe.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnLupe.Location = new System.Drawing.Point(1058, 581);
+            this.BtnLupe.Location = new System.Drawing.Point(945, 643);
             this.BtnLupe.Name = "BtnLupe";
             this.BtnLupe.Size = new System.Drawing.Size(105, 56);
             this.BtnLupe.TabIndex = 17;
@@ -278,7 +279,7 @@
             this.BtnHomepage.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnHomepage.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnHomepage.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnHomepage.Location = new System.Drawing.Point(945, 581);
+            this.BtnHomepage.Location = new System.Drawing.Point(1058, 581);
             this.BtnHomepage.Name = "BtnHomepage";
             this.BtnHomepage.Size = new System.Drawing.Size(107, 56);
             this.BtnHomepage.TabIndex = 18;
@@ -296,7 +297,7 @@
             this.ListBoxDocuments.ItemHeight = 15;
             this.ListBoxDocuments.Location = new System.Drawing.Point(945, 199);
             this.ListBoxDocuments.Name = "ListBoxDocuments";
-            this.ListBoxDocuments.Size = new System.Drawing.Size(218, 199);
+            this.ListBoxDocuments.Size = new System.Drawing.Size(218, 169);
             this.ListBoxDocuments.TabIndex = 19;
             this.ListBoxDocuments.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBoxDocuments_DrawItem);
             this.ListBoxDocuments.DoubleClick += new System.EventHandler(this.ListBoxDocuments_DoubleClick);
@@ -379,17 +380,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.Transparent;
             this.chartPerformance.BorderlineColor = System.Drawing.Color.Transparent;
-            chartArea1.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea1);
-            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend1.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend1);
+            chartArea2.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea2);
+            legend2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend2.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend2);
             this.chartPerformance.Location = new System.Drawing.Point(309, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartPerformance.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chartPerformance.Series.Add(series2);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -424,7 +425,7 @@
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(942, 424);
+            this.label2.Location = new System.Drawing.Point(942, 429);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(148, 17);
             this.label2.TabIndex = 30;
@@ -435,7 +436,7 @@
             this.label3.AutoSize = true;
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(942, 463);
+            this.label3.Location = new System.Drawing.Point(942, 468);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(162, 17);
             this.label3.TabIndex = 31;
@@ -447,7 +448,7 @@
             this.lblOberflaechenHeute.BackColor = System.Drawing.Color.Transparent;
             this.lblOberflaechenHeute.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOberflaechenHeute.ForeColor = System.Drawing.Color.Blue;
-            this.lblOberflaechenHeute.Location = new System.Drawing.Point(946, 442);
+            this.lblOberflaechenHeute.Location = new System.Drawing.Point(946, 447);
             this.lblOberflaechenHeute.Name = "lblOberflaechenHeute";
             this.lblOberflaechenHeute.Size = new System.Drawing.Size(16, 17);
             this.lblOberflaechenHeute.TabIndex = 32;
@@ -459,7 +460,7 @@
             this.lblOberflaechenGestern.BackColor = System.Drawing.Color.Transparent;
             this.lblOberflaechenGestern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOberflaechenGestern.ForeColor = System.Drawing.Color.Blue;
-            this.lblOberflaechenGestern.Location = new System.Drawing.Point(946, 480);
+            this.lblOberflaechenGestern.Location = new System.Drawing.Point(946, 485);
             this.lblOberflaechenGestern.Name = "lblOberflaechenGestern";
             this.lblOberflaechenGestern.Size = new System.Drawing.Size(16, 17);
             this.lblOberflaechenGestern.TabIndex = 33;
@@ -476,7 +477,7 @@
             this.BtngesamtOberflaechen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtngesamtOberflaechen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtngesamtOberflaechen.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtngesamtOberflaechen.Location = new System.Drawing.Point(945, 541);
+            this.BtngesamtOberflaechen.Location = new System.Drawing.Point(945, 546);
             this.BtngesamtOberflaechen.Name = "BtngesamtOberflaechen";
             this.BtngesamtOberflaechen.Size = new System.Drawing.Size(107, 24);
             this.BtngesamtOberflaechen.TabIndex = 34;
@@ -517,7 +518,7 @@
             this.label4.AutoSize = true;
             this.label4.BackColor = System.Drawing.Color.Transparent;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(942, 502);
+            this.label4.Location = new System.Drawing.Point(942, 507);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(171, 17);
             this.label4.TabIndex = 37;
@@ -529,7 +530,7 @@
             this.lblOberflaechenGesamt.BackColor = System.Drawing.Color.Transparent;
             this.lblOberflaechenGesamt.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOberflaechenGesamt.ForeColor = System.Drawing.Color.Blue;
-            this.lblOberflaechenGesamt.Location = new System.Drawing.Point(946, 519);
+            this.lblOberflaechenGesamt.Location = new System.Drawing.Point(946, 524);
             this.lblOberflaechenGesamt.Name = "lblOberflaechenGesamt";
             this.lblOberflaechenGesamt.Size = new System.Drawing.Size(16, 17);
             this.lblOberflaechenGesamt.TabIndex = 38;
@@ -616,6 +617,20 @@
             this.btnRFID.UseVisualStyleBackColor = false;
             this.btnRFID.Click += new System.EventHandler(this.btnRFID_Click);
             // 
+            // btnDatenExportTabellen
+            // 
+            this.btnDatenExportTabellen.BackColor = System.Drawing.Color.Silver;
+            this.btnDatenExportTabellen.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnDatenExportTabellen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnDatenExportTabellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDatenExportTabellen.Location = new System.Drawing.Point(637, 638);
+            this.btnDatenExportTabellen.Name = "btnDatenExportTabellen";
+            this.btnDatenExportTabellen.Size = new System.Drawing.Size(239, 66);
+            this.btnDatenExportTabellen.TabIndex = 45;
+            this.btnDatenExportTabellen.Text = "Daten Exporte";
+            this.btnDatenExportTabellen.UseVisualStyleBackColor = false;
+            this.btnDatenExportTabellen.Click += new System.EventHandler(this.btnDatenExportTabellen_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -624,6 +639,7 @@
             this.BackgroundImage = global::VerwaltungKST1127.Properties.Resources.StartHintergrund2;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.btnDatenExportTabellen);
             this.Controls.Add(this.btnRFID);
             this.Controls.Add(this.BtnRFIDAnischtWaschen);
             this.Controls.Add(this.BtnArtikelAendern);
@@ -726,6 +742,7 @@
         private System.Windows.Forms.Button BtnArtikelAendern;
         private System.Windows.Forms.Button BtnRFIDAnischtWaschen;
         private System.Windows.Forms.Button btnRFID;
+        private System.Windows.Forms.Button btnDatenExportTabellen;
     }
 }
 
