@@ -81,6 +81,7 @@
             this.BtnRFIDAnischtWaschen = new System.Windows.Forms.Button();
             this.btnRFID = new System.Windows.Forms.Button();
             this.btnDatenExportTabellen = new System.Windows.Forms.Button();
+            this.btnProduktionGestern = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -631,15 +632,31 @@
             this.btnDatenExportTabellen.Text = "Daten Exporte";
             this.btnDatenExportTabellen.UseVisualStyleBackColor = false;
             this.btnDatenExportTabellen.Click += new System.EventHandler(this.btnDatenExportTabellen_Click);
-            // 
+            //
+            // btnProduktionGestern
+            //
+            this.btnProduktionGestern.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(122)))), ((int)(((byte)(215)))), ((int)(((byte)(255)))));
+            this.btnProduktionGestern.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnProduktionGestern.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnProduktionGestern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnProduktionGestern.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(16)))), ((int)(((byte)(32)))));
+            this.btnProduktionGestern.Location = new System.Drawing.Point(281, 571);
+            this.btnProduktionGestern.Name = "btnProduktionGestern";
+            this.btnProduktionGestern.Size = new System.Drawing.Size(239, 66);
+            this.btnProduktionGestern.TabIndex = 46;
+            this.btnProduktionGestern.Text = "Produktion gestern";
+            this.btnProduktionGestern.UseVisualStyleBackColor = false;
+            this.btnProduktionGestern.Click += new System.EventHandler(this.btnProduktionGestern_Click);
+            //
             // Form_Start
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.BackgroundImage = global::VerwaltungKST1127.Properties.Resources.StartHintergrund2;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.btnProduktionGestern);
             this.Controls.Add(this.btnDatenExportTabellen);
             this.Controls.Add(this.btnRFID);
             this.Controls.Add(this.BtnRFIDAnischtWaschen);
@@ -744,6 +761,7 @@
         private System.Windows.Forms.Button BtnRFIDAnischtWaschen;
         private System.Windows.Forms.Button btnRFID;
         private System.Windows.Forms.Button btnDatenExportTabellen;
+        private System.Windows.Forms.Button btnProduktionGestern;
     }
 }
 

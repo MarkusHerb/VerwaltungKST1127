@@ -122,6 +122,15 @@
     <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.3.0.1\lib\netstandard2.0\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.2792.45, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.WebView2.1.0.2792.45\lib\net462\Microsoft.Web.WebView2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.WinForms, Version=1.0.2792.45, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.WebView2.1.0.2792.45\lib\net462\Microsoft.Web.WebView2.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Wpf, Version=1.0.2792.45, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.WebView2.1.0.2792.45\lib\net462\Microsoft.Web.WebView2.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -387,12 +396,19 @@
     <Compile Include="Produktionsauswertung\Form_RFIDAnsichtWaschanlagen.Designer.cs">
       <DependentUpon>Form_RFIDAnsichtWaschanlagen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Produktionsauswertung\Form_ProduktionsuebersichtGestern.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Produktionsauswertung\Form_ProduktionsuebersichtGestern.Designer.cs">
+      <DependentUpon>Form_ProduktionsuebersichtGestern.cs</DependentUpon>
+    </Compile>
     <Compile Include="Produktionsauswertung\Form_StkVorAvo.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Produktionsauswertung\Form_StkVorAvo.Designer.cs">
       <DependentUpon>Form_StkVorAvo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Produktionsauswertung\UebersichtGesternDataService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RFID\Form_RFID_Test.cs">
@@ -485,8 +501,14 @@
     <EmbeddedResource Include="Produktionsauswertung\Form_RFIDAnsichtWaschanlagen.resx">
       <DependentUpon>Form_RFIDAnsichtWaschanlagen.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Produktionsauswertung\Form_ProduktionsuebersichtGestern.resx">
+      <DependentUpon>Form_ProduktionsuebersichtGestern.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Produktionsauswertung\Form_StkVorAvo.resx">
       <DependentUpon>Form_StkVorAvo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Produktionsauswertung\Resources\Dashboard.html">
+      <LogicalName>VerwaltungKST1127.Produktionsauswertung.Resources.Dashboard.html</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -574,12 +596,14 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />
+  <Import Project="..\packages\Microsoft.Web.WebView2.1.0.2792.45\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.2792.45\build\Microsoft.Web.WebView2.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets'))" />
     <Error Condition="!Exists('..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.2792.45\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.2792.45\build\Microsoft.Web.WebView2.targets'))" />
   </Target>
   <Import Project="..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.2\build\net471\System.ValueTuple.targets')" />
 </Project>
