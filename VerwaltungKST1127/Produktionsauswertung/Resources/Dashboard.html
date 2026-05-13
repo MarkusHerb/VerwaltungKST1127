@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Produktion Gestern</title>
+<!--
+  Cockpit-Style Dashboard für "Produktion Gestern".
+  Daten werden vom WinForms-Host injiziert: window.__DASHBOARD_DATA__
+  Visualisierung: Apache ECharts (CDN). Für Offline-Betrieb kann
+  echarts.min.js neben der EXE abgelegt und der Pfad unten ersetzt werden.
+-->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg-0: #0b1020;
+    --bg-1: #11172e;
+    --bg-2: #1a2244;
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-stroke: rgba(255, 255, 255, 0.08);
+    --txt-0: #f3f6ff;
+    --txt-1: #aab1c8;
+    --txt-2: #6b7390;
+    --accent-1: #7ad7ff;   /* cyan */
+    --accent-2: #b283ff;   /* violet */
+    --accent-3: #ffd166;   /* yellow */
+    --accent-4: #06d6a0;   /* green */
+    --accent-5: #ef476f;   /* red */
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: radial-gradient(ellipse at top left, #1a2350 0%, #0b1020 60%) fixed;
+    color: var(--txt-0);
+    font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* dezenter, animierter Sternen-Hintergrund */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.5), transparent 60%),
+      radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.35), transparent 60%),
+      radial-gradient(1px 1px at 40% 50%, rgba(255,255,255,0.3), transparent 60%),
+      radial-gradient(2px 2px at 90% 30%, rgba(122,215,255,0.25), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 60s linear infinite;
+  }
+  @keyframes drift { 0%{transform:translateY(0)} 100%{transform:translateY(-40px)} }
+
+  .layout { position: relative; z-index: 1; padding: 24px 28px 40px; }
+
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px;
+  }
+  .title {
+    font-size: 26px; font-weight: 600; letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #fff 10%, var(--accent-1) 60%, var(--accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .subtitle { color: var(--txt-1); font-size: 14px; margin-top: 2px; }
+
+  /* KPI Cards mit Glassmorphism + Count-Up */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .kpi {
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 14px;
+    padding: 16px 18px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+  .kpi:hover { transform: translateY(-2px); }
+  .kpi::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    opacity: 0.85;
+  }
+  .kpi.green::before  { background: linear-gradient(90deg, var(--accent-4), var(--accent-1)); }
+  .kpi.yellow::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-5)); }
+  .kpi.red::before    { background: linear-gradient(90deg, var(--accent-5), var(--accent-2)); }
+
+  .kpi-label { color: var(--txt-2); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .kpi-value {
+    font-size: 34px; font-weight: 600; margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-suffix { font-size: 14px; color: var(--txt-1); margin-left: 4px; font-weight: 400; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 16px;
+  }
+  .panel {
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 16px;
+    padding: 16px 18px 8px;
+    backdrop-filter: blur(10px);
+  }
+  .panel-title {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--txt-1); margin: 0 0 8px;
+  }
+  .panel-title span.muted { color: var(--txt-2); text-transform: none; letter-spacing: 0; font-size: 12px; }
+
+  #heatmap     { height: 320px; }
+  #timeline    { height: 520px; }
+  #treemap     { height: 320px; }
+  #rezepte     { height: 520px; }
+
+  /* leere Daten */
+  .empty {
+    display: flex; align-items: center; justify-content: center;
+    height: 100%;
+    color: var(--txt-2); font-style: italic; font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="header">
+    <div>
+      <div class="title">Produktionsübersicht</div>
+      <div class="subtitle" id="hd-subtitle">Lade Daten...</div>
+    </div>
+    <div class="subtitle" id="hd-now"></div>
+  </div>
+
+  <!-- KPI-Karten -->
+  <div class="kpi-row">
+    <div class="kpi green">
+      <div class="kpi-label">Gesamt Stk</div>
+      <div class="kpi-value" data-target="0" id="kpi-stk">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Chargen</div>
+      <div class="kpi-value" data-target="0" id="kpi-chargen">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Proben</div>
+      <div class="kpi-value" data-target="0" id="kpi-proben">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Artikel / Rezepte</div>
+      <div class="kpi-value"><span data-target="0" id="kpi-art">0</span>
+        <span class="kpi-suffix">/ <span data-target="0" id="kpi-rez">0</span></span>
+      </div>
+    </div>
+    <div class="kpi yellow">
+      <div class="kpi-label">Produktivzeit</div>
+      <div class="kpi-value"><span data-target="0" id="kpi-prod">0</span><span class="kpi-suffix">h</span></div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Fehlerzeit</div>
+      <div class="kpi-value"><span data-target="0" id="kpi-fehler">0</span><span class="kpi-suffix">h</span></div>
+    </div>
+  </div>
+
+  <!-- Charts-Grid -->
+  <div class="grid">
+    <div class="panel" style="grid-column: 1 / 2;">
+      <div class="panel-title">Heatmap <span class="muted">— Stückzahl je Stunde × Anlage</span></div>
+      <div id="heatmap"></div>
+    </div>
+    <div class="panel" style="grid-column: 2 / 3;">
+      <div class="panel-title">Artikel-Mix <span class="muted">— Anlage → Artikel (Klick = Drilldown)</span></div>
+      <div id="treemap"></div>
+    </div>
+    <div class="panel" style="grid-column: 1 / 2;">
+      <div class="panel-title">Timeline <span class="muted">— Produktiv (grün) vs. Fehler (rot)</span></div>
+      <div id="timeline"></div>
+    </div>
+    <div class="panel" style="grid-column: 2 / 3;">
+      <div class="panel-title">Rezept-Verteilung <span class="muted">— Anzahl Chargen</span></div>
+      <div id="rezepte"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ─── Daten-Bezug ───────────────────────────────────────────────────────────
+  // Der WinForms-Host injiziert vor dem Laden window.__DASHBOARD_DATA__.
+  const data = window.__DASHBOARD_DATA__ || null;
+
+  if (!data) {
+    document.querySelector('.layout').innerHTML =
+      '<div class="empty" style="height:80vh">Keine Daten verfügbar.</div>';
+    return;
+  }
+
+  document.getElementById('hd-subtitle').textContent = data.DatumLang || data.Datum || '';
+  document.getElementById('hd-now').textContent =
+    'Stand: ' + new Date().toLocaleString('de-DE');
+
+  // ─── KPI Count-Up Animation ───────────────────────────────────────────────
+  function countUp(el, target, decimals) {
+    decimals = decimals || 0;
+    const dur = 1100;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = target * eased;
+      el.textContent = decimals > 0
+        ? val.toFixed(decimals).replace('.', ',')
+        : Math.round(val).toLocaleString('de-DE');
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  countUp(document.getElementById('kpi-stk'),     data.GesamtStk || 0);
+  countUp(document.getElementById('kpi-chargen'), data.AnzahlChargen || 0);
+  countUp(document.getElementById('kpi-proben'),  data.AnzahlProben || 0);
+  countUp(document.getElementById('kpi-art'),     data.AnzahlArtikel || 0);
+  countUp(document.getElementById('kpi-rez'),     data.AnzahlRezepte || 0);
+  countUp(document.getElementById('kpi-prod'),    data.ProduktivStunden || 0, 1);
+  countUp(document.getElementById('kpi-fehler'),  data.FehlerStunden || 0, 1);
+
+  // ─── Globale Chart-Optionen ───────────────────────────────────────────────
+  const textColor = '#aab1c8';
+  const axisLine  = 'rgba(255,255,255,0.08)';
+  const splitLine = 'rgba(255,255,255,0.05)';
+
+  const baseTooltip = {
+    backgroundColor: 'rgba(17, 23, 46, 0.95)',
+    borderColor: 'rgba(122,215,255,0.4)',
+    borderWidth: 1,
+    textStyle: { color: '#f3f6ff', fontSize: 12 },
+    extraCssText: 'backdrop-filter: blur(8px); border-radius: 8px;',
+  };
+
+  // ─── 1) Heatmap: Stunde × Anlage ──────────────────────────────────────────
+  (function renderHeatmap() {
+    const anlagen = (data.Anlagen || []).map(a => a.Name);
+    const stunden = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
+    let max = 0;
+    const zellen = (data.Heatmap || []).map(z => {
+      const v = z.Stk || 0;
+      if (v > max) max = v;
+      return [z.Stunde, anlagen.indexOf(z.Anlage), v];
+    }).filter(z => z[1] >= 0);
+
+    const chart = echarts.init(document.getElementById('heatmap'), null, { renderer: 'canvas' });
+
+    if (zellen.length === 0) {
+      document.getElementById('heatmap').innerHTML = '<div class="empty">Keine Daten</div>';
+      return;
+    }
+
+    chart.setOption({
+      tooltip: {
+        ...baseTooltip,
+        formatter: p => `<b>${anlagen[p.value[1]]}</b> · ${stunden[p.value[0]]}:00<br/>
+          <span style="color:#7ad7ff">${p.value[2].toLocaleString('de-DE')} Stk</span>`,
+      },
+      grid: { top: 16, left: 50, right: 24, bottom: 32 },
+      xAxis: {
+        type: 'category', data: stunden,
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 10 },
+        splitArea: { show: false },
+      },
+      yAxis: {
+        type: 'category', data: anlagen,
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 11 },
+        splitArea: { show: false },
+      },
+      visualMap: {
+        min: 0, max: Math.max(max, 1),
+        calculable: false, show: false,
+        inRange: {
+          color: [
+            'rgba(122,215,255,0.05)',
+            'rgba(122,215,255,0.35)',
+            'rgba(178,131,255,0.55)',
+            'rgba(255,209,102,0.85)',
+            'rgba(239,71,111,0.95)'
+          ]
+        },
+      },
+      series: [{
+        name: 'Stk/h',
+        type: 'heatmap',
+        data: zellen,
+        progressive: 1000,
+        animation: true,
+        animationDuration: 900,
+        itemStyle: { borderRadius: 4, borderColor: 'rgba(0,0,0,0.2)', borderWidth: 1 },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 14,
+            shadowColor: 'rgba(122,215,255,0.6)',
+          }
+        },
+      }]
+    });
+    window.addEventListener('resize', () => chart.resize());
+  })();
+
+  // ─── 2) Timeline (Custom Series, Gantt-Stil) ──────────────────────────────
+  (function renderTimeline() {
+    const anlagen = (data.Anlagen || []).map(a => a.Name);
+    const bloecke = data.Timeline || [];
+
+    if (bloecke.length === 0) {
+      document.getElementById('timeline').innerHTML = '<div class="empty">Keine Timeline-Daten</div>';
+      return;
+    }
+
+    // category-Index pro Anlage
+    const idxMap = {};
+    anlagen.forEach((a, i) => idxMap[a] = i);
+
+    const items = bloecke
+      .filter(b => idxMap[b.Anlage] !== undefined)
+      .map(b => ({
+        name: b.Info || '',
+        value: [idxMap[b.Anlage], b.StartMs, b.EndeMs, b.Typ],
+        itemStyle: {
+          color: b.Typ === 'fehler' ? '#ef476f' : '#06d6a0',
+          opacity: b.Typ === 'fehler' ? 0.9 : 0.75,
+          borderRadius: 3,
+        }
+      }));
+
+    function renderItem(params, api) {
+      const categoryIndex = api.value(0);
+      const start = api.coord([api.value(1), categoryIndex]);
+      const end   = api.coord([api.value(2), categoryIndex]);
+      const height = api.size([0, 1])[1] * 0.55;
+      const rect = {
+        x: start[0], y: start[1] - height / 2,
+        width: Math.max(end[0] - start[0], 1.5),
+        height: height,
+      };
+      return {
+        type: 'rect',
+        transition: ['shape'],
+        shape: rect,
+        style: api.style(),
+      };
+    }
+
+    function fmtMs(ms) {
+      const total = Math.round(ms / 1000);
+      const hh = String(Math.floor(total / 3600)).padStart(2, '0');
+      const mm = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
+      const ss = String(total % 60).padStart(2, '0');
+      return `${hh}:${mm}:${ss}`;
+    }
+
+    const chart = echarts.init(document.getElementById('timeline'), null, { renderer: 'canvas' });
+    chart.setOption({
+      tooltip: {
+        ...baseTooltip,
+        formatter: p => {
+          const a = anlagen[p.value[0]];
+          return `<b>${a}</b> · ${p.value[3] === 'fehler' ? 'Fehler' : 'Produktiv'}<br/>
+            ${fmtMs(p.value[1])} → ${fmtMs(p.value[2])}<br/>
+            <span style="color:#7ad7ff">${p.name}</span>`;
+        }
+      },
+      grid: { top: 16, left: 56, right: 24, bottom: 36 },
+      xAxis: {
+        type: 'value', min: 0, max: 24 * 3600 * 1000,
+        interval: 2 * 3600 * 1000,
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 10, formatter: v => fmtMs(v).substring(0, 5) },
+        splitLine: { lineStyle: { color: splitLine } },
+      },
+      yAxis: {
+        type: 'category', data: anlagen, inverse: true,
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 11 },
+      },
+      series: [{
+        type: 'custom',
+        renderItem: renderItem,
+        encode: { x: [1, 2], y: 0 },
+        data: items,
+        animationDuration: 900,
+      }]
+    });
+    window.addEventListener('resize', () => chart.resize());
+  })();
+
+  // ─── 3) Treemap: Anlage → Artikel ─────────────────────────────────────────
+  (function renderTreemap() {
+    const baum = data.ArtikelBaum || [];
+    if (baum.length === 0) {
+      document.getElementById('treemap').innerHTML = '<div class="empty">Keine Artikeldaten</div>';
+      return;
+    }
+    const pal = ['#7ad7ff', '#b283ff', '#06d6a0', '#ffd166', '#ef476f',
+                 '#5cdbd3', '#ffa657', '#9b87f5', '#84d2f6', '#f6b2d2'];
+
+    const chart = echarts.init(document.getElementById('treemap'), null, { renderer: 'canvas' });
+    chart.setOption({
+      tooltip: {
+        ...baseTooltip,
+        formatter: info =>
+          `<b>${info.name}</b><br/><span style="color:#7ad7ff">${
+            Number(info.value).toLocaleString('de-DE')} Stk</span>`,
+      },
+      series: [{
+        type: 'treemap',
+        data: baum.map((n, i) => ({
+          name: n.Name, value: n.Value,
+          itemStyle: { color: pal[i % pal.length] },
+          children: (n.Children || []).map(c => ({ name: c.Name, value: c.Value })),
+        })),
+        roam: false, nodeClick: 'zoomToNode',
+        breadcrumb: { show: true, top: 4,
+          itemStyle: { color: 'rgba(255,255,255,0.06)',
+                       borderColor: 'rgba(255,255,255,0.1)',
+                       textStyle: { color: '#aab1c8' } } },
+        upperLabel: { show: true, color: '#fff', fontSize: 11, fontWeight: 600 },
+        label: { show: true, color: '#0b1020', fontWeight: 600,
+                 formatter: '{b}\n{c}', fontSize: 11 },
+        itemStyle: { borderColor: 'rgba(11,16,32,0.7)', borderWidth: 2, gapWidth: 2 },
+        levels: [
+          { itemStyle: { borderWidth: 0, gapWidth: 4 } },
+          { itemStyle: { borderWidth: 2, gapWidth: 1 },
+            colorSaturation: [0.35, 0.55] }
+        ],
+        animationDuration: 1000,
+        animationEasing: 'cubicOut',
+      }]
+    });
+    window.addEventListener('resize', () => chart.resize());
+  })();
+
+  // ─── 4) Rezepte (horizontaler Bar-Chart, animiert) ────────────────────────
+  (function renderRezepte() {
+    const rez = (data.Rezepte || []).slice().sort((a, b) => a.Anzahl - b.Anzahl);
+    if (rez.length === 0) {
+      document.getElementById('rezepte').innerHTML = '<div class="empty">Keine Rezeptdaten</div>';
+      return;
+    }
+
+    const chart = echarts.init(document.getElementById('rezepte'), null, { renderer: 'canvas' });
+    chart.setOption({
+      tooltip: {
+        ...baseTooltip,
+        formatter: p => `<b>${p.name}</b><br/><span style="color:#7ad7ff">${p.value} Chargen</span>`,
+      },
+      grid: { top: 8, left: 8, right: 40, bottom: 16, containLabel: true },
+      xAxis: {
+        type: 'value',
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 10 },
+        splitLine: { lineStyle: { color: splitLine } },
+      },
+      yAxis: {
+        type: 'category', data: rez.map(r => r.Name),
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 11 },
+      },
+      series: [{
+        type: 'bar',
+        data: rez.map((r, i) => ({
+          value: r.Anzahl,
+          itemStyle: {
+            borderRadius: [0, 6, 6, 0],
+            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+              { offset: 0, color: 'rgba(122,215,255,0.4)' },
+              { offset: 1, color: 'rgba(178,131,255,0.95)' },
+            ]),
+          }
+        })),
+        label: { show: true, position: 'right', color: '#f3f6ff', fontSize: 11 },
+        animationDuration: 1100,
+        animationDelay: idx => idx * 60,
+      }]
+    });
+    window.addEventListener('resize', () => chart.resize());
+  })();
+})();
+</script>
+</body>
+</html>
