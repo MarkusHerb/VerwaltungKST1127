@@ -647,6 +647,14 @@ namespace VerwaltungKST1127
             form_AnsichtProduktionsauswertung.Show();
         }
 
+        // Öffnet das "Produktion gestern"-Dashboard (WebView2 + ECharts).
+        // Vorbelegt mit dem gestrigen Datum; Datumswechsel im Dashboard lädt neu.
+        private void btnProduktionGestern_Click(object sender, EventArgs e)
+        {
+            var form = new Form_ProduktionsuebersichtGestern();
+            form.Show();
+        }
+
         private void BtnRFIDAnischtWaschen_Click(object sender, EventArgs e)
         {
             Form_RFIDAnsichtWaschanlagen form_RFIDWaschen = new Form_RFIDAnsichtWaschanlagen();
