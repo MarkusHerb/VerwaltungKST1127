@@ -181,7 +181,7 @@
       <div id="heatmap"></div>
     </div>
     <div class="panel" style="grid-column: 2 / 3;">
-      <div class="panel-title">Artikel-Mix <span class="muted">— Anlage → Artikel (Klick = Drilldown)</span></div>
+      <div class="panel-title">Artikel-Mix <span class="muted">— Anlage → Artikel (Klick zoomt rein, Ziehen = Pan)</span></div>
       <div id="treemap"></div>
     </div>
     <div class="panel" style="grid-column: 1 / 2;">
@@ -304,7 +304,7 @@
         splitArea: { show: false },
       },
       yAxis: {
-        type: 'category', data: anlagen,
+        type: 'category', data: anlagen, inverse: true,
         axisLine: { lineStyle: { color: axisLine } },
         axisLabel: { color: textColor, fontSize: 11 },
         splitArea: { show: false },
@@ -431,7 +431,11 @@
 
   // ─── 3) Treemap: Anlage → Artikel ─────────────────────────────────────────
   (function renderTreemap() {
-    const baum = data.ArtikelBaum || [];
+    // Anlagen aufsteigend nach Nummer sortieren (A20 zuerst, A65 zuletzt),
+    // damit die Reihenfolge zur Heatmap/Timeline passt.
+    const baum = (data.ArtikelBaum || []).slice().sort((a, b) =>
+      (a.Name || '').localeCompare(b.Name || '', 'de', { numeric: true })
+    );
     if (baum.length === 0) {
       document.getElementById('treemap').innerHTML = '<div class="empty">Keine Artikeldaten</div>';
       return;
@@ -454,20 +458,41 @@
           itemStyle: { color: pal[i % pal.length] },
           children: (n.Children || []).map(c => ({ name: c.Name, value: c.Value })),
         })),
-        roam: false, nodeClick: 'zoomToNode',
+        // Zoom/Pan ermöglichen, damit der User in winzige Anlagen-Kacheln
+        // (z. B. A60 mit nur einer Charge) hineinzoomen kann. Klick zoomt direkt
+        // auf den Knoten.
+        roam: 'move', nodeClick: 'zoomToNode',
         breadcrumb: { show: true, top: 4,
           itemStyle: { color: 'rgba(255,255,255,0.06)',
                        borderColor: 'rgba(255,255,255,0.1)',
                        textStyle: { color: '#aab1c8' } } },
-        upperLabel: { show: true, color: '#fff', fontSize: 11, fontWeight: 600 },
+        // Header der Anlagen-Kachel deutlich höher und mit eigenem Hintergrund:
+        // dadurch ist die Anlage selbst dann lesbar, wenn ihr Anteil winzig ist.
+        upperLabel: {
+          show: true, height: 22, color: '#fff', fontSize: 12, fontWeight: 700,
+          backgroundColor: 'rgba(0,0,0,0.30)',
+          borderRadius: 4, padding: [2, 6],
+          formatter: p => p.name + '  ·  ' + Number(p.value).toLocaleString('de-DE') + ' Stk',
+        },
         label: { show: true, color: '#0b1020', fontWeight: 600,
                  formatter: '{b}\n{c}', fontSize: 11 },
-        itemStyle: { borderColor: 'rgba(11,16,32,0.7)', borderWidth: 2, gapWidth: 2 },
+        itemStyle: { borderColor: '#0b1020', borderWidth: 3, gapWidth: 3 },
         levels: [
-          { itemStyle: { borderWidth: 0, gapWidth: 4 } },
-          { itemStyle: { borderWidth: 2, gapWidth: 1 },
+          // Wurzel: kräftige Trenner zwischen Anlagen, dadurch werden kleine
+          // Kacheln optisch hervorgehoben statt im Nachbarblock zu verschwinden.
+          { itemStyle: { borderWidth: 0, gapWidth: 6, borderColor: '#0b1020' } },
+          { itemStyle: { borderWidth: 3, gapWidth: 2, borderColor: 'rgba(255,255,255,0.45)' },
             colorSaturation: [0.35, 0.55] }
         ],
+        // Beim Hover die Kachel hervorheben (Glow), damit auch sehr kleine
+        // Kacheln beim Drüberfahren klar erkennbar werden.
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 20,
+            shadowColor: 'rgba(255,255,255,0.5)',
+            borderColor: '#fff', borderWidth: 2,
+          }
+        },
         animationDuration: 1000,
         animationEasing: 'cubicOut',
       }]

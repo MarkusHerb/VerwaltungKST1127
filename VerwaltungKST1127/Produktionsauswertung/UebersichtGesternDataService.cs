@@ -513,11 +513,12 @@ namespace VerwaltungKST1127.Produktionsauswertung
                             string rezeptName = SaeubereRezeptName(rezeptRoh);
                             if (IstProduktivRezept(rezeptName))
                             {
-                                // Rezept-Counter für das Dashboard
-                                if (!result.Rezepte.ContainsKey(rezeptName))
-                                    result.Rezepte[rezeptName] = 0;
-                                result.Rezepte[rezeptName]++;
-
+                                // Pro Charge schreibt die Anlage mehrere Logzeilen mit
+                                // 'Rezept = …' (für verschiedene Statuswechsel). Nur die
+                                // Zeile mit 'Zeitdauer = …' markiert den Abschluss der
+                                // Charge – nur dort werden Rezept-Counter, Produktivzeit
+                                // und Timeline-Block geschrieben, damit jede Charge
+                                // genau einmal zählt.
                                 int zdPos = line.IndexOf("Zeitdauer = ", StringComparison.Ordinal);
                                 if (zdPos >= 0)
                                 {
@@ -525,6 +526,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
                                     var dauer = ParseZeitdauer(zd);
                                     if (dauer > TimeSpan.Zero)
                                     {
+                                        if (!result.Rezepte.ContainsKey(rezeptName))
+                                            result.Rezepte[rezeptName] = 0;
+                                        result.Rezepte[rezeptName]++;
+
                                         result.Produktiv += dauer;
 
                                         // Block-Ende ist der Zeitstempel der Zeile, Anfang = Ende - Dauer
