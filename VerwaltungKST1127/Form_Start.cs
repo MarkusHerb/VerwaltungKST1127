@@ -16,7 +16,6 @@ using VerwaltungKST1127.Farbauswertung;
 using VerwaltungKST1127.GlasWaschDaten;
 using VerwaltungKST1127.Personal;
 using VerwaltungKST1127.Produktionsauswertung;
-using VerwaltungKST1127.RFID;
 using VerwaltungKST1127.RingSpannzange;
 
 // "namespace" gruppiert Klassen logisch (wie ein Ordner) und vermeidet Namenskonflikte.
@@ -487,13 +486,6 @@ namespace VerwaltungKST1127
             Form_ArtikelPrototypAendern form_ArtikelAender = new Form_ArtikelPrototypAendern("12-2044", "1");
             form_ArtikelAender.Show();
             form_ArtikelAender.BringToFront(); // direkt nach vorn holen
-        }
-
-        // RFID-Test-Fenster.
-        private void btnRFID_Click(object sender, EventArgs e)
-        {
-            Form_RFID_Test form_RFID_Test = new Form_RFID_Test();
-            form_RFID_Test.Show();
         }
 
         // ##################################################################################################
