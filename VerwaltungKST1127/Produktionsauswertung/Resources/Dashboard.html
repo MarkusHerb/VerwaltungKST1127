@@ -157,9 +157,11 @@
       <div class="kpi-value" data-target="0" id="kpi-proben">0</div>
     </div>
     <div class="kpi">
-      <div class="kpi-label">Artikel / Rezepte</div>
-      <div class="kpi-value"><span data-target="0" id="kpi-art">0</span>
-        <span class="kpi-suffix">/ <span data-target="0" id="kpi-rez">0</span></span>
+      <div class="kpi-label">Versch. Artikel · Rezepte</div>
+      <div class="kpi-value" style="display:flex;align-items:baseline;gap:12px;">
+        <span><span id="kpi-art">0</span><span class="kpi-suffix" style="margin-left:4px;">Art.</span></span>
+        <span style="color:var(--txt-2);">·</span>
+        <span><span id="kpi-rez">0</span><span class="kpi-suffix" style="margin-left:4px;">Rez.</span></span>
       </div>
     </div>
     <div class="kpi yellow">
@@ -247,16 +249,16 @@
     extraCssText: 'backdrop-filter: blur(8px); border-radius: 8px;',
   };
 
-  // ─── 1) Heatmap: Stunde × Anlage ──────────────────────────────────────────
+  // ─── 1) Heatmap: Stunde × Anlage (produktive Minuten je Stunde) ───────────
   (function renderHeatmap() {
     const anlagen = (data.Anlagen || []).map(a => a.Name);
     const stunden = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
     let max = 0;
     const zellen = (data.Heatmap || []).map(z => {
-      const v = z.Stk || 0;
+      const v = z.Minuten || 0;
       if (v > max) max = v;
       return [z.Stunde, anlagen.indexOf(z.Anlage), v];
-    }).filter(z => z[1] >= 0);
+    }).filter(z => z[1] >= 0 && z[2] > 0);
 
     const chart = echarts.init(document.getElementById('heatmap'), null, { renderer: 'canvas' });
 
@@ -268,8 +270,8 @@
     chart.setOption({
       tooltip: {
         ...baseTooltip,
-        formatter: p => `<b>${anlagen[p.value[1]]}</b> · ${stunden[p.value[0]]}:00<br/>
-          <span style="color:#7ad7ff">${p.value[2].toLocaleString('de-DE')} Stk</span>`,
+        formatter: p => `<b>${anlagen[p.value[1]]}</b> · ${stunden[p.value[0]]}:00–${stunden[p.value[0]]}:59<br/>
+          <span style="color:#7ad7ff">${p.value[2]} Min produktiv</span>`,
       },
       grid: { top: 16, left: 50, right: 24, bottom: 32 },
       xAxis: {
@@ -285,7 +287,7 @@
         splitArea: { show: false },
       },
       visualMap: {
-        min: 0, max: Math.max(max, 1),
+        min: 0, max: 60,
         calculable: false, show: false,
         inRange: {
           color: [
@@ -452,12 +454,27 @@
   // ─── 4) Rezepte (horizontaler Bar-Chart, animiert) ────────────────────────
   (function renderRezepte() {
     const rez = (data.Rezepte || []).slice().sort((a, b) => a.Anzahl - b.Anzahl);
+    const container = document.getElementById('rezepte');
     if (rez.length === 0) {
-      document.getElementById('rezepte').innerHTML = '<div class="empty">Keine Rezeptdaten</div>';
+      container.innerHTML = '<div class="empty">Keine Rezeptdaten</div>';
       return;
     }
 
-    const chart = echarts.init(document.getElementById('rezepte'), null, { renderer: 'canvas' });
+    // Container-Höhe an die Anzahl Rezepte anpassen: ~26 px pro Eintrag,
+    // mindestens die ursprünglichen 520 px. So bleiben Labels lesbar,
+    // egal ob 5 oder 50 Rezepte am Tag liefen.
+    const dynH = Math.max(520, rez.length * 26);
+    container.style.height = dynH + 'px';
+
+    // Damit die Timeline daneben nicht "kurz" wirkt: gleiche Höhe geben.
+    if (dynH > 520) {
+      const tlEl = document.getElementById('timeline');
+      tlEl.style.height = dynH + 'px';
+      const tlInst = echarts.getInstanceByDom(tlEl);
+      if (tlInst) tlInst.resize();
+    }
+
+    const chart = echarts.init(container, null, { renderer: 'canvas' });
     chart.setOption({
       tooltip: {
         ...baseTooltip,
