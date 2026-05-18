@@ -121,7 +121,7 @@
 
   #heatmap     { height: 360px; }
   #timeline    { height: 520px; }
-  #treemap     { height: 360px; }
+  #treemap     { height: 320px; }
   #rezepte     { height: 520px; }
 
   /* leere Daten */
@@ -130,6 +130,25 @@
     height: 100%;
     color: var(--txt-2); font-style: italic; font-size: 14px;
   }
+
+  /* Anlagen-Chips unter der Treemap – garantieren, dass auch winzige
+     Anlagen (z. B. A60 mit 1 Charge) jederzeit lesbar bleiben. */
+  .anlage-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 6px 4px 4px;
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 8px; border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-stroke);
+    font-size: 11px; color: var(--txt-0);
+    font-variant-numeric: tabular-nums;
+  }
+  .chip-dot {
+    width: 10px; height: 10px; border-radius: 2px; flex: 0 0 auto;
+  }
+  .chip .chip-label { color: var(--txt-1); }
 </style>
 </head>
 <body>
@@ -183,6 +202,7 @@
     <div class="panel" style="grid-column: 2 / 3;">
       <div class="panel-title">Artikel-Mix <span class="muted">— Anlage → Artikel (Klick zoomt rein, Ziehen = Pan)</span></div>
       <div id="treemap"></div>
+      <div id="treemap-chips" class="anlage-chips"></div>
     </div>
     <div class="panel" style="grid-column: 1 / 2;">
       <div class="panel-title">Timeline <span class="muted">— Produktiv (grün) vs. Fehler (rot)</span></div>
@@ -498,6 +518,20 @@
       }]
     });
     window.addEventListener('resize', () => chart.resize());
+
+    // Anlagen-Chips unter der Treemap rendern – stellt sicher, dass auch
+    // sehr kleine Anlagen (z. B. A60 mit 1 Charge) jederzeit lesbar sind,
+    // unabhängig davon, wie winzig ihre Kachel in der Treemap ist.
+    const chipsEl = document.getElementById('treemap-chips');
+    if (chipsEl) {
+      chipsEl.innerHTML = baum.map((n, i) =>
+        `<span class="chip" title="${n.Name}: ${Number(n.Value).toLocaleString('de-DE')} Stk">
+           <span class="chip-dot" style="background:${pal[i % pal.length]}"></span>
+           <b>${n.Name}</b>
+           <span class="chip-label">${Number(n.Value).toLocaleString('de-DE')} Stk</span>
+         </span>`
+      ).join('');
+    }
   })();
 
   // ─── 4) Rezepte (horizontaler Bar-Chart, animiert) ────────────────────────

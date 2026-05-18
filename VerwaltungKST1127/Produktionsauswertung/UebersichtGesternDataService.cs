@@ -462,6 +462,14 @@ namespace VerwaltungKST1127.Produktionsauswertung
             int fehlerStartSec = 0;
             int letzterBestaetigtSec = -1;
 
+            // Eine Charge kann aus mehreren Production-Segmenten bestehen
+            // (z. B. Anlage stoppt kurz, fährt mit demselben Rezept weiter,
+            // oder ein Fehler unterbricht und das gleiche Rezept startet erneut).
+            // Für den Rezept-Counter wird daher pro Anlage nur dann +1 gezählt,
+            // wenn das produktive Rezept sich vom vorhergehenden unterscheidet –
+            // also wenn wirklich eine NEUE Charge beginnt.
+            string vorigesProduktivRezept = null;
+
             int ParseHmsToSec(string hms)
             {
                 int hh = (hms[0] - '0') * 10 + (hms[1] - '0');
@@ -526,9 +534,17 @@ namespace VerwaltungKST1127.Produktionsauswertung
                                     var dauer = ParseZeitdauer(zd);
                                     if (dauer > TimeSpan.Zero)
                                     {
-                                        if (!result.Rezepte.ContainsKey(rezeptName))
-                                            result.Rezepte[rezeptName] = 0;
-                                        result.Rezepte[rezeptName]++;
+                                        // Rezept-Counter nur bei Wechsel zum vorigen produktiven
+                                        // Rezept hochzählen → Fortsetzungen derselben Charge
+                                        // (mehrere Production-Blöcke nach Pausen/Fehlern) bleiben 1 Charge.
+                                        if (!string.Equals(rezeptName, vorigesProduktivRezept,
+                                                StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            if (!result.Rezepte.ContainsKey(rezeptName))
+                                                result.Rezepte[rezeptName] = 0;
+                                            result.Rezepte[rezeptName]++;
+                                        }
+                                        vorigesProduktivRezept = rezeptName;
 
                                         result.Produktiv += dauer;
 
