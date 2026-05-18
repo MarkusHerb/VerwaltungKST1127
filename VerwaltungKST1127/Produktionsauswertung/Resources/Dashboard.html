@@ -119,9 +119,9 @@
   }
   .panel-title span.muted { color: var(--txt-2); text-transform: none; letter-spacing: 0; font-size: 12px; }
 
-  #heatmap     { height: 320px; }
+  #heatmap     { height: 360px; }
   #timeline    { height: 520px; }
-  #treemap     { height: 320px; }
+  #treemap     { height: 360px; }
   #rezepte     { height: 520px; }
 
   /* leere Daten */
@@ -177,7 +177,7 @@
   <!-- Charts-Grid -->
   <div class="grid">
     <div class="panel" style="grid-column: 1 / 2;">
-      <div class="panel-title">Heatmap <span class="muted">— Stückzahl je Stunde × Anlage</span></div>
+      <div class="panel-title">Heatmap <span class="muted">— Stückzahl je Stunde × Anlage (anteilig nach Produktivzeit)</span></div>
       <div id="heatmap"></div>
     </div>
     <div class="panel" style="grid-column: 2 / 3;">
@@ -249,31 +249,54 @@
     extraCssText: 'backdrop-filter: blur(8px); border-radius: 8px;',
   };
 
-  // ─── 1) Heatmap: Stunde × Anlage (produktive Minuten je Stunde) ───────────
+  // ─── 1) Heatmap: Stk je Stunde × Anlage (geschätzt aus Produktivzeit) ─────
   (function renderHeatmap() {
     const anlagen = (data.Anlagen || []).map(a => a.Name);
     const stunden = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'));
-    let max = 0;
+
+    // value-Array pro Zelle: [stundeIdx, anlageIdx, stk, minuten]
+    let maxStk = 0;
     const zellen = (data.Heatmap || []).map(z => {
-      const v = z.Minuten || 0;
-      if (v > max) max = v;
-      return [z.Stunde, anlagen.indexOf(z.Anlage), v];
+      const stk = z.Stk || 0;
+      if (stk > maxStk) maxStk = stk;
+      return [z.Stunde, anlagen.indexOf(z.Anlage), stk, z.Minuten || 0];
     }).filter(z => z[1] >= 0 && z[2] > 0);
 
-    const chart = echarts.init(document.getElementById('heatmap'), null, { renderer: 'canvas' });
-
+    const container = document.getElementById('heatmap');
     if (zellen.length === 0) {
-      document.getElementById('heatmap').innerHTML = '<div class="empty">Keine Daten</div>';
+      container.innerHTML = '<div class="empty">Keine Daten</div>';
       return;
     }
 
+    // 4 diskrete Stufen mit hübschen runden Grenzen.
+    // Tagesmaximum auf den nächsten Schritt (50/100/200/…) aufrunden,
+    // dann in 4 Buckets teilen.
+    function roundUpStep(n) {
+      if (n <= 100)  return 100;
+      if (n <= 200)  return 200;
+      if (n <= 400)  return 400;
+      if (n <= 800)  return 800;
+      if (n <= 1500) return 1500;
+      return Math.ceil(n / 1000) * 1000;
+    }
+    const niceMax = roundUpStep(Math.max(maxStk, 1));
+    const q = niceMax / 4;
+    const pieces = [
+      { gt: 0,     lte: q,        label: '1 – '   + q,           color: 'rgba(122,215,255,0.45)' },
+      { gt: q,     lte: q * 2,    label: (q+1)    + ' – ' + q*2, color: 'rgba(178,131,255,0.70)' },
+      { gt: q * 2, lte: q * 3,    label: (q*2+1)  + ' – ' + q*3, color: 'rgba(255,180,90,0.85)'  },
+      { gt: q * 3,                label: '> '     + q*3,         color: 'rgba(239,71,111,0.95)'  },
+    ];
+
+    const chart = echarts.init(container, null, { renderer: 'canvas' });
     chart.setOption({
       tooltip: {
         ...baseTooltip,
         formatter: p => `<b>${anlagen[p.value[1]]}</b> · ${stunden[p.value[0]]}:00–${stunden[p.value[0]]}:59<br/>
-          <span style="color:#7ad7ff">${p.value[2]} Min produktiv</span>`,
+          <span style="color:#7ad7ff">${p.value[2].toLocaleString('de-DE')} Stk</span>
+          <span style="color:#6b7390"> · ${p.value[3]} Min produktiv</span>`,
       },
-      grid: { top: 16, left: 50, right: 24, bottom: 32 },
+      grid: { top: 16, left: 50, right: 24, bottom: 52 },
       xAxis: {
         type: 'category', data: stunden,
         axisLine: { lineStyle: { color: axisLine } },
@@ -287,17 +310,18 @@
         splitArea: { show: false },
       },
       visualMap: {
-        min: 0, max: 60,
-        calculable: false, show: false,
-        inRange: {
-          color: [
-            'rgba(122,215,255,0.05)',
-            'rgba(122,215,255,0.35)',
-            'rgba(178,131,255,0.55)',
-            'rgba(255,209,102,0.85)',
-            'rgba(239,71,111,0.95)'
-          ]
-        },
+        show: true,
+        type: 'piecewise',
+        pieces: pieces,
+        orient: 'horizontal',
+        left: 'center',
+        bottom: 4,
+        itemWidth: 16,
+        itemHeight: 12,
+        itemGap: 10,
+        textStyle: { color: textColor, fontSize: 10 },
+        textGap: 4,
+        dimension: 2,   // Farbe nach Stk (value[2])
       },
       series: [{
         name: 'Stk/h',

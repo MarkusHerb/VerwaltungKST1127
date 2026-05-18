@@ -62,7 +62,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
     {
         public int Stunde { get; set; }                                    // 0..23
         public string Anlage { get; set; }                                 // "A20"
-        public int Minuten { get; set; }                                   // produktive Minuten in dieser Stunde (0..60)
+        public int Stk { get; set; }                                       // geschätzte Stk in dieser Stunde
+        public int Minuten { get; set; }                                   // produktive Minuten (0..60)
     }
 
     public class TimelineBlock
@@ -238,22 +239,28 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 .Select(kv => new RezeptAnteil { Name = kv.Key, Anzahl = kv.Value })
                 .ToList();
 
-            // Heatmap aus den Timeline-Blöcken (echte Uhrzeiten aus dem Log) bauen.
-            // Pro Anlage und Stunde werden produktive Minuten aufsummiert (max. 60).
-            data.Heatmap = BaueHeatmapAusTimeline(data.Timeline);
+            // Heatmap-Zellen bauen: produktive Minuten je (Anlage, Stunde) aus dem
+            // Log, dazu Stk proportional zur Tagessumme der Anlage verteilt.
+            data.Heatmap = BaueHeatmapZellen(data.Timeline, data.Anlagen);
 
             return data;
         }
 
         /// <summary>
-        /// Verteilt produktive Timeline-Blöcke stundenweise und zählt die Minuten
-        /// pro (Anlage, Stunde). Erlaubt der HTML-Seite, eine echte Aktivitätskarte
-        /// zu zeichnen, auch wenn die SQL-Datumsspalte keine Uhrzeit enthält.
+        /// Berechnet je (Anlage, Stunde) zwei Werte:
+        ///  - produktive Minuten (aus den Timeline-Blöcken)
+        ///  - geschätzte Stückzahl (Tagessumme der Anlage anteilig nach Minuten)
+        ///
+        /// Hintergrund: Die SQL-Spalte Chargenprotokoll.[Datum] enthält keine
+        /// Uhrzeit, daher gibt es keine direkte Zuordnung Stk → Stunde. Der
+        /// Anteil über Produktivzeit ist die genaueste Näherung, die ohne
+        /// zusätzliche Zeitspalte möglich ist.
         /// </summary>
-        private static List<HeatmapZelle> BaueHeatmapAusTimeline(List<TimelineBlock> timeline)
+        private static List<HeatmapZelle> BaueHeatmapZellen(
+            List<TimelineBlock> timeline, List<AnlageKpi> anlagen)
         {
-            var dict = new Dictionary<string, double>(StringComparer.Ordinal);
-
+            // 1) Minuten je (Anlage, Stunde) aufsummieren
+            var minDict = new Dictionary<string, double>(StringComparer.Ordinal);
             foreach (var b in timeline)
             {
                 if (b.Typ != "produktiv") continue;
@@ -271,22 +278,52 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     double mins = (segEnd - t) / 60000.0;
 
                     string key = b.Anlage + "|" + stunde;
-                    if (!dict.ContainsKey(key)) dict[key] = 0;
-                    dict[key] += mins;
+                    if (!minDict.ContainsKey(key)) minDict[key] = 0;
+                    minDict[key] += mins;
 
                     t = segEnd;
                 }
             }
 
-            var liste = new List<HeatmapZelle>(dict.Count);
-            foreach (var kv in dict)
+            // 2) Tagessumme der Minuten pro Anlage (für die Anteils-Berechnung)
+            var anlageMinTotal = new Dictionary<string, double>(StringComparer.Ordinal);
+            foreach (var kv in minDict)
             {
                 int sep = kv.Key.IndexOf('|');
+                string anlageName = kv.Key.Substring(0, sep);
+                if (!anlageMinTotal.ContainsKey(anlageName)) anlageMinTotal[anlageName] = 0;
+                anlageMinTotal[anlageName] += kv.Value;
+            }
+
+            // 3) Tages-Stk pro Anlage (aus SQL-KPIs)
+            var anlageStk = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var a in anlagen)
+                anlageStk[a.Name] = a.Stk;
+
+            // 4) Zellen erzeugen – Stk anteilig nach Minuten verteilen
+            var liste = new List<HeatmapZelle>(minDict.Count);
+            foreach (var kv in minDict)
+            {
+                int sep = kv.Key.IndexOf('|');
+                string anlageName = kv.Key.Substring(0, sep);
+                int stunde = int.Parse(kv.Key.Substring(sep + 1));
+                double mins = kv.Value;
+
+                double total;
+                anlageMinTotal.TryGetValue(anlageName, out total);
+                int totalStk;
+                anlageStk.TryGetValue(anlageName, out totalStk);
+
+                int stkInHour = (total > 0 && totalStk > 0)
+                    ? (int)Math.Round(totalStk * (mins / total))
+                    : 0;
+
                 liste.Add(new HeatmapZelle
                 {
-                    Anlage = kv.Key.Substring(0, sep),
-                    Stunde = int.Parse(kv.Key.Substring(sep + 1)),
-                    Minuten = (int)Math.Round(kv.Value),
+                    Anlage = anlageName,
+                    Stunde = stunde,
+                    Stk = stkInHour,
+                    Minuten = (int)Math.Round(mins),
                 });
             }
             return liste;
