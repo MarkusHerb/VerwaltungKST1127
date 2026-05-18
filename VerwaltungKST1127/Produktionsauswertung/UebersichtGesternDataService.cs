@@ -187,14 +187,15 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 // Timeline-Blöcke aus Log
                 data.Timeline.AddRange(log.Bloecke);
 
-                // Rezept- und Artikel-Sammlung über alle Anlagen aufaddieren
-                foreach (var r in sql.Rezepte)
+                // Rezept-Sammlung kommt aus der Logdatei (SQL hat keine Rezept-Spalte)
+                foreach (var r in log.Rezepte)
                 {
                     if (!rezeptZaehler.ContainsKey(r.Key))
                         rezeptZaehler[r.Key] = 0;
                     rezeptZaehler[r.Key] += r.Value;
                 }
 
+                // Artikel-Sammlung kommt aus SQL
                 foreach (var a in sql.ArtikelStk)
                 {
                     if (!artikelGesamt.ContainsKey(a.Key))
@@ -262,13 +263,13 @@ namespace VerwaltungKST1127.Produktionsauswertung
             public Dictionary<int, int> StkProStunde { get; set; } = new Dictionary<int, int>();
             public Dictionary<string, int> ArtikelStk { get; set; }
                 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            public Dictionary<string, int> Rezepte { get; set; }
-                = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
         /// Liest ein Chargenprotokoll der gewählten Anlage am gewählten Tag aus.
         /// Behandelt sowohl die Spalte [Datum] als auch die Legacy-Spalte [ Datum].
+        /// Die Tabellen enthalten KEINE Rezept-Spalte – Rezepte werden separat aus
+        /// der Logdatei der Anlage ermittelt.
         /// </summary>
         private static async Task<AnlageSqlResult> LadeAnlageSqlAsync(
             string anlage, string tabelle, DateTime tag)
@@ -278,10 +279,9 @@ namespace VerwaltungKST1127.Produktionsauswertung
             async Task ReadWithColumnAsync(string col)
             {
                 // Datum mit Uhrzeit selektieren (Stundenverteilung für Heatmap)
-                // Probe wird über Artikelnummer1='Probe' erkannt.
+                // Probe wird über Artikelnummer1='Probe' (case-insensitive) erkannt.
                 string sql =
                     $"SELECT {col} AS Datum, " +
-                    $"  Rezept, " +
                     $"  Artikelnummer1, Stk1, " +
                     $"  Artikelnummer2, Stk2, " +
                     $"  Artikelnummer3, Stk3 " +
@@ -296,7 +296,6 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     using (var rdr = await cmd.ExecuteReaderAsync())
                     {
                         int idxDatum = rdr.GetOrdinal("Datum");
-                        int idxRezept = SafeOrdinal(rdr, "Rezept");
 
                         while (await rdr.ReadAsync())
                         {
@@ -317,19 +316,6 @@ namespace VerwaltungKST1127.Produktionsauswertung
                                         Convert.ToString(val, CultureInfo.InvariantCulture),
                                         out DateTime parsed);
                                     stunde = parsed.Hour;
-                                }
-                            }
-
-                            // Rezept zählen
-                            if (idxRezept >= 0 && !rdr.IsDBNull(idxRezept))
-                            {
-                                string rezept = (rdr.GetValue(idxRezept) as string ?? "").Trim();
-                                if (!string.IsNullOrEmpty(rezept)
-                                    && !IstAusschlussRezept(rezept))
-                                {
-                                    if (!result.Rezepte.ContainsKey(rezept))
-                                        result.Rezepte[rezept] = 0;
-                                    result.Rezepte[rezept]++;
                                 }
                             }
 
@@ -374,23 +360,17 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
             try
             {
-                try
-                {
-                    await ReadWithColumnAsync("[Datum]");
-                }
-                catch (SqlException ex) when (ex.Number == 207)
-                {
-                    await ReadWithColumnAsync("[ Datum]");
-                }
+                await ReadWithColumnAsync("[Datum]");
+            }
+            catch (SqlException ex) when (ex.Number == 207)
+            {
+                // Legacy-Spalte mit führendem Leerzeichen
+                try { await ReadWithColumnAsync("[ Datum]"); }
+                catch (SqlException ex2) when (ex2.Number == 208) { /* Tabelle fehlt */ }
             }
             catch (SqlException ex) when (ex.Number == 208)
             {
                 // Tabelle existiert nicht (Anlage außer Betrieb) – leeres Ergebnis liefern
-            }
-            catch
-            {
-                // andere Fehler still tolerieren, damit eine Anlage nicht das ganze
-                // Dashboard zum Absturz bringt
             }
 
             return result;
@@ -404,6 +384,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
             public TimeSpan Fehler { get; set; }
             public string LetzteUhrzeit { get; set; }
             public List<TimelineBlock> Bloecke { get; set; } = new List<TimelineBlock>();
+            public Dictionary<string, int> Rezepte { get; set; }
+                = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -474,6 +456,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
                             string rezeptName = line.Substring(rezeptPos + "Rezept = ".Length).Trim();
                             if (IstProduktivRezept(rezeptName))
                             {
+                                // Rezept-Counter für das Dashboard
+                                if (!result.Rezepte.ContainsKey(rezeptName))
+                                    result.Rezepte[rezeptName] = 0;
+                                result.Rezepte[rezeptName]++;
+
                                 int zdPos = line.IndexOf("Zeitdauer = ", StringComparison.Ordinal);
                                 if (zdPos >= 0)
                                 {
@@ -584,17 +571,6 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 return true;
             if (c == 'S' && rezept.Length >= 2 && char.IsDigit(rezept[1]))
                 return true;
-            return false;
-        }
-
-        private static bool IstAusschlussRezept(string rezept)
-        {
-            for (int i = 0; i < AusschlussRezeptKeywords.Length; i++)
-            {
-                if (rezept.IndexOf(AusschlussRezeptKeywords[i],
-                    StringComparison.OrdinalIgnoreCase) >= 0)
-                    return true;
-            }
             return false;
         }
 
