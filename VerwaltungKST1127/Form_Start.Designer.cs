@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -379,17 +379,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.Transparent;
             this.chartPerformance.BorderlineColor = System.Drawing.Color.Transparent;
-            chartArea4.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea4);
-            legend4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend4.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend4);
+            chartArea1.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea1);
+            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend1.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend1);
             this.chartPerformance.Location = new System.Drawing.Point(309, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series4.ChartArea = "ChartArea1";
-            series4.Legend = "Legend1";
-            series4.Name = "Series1";
-            this.chartPerformance.Series.Add(series4);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartPerformance.Series.Add(series1);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -552,7 +552,7 @@
             this.btnProduktionsauswertung.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnProduktionsauswertung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnProduktionsauswertung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnProduktionsauswertung.Location = new System.Drawing.Point(336, 645);
+            this.btnProduktionsauswertung.Location = new System.Drawing.Point(336, 643);
             this.btnProduktionsauswertung.Name = "btnProduktionsauswertung";
             this.btnProduktionsauswertung.Size = new System.Drawing.Size(239, 66);
             this.btnProduktionsauswertung.TabIndex = 41;
@@ -594,7 +594,7 @@
             this.btnDatenExportTabellen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnDatenExportTabellen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnDatenExportTabellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDatenExportTabellen.Location = new System.Drawing.Point(637, 638);
+            this.btnDatenExportTabellen.Location = new System.Drawing.Point(637, 643);
             this.btnDatenExportTabellen.Name = "btnDatenExportTabellen";
             this.btnDatenExportTabellen.Size = new System.Drawing.Size(239, 66);
             this.btnDatenExportTabellen.TabIndex = 45;
