@@ -44,6 +44,8 @@
             this.listBoxWaschtragerl = new System.Windows.Forms.ListBox();
             this.listBoxChargenprotokoll = new System.Windows.Forms.ListBox();
             this.btnExportTable = new System.Windows.Forms.Button();
+            this.btnWichtigsteTabellen = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // label1
@@ -186,7 +188,7 @@
             // 
             this.btnExportTable.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.btnExportTable.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, ((byte)(0)));
-            this.btnExportTable.Location = new System.Drawing.Point(601, 371);
+            this.btnExportTable.Location = new System.Drawing.Point(602, 331);
             this.btnExportTable.Name = "btnExportTable";
             this.btnExportTable.Size = new System.Drawing.Size(181, 61);
             this.btnExportTable.TabIndex = 15;
@@ -194,11 +196,32 @@
             this.btnExportTable.UseVisualStyleBackColor = false;
             this.btnExportTable.Click += new System.EventHandler(this.btnExportTable_Click);
             // 
+            // btnWichtigsteTabellen
+            // 
+            this.btnWichtigsteTabellen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.btnWichtigsteTabellen.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.World, ((byte)(0)));
+            this.btnWichtigsteTabellen.Location = new System.Drawing.Point(602, 398);
+            this.btnWichtigsteTabellen.Name = "btnWichtigsteTabellen";
+            this.btnWichtigsteTabellen.Size = new System.Drawing.Size(181, 61);
+            this.btnWichtigsteTabellen.TabIndex = 16;
+            this.btnWichtigsteTabellen.Text = "Wichtigsten Tabellen exportieren";
+            this.btnWichtigsteTabellen.UseVisualStyleBackColor = false;
+            this.btnWichtigsteTabellen.Click += new System.EventHandler(this.btnWichtigsteTabellen_Click);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(602, 459);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(180, 19);
+            this.progressBar1.TabIndex = 17;
+            // 
             // Form_DatenExportExcel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(794, 494);
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.btnWichtigsteTabellen);
             this.Controls.Add(this.btnExportTable);
             this.Controls.Add(this.listBoxChargenprotokoll);
             this.Controls.Add(this.listBoxWaschtragerl);
@@ -240,5 +263,7 @@
         private System.Windows.Forms.ListBox listBoxWaschtragerl;
         private System.Windows.Forms.ListBox listBoxChargenprotokoll;
         private System.Windows.Forms.Button btnExportTable;
+        private System.Windows.Forms.Button btnWichtigsteTabellen;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
