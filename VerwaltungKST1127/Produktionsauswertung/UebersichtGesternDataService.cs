@@ -62,7 +62,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
     {
         public int Stunde { get; set; }                                    // 0..23
         public string Anlage { get; set; }                                 // "A20"
-        public int Stk { get; set; }
+        public int Stk { get; set; }                                       // geschätzte Stk in dieser Stunde
+        public int Minuten { get; set; }                                   // produktive Minuten (0..60)
     }
 
     public class TimelineBlock
@@ -173,28 +174,18 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
                 data.Anlagen.Add(anlage);
 
-                // Heatmap-Zellen aus SQL
-                foreach (var kv in sql.StkProStunde)
-                {
-                    data.Heatmap.Add(new HeatmapZelle
-                    {
-                        Anlage = sql.Anlage,
-                        Stunde = kv.Key,
-                        Stk = kv.Value,
-                    });
-                }
-
-                // Timeline-Blöcke aus Log
+                // Timeline-Blöcke aus Log (Quelle für Heatmap UND Timeline-Chart)
                 data.Timeline.AddRange(log.Bloecke);
 
-                // Rezept- und Artikel-Sammlung über alle Anlagen aufaddieren
-                foreach (var r in sql.Rezepte)
+                // Rezept-Sammlung kommt aus der Logdatei (SQL hat keine Rezept-Spalte)
+                foreach (var r in log.Rezepte)
                 {
                     if (!rezeptZaehler.ContainsKey(r.Key))
                         rezeptZaehler[r.Key] = 0;
                     rezeptZaehler[r.Key] += r.Value;
                 }
 
+                // Artikel-Sammlung kommt aus SQL
                 foreach (var a in sql.ArtikelStk)
                 {
                     if (!artikelGesamt.ContainsKey(a.Key))
@@ -241,14 +232,101 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 .Select(kv => new TopArtikel { Artikelnummer = kv.Key, Stk = kv.Value })
                 .ToList();
 
-            // Rezept-Verteilung (Top 12 für saubere Darstellung)
+            // Alle Rezepte (sortiert nach Häufigkeit) – die HTML-Seite skaliert die
+            // Chart-Höhe automatisch auf die Anzahl.
             data.Rezepte = rezeptZaehler
                 .OrderByDescending(kv => kv.Value)
-                .Take(12)
                 .Select(kv => new RezeptAnteil { Name = kv.Key, Anzahl = kv.Value })
                 .ToList();
 
+            // Heatmap-Zellen bauen: produktive Minuten je (Anlage, Stunde) aus dem
+            // Log, dazu Stk proportional zur Tagessumme der Anlage verteilt.
+            data.Heatmap = BaueHeatmapZellen(data.Timeline, data.Anlagen);
+
             return data;
+        }
+
+        /// <summary>
+        /// Berechnet je (Anlage, Stunde) zwei Werte:
+        ///  - produktive Minuten (aus den Timeline-Blöcken)
+        ///  - geschätzte Stückzahl (Tagessumme der Anlage anteilig nach Minuten)
+        ///
+        /// Hintergrund: Die SQL-Spalte Chargenprotokoll.[Datum] enthält keine
+        /// Uhrzeit, daher gibt es keine direkte Zuordnung Stk → Stunde. Der
+        /// Anteil über Produktivzeit ist die genaueste Näherung, die ohne
+        /// zusätzliche Zeitspalte möglich ist.
+        /// </summary>
+        private static List<HeatmapZelle> BaueHeatmapZellen(
+            List<TimelineBlock> timeline, List<AnlageKpi> anlagen)
+        {
+            // 1) Minuten je (Anlage, Stunde) aufsummieren
+            var minDict = new Dictionary<string, double>(StringComparer.Ordinal);
+            foreach (var b in timeline)
+            {
+                if (b.Typ != "produktiv") continue;
+
+                long t = Math.Max(0L, b.StartMs);
+                long end = Math.Min(b.EndeMs, 24L * 3600L * 1000L);
+                if (end <= t) continue;
+
+                while (t < end)
+                {
+                    int stunde = (int)(t / 3600000L);
+                    if (stunde > 23) stunde = 23;
+                    long hourEnd = ((long)stunde + 1) * 3600000L;
+                    long segEnd = Math.Min(end, hourEnd);
+                    double mins = (segEnd - t) / 60000.0;
+
+                    string key = b.Anlage + "|" + stunde;
+                    if (!minDict.ContainsKey(key)) minDict[key] = 0;
+                    minDict[key] += mins;
+
+                    t = segEnd;
+                }
+            }
+
+            // 2) Tagessumme der Minuten pro Anlage (für die Anteils-Berechnung)
+            var anlageMinTotal = new Dictionary<string, double>(StringComparer.Ordinal);
+            foreach (var kv in minDict)
+            {
+                int sep = kv.Key.IndexOf('|');
+                string anlageName = kv.Key.Substring(0, sep);
+                if (!anlageMinTotal.ContainsKey(anlageName)) anlageMinTotal[anlageName] = 0;
+                anlageMinTotal[anlageName] += kv.Value;
+            }
+
+            // 3) Tages-Stk pro Anlage (aus SQL-KPIs)
+            var anlageStk = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var a in anlagen)
+                anlageStk[a.Name] = a.Stk;
+
+            // 4) Zellen erzeugen – Stk anteilig nach Minuten verteilen
+            var liste = new List<HeatmapZelle>(minDict.Count);
+            foreach (var kv in minDict)
+            {
+                int sep = kv.Key.IndexOf('|');
+                string anlageName = kv.Key.Substring(0, sep);
+                int stunde = int.Parse(kv.Key.Substring(sep + 1));
+                double mins = kv.Value;
+
+                double total;
+                anlageMinTotal.TryGetValue(anlageName, out total);
+                int totalStk;
+                anlageStk.TryGetValue(anlageName, out totalStk);
+
+                int stkInHour = (total > 0 && totalStk > 0)
+                    ? (int)Math.Round(totalStk * (mins / total))
+                    : 0;
+
+                liste.Add(new HeatmapZelle
+                {
+                    Anlage = anlageName,
+                    Stunde = stunde,
+                    Stk = stkInHour,
+                    Minuten = (int)Math.Round(mins),
+                });
+            }
+            return liste;
         }
 
         // ── SQL pro Anlage ───────────────────────────────────────────────────
@@ -259,16 +337,15 @@ namespace VerwaltungKST1127.Produktionsauswertung
             public int GesamtStk { get; set; }
             public int GesamtChargen { get; set; }
             public int GesamtProben { get; set; }
-            public Dictionary<int, int> StkProStunde { get; set; } = new Dictionary<int, int>();
             public Dictionary<string, int> ArtikelStk { get; set; }
-                = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            public Dictionary<string, int> Rezepte { get; set; }
                 = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
         /// Liest ein Chargenprotokoll der gewählten Anlage am gewählten Tag aus.
         /// Behandelt sowohl die Spalte [Datum] als auch die Legacy-Spalte [ Datum].
+        /// Die Tabellen enthalten KEINE Rezept-Spalte – Rezepte werden separat aus
+        /// der Logdatei der Anlage ermittelt.
         /// </summary>
         private static async Task<AnlageSqlResult> LadeAnlageSqlAsync(
             string anlage, string tabelle, DateTime tag)
@@ -277,12 +354,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
             async Task ReadWithColumnAsync(string col)
             {
-                // Datum mit Uhrzeit selektieren (Stundenverteilung für Heatmap)
-                // Probe wird über Artikelnummer1='Probe' erkannt.
+                // Datum wird nur fürs Filtern benötigt; Stundenverteilung kommt
+                // aus den Logdateien (Datum in SQL ist hier datums-genau, ohne Uhrzeit).
+                // Probe wird über Artikelnummer1='Probe' (case-insensitive) erkannt.
                 string sql =
-                    $"SELECT {col} AS Datum, " +
-                    $"  Rezept, " +
-                    $"  Artikelnummer1, Stk1, " +
+                    $"SELECT Artikelnummer1, Stk1, " +
                     $"  Artikelnummer2, Stk2, " +
                     $"  Artikelnummer3, Stk3 " +
                     $"FROM [{tabelle}] " +
@@ -295,43 +371,9 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     await conn.OpenAsync();
                     using (var rdr = await cmd.ExecuteReaderAsync())
                     {
-                        int idxDatum = rdr.GetOrdinal("Datum");
-                        int idxRezept = SafeOrdinal(rdr, "Rezept");
-
                         while (await rdr.ReadAsync())
                         {
                             result.GesamtChargen++;
-
-                            // Stunde der Charge bestimmen (für Heatmap)
-                            int stunde = 0;
-                            if (!rdr.IsDBNull(idxDatum))
-                            {
-                                var val = rdr.GetValue(idxDatum);
-                                if (val is DateTime dt)
-                                {
-                                    stunde = dt.Hour;
-                                }
-                                else
-                                {
-                                    DateTime.TryParse(
-                                        Convert.ToString(val, CultureInfo.InvariantCulture),
-                                        out DateTime parsed);
-                                    stunde = parsed.Hour;
-                                }
-                            }
-
-                            // Rezept zählen
-                            if (idxRezept >= 0 && !rdr.IsDBNull(idxRezept))
-                            {
-                                string rezept = (rdr.GetValue(idxRezept) as string ?? "").Trim();
-                                if (!string.IsNullOrEmpty(rezept)
-                                    && !IstAusschlussRezept(rezept))
-                                {
-                                    if (!result.Rezepte.ContainsKey(rezept))
-                                        result.Rezepte[rezept] = 0;
-                                    result.Rezepte[rezept]++;
-                                }
-                            }
 
                             // Bis zu 3 Artikel pro Charge: Stk aufaddieren
                             int chargenStk = 0;
@@ -363,10 +405,6 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
                             if (istProbe) result.GesamtProben++;
                             result.GesamtStk += chargenStk;
-
-                            if (!result.StkProStunde.ContainsKey(stunde))
-                                result.StkProStunde[stunde] = 0;
-                            result.StkProStunde[stunde] += chargenStk;
                         }
                     }
                 }
@@ -374,23 +412,17 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
             try
             {
-                try
-                {
-                    await ReadWithColumnAsync("[Datum]");
-                }
-                catch (SqlException ex) when (ex.Number == 207)
-                {
-                    await ReadWithColumnAsync("[ Datum]");
-                }
+                await ReadWithColumnAsync("[Datum]");
+            }
+            catch (SqlException ex) when (ex.Number == 207)
+            {
+                // Legacy-Spalte mit führendem Leerzeichen
+                try { await ReadWithColumnAsync("[ Datum]"); }
+                catch (SqlException ex2) when (ex2.Number == 208) { /* Tabelle fehlt */ }
             }
             catch (SqlException ex) when (ex.Number == 208)
             {
                 // Tabelle existiert nicht (Anlage außer Betrieb) – leeres Ergebnis liefern
-            }
-            catch
-            {
-                // andere Fehler still tolerieren, damit eine Anlage nicht das ganze
-                // Dashboard zum Absturz bringt
             }
 
             return result;
@@ -404,6 +436,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
             public TimeSpan Fehler { get; set; }
             public string LetzteUhrzeit { get; set; }
             public List<TimelineBlock> Bloecke { get; set; } = new List<TimelineBlock>();
+            public Dictionary<string, int> Rezepte { get; set; }
+                = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -427,6 +461,14 @@ namespace VerwaltungKST1127.Produktionsauswertung
             bool fehlerAktiv = false;
             int fehlerStartSec = 0;
             int letzterBestaetigtSec = -1;
+
+            // Eine Charge kann aus mehreren Production-Segmenten bestehen
+            // (z. B. Anlage stoppt kurz, fährt mit demselben Rezept weiter,
+            // oder ein Fehler unterbricht und das gleiche Rezept startet erneut).
+            // Für den Rezept-Counter wird daher pro Anlage nur dann +1 gezählt,
+            // wenn das produktive Rezept sich vom vorhergehenden unterscheidet –
+            // also wenn wirklich eine NEUE Charge beginnt.
+            string vorigesProduktivRezept = null;
 
             int ParseHmsToSec(string hms)
             {
@@ -471,9 +513,20 @@ namespace VerwaltungKST1127.Produktionsauswertung
                         int rezeptPos = line.IndexOf("Rezept = ", StringComparison.Ordinal);
                         if (rezeptPos >= 0)
                         {
-                            string rezeptName = line.Substring(rezeptPos + "Rezept = ".Length).Trim();
+                            // Rohwert ab "Rezept = " bis Zeilenende, dann Suffixe wegschneiden:
+                            // manche Anlagen schreiben "Rezept = B213_BBM.rcp / Zeitdauer = 1:55:56"
+                            // in einer einzigen Zeile – ohne Cleanup würde jede Dauer als
+                            // eigenes Rezept gezählt.
+                            string rezeptRoh = line.Substring(rezeptPos + "Rezept = ".Length);
+                            string rezeptName = SaeubereRezeptName(rezeptRoh);
                             if (IstProduktivRezept(rezeptName))
                             {
+                                // Pro Charge schreibt die Anlage mehrere Logzeilen mit
+                                // 'Rezept = …' (für verschiedene Statuswechsel). Nur die
+                                // Zeile mit 'Zeitdauer = …' markiert den Abschluss der
+                                // Charge – nur dort werden Rezept-Counter, Produktivzeit
+                                // und Timeline-Block geschrieben, damit jede Charge
+                                // genau einmal zählt.
                                 int zdPos = line.IndexOf("Zeitdauer = ", StringComparison.Ordinal);
                                 if (zdPos >= 0)
                                 {
@@ -481,6 +534,18 @@ namespace VerwaltungKST1127.Produktionsauswertung
                                     var dauer = ParseZeitdauer(zd);
                                     if (dauer > TimeSpan.Zero)
                                     {
+                                        // Rezept-Counter nur bei Wechsel zum vorigen produktiven
+                                        // Rezept hochzählen → Fortsetzungen derselben Charge
+                                        // (mehrere Production-Blöcke nach Pausen/Fehlern) bleiben 1 Charge.
+                                        if (!string.Equals(rezeptName, vorigesProduktivRezept,
+                                                StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            if (!result.Rezepte.ContainsKey(rezeptName))
+                                                result.Rezepte[rezeptName] = 0;
+                                            result.Rezepte[rezeptName]++;
+                                        }
+                                        vorigesProduktivRezept = rezeptName;
+
                                         result.Produktiv += dauer;
 
                                         // Block-Ende ist der Zeitstempel der Zeile, Anfang = Ende - Dauer
@@ -576,6 +641,25 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
         // ── Hilfsmethoden ────────────────────────────────────────────────────
 
+        // Entfernt nachgelagerte Marker aus dem Rezeptnamen-Rohwert:
+        //   "B213_BBM.rcp / Zeitdauer = 1:55:56"  -> "B213_BBM.rcp"
+        //   "B146-F4_Nb2TiO7_BBM.rcp Zeitdauer = …" -> "B146-F4_Nb2TiO7_BBM.rcp"
+        // Konservativ: schneidet nur an bekannten Markern (" / Zeitdauer" / " Zeitdauer"),
+        // damit echte Rezeptnamen mit Sonderzeichen unangetastet bleiben.
+        private static string SaeubereRezeptName(string roh)
+        {
+            if (string.IsNullOrEmpty(roh)) return string.Empty;
+            string s = roh;
+
+            int idx = s.IndexOf(" / Zeitdauer", StringComparison.OrdinalIgnoreCase);
+            if (idx >= 0) s = s.Substring(0, idx);
+
+            idx = s.IndexOf(" Zeitdauer", StringComparison.OrdinalIgnoreCase);
+            if (idx >= 0) s = s.Substring(0, idx);
+
+            return s.Trim();
+        }
+
         private static bool IstProduktivRezept(string rezept)
         {
             if (string.IsNullOrEmpty(rezept)) return false;
@@ -584,17 +668,6 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 return true;
             if (c == 'S' && rezept.Length >= 2 && char.IsDigit(rezept[1]))
                 return true;
-            return false;
-        }
-
-        private static bool IstAusschlussRezept(string rezept)
-        {
-            for (int i = 0; i < AusschlussRezeptKeywords.Length; i++)
-            {
-                if (rezept.IndexOf(AusschlussRezeptKeywords[i],
-                    StringComparison.OrdinalIgnoreCase) >= 0)
-                    return true;
-            }
             return false;
         }
 

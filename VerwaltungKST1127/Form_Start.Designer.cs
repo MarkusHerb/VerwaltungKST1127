@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -75,11 +75,9 @@
             this.label4 = new System.Windows.Forms.Label();
             this.lblOberflaechenGesamt = new System.Windows.Forms.Label();
             this.lblAngemeldet = new System.Windows.Forms.Label();
-            this.btnPraemienbewertung = new System.Windows.Forms.Button();
             this.btnProduktionsauswertung = new System.Windows.Forms.Button();
             this.BtnArtikelAendern = new System.Windows.Forms.Button();
             this.BtnRFIDAnischtWaschen = new System.Windows.Forms.Button();
-            this.btnRFID = new System.Windows.Forms.Button();
             this.btnDatenExportTabellen = new System.Windows.Forms.Button();
             this.btnProduktionGestern = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
@@ -381,17 +379,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.Transparent;
             this.chartPerformance.BorderlineColor = System.Drawing.Color.Transparent;
-            chartArea2.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea2);
-            legend2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend2.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend2);
+            chartArea4.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea4);
+            legend4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend4.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend4);
             this.chartPerformance.Location = new System.Drawing.Point(309, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.chartPerformance.Series.Add(series2);
+            series4.ChartArea = "ChartArea1";
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.chartPerformance.Series.Add(series4);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -548,31 +546,17 @@
             this.lblAngemeldet.TabIndex = 39;
             this.lblAngemeldet.Text = "Angemeldet: ";
             // 
-            // btnPraemienbewertung
-            // 
-            this.btnPraemienbewertung.BackColor = System.Drawing.Color.Silver;
-            this.btnPraemienbewertung.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnPraemienbewertung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnPraemienbewertung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPraemienbewertung.Location = new System.Drawing.Point(637, 355);
-            this.btnPraemienbewertung.Name = "btnPraemienbewertung";
-            this.btnPraemienbewertung.Size = new System.Drawing.Size(239, 66);
-            this.btnPraemienbewertung.TabIndex = 40;
-            this.btnPraemienbewertung.Text = "Prämienbewertung\r\nExcelfile auf \"K\"";
-            this.btnPraemienbewertung.UseVisualStyleBackColor = false;
-            this.btnPraemienbewertung.Click += new System.EventHandler(this.btnPraemienbewertung_Click);
-            // 
             // btnProduktionsauswertung
             // 
             this.btnProduktionsauswertung.BackColor = System.Drawing.Color.Silver;
             this.btnProduktionsauswertung.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnProduktionsauswertung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnProduktionsauswertung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnProduktionsauswertung.Location = new System.Drawing.Point(36, 571);
+            this.btnProduktionsauswertung.Location = new System.Drawing.Point(336, 645);
             this.btnProduktionsauswertung.Name = "btnProduktionsauswertung";
             this.btnProduktionsauswertung.Size = new System.Drawing.Size(239, 66);
             this.btnProduktionsauswertung.TabIndex = 41;
-            this.btnProduktionsauswertung.Text = "Produktionsauswertung";
+            this.btnProduktionsauswertung.Text = "Produktionsauswertung\r\nAlt";
             this.btnProduktionsauswertung.UseVisualStyleBackColor = false;
             this.btnProduktionsauswertung.Click += new System.EventHandler(this.btnProduktionsauswertung_Click);
             // 
@@ -604,20 +588,6 @@
             this.BtnRFIDAnischtWaschen.UseVisualStyleBackColor = false;
             this.BtnRFIDAnischtWaschen.Click += new System.EventHandler(this.BtnRFIDAnischtWaschen_Click);
             // 
-            // btnRFID
-            // 
-            this.btnRFID.BackColor = System.Drawing.Color.Silver;
-            this.btnRFID.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnRFID.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnRFID.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnRFID.Location = new System.Drawing.Point(336, 499);
-            this.btnRFID.Name = "btnRFID";
-            this.btnRFID.Size = new System.Drawing.Size(239, 66);
-            this.btnRFID.TabIndex = 44;
-            this.btnRFID.Text = "RFID_TEST";
-            this.btnRFID.UseVisualStyleBackColor = false;
-            this.btnRFID.Click += new System.EventHandler(this.btnRFID_Click);
-            // 
             // btnDatenExportTabellen
             // 
             this.btnDatenExportTabellen.BackColor = System.Drawing.Color.Silver;
@@ -631,24 +601,24 @@
             this.btnDatenExportTabellen.Text = "Daten Exporte";
             this.btnDatenExportTabellen.UseVisualStyleBackColor = false;
             this.btnDatenExportTabellen.Click += new System.EventHandler(this.btnDatenExportTabellen_Click);
-            //
+            // 
             // btnProduktionGestern
-            //
-            this.btnProduktionGestern.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(122)))), ((int)(((byte)(215)))), ((int)(((byte)(255)))));
+            // 
+            this.btnProduktionGestern.BackColor = System.Drawing.Color.Silver;
             this.btnProduktionGestern.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnProduktionGestern.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnProduktionGestern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnProduktionGestern.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(16)))), ((int)(((byte)(32)))));
-            this.btnProduktionGestern.Location = new System.Drawing.Point(281, 571);
+            this.btnProduktionGestern.Location = new System.Drawing.Point(36, 571);
             this.btnProduktionGestern.Name = "btnProduktionGestern";
             this.btnProduktionGestern.Size = new System.Drawing.Size(239, 66);
             this.btnProduktionGestern.TabIndex = 46;
-            this.btnProduktionGestern.Text = "Produktion gestern";
+            this.btnProduktionGestern.Text = "Produktion gestern \r\nDashboard";
             this.btnProduktionGestern.UseVisualStyleBackColor = false;
             this.btnProduktionGestern.Click += new System.EventHandler(this.btnProduktionGestern_Click);
-            //
+            // 
             // Form_Start
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
@@ -657,11 +627,9 @@
             this.ClientSize = new System.Drawing.Size(1197, 721);
             this.Controls.Add(this.btnProduktionGestern);
             this.Controls.Add(this.btnDatenExportTabellen);
-            this.Controls.Add(this.btnRFID);
             this.Controls.Add(this.BtnRFIDAnischtWaschen);
             this.Controls.Add(this.BtnArtikelAendern);
             this.Controls.Add(this.btnProduktionsauswertung);
-            this.Controls.Add(this.btnPraemienbewertung);
             this.Controls.Add(this.lblAngemeldet);
             this.Controls.Add(this.lblOberflaechenGesamt);
             this.Controls.Add(this.label4);
@@ -754,11 +722,9 @@
         private System.Windows.Forms.Label lblOberflaechenGesamt;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblAngemeldet;
-        private System.Windows.Forms.Button btnPraemienbewertung;
         private System.Windows.Forms.Button btnProduktionsauswertung;
         private System.Windows.Forms.Button BtnArtikelAendern;
         private System.Windows.Forms.Button BtnRFIDAnischtWaschen;
-        private System.Windows.Forms.Button btnRFID;
         private System.Windows.Forms.Button btnDatenExportTabellen;
         private System.Windows.Forms.Button btnProduktionGestern;
     }
