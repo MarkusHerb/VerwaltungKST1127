@@ -52,31 +52,43 @@
   }
   @keyframes drift { 0%{transform:translateY(0)} 100%{transform:translateY(-40px)} }
 
-  .layout { position: relative; z-index: 1; padding: 24px 28px 40px; }
+  .layout {
+    position: relative; z-index: 1;
+    padding: 24px 28px 28px;
+    /* Layout-Höhe an Viewport koppeln, damit das Dashboard sowohl auf
+       3560×1440 als auch auf 1920×1080 ohne Scrollbalken passt und beim
+       Verschieben zwischen Monitoren live skaliert. */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
   .header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
+    flex: 0 0 auto;
   }
   .title {
-    font-size: 26px; font-weight: 600; letter-spacing: 0.5px;
+    font-size: clamp(20px, 1.7vw, 28px);
+    font-weight: 600; letter-spacing: 0.5px;
     background: linear-gradient(90deg, #fff 10%, var(--accent-1) 60%, var(--accent-2) 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .subtitle { color: var(--txt-1); font-size: 14px; margin-top: 2px; }
+  .subtitle { color: var(--txt-1); font-size: clamp(12px, 0.95vw, 14px); margin-top: 2px; }
 
   /* KPI Cards mit Glassmorphism + Count-Up */
   .kpi-row {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 14px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
+    flex: 0 0 auto;
   }
   .kpi {
     background: var(--glass);
     border: 1px solid var(--glass-stroke);
     border-radius: 14px;
-    padding: 16px 18px;
+    padding: 12px 16px;
     backdrop-filter: blur(10px);
     position: relative;
     overflow: hidden;
@@ -93,36 +105,58 @@
   .kpi.yellow::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-5)); }
   .kpi.red::before    { background: linear-gradient(90deg, var(--accent-5), var(--accent-2)); }
 
-  .kpi-label { color: var(--txt-2); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .kpi-label { color: var(--txt-2); font-size: clamp(10px, 0.78vw, 12px); text-transform: uppercase; letter-spacing: 1px; }
   .kpi-value {
-    font-size: 34px; font-weight: 600; margin-top: 4px;
+    font-size: clamp(22px, 2.2vw, 34px);
+    font-weight: 600; margin-top: 4px;
     font-variant-numeric: tabular-nums;
   }
-  .kpi-suffix { font-size: 14px; color: var(--txt-1); margin-left: 4px; font-weight: 400; }
+  .kpi-suffix { font-size: clamp(11px, 0.95vw, 14px); color: var(--txt-1); margin-left: 4px; font-weight: 400; }
 
   .grid {
     display: grid;
     grid-template-columns: 1.6fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 16px;
+    grid-template-rows: 1fr 1fr;
+    gap: 14px;
+    flex: 1 1 auto;
+    min-height: 0;
   }
   .panel {
     background: var(--glass);
     border: 1px solid var(--glass-stroke);
     border-radius: 16px;
-    padding: 16px 18px 8px;
+    padding: 12px 16px 8px;
     backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
   }
   .panel-title {
-    font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--txt-1); margin: 0 0 8px;
+    font-size: clamp(11px, 0.85vw, 13px); text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--txt-1); margin: 0 0 6px;
+    flex: 0 0 auto;
   }
-  .panel-title span.muted { color: var(--txt-2); text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .panel-title span.muted { color: var(--txt-2); text-transform: none; letter-spacing: 0; font-size: clamp(10px, 0.78vw, 12px); }
 
-  #heatmap     { height: 360px; }
-  #timeline    { height: 520px; }
-  #treemap     { height: 320px; }
-  #rezepte     { height: 520px; }
+  /* Charts füllen das verbleibende Panel — keine festen Pixelhöhen mehr,
+     damit das Layout auf jedem Monitor (1080 / 1440 / mehr) passt. */
+  .chart {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+  }
+  #heatmap, #timeline, #treemap, #rezepte { width: 100%; height: 100%; }
+
+  /* Sehr schmale Viewports (z. B. Notebook 1366×768): KPI-Karten umbrechen,
+     damit Werte nicht abgeschnitten werden. */
+  @media (max-width: 1500px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  }
 
   /* leere Daten */
   .empty {
@@ -197,20 +231,20 @@
   <div class="grid">
     <div class="panel" style="grid-column: 1 / 2;">
       <div class="panel-title">Heatmap <span class="muted">— Stückzahl je Stunde × Anlage (anteilig nach Produktivzeit)</span></div>
-      <div id="heatmap"></div>
+      <div class="chart"><div id="heatmap"></div></div>
     </div>
     <div class="panel" style="grid-column: 2 / 3;">
       <div class="panel-title">Artikel-Mix <span class="muted">— Anlage → Artikel (Klick zoomt rein, Ziehen = Pan)</span></div>
-      <div id="treemap"></div>
+      <div class="chart"><div id="treemap"></div></div>
       <div id="treemap-chips" class="anlage-chips"></div>
     </div>
     <div class="panel" style="grid-column: 1 / 2;">
       <div class="panel-title">Timeline <span class="muted">— Produktiv (grün) vs. Fehler (rot)</span></div>
-      <div id="timeline"></div>
+      <div class="chart"><div id="timeline"></div></div>
     </div>
     <div class="panel" style="grid-column: 2 / 3;">
       <div class="panel-title">Rezept-Verteilung <span class="muted">— Anzahl Chargen</span></div>
-      <div id="rezepte"></div>
+      <div class="chart" id="rezepte-wrap" style="overflow:auto;"><div id="rezepte"></div></div>
     </div>
   </div>
 </div>
@@ -255,6 +289,28 @@
   countUp(document.getElementById('kpi-rez'),     data.AnzahlRezepte || 0);
   countUp(document.getElementById('kpi-prod'),    data.ProduktivStunden || 0, 2);
   countUp(document.getElementById('kpi-fehler'),  data.FehlerStunden || 0, 1);
+
+  // ─── Resize-Helper ────────────────────────────────────────────────────────
+  // Statt einmalig 'window.resize' zu hören, beobachten wir jedes Chart-Element
+  // direkt. Damit reagieren die Charts auch dann zuverlässig, wenn der Host
+  // (WinForms-Fenster) zwischen Monitoren mit unterschiedlicher Auflösung
+  // verschoben wird oder das Layout per Flex-Grid umfließt.
+  const chartInstances = [];
+  function bindResize(chart, el) {
+    chartInstances.push(chart);
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => {
+        // requestAnimationFrame entkoppelt vom Layout-Pass und vermeidet
+        // ResizeObserver-Loop-Warnungen.
+        requestAnimationFrame(() => chart.resize());
+      });
+      ro.observe(el);
+    }
+  }
+  // Fallback + zusätzlicher Trigger beim Fensterwechsel.
+  window.addEventListener('resize', () => {
+    chartInstances.forEach(c => c.resize());
+  });
 
   // ─── Globale Chart-Optionen ───────────────────────────────────────────────
   const textColor = '#aab1c8';
@@ -359,7 +415,7 @@
         },
       }]
     });
-    window.addEventListener('resize', () => chart.resize());
+    bindResize(chart, container);
   })();
 
   // ─── 2) Timeline (Custom Series, Gantt-Stil) ──────────────────────────────
@@ -414,7 +470,8 @@
       return `${hh}:${mm}:${ss}`;
     }
 
-    const chart = echarts.init(document.getElementById('timeline'), null, { renderer: 'canvas' });
+    const timelineEl = document.getElementById('timeline');
+    const chart = echarts.init(timelineEl, null, { renderer: 'canvas' });
     chart.setOption({
       tooltip: {
         ...baseTooltip,
@@ -446,7 +503,7 @@
         animationDuration: 900,
       }]
     });
-    window.addEventListener('resize', () => chart.resize());
+    bindResize(chart, timelineEl);
   })();
 
   // ─── 3) Treemap: Anlage → Artikel ─────────────────────────────────────────
@@ -463,7 +520,8 @@
     const pal = ['#7ad7ff', '#b283ff', '#06d6a0', '#ffd166', '#ef476f',
                  '#5cdbd3', '#ffa657', '#9b87f5', '#84d2f6', '#f6b2d2'];
 
-    const chart = echarts.init(document.getElementById('treemap'), null, { renderer: 'canvas' });
+    const treemapEl = document.getElementById('treemap');
+    const chart = echarts.init(treemapEl, null, { renderer: 'canvas' });
     chart.setOption({
       tooltip: {
         ...baseTooltip,
@@ -537,7 +595,7 @@
         animationEasing: 'cubicOut',
       }]
     });
-    window.addEventListener('resize', () => chart.resize());
+    bindResize(chart, treemapEl);
 
     // Anlagen-Chips unter der Treemap rendern – stellt sicher, dass auch
     // sehr kleine Anlagen (z. B. A60 mit 1 Charge) jederzeit lesbar sind,
@@ -558,24 +616,19 @@
   (function renderRezepte() {
     const rez = (data.Rezepte || []).slice().sort((a, b) => a.Anzahl - b.Anzahl);
     const container = document.getElementById('rezepte');
+    const wrap = document.getElementById('rezepte-wrap');
     if (rez.length === 0) {
       container.innerHTML = '<div class="empty">Keine Rezeptdaten</div>';
       return;
     }
 
-    // Container-Höhe an die Anzahl Rezepte anpassen: ~26 px pro Eintrag,
-    // mindestens die ursprünglichen 520 px. So bleiben Labels lesbar,
-    // egal ob 5 oder 50 Rezepte am Tag liefen.
-    const dynH = Math.max(520, rez.length * 26);
-    container.style.height = dynH + 'px';
-
-    // Damit die Timeline daneben nicht "kurz" wirkt: gleiche Höhe geben.
-    if (dynH > 520) {
-      const tlEl = document.getElementById('timeline');
-      tlEl.style.height = dynH + 'px';
-      const tlInst = echarts.getInstanceByDom(tlEl);
-      if (tlInst) tlInst.resize();
-    }
+    // Mindesthöhe pro Eintrag, damit Labels lesbar bleiben. Ist der Wert
+    // größer als der verfügbare Panel-Platz, scrollt das Wrap-Element –
+    // das gesamte Dashboard bleibt dadurch immer bildschirmfüllend, statt
+    // bei vielen Rezepten unten herauszuwachsen.
+    const minH = rez.length * 26;
+    const wrapH = wrap ? wrap.clientHeight : minH;
+    container.style.height = Math.max(minH, wrapH) + 'px';
 
     const chart = echarts.init(container, null, { renderer: 'canvas' });
     chart.setOption({
@@ -612,7 +665,18 @@
         animationDelay: idx => idx * 60,
       }]
     });
-    window.addEventListener('resize', () => chart.resize());
+    // Wenn sich der Panel-Wrapper ändert (z. B. anderer Bildschirm), die
+    // Container-Höhe nachziehen und ECharts neu vermessen lassen.
+    if (typeof ResizeObserver !== 'undefined' && wrap) {
+      const ro = new ResizeObserver(() => {
+        requestAnimationFrame(() => {
+          container.style.height = Math.max(minH, wrap.clientHeight) + 'px';
+          chart.resize();
+        });
+      });
+      ro.observe(wrap);
+    }
+    chartInstances.push(chart);
   })();
 })();
 </script>
