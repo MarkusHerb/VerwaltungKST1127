@@ -8,6 +8,9 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private System.Windows.Forms.DateTimePicker dateTimePickerTag;
         private System.Windows.Forms.Button btnNeuLaden;
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.CheckBox chkAutoRefresh;
+        private System.Windows.Forms.Label lblAutoRefreshTimer;
+        private System.Windows.Forms.Timer timerAutoRefresh;
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
 
         protected override void Dispose(bool disposing)
@@ -21,12 +24,16 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panelToolbar = new System.Windows.Forms.Panel();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.lblAutoRefreshTimer = new System.Windows.Forms.Label();
+            this.chkAutoRefresh = new System.Windows.Forms.CheckBox();
             this.btnNeuLaden = new System.Windows.Forms.Button();
             this.dateTimePickerTag = new System.Windows.Forms.DateTimePicker();
             this.lblTag = new System.Windows.Forms.Label();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
+            this.timerAutoRefresh = new System.Windows.Forms.Timer(this.components);
             this.panelToolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
             this.SuspendLayout();
@@ -35,6 +42,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
             //
             this.panelToolbar.BackColor = System.Drawing.Color.FromArgb(17, 23, 46);
             this.panelToolbar.Controls.Add(this.lblStatus);
+            this.panelToolbar.Controls.Add(this.lblAutoRefreshTimer);
+            this.panelToolbar.Controls.Add(this.chkAutoRefresh);
             this.panelToolbar.Controls.Add(this.btnNeuLaden);
             this.panelToolbar.Controls.Add(this.dateTimePickerTag);
             this.panelToolbar.Controls.Add(this.lblTag);
@@ -82,16 +91,47 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.btnNeuLaden.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnNeuLaden.Click += new System.EventHandler(this.btnNeuLaden_Click);
             //
+            // chkAutoRefresh
+            //
+            this.chkAutoRefresh.AutoSize = true;
+            this.chkAutoRefresh.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
+            this.chkAutoRefresh.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.chkAutoRefresh.Location = new System.Drawing.Point(440, 14);
+            this.chkAutoRefresh.Name = "chkAutoRefresh";
+            this.chkAutoRefresh.Size = new System.Drawing.Size(140, 21);
+            this.chkAutoRefresh.TabIndex = 4;
+            this.chkAutoRefresh.Text = "Auto-Aktualisierung";
+            this.chkAutoRefresh.UseVisualStyleBackColor = false;
+            this.chkAutoRefresh.BackColor = System.Drawing.Color.Transparent;
+            this.chkAutoRefresh.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.chkAutoRefresh.CheckedChanged += new System.EventHandler(this.chkAutoRefresh_CheckedChanged);
+            //
+            // lblAutoRefreshTimer
+            //
+            this.lblAutoRefreshTimer.AutoSize = true;
+            this.lblAutoRefreshTimer.ForeColor = System.Drawing.Color.FromArgb(122, 215, 255);
+            this.lblAutoRefreshTimer.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
+            this.lblAutoRefreshTimer.Location = new System.Drawing.Point(596, 15);
+            this.lblAutoRefreshTimer.Name = "lblAutoRefreshTimer";
+            this.lblAutoRefreshTimer.Size = new System.Drawing.Size(50, 19);
+            this.lblAutoRefreshTimer.TabIndex = 5;
+            this.lblAutoRefreshTimer.Text = "";
+            //
             // lblStatus
             //
             this.lblStatus.AutoSize = true;
             this.lblStatus.ForeColor = System.Drawing.Color.FromArgb(170, 177, 200);
             this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblStatus.Location = new System.Drawing.Point(440, 15);
+            this.lblStatus.Location = new System.Drawing.Point(680, 15);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(40, 17);
             this.lblStatus.TabIndex = 3;
             this.lblStatus.Text = "Bereit";
+            //
+            // timerAutoRefresh
+            //
+            this.timerAutoRefresh.Interval = 1000;
+            this.timerAutoRefresh.Tick += new System.EventHandler(this.timerAutoRefresh_Tick);
             //
             // webView
             //

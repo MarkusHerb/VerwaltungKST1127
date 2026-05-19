@@ -216,7 +216,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             data.AnzahlProben = data.Anlagen.Sum(a => a.Proben);
             data.AnzahlArtikel = artikelGesamt.Count;
             data.AnzahlRezepte = rezeptZaehler.Count;
-            data.ProduktivStunden = Math.Round(data.Anlagen.Sum(a => a.ProduktivStunden), 1);
+            data.ProduktivStunden = Math.Round(data.Anlagen.Sum(a => a.ProduktivStunden), 2);
             data.FehlerStunden = Math.Round(data.Anlagen.Sum(a => a.FehlerStunden), 1);
 
             // Ø Auslastung: produktive Stunden / (Anzahl Anlagen * 24h)
@@ -537,7 +537,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
                                         // Rezept-Counter nur bei Wechsel zum vorigen produktiven
                                         // Rezept hochzählen → Fortsetzungen derselben Charge
                                         // (mehrere Production-Blöcke nach Pausen/Fehlern) bleiben 1 Charge.
-                                        if (!string.Equals(rezeptName, vorigesProduktivRezept,
+                                        // Chargen unter 20 Minuten Produktivzeit werden ignoriert –
+                                        // so kurze Prozesse existieren nicht und entstehen nur durch
+                                        // aktiven Eingriff/Abbruch durch das Produktionspersonal.
+                                        if (dauer >= TimeSpan.FromMinutes(20)
+                                            && !string.Equals(rezeptName, vorigesProduktivRezept,
                                                 StringComparison.OrdinalIgnoreCase))
                                         {
                                             if (!result.Rezepte.ContainsKey(rezeptName))

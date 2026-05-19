@@ -27,6 +27,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private bool _initialized;     // erst nach WebView-Init dürfen Datumswechsel laden
         private string _htmlTemplate;
 
+        // Auto-Refresh: alle 5 Minuten, sekündlicher Countdown im Label.
+        private const int AutoRefreshSekunden = 5 * 60;
+        private int _autoRefreshRest;
+
         public Form_ProduktionsuebersichtGestern()
         {
             InitializeComponent();
@@ -106,7 +110,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 webView.CoreWebView2.NavigateToString(finalHtml);
 
                 lblStatus.Text = string.Format(
-                    "Stand: {0}  ·  {1:N0} Stk  ·  {2} Chargen  ·  {3:N1} h produktiv",
+                    "Stand: {0}  ·  {1:N0} Stk  ·  {2} Chargen  ·  {3:N2} h produktiv",
                     data.DatumLang, data.GesamtStk, data.AnzahlChargen,
                     data.ProduktivStunden);
             }
@@ -115,6 +119,58 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 btnNeuLaden.Enabled = true;
                 dateTimePickerTag.Enabled = true;
                 _isLoading = false;
+
+                // Nach jedem Ladevorgang den Countdown wieder auf 5 Minuten setzen,
+                // damit Auto-Refresh und manueller "Neu laden"-Klick synchron bleiben.
+                if (chkAutoRefresh.Checked)
+                    ResetAutoRefreshCountdown();
+            }
+        }
+
+        // ── Auto-Refresh ────────────────────────────────────────────────────────
+
+        private void chkAutoRefresh_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkAutoRefresh.Checked)
+            {
+                ResetAutoRefreshCountdown();
+                timerAutoRefresh.Start();
+            }
+            else
+            {
+                timerAutoRefresh.Stop();
+                lblAutoRefreshTimer.Text = string.Empty;
+            }
+        }
+
+        private void ResetAutoRefreshCountdown()
+        {
+            _autoRefreshRest = AutoRefreshSekunden;
+            AktualisiereTimerLabel();
+        }
+
+        private void AktualisiereTimerLabel()
+        {
+            int m = _autoRefreshRest / 60;
+            int s = _autoRefreshRest % 60;
+            lblAutoRefreshTimer.Text = string.Format("{0:00}:{1:00}", m, s);
+        }
+
+        private async void timerAutoRefresh_Tick(object sender, EventArgs e)
+        {
+            if (!chkAutoRefresh.Checked) return;
+
+            _autoRefreshRest--;
+            if (_autoRefreshRest <= 0)
+            {
+                // Reload triggern; ResetAutoRefreshCountdown() läuft im finally von LadeDashboardAsync.
+                _autoRefreshRest = AutoRefreshSekunden;
+                AktualisiereTimerLabel();
+                await LadeDashboardAsync();
+            }
+            else
+            {
+                AktualisiereTimerLabel();
             }
         }
 
