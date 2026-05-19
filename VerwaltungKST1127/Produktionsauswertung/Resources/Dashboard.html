@@ -31,10 +31,13 @@
 
   html, body {
     margin: 0; padding: 0;
+    /* Genau die Viewport-Hoehe fuellen, nichts scrollt. Das Dashboard
+       skaliert dadurch beim Wechsel zwischen Monitoren live mit. */
+    height: 100%;
+    overflow: hidden;
     background: radial-gradient(ellipse at top left, #1a2350 0%, #0b1020 60%) fixed;
     color: var(--txt-0);
     font-family: "Segoe UI", "Inter", system-ui, sans-serif;
-    overflow-x: hidden;
   }
 
   /* dezenter, animierter Sternen-Hintergrund */
@@ -54,18 +57,17 @@
 
   .layout {
     position: relative; z-index: 1;
-    padding: 24px 28px 28px;
-    /* Layout-Höhe an Viewport koppeln, damit das Dashboard sowohl auf
-       3560×1440 als auch auf 1920×1080 ohne Scrollbalken passt und beim
-       Verschieben zwischen Monitoren live skaliert. */
-    min-height: 100vh;
+    /* Exakt Viewport-Hoehe; kompakte Aussenabstaende, damit sowohl
+       3560x1440 als auch 1920x1080 ohne Scrollbalken vollstaendig passen. */
+    height: 100vh;
+    padding: 12px 16px;
     display: flex;
     flex-direction: column;
+    gap: 10px;
   }
 
   .header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 18px;
     flex: 0 0 auto;
   }
   .title {
@@ -80,15 +82,14 @@
   .kpi-row {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 14px;
-    margin-bottom: 16px;
+    gap: 10px;
     flex: 0 0 auto;
   }
   .kpi {
     background: var(--glass);
     border: 1px solid var(--glass-stroke);
     border-radius: 14px;
-    padding: 12px 16px;
+    padding: 8px 14px;
     backdrop-filter: blur(10px);
     position: relative;
     overflow: hidden;
@@ -105,27 +106,28 @@
   .kpi.yellow::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-5)); }
   .kpi.red::before    { background: linear-gradient(90deg, var(--accent-5), var(--accent-2)); }
 
-  .kpi-label { color: var(--txt-2); font-size: clamp(10px, 0.78vw, 12px); text-transform: uppercase; letter-spacing: 1px; }
+  .kpi-label { color: var(--txt-2); font-size: clamp(10px, 0.7vw, 12px); text-transform: uppercase; letter-spacing: 1px; }
   .kpi-value {
-    font-size: clamp(22px, 2.2vw, 34px);
-    font-weight: 600; margin-top: 4px;
+    font-size: clamp(18px, 1.8vw, 30px);
+    font-weight: 600; margin-top: 2px;
     font-variant-numeric: tabular-nums;
+    line-height: 1.1;
   }
-  .kpi-suffix { font-size: clamp(11px, 0.95vw, 14px); color: var(--txt-1); margin-left: 4px; font-weight: 400; }
+  .kpi-suffix { font-size: clamp(11px, 0.85vw, 14px); color: var(--txt-1); margin-left: 4px; font-weight: 400; }
 
   .grid {
     display: grid;
     grid-template-columns: 1.6fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 14px;
+    gap: 10px;
     flex: 1 1 auto;
     min-height: 0;
   }
   .panel {
     background: var(--glass);
     border: 1px solid var(--glass-stroke);
-    border-radius: 16px;
-    padding: 12px 16px 8px;
+    border-radius: 14px;
+    padding: 8px 12px 6px;
     backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
@@ -133,8 +135,8 @@
     overflow: hidden;
   }
   .panel-title {
-    font-size: clamp(11px, 0.85vw, 13px); text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--txt-1); margin: 0 0 6px;
+    font-size: clamp(10px, 0.75vw, 12px); text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--txt-1); margin: 0 0 4px;
     flex: 0 0 auto;
   }
   .panel-title span.muted { color: var(--txt-2); text-transform: none; letter-spacing: 0; font-size: clamp(10px, 0.78vw, 12px); }
@@ -168,16 +170,20 @@
   /* Anlagen-Chips unter der Treemap – garantieren, dass auch winzige
      Anlagen (z. B. A60 mit 1 Charge) jederzeit lesbar bleiben. */
   .anlage-chips {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    padding: 6px 4px 4px;
+    display: flex; flex-wrap: wrap; gap: 4px;
+    padding: 4px 2px 0;
+    flex: 0 0 auto;
+    max-height: 56px;
+    overflow: hidden;
   }
   .chip {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 3px 8px; border-radius: 6px;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 6px; border-radius: 5px;
     background: rgba(255,255,255,0.05);
     border: 1px solid var(--glass-stroke);
-    font-size: 11px; color: var(--txt-0);
+    font-size: 10px; color: var(--txt-0);
     font-variant-numeric: tabular-nums;
+    line-height: 1.3;
   }
   .chip-dot {
     width: 10px; height: 10px; border-radius: 2px; flex: 0 0 auto;
