@@ -253,7 +253,7 @@
   countUp(document.getElementById('kpi-proben'),  data.AnzahlProben || 0);
   countUp(document.getElementById('kpi-art'),     data.AnzahlArtikel || 0);
   countUp(document.getElementById('kpi-rez'),     data.AnzahlRezepte || 0);
-  countUp(document.getElementById('kpi-prod'),    data.ProduktivStunden || 0, 1);
+  countUp(document.getElementById('kpi-prod'),    data.ProduktivStunden || 0, 2);
   countUp(document.getElementById('kpi-fehler'),  data.FehlerStunden || 0, 1);
 
   // ─── Globale Chart-Optionen ───────────────────────────────────────────────
@@ -482,10 +482,30 @@
         // (z. B. A60 mit nur einer Charge) hineinzoomen kann. Klick zoomt direkt
         // auf den Knoten.
         roam: 'move', nodeClick: 'zoomToNode',
-        breadcrumb: { show: true, top: 4,
-          itemStyle: { color: 'rgba(255,255,255,0.06)',
-                       borderColor: 'rgba(255,255,255,0.1)',
-                       textStyle: { color: '#aab1c8' } } },
+        // Breadcrumb (Klick-Box zum Rauszoomen) deutlich hervorheben –
+        // sonst übersieht man, dass man hier auf "Alle" zurück muss,
+        // sobald man auf eine einzelne Anlage gezoomt hat.
+        breadcrumb: {
+          show: true, top: 6, left: 8, height: 26,
+          emptyItemWidth: 28,
+          itemStyle: {
+            color: 'rgba(122,215,255,0.18)',
+            borderColor: 'rgba(122,215,255,0.95)',
+            borderWidth: 1.5,
+            shadowBlur: 8,
+            shadowColor: 'rgba(122,215,255,0.6)',
+            textStyle: { color: '#f3f6ff', fontSize: 12, fontWeight: 700 }
+          },
+          emphasis: {
+            itemStyle: {
+              color: 'rgba(122,215,255,0.4)',
+              borderColor: '#7ad7ff',
+              shadowBlur: 14,
+              shadowColor: 'rgba(122,215,255,0.9)',
+              textStyle: { color: '#ffffff' }
+            }
+          }
+        },
         // Header der Anlagen-Kachel deutlich höher und mit eigenem Hintergrund:
         // dadurch ist die Anlage selbst dann lesbar, wenn ihr Anteil winzig ist.
         upperLabel: {
