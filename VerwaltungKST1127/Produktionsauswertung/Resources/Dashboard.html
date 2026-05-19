@@ -269,6 +269,43 @@
     extraCssText: 'backdrop-filter: blur(8px); border-radius: 8px;',
   };
 
+  // Artikel je Anlage aus dem bereits aufbereiteten ArtikelBaum extrahieren.
+  // Wird von Heatmap- und Timeline-Tooltip genutzt, um zusätzlich zu den
+  // Stk-Werten die zugehörigen Artikelnummern darzustellen. Eine stunden-
+  // bzw. blockgenaue Zuordnung ist nicht möglich, da die SQL-Quelle keine
+  // Uhrzeit liefert – daher zeigen wir entweder die Tagessumme der Anlage
+  // (Timeline) oder eine anteilige Verteilung (Heatmap).
+  const anlageArtikel = {};
+  (data.ArtikelBaum || []).forEach(n => {
+    anlageArtikel[n.Name] = (n.Children || [])
+      .map(c => ({ name: c.Name, value: c.Value || 0 }))
+      .filter(c => c.value > 0)
+      .sort((a, b) => b.value - a.value);
+  });
+
+  // HTML-Snippet "Artikel: …" für die Tooltips. Begrenzung auf 10 Einträge,
+  // um sehr lange Tooltips zu vermeiden – bei mehr Artikeln wird die Restzahl
+  // als "… und N weitere" zusammengefasst.
+  function artikelTooltipBlock(anlageName, header, mapStk) {
+    const arts = anlageArtikel[anlageName] || [];
+    if (arts.length === 0) return '';
+    const liste = (mapStk ? arts.map(a => ({ name: a.name, stk: mapStk(a) }))
+                          : arts.map(a => ({ name: a.name, stk: a.value })))
+                  .filter(x => x.stk > 0);
+    if (liste.length === 0) return '';
+    const MAX = 10;
+    const head = liste.slice(0, MAX);
+    const rest = liste.length - head.length;
+    const zeilen = head.map(v =>
+      `<span style="color:#aab1c8">${v.name}</span> ` +
+      `<span style="color:#7ad7ff">${v.stk.toLocaleString('de-DE')} Stk</span>`
+    ).join('<br/>');
+    const more = rest > 0
+      ? `<br/><span style="color:#6b7390">… und ${rest} weitere</span>`
+      : '';
+    return `<br/><span style="color:#6b7390">${header}</span><br/>${zeilen}${more}`;
+  }
+
   // ─── 1) Heatmap: Stk je Stunde × Anlage (geschätzt aus Produktivzeit) ─────
   (function renderHeatmap() {
     const anlagen = (data.Anlagen || []).map(a => a.Name);
@@ -312,9 +349,23 @@
     chart.setOption({
       tooltip: {
         ...baseTooltip,
-        formatter: p => `<b>${anlagen[p.value[1]]}</b> · ${stunden[p.value[0]]}:00–${stunden[p.value[0]]}:59<br/>
-          <span style="color:#7ad7ff">${p.value[2].toLocaleString('de-DE')} Stk</span>
-          <span style="color:#6b7390"> · ${p.value[3]} Min produktiv</span>`,
+        formatter: p => {
+          const anlageName = anlagen[p.value[1]];
+          const stunde = stunden[p.value[0]];
+          const stkInCell = p.value[2];
+          // Artikel anteilig auf die Stunde verteilen: Anteil des Artikels
+          // an der Tagessumme der Anlage × Stk dieser Zelle. Konsistent zur
+          // bereits bestehenden Heatmap-Logik ("anteilig nach Produktivzeit").
+          const arts = anlageArtikel[anlageName] || [];
+          const tagesSumme = arts.reduce((s, x) => s + x.value, 0);
+          const artikelHtml = tagesSumme > 0
+            ? artikelTooltipBlock(anlageName, 'Artikel (anteilig):',
+                a => Math.round(stkInCell * a.value / tagesSumme))
+            : '';
+          return `<b>${anlageName}</b> · ${stunde}:00–${stunde}:59<br/>
+            <span style="color:#7ad7ff">${stkInCell.toLocaleString('de-DE')} Stk</span>
+            <span style="color:#6b7390"> · ${p.value[3]} Min produktiv</span>${artikelHtml}`;
+        },
       },
       grid: { top: 16, left: 50, right: 24, bottom: 52 },
       xAxis: {
@@ -420,9 +471,16 @@
         ...baseTooltip,
         formatter: p => {
           const a = anlagen[p.value[0]];
-          return `<b>${a}</b> · ${p.value[3] === 'fehler' ? 'Fehler' : 'Produktiv'}<br/>
+          const istFehler = p.value[3] === 'fehler';
+          // Bei Fehler-Blöcken keine Artikel mit anhängen – die zeigen wir nur
+          // bei Produktiv-Blöcken, da Artikel nur tagesweise je Anlage bekannt
+          // sind (kein Block-genauer Bezug aus den SQL-Daten möglich).
+          const artikelHtml = istFehler
+            ? ''
+            : artikelTooltipBlock(a, 'Artikel der Anlage am Tag:');
+          return `<b>${a}</b> · ${istFehler ? 'Fehler' : 'Produktiv'}<br/>
             ${fmtMs(p.value[1])} → ${fmtMs(p.value[2])}<br/>
-            <span style="color:#7ad7ff">${p.name}</span>`;
+            <span style="color:#7ad7ff">${p.name}</span>${artikelHtml}`;
         }
       },
       grid: { top: 16, left: 56, right: 24, bottom: 36 },
