@@ -44,6 +44,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // Tabelle mit den Belägen (Eingabe von außen, wurde dem Konstruktor übergeben).
         private readonly DataTable belagData;
 
+        // An das Grid gebundene Arbeitskopie. Enthält neben den Eingabespalten auch die
+        // beiden berechneten Spalten ("Realer Rücks.", "Brutto Rücks.") als ECHTE Datenspalten,
+        // damit sie beim Sortieren korrekt mitsortiert werden und nicht leer bleiben.
+        private DataTable _gridTable;
+
         // Verbindung zur SQL-Server-Datenbank. "new(...)" ist die Kurzform für "new SqlConnection(...)".
         // Der String dahinter ist der "Connection-String": Server, Datenbank, Authentifizierung.
         private readonly SqlConnection sqlConnectionVerwaltung =
@@ -137,7 +142,9 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // -----------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Bindet das Belag-Grid und legt die zwei zusätzlichen Spalten an (Rückstand gesamt, Soll-Rückstand).
+        /// Bindet das Belag-Grid. Die beiden berechneten Spalten ("Realer Rücks.", "Brutto Rücks.")
+        /// werden als ECHTE Datenspalten in der gebundenen Tabelle angelegt – dadurch werden sie beim
+        /// Sortieren (Klick auf einen Spaltenkopf) korrekt mitsortiert und bleiben nicht leer.
         /// </summary>
         private void LoadBelagData()
         {
@@ -147,41 +154,36 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             // Wenn keine Daten übergeben wurden, Grid leer lassen und Methode beenden.
             if (belagData == null)
             {
+                _gridTable = null;
                 dGv_AuswahlBelag.DataSource = null;
                 return;
             }
 
-            // ".Copy()" liefert eine unabhängige Kopie der Tabelle – Änderungen im Grid wirken nicht zurück.
-            dGv_AuswahlBelag.DataSource = belagData.Copy();
+            // Unabhängige Arbeitskopie + berechnete Spalten als Datenspalten ergänzen.
+            _gridTable = belagData.Copy();
+            if (!_gridTable.Columns.Contains("Realer Rücks."))
+                _gridTable.Columns.Add("Realer Rücks.", typeof(decimal));
+            if (!_gridTable.Columns.Contains("Brutto Rücks."))
+                _gridTable.Columns.Add("Brutto Rücks.", typeof(decimal));
 
-            // Spalten zentriert ausrichten – nur falls die Spalte überhaupt existiert.
-            if (dGv_AuswahlBelag.Columns.Contains("Realer Rücks."))
-                dGv_AuswahlBelag.Columns["Realer Rücks."].DefaultCellStyle.Alignment =
-                    DataGridViewContentAlignment.MiddleCenter;
+            // Binden (erzeugt automatisch die Grid-Spalten in Tabellen-Reihenfolge).
+            dGv_AuswahlBelag.DataSource = _gridTable;
 
-            if (dGv_AuswahlBelag.Columns.Contains("Brutto Rücks."))
-                dGv_AuswahlBelag.Columns["Brutto Rücks."].DefaultCellStyle.Alignment =
-                    DataGridViewContentAlignment.MiddleCenter;
-
-            // Grid "schreibgeschützt" machen + Optik konfigurieren.
+            // Grid "schreibgeschützt" machen + Verhalten konfigurieren.
             dGv_AuswahlBelag.AllowUserToAddRows = false;        // keine leere Zeile am Ende
             dGv_AuswahlBelag.AllowUserToDeleteRows = false;     // Zeilen können nicht gelöscht werden
             dGv_AuswahlBelag.AllowUserToResizeColumns = false;  // Spaltenbreite fix
             dGv_AuswahlBelag.AllowUserToResizeRows = false;     // Zeilenhöhe fix
-            dGv_AuswahlBelag.ReadOnly = true;                   // keine Bearbeitung möglich
+            dGv_AuswahlBelag.ReadOnly = true;                   // keine Bearbeitung möglich (blockt nur Benutzer, nicht Code)
             dGv_AuswahlBelag.RowHeadersVisible = false;         // den linken grauen Balken ausblenden
             dGv_AuswahlBelag.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // immer ganze Zeile markieren
             dGv_AuswahlBelag.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Spalten füllen Breite
 
-            // Zusatzspalten "Realer Rücks." und "Brutto Rücks." anlegen, falls nicht vorhanden.
-            EnsureDgvTotalsColumns();
-
-            // Optionale Spalte "AVOs": als Ganzzahl ohne Nachkommastellen, zentriert.
-            if (dGv_AuswahlBelag.Columns.Contains("AVOs"))
-            {
-                dGv_AuswahlBelag.Columns["AVOs"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dGv_AuswahlBelag.Columns["AVOs"].DefaultCellStyle.Format = "N0";
-            }
+            // Spaltenformatierung + relative Breiten (FillWeight) setzen.
+            ConfigureGridColumn("Belag", null, DataGridViewContentAlignment.MiddleCenter, 75);
+            ConfigureGridColumn("AVOs", "N0", DataGridViewContentAlignment.MiddleCenter, 55);
+            ConfigureGridColumn("Realer Rücks.", "N2", DataGridViewContentAlignment.MiddleCenter, 95);
+            ConfigureGridColumn("Brutto Rücks.", "N2", DataGridViewContentAlignment.MiddleCenter, 95);
 
             // Alle Spaltenüberschriften zentrieren.
             foreach (DataGridViewColumn c in dGv_AuswahlBelag.Columns)
@@ -189,42 +191,19 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         }
 
         /// <summary>
-        /// Legt die beiden Zusatzspalten an: "Realer Rücks." (echter Rückstand in h) und "Brutto Rücks." (Soll in h).
+        /// Hilfsmethode: setzt Format, Ausrichtung und relative Breite (FillWeight) einer Grid-Spalte,
+        /// sofern diese existiert.
         /// </summary>
-        private void EnsureDgvTotalsColumns()
+        private void ConfigureGridColumn(string name, string format, DataGridViewContentAlignment align, float fillWeight)
         {
-            // Spalte 1: Realer Rückstand
-            const string ColRueck = "Realer Rücks.";
-            if (!dGv_AuswahlBelag.Columns.Contains(ColRueck)) // nur anlegen, wenn noch nicht da
-            {
-                var col = new DataGridViewTextBoxColumn();
-                col.Name = ColRueck;
-                col.HeaderText = "Realer Rücks.";
-                col.ReadOnly = true;
-                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells; // Breite passt sich an Inhalt an
+            if (!dGv_AuswahlBelag.Columns.Contains(name))
+                return;
 
-                // Style "DefaultCellStyle" gilt für alle Zellen dieser Spalte:
-                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                col.DefaultCellStyle.Format = "N2"; // 2 Nachkommastellen (z. B. 12,34)
-
-                dGv_AuswahlBelag.Columns.Add(col);
-            }
-
-            // Spalte 2: Brutto Rückstand (analog)
-            const string ColSoll = "Brutto Rücks.";
-            if (!dGv_AuswahlBelag.Columns.Contains(ColSoll))
-            {
-                var col = new DataGridViewTextBoxColumn();
-                col.Name = ColSoll;
-                col.HeaderText = "Brutto Rücks.";
-                col.ReadOnly = true;
-                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                col.DefaultCellStyle.Format = "N2";
-
-                dGv_AuswahlBelag.Columns.Add(col);
-            }
+            var col = dGv_AuswahlBelag.Columns[name];
+            col.DefaultCellStyle.Alignment = align;
+            if (!string.IsNullOrEmpty(format))
+                col.DefaultCellStyle.Format = format;
+            col.FillWeight = fillWeight;
         }
 
         /// <summary>
@@ -502,28 +481,29 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // -----------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Füllt die beiden Zusatzspalten im DGV aus den Aggregaten.
+        /// Füllt die beiden berechneten Spalten direkt in der gebundenen Tabelle (_gridTable)
+        /// aus den Aggregaten. Da es echte Datenspalten sind, bleiben die Werte auch nach dem
+        /// Sortieren erhalten.
         /// </summary>
         private void FillBelagTotalsFromCaches()
         {
             const string ColRueck = "Realer Rücks.";
             const string ColSoll = "Brutto Rücks.";
 
-            // Wenn eine der beiden Spalten fehlt, abbrechen.
-            if (!dGv_AuswahlBelag.Columns.Contains(ColRueck) ||
-                !dGv_AuswahlBelag.Columns.Contains(ColSoll))
+            if (_gridTable == null ||
+                !_gridTable.Columns.Contains("Belag") ||
+                !_gridTable.Columns.Contains(ColRueck) ||
+                !_gridTable.Columns.Contains(ColSoll))
                 return;
 
-            // Jede Zeile durchgehen.
-            foreach (DataGridViewRow row in dGv_AuswahlBelag.Rows)
+            // Jede Datenzeile durchgehen.
+            foreach (DataRow row in _gridTable.Rows)
             {
-                if (row.IsNewRow) continue; // die leere "Neue Zeile" überspringen
-
-                string belag = row.Cells["Belag"]?.Value?.ToString();
+                string belag = row["Belag"]?.ToString();
                 if (string.IsNullOrWhiteSpace(belag))
                 {
-                    row.Cells[ColRueck].Value = null;
-                    row.Cells[ColSoll].Value = null;
+                    row[ColRueck] = DBNull.Value;
+                    row[ColSoll] = DBNull.Value;
                     continue;
                 }
 
@@ -534,33 +514,28 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 decimal rueck = _aggBelagRueckstandBisHeuteHours.TryGetValue(clean, out var rr) ? rr : 0m;
                 decimal soll = _aggBelagSollBisHeuteHours.TryGetValue(clean, out var sr) ? sr : 0m;
 
-                row.Cells[ColRueck].Value = Math.Round(rueck, 2);
-                row.Cells[ColSoll].Value = Math.Round(soll, 2);
+                row[ColRueck] = Math.Round(rueck, 2);
+                row[ColSoll] = Math.Round(soll, 2);
             }
         }
 
         /// <summary>
-        /// Summiert die Spalte "Brutto Rücks." im DGV und zeigt das Ergebnis als Stunden im Label an.
+        /// Summiert die Spalte "Brutto Rücks." (aus _gridTable) und zeigt das Ergebnis als Stunden an.
         /// </summary>
         private void UpdateGesamtRueckstandAbteilungLabel()
         {
             const string SollCol = "Brutto Rücks.";
-            if (!dGv_AuswahlBelag.Columns.Contains(SollCol))
+            if (_gridTable == null || !_gridTable.Columns.Contains(SollCol))
             {
                 lblGesamtRueckstandAbteilung.Text = "0,00h";
                 return;
             }
 
             decimal sum = 0m; // 0m = decimal-Null
-            foreach (DataGridViewRow row in dGv_AuswahlBelag.Rows)
+            foreach (DataRow row in _gridTable.Rows)
             {
-                if (row.IsNewRow) continue;
-                object val = row.Cells[SollCol].Value;
-                if (val == null || val == DBNull.Value) continue;
-
-                // Wert in decimal umwandeln; nur addieren, wenn Konvertierung klappt.
-                if (decimal.TryParse(Convert.ToString(val), out decimal d))
-                    sum += d;
+                if (row[SollCol] == DBNull.Value) continue;
+                sum += Convert.ToDecimal(row[SollCol]);
             }
 
             // String-Interpolation: $"...{sum:0.00}h..." formatiert die Zahl.
@@ -1156,23 +1131,23 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
 
-            // Kopfzeile.
+            // Kopfzeile (WrapMode erlaubt Umbruch enger Überschriften → keine "..."-Abschneidung).
             g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            g.ColumnHeadersHeight = 34;
+            g.ColumnHeadersHeight = 38;
             g.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(63, 81, 120);
             g.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             g.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(63, 81, 120);
             g.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
-            g.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 9.5f, FontStyle.Regular);
+            g.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 9f, FontStyle.Regular);
             g.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            g.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
 
             // Datenzeilen.
-            g.DefaultCellStyle.Font = new Font("Segoe UI", 9.5f, FontStyle.Regular);
+            g.DefaultCellStyle.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
             g.DefaultCellStyle.ForeColor = Color.FromArgb(50, 60, 75);
             g.DefaultCellStyle.BackColor = Color.White;
             g.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 120, 215);
             g.DefaultCellStyle.SelectionForeColor = Color.White;
-            g.DefaultCellStyle.Padding = new Padding(2, 0, 2, 0);
             g.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 247, 251);
             g.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 120, 215);
             g.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
