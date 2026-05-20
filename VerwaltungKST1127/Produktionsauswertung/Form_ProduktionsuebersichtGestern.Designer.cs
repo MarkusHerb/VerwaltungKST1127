@@ -6,6 +6,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private System.Windows.Forms.Panel panelToolbar;
         private System.Windows.Forms.Label lblTag;
         private System.Windows.Forms.DateTimePicker dateTimePickerTag;
+        private System.Windows.Forms.Button btnHeute;
         private System.Windows.Forms.Button btnNeuLaden;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.CheckBox chkAutoRefresh;
@@ -30,6 +31,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.lblAutoRefreshTimer = new System.Windows.Forms.Label();
             this.chkAutoRefresh = new System.Windows.Forms.CheckBox();
             this.btnNeuLaden = new System.Windows.Forms.Button();
+            this.btnHeute = new System.Windows.Forms.Button();
             this.dateTimePickerTag = new System.Windows.Forms.DateTimePicker();
             this.lblTag = new System.Windows.Forms.Label();
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
@@ -40,11 +42,12 @@ namespace VerwaltungKST1127.Produktionsauswertung
             //
             // panelToolbar
             //
-            this.panelToolbar.BackColor = System.Drawing.Color.FromArgb(17, 23, 46);
+            this.panelToolbar.BackColor = System.Drawing.Color.FromArgb(22, 29, 58);
             this.panelToolbar.Controls.Add(this.lblStatus);
             this.panelToolbar.Controls.Add(this.lblAutoRefreshTimer);
             this.panelToolbar.Controls.Add(this.chkAutoRefresh);
             this.panelToolbar.Controls.Add(this.btnNeuLaden);
+            this.panelToolbar.Controls.Add(this.btnHeute);
             this.panelToolbar.Controls.Add(this.dateTimePickerTag);
             this.panelToolbar.Controls.Add(this.lblTag);
             this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Top;
@@ -75,6 +78,23 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.dateTimePickerTag.TabIndex = 1;
             this.dateTimePickerTag.ValueChanged += new System.EventHandler(this.dateTimePickerTag_ValueChanged);
             //
+            // btnHeute
+            //
+            this.btnHeute.BackColor = System.Drawing.Color.FromArgb(42, 51, 90);
+            this.btnHeute.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(122, 215, 255);
+            this.btnHeute.FlatAppearance.BorderSize = 1;
+            this.btnHeute.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHeute.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F);
+            this.btnHeute.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
+            this.btnHeute.Location = new System.Drawing.Point(308, 10);
+            this.btnHeute.Name = "btnHeute";
+            this.btnHeute.Size = new System.Drawing.Size(72, 27);
+            this.btnHeute.TabIndex = 2;
+            this.btnHeute.Text = "Heute";
+            this.btnHeute.UseVisualStyleBackColor = false;
+            this.btnHeute.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnHeute.Click += new System.EventHandler(this.btnHeute_Click);
+            //
             // btnNeuLaden
             //
             this.btnNeuLaden.BackColor = System.Drawing.Color.FromArgb(122, 215, 255);
@@ -82,10 +102,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.btnNeuLaden.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNeuLaden.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F);
             this.btnNeuLaden.ForeColor = System.Drawing.Color.FromArgb(11, 16, 32);
-            this.btnNeuLaden.Location = new System.Drawing.Point(312, 10);
+            this.btnNeuLaden.Location = new System.Drawing.Point(388, 10);
             this.btnNeuLaden.Name = "btnNeuLaden";
             this.btnNeuLaden.Size = new System.Drawing.Size(110, 27);
-            this.btnNeuLaden.TabIndex = 2;
+            this.btnNeuLaden.TabIndex = 3;
             this.btnNeuLaden.Text = "Neu laden";
             this.btnNeuLaden.UseVisualStyleBackColor = false;
             this.btnNeuLaden.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -96,7 +116,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.chkAutoRefresh.AutoSize = true;
             this.chkAutoRefresh.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
             this.chkAutoRefresh.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.chkAutoRefresh.Location = new System.Drawing.Point(440, 14);
+            this.chkAutoRefresh.Location = new System.Drawing.Point(516, 14);
             this.chkAutoRefresh.Name = "chkAutoRefresh";
             this.chkAutoRefresh.Size = new System.Drawing.Size(140, 21);
             this.chkAutoRefresh.TabIndex = 4;
@@ -111,7 +131,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.lblAutoRefreshTimer.AutoSize = true;
             this.lblAutoRefreshTimer.ForeColor = System.Drawing.Color.FromArgb(122, 215, 255);
             this.lblAutoRefreshTimer.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
-            this.lblAutoRefreshTimer.Location = new System.Drawing.Point(596, 15);
+            this.lblAutoRefreshTimer.Location = new System.Drawing.Point(672, 15);
             this.lblAutoRefreshTimer.Name = "lblAutoRefreshTimer";
             this.lblAutoRefreshTimer.Size = new System.Drawing.Size(50, 19);
             this.lblAutoRefreshTimer.TabIndex = 5;
@@ -122,10 +142,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.lblStatus.AutoSize = true;
             this.lblStatus.ForeColor = System.Drawing.Color.FromArgb(170, 177, 200);
             this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblStatus.Location = new System.Drawing.Point(680, 15);
+            this.lblStatus.Location = new System.Drawing.Point(756, 15);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(40, 17);
-            this.lblStatus.TabIndex = 3;
+            this.lblStatus.TabIndex = 6;
             this.lblStatus.Text = "Bereit";
             //
             // timerAutoRefresh
@@ -137,7 +157,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             //
             this.webView.AllowExternalDrop = false;
             this.webView.CreationProperties = null;
-            this.webView.DefaultBackgroundColor = System.Drawing.Color.FromArgb(11, 16, 32);
+            this.webView.DefaultBackgroundColor = System.Drawing.Color.FromArgb(17, 23, 49);
             this.webView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.webView.Location = new System.Drawing.Point(0, 48);
             this.webView.Name = "webView";
@@ -149,7 +169,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(11, 16, 32);
+            this.BackColor = System.Drawing.Color.FromArgb(17, 23, 49);
             this.ClientSize = new System.Drawing.Size(1280, 800);
             this.Controls.Add(this.webView);
             this.Controls.Add(this.panelToolbar);

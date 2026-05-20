@@ -12,9 +12,9 @@
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
   :root {
-    --bg-0: #0b1020;
-    --bg-1: #11172e;
-    --bg-2: #1a2244;
+    --bg-0: #111731;
+    --bg-1: #161d3a;
+    --bg-2: #202a5a;
     --glass: rgba(255, 255, 255, 0.04);
     --glass-stroke: rgba(255, 255, 255, 0.08);
     --txt-0: #f3f6ff;
@@ -31,7 +31,7 @@
 
   html, body {
     margin: 0; padding: 0;
-    background: radial-gradient(ellipse at top left, #1a2350 0%, #0b1020 60%) fixed;
+    background: radial-gradient(ellipse at top left, #202a5a 0%, #111731 60%) fixed;
     color: var(--txt-0);
     font-family: "Segoe UI", "Inter", system-ui, sans-serif;
     overflow-x: hidden;
@@ -205,7 +205,7 @@
       <div id="treemap-chips" class="anlage-chips"></div>
     </div>
     <div class="panel" style="grid-column: 1 / 2;">
-      <div class="panel-title">Timeline <span class="muted">— Produktiv (grün) vs. Fehler (rot)</span></div>
+      <div class="panel-title">Timeline <span class="muted">— Produktiv (grün) vs. Fehler (rot) · je Anlage: Σ Produktiv · Fehler · Chargen</span></div>
       <div id="timeline"></div>
     </div>
     <div class="panel" style="grid-column: 2 / 3;">
@@ -372,6 +372,18 @@
       return;
     }
 
+    // Tages-Summen je Anlage für die Achsenbeschriftung: produktive Zeit,
+    // Fehlerzeit und Anzahl Chargen über den gesamten Tag.
+    const anlageInfo = {};
+    (data.Anlagen || []).forEach(a => {
+      anlageInfo[a.Name] = {
+        prod: a.ProduktivStunden || 0,
+        fehler: a.FehlerStunden || 0,
+        chargen: a.Chargen || 0,
+      };
+    });
+    const fmtH = h => (h || 0).toFixed(1).replace('.', ',') + ' h';
+
     // category-Index pro Anlage
     const idxMap = {};
     anlagen.forEach((a, i) => idxMap[a] = i);
@@ -425,7 +437,7 @@
             <span style="color:#7ad7ff">${p.name}</span>`;
         }
       },
-      grid: { top: 16, left: 56, right: 24, bottom: 36 },
+      grid: { top: 16, left: 132, right: 24, bottom: 36 },
       xAxis: {
         type: 'value', min: 0, max: 24 * 3600 * 1000,
         interval: 2 * 3600 * 1000,
@@ -436,7 +448,22 @@
       yAxis: {
         type: 'category', data: anlagen, inverse: true,
         axisLine: { lineStyle: { color: axisLine } },
-        axisLabel: { color: textColor, fontSize: 11 },
+        axisLabel: {
+          color: textColor, fontSize: 11, align: 'right', lineHeight: 13,
+          // Pro Anlage: Name + Tages-Summen (Produktiv grün, Fehler rot, Chargen).
+          formatter: name => {
+            const info = anlageInfo[name];
+            if (!info) return '{n|' + name + '}';
+            return '{n|' + name + '}\n{p|' + fmtH(info.prod) + '}{s| · }{f|' + fmtH(info.fehler) + '}\n{c|' + info.chargen + ' Chargen}';
+          },
+          rich: {
+            n: { color: '#f3f6ff', fontSize: 12, fontWeight: 600, padding: [0, 0, 1, 0] },
+            p: { color: '#06d6a0', fontSize: 9 },
+            f: { color: '#ef476f', fontSize: 9 },
+            c: { color: '#6b7390', fontSize: 9 },
+            s: { color: '#6b7390', fontSize: 9 },
+          },
+        },
       },
       series: [{
         type: 'custom',

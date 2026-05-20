@@ -197,6 +197,17 @@ namespace VerwaltungKST1127.Produktionsauswertung
             await LadeDashboardAsync();
         }
 
+        // Springt auf den heutigen Tag. Ist bereits "heute" eingestellt, wird direkt
+        // neu geladen; andernfalls löst die Datumsänderung das Laden via ValueChanged aus.
+        private async void btnHeute_Click(object sender, EventArgs e)
+        {
+            DateTime heute = DateTime.Today;
+            if (dateTimePickerTag.Value.Date == heute)
+                await LadeDashboardAsync();
+            else
+                dateTimePickerTag.Value = heute;
+        }
+
         private async void dateTimePickerTag_ValueChanged(object sender, EventArgs e)
         {
             // Beim Datumswechsel sofort neu laden, aber erst wenn WebView fertig
