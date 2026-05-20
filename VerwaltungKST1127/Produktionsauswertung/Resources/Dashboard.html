@@ -35,7 +35,7 @@
     background: radial-gradient(ellipse at top left, #202a5a 0%, #111731 60%) fixed;
     color: var(--txt-0);
     font-family: "Segoe UI", "Inter", system-ui, sans-serif;
-    overflow-x: hidden;
+    overflow: hidden;
   }
 
   /* dezenter, animierter Sternen-Hintergrund */
@@ -58,7 +58,7 @@
   .layout {
     position: relative; z-index: 1;
     padding: 18px 28px 22px;
-    min-height: 100vh;
+    height: 100vh;
     display: flex; flex-direction: column;
   }
 
@@ -116,7 +116,7 @@
     grid-template-rows: 1fr 1fr;
     gap: 16px;
     flex: 1 1 auto;
-    min-height: 480px;   /* nicht beliebig klein werden, sonst scrollt der Body */
+    min-height: 0;   /* füllt exakt die Resthöhe – kein Scrollbalken */
   }
   .panel {
     background: var(--glass);
