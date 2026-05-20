@@ -457,7 +457,7 @@
             <span style="color:#7ad7ff">${p.name}</span>`;
         }
       },
-      grid: { top: 16, left: 132, right: 24, bottom: 36 },
+      grid: { top: 22, left: 132, right: 24, bottom: 40 },
       xAxis: {
         type: 'value', min: 0, max: 24 * 3600 * 1000,
         interval: 2 * 3600 * 1000,
@@ -469,12 +469,15 @@
         type: 'category', data: anlagen, inverse: true,
         axisLine: { lineStyle: { color: axisLine } },
         axisLabel: {
-          color: textColor, fontSize: 11, align: 'right', lineHeight: 13,
-          // Pro Anlage: Name + Tages-Summen (Produktiv grün, Fehler rot, Chargen).
+          color: textColor, fontSize: 11, align: 'right', lineHeight: 14,
+          interval: 0,   // alle Anlagen erzwingen – sonst werden auf kleineren
+                         // Bildschirmen die Randzeilen (A20/A65) ausgeblendet
+          // Pro Anlage: Name + Tages-Summen kompakt in einer 2. Zeile, damit die
+          // Beschriftung auch auf niedrigeren Bildschirmen vollständig passt.
           formatter: name => {
             const info = anlageInfo[name];
             if (!info) return '{n|' + name + '}';
-            return '{n|' + name + '}\n{p|' + fmtH(info.prod) + '}{s| · }{f|' + fmtH(info.fehler) + '}\n{c|' + info.chargen + ' Chargen}';
+            return '{n|' + name + '}\n{p|' + fmtH(info.prod) + '}{s| · }{f|' + fmtH(info.fehler) + '}{s| · }{c|' + info.chargen + ' Ch.}';
           },
           rich: {
             n: { color: '#f3f6ff', fontSize: 12, fontWeight: 600, padding: [0, 0, 1, 0] },
