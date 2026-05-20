@@ -113,6 +113,9 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // "async" = Methode kann auf langsame Operationen warten, ohne die UI einzufrieren.
         private async void Form_Rueckstand_Load(object sender, EventArgs e)
         {
+            // 0) Modernes Erscheinungsbild anwenden (rein optisch, keine Logikänderung).
+            ApplyModernDesign();
+
             // 1) UI-Grundaufbau (lokal, schnell)
             LoadBelagData();
             dateTimePickerRueckstandAb.Value = DateTime.Today; // DatePicker auf heute setzen
@@ -138,6 +141,9 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         /// </summary>
         private void LoadBelagData()
         {
+            // Modernes Grid-Styling immer anwenden (unabhängig davon, ob Daten vorhanden sind).
+            StyleAuswahlGrid();
+
             // Wenn keine Daten übergeben wurden, Grid leer lassen und Methode beenden.
             if (belagData == null)
             {
@@ -583,15 +589,33 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         }
 
         /// <summary>
-        /// ±40-Tage-Chart (unten) aus Aggregat _aggRueckstandAllBelagsByDay, ohne DB.
+        /// Verlauf-Chart (unten) aus Aggregat _aggRueckstandAllBelagsByDay, ohne DB.
+        /// Standardfenster: heute ±40 Tage. Existieren noch ältere Rückstände
+        /// (Enddatum in der Vergangenheit), wird der Startpunkt bis zum frühesten
+        /// vergangenen Rückstandstag zurückgezogen – so wird z. B. ein Februar-Rückstand sichtbar.
         /// </summary>
         private void RefreshRueckstandPlusMinusTwoMonthsChart()
         {
             DateTime today = DateTime.Today;
-            DateTime startDate = today.AddDays(-40);
             DateTime endDate = today.AddDays(+40);
 
-            // Alle Tage aus dem Aggregat im Zeitfenster auf ein Dictionary reduzieren.
+            // Standard-Startpunkt: 40 Tage in die Vergangenheit.
+            DateTime startDate = today.AddDays(-40);
+
+            // Frühesten vergangenen Tag mit echtem Rückstand suchen (Wert > 0).
+            var pastBacklogDays = _aggRueckstandAllBelagsByDay
+                .Where(kv => kv.Key <= today && kv.Value > 0m)
+                .Select(kv => kv.Key)
+                .ToList();
+
+            if (pastBacklogDays.Count > 0)
+            {
+                DateTime earliestPast = pastBacklogDays.Min();
+                if (earliestPast < startDate)
+                    startDate = earliestPast; // Fenster nach hinten erweitern
+            }
+
+            // Alle Tage aus dem Aggregat im (ggf. erweiterten) Zeitfenster reduzieren.
             var dict = _aggRueckstandAllBelagsByDay
                 .Where(kv => kv.Key >= startDate && kv.Key <= endDate)
                 .ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -600,12 +624,15 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             lblRueckstandPlusMinusFourtyDays.Text = $"{dict.Values.Sum():0.00}h";
 
             // Chart zeichnen.
-            UpdatePlusMinusTwoMonthsChart(dict, today);
+            UpdatePlusMinusTwoMonthsChart(dict, startDate, endDate);
         }
 
         /// <summary>
         /// Oberes Chart (Belag) aus Aggregat _aggBelagByDay.
-        /// Vergangenheit: [selected..heute], Zukunft: [heute..selected].
+        /// Zeigt ein gleitendes Zeitfenster von ±1 Woche um das gewählte Datum
+        /// (Klick auf einen Belag bei Datum = heute → heute ±1 Woche).
+        /// Die ±1/±2-Wochen-Buttons verschieben das Fenster wochenweise.
+        /// Es wird nur gezeichnet, wenn der ausgewählte Belag überhaupt einen Rückstand hat.
         /// </summary>
         private void RefreshRueckstandVerguetenChart()
         {
@@ -613,30 +640,47 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 return;
 
             DateTime selectedDate = dateTimePickerRueckstandAb.Value.Date;
-            DateTime today = DateTime.Today;
 
-            // Bereich so wählen, dass Start <= Ende ist (egal ob Stichtag in Vergangenheit oder Zukunft).
-            DateTime start = selectedDate <= today ? selectedDate : today;
-            DateTime end = selectedDate <= today ? today : selectedDate;
+            // Gleitendes Fenster: eine Woche vor und nach dem gewählten Datum.
+            DateTime start = selectedDate.AddDays(-7);
+            DateTime end = selectedDate.AddDays(7);
 
             string clean = selectedBelag.Replace("-", "").ToUpper();
 
-            // Belag-spezifische Tageswerte aus Aggregat (oder leeres Dict, falls Belag unbekannt).
-            var src = _aggBelagByDay.TryGetValue(clean, out var dictBelag)
-                        ? dictBelag
-                        : new Dictionary<DateTime, decimal>();
+            // Guard: Nur zeichnen, wenn für diesen Belag überhaupt ein Rückstand vorhanden ist.
+            if (!_aggBelagByDay.TryGetValue(clean, out var dictBelag) || dictBelag.Values.Sum() <= 0m)
+            {
+                ClearVerguetenChart();
+                return;
+            }
 
             // Zeitbereich filtern.
-            var rangeDict = src
+            var rangeDict = dictBelag
                 .Where(kv => kv.Key >= start && kv.Key <= end)
                 .ToDictionary(kv => kv.Key, kv => kv.Value);
 
             // Lücken (Tage ohne Wert) mit 0 auffüllen, damit die X-Achse durchgehend ist.
             var filled = FillMissingDates(rangeDict, start, end);
 
-            // Sonderfall: Stichtag = heute → nur ein einzelner Balken (Single-Day-Modus).
-            bool singleDay = selectedDate == today;
-            UpdateVerguetenChart(selectedBelag, filled, singleDay, selectedDate);
+            UpdateVerguetenChart(filled);
+        }
+
+        /// <summary>
+        /// Leert das obere Belag-Chart (z. B. wenn der gewählte Belag keinen Rückstand hat).
+        /// </summary>
+        private void ClearVerguetenChart()
+        {
+            var chart = chartVergueten;
+
+            if (chart.Series.IndexOf("Series1") != -1)
+                chart.Series["Series1"].Points.Clear();
+            if (chart.Series.IndexOf("Trend") != -1)
+                chart.Series["Trend"].Points.Clear();
+
+            if (chart.ChartAreas.Count > 0)
+                chart.ChartAreas[0].AxisX.StripLines.Clear();
+
+            lblVergueten.Text = "0,00h";
         }
 
         // -----------------------------------------------------------------------------------------------------------------
@@ -645,14 +689,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
         /// <summary>
         /// Zeichnet das Belag-Chart (oben) – modernisiertes Design.
-        /// Funktionen unverändert: Single-Day-Anzeige, Tagesbalken mit Wertelabel,
-        /// Trendlinie (5-Pkt-Fenster), ToolTips, Summen-Label.
+        /// Zeigt die Tagesbalken im ±1-Wochen-Fenster mit Wertelabel,
+        /// Trendlinie (5-Pkt-Fenster), ToolTips, Summen-Label und einer
+        /// dezenten senkrechten „Heute"-Linie (sofern heute im Fenster liegt).
         /// </summary>
         private void UpdateVerguetenChart(
-            string belag,
-            Dictionary<DateTime, decimal> rueckstandByDate,
-            bool singleDay,
-            DateTime selectedDate)
+            Dictionary<DateTime, decimal> rueckstandByDate)
         {
             // Verweis aufs Chart-Objekt – kürzere Schreibweise.
             var chart = chartVergueten;
@@ -737,24 +779,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             series.ToolTip = "#AXISLABEL: #VAL{N2} h";          // Tooltip beim Hovern
 
             // =============================================================
-            // Single-Day-Modus: nur ein einzelner Balken mit Belag-Namen
-            // =============================================================
-            if (singleDay)
-            {
-                decimal total = rueckstandByDate.Values.Sum();
-                series.Points.AddXY(belag, Math.Round(total, 2));
-
-                lblVergueten.Text = $"{total:0.00}h";
-
-                // Trend-Serie leeren (im Single-Day nicht sinnvoll).
-                if (chart.Series.IndexOf("Trend") != -1)
-                    chart.Series["Trend"].Points.Clear();
-
-                return;
-            }
-
-            // =============================================================
-            // Multi-Day: Tagesbalken befüllen (chronologisch sortiert)
+            // Tagesbalken befüllen (chronologisch sortiert)
             // =============================================================
             foreach (var kv in rueckstandByDate.OrderBy(k => k.Key))
                 series.Points.AddXY(kv.Key.ToString("dd.MM"), Math.Round(kv.Value, 2));
@@ -764,7 +789,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
             // Bei vielen Tagen die X-Achsen-Beschriftung ausdünnen (jede 2. oder 5. Beschriftung).
             int pointCount = series.Points.Count;
-            area.AxisX.Interval = pointCount > 30 ? 5 : (pointCount > 14 ? 2 : 1);
+            area.AxisX.Interval = pointCount > 30 ? 5 : (pointCount > 16 ? 2 : 1);
 
             // =============================================================
             // Trendlinie als Spline (sanft geschwungen)
@@ -794,22 +819,67 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
                 trend.Points.AddXY(dates[i].ToString("dd.MM"), Math.Round(avg, 2));
             }
+
+            // =============================================================
+            // Dezente senkrechte „Heute"-Linie (nur wenn heute im Fenster liegt)
+            // =============================================================
+            DrawTodayStripLine(area, series);
         }
 
         /// <summary>
-        /// Zeichnet das ±40-Tage-Chart (unten) – modernisiertes Design.
+        /// Zeichnet eine dezente, gestrichelte senkrechte Linie an der Position des
+        /// heutigen Tages auf einer kategorialen X-Achse (Labels im Format "dd.MM").
+        /// Liegt „heute" nicht im Punktebereich, werden nur evtl. alte Linien entfernt.
+        /// </summary>
+        private void DrawTodayStripLine(ChartArea area, Series series)
+        {
+            // Alte StripLines entfernen, bevor eine neue gesetzt wird.
+            area.AxisX.StripLines.Clear();
+
+            string todayLabel = DateTime.Today.ToString("dd.MM");
+            int todayIndex1Based = -1;
+            for (int i = 0; i < series.Points.Count; i++)
+            {
+                if (string.Equals(series.Points[i].AxisLabel, todayLabel, StringComparison.Ordinal))
+                {
+                    todayIndex1Based = i + 1; // Chart verwendet Kategorieindex ab 1
+                    break;
+                }
+            }
+
+            if (todayIndex1Based <= 0)
+                return;
+
+            var todayStrip = new StripLine
+            {
+                Interval = 0,                                     // einmalige Linie (kein Wiederholungsraster)
+                IntervalOffset = todayIndex1Based,                // bei dieser Kategorie zeichnen
+                StripWidth = 0,                                   // 0 = nur die Linie, kein Streifen
+                BorderColor = Color.FromArgb(180, 110, 130, 160), // Alpha 180 = leicht transparent
+                BorderWidth = 1,
+                BorderDashStyle = ChartDashStyle.Dash,
+                Text = "  Heute",                                 // Beschriftung neben der Linie
+                ForeColor = Color.FromArgb(110, 130, 160),
+                Font = new Font("Segoe UI", 7.5f, FontStyle.Regular),
+                TextAlignment = StringAlignment.Near,
+                TextLineAlignment = StringAlignment.Near
+            };
+            area.AxisX.StripLines.Add(todayStrip);
+        }
+
+        /// <summary>
+        /// Zeichnet das Verlauf-Chart (unten) – modernisiertes Design.
         /// Funktionen unverändert: Tagesbalken, Trend (lang) 7-Pkt-MA, Trend (kurz) 3-Pkt-Glättung,
         /// Top-3 Hervorhebung, senkrechte „Heute"-Linie, ToolTips.
+        /// Das Zeitfenster [startDate..endDate] wird vom Aufrufer vorgegeben und kann
+        /// zur Anzeige alter Rückstände nach hinten erweitert sein.
         /// </summary>
         private void UpdatePlusMinusTwoMonthsChart(
             Dictionary<DateTime, decimal> rueckstandByDate,
-            DateTime selectedDate)
+            DateTime startDate,
+            DateTime endDate)
         {
             var chart = chartPlusMinusTwoMonths;
-
-            // Datumsfenster ±40 Tage rund um den Stichtag.
-            DateTime startDate = selectedDate.AddDays(-40);
-            DateTime endDate = selectedDate.AddDays(40);
 
             // =============================================================
             // Globale Chart-Optik (analog zum oberen Chart)
@@ -842,14 +912,15 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             area.BackSecondaryColor = Color.Transparent;
             area.BorderColor = Color.Transparent;
 
-            // X-Achse: Beschriftung jeden 5. Tag (Datumsdichte reduzieren).
+            // X-Achse: Beschriftungsdichte an die (ggf. erweiterte) Fensterbreite anpassen.
             area.AxisX.MajorGrid.Enabled = false;
             area.AxisX.LineColor = Color.FromArgb(220, 225, 235);
             area.AxisX.LineWidth = 1;
             area.AxisX.MajorTickMark.Enabled = false;
             area.AxisX.LabelStyle.Font = new Font("Segoe UI", 8.25f, FontStyle.Regular);
             area.AxisX.LabelStyle.ForeColor = Color.FromArgb(110, 120, 135);
-            area.AxisX.Interval = 5;
+            int totalDays = (int)(endDate.Date - startDate.Date).TotalDays + 1;
+            area.AxisX.Interval = totalDays > 120 ? 14 : (totalDays > 90 ? 10 : (totalDays > 60 ? 7 : 5));
 
             // Y-Achse: feine horizontale Gridlines.
             area.AxisY.MajorGrid.LineColor = Color.FromArgb(235, 238, 244);
@@ -965,39 +1036,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             // =============================================================
             // Senkrechte „Heute"-Linie auf der kategorialen X-Achse (dd.MM)
             // =============================================================
-            // Die X-Achse ist hier "kategorial" – sie nummeriert die Kategorien (Tage) ab 1.
-            // Wir suchen die Position des "heute"-Labels im Punkte-Array.
-            string todayLabel = DateTime.Today.ToString("dd.MM");
-            int todayIndex1Based = -1;
-            for (int i = 0; i < series.Points.Count; i++)
-            {
-                if (string.Equals(series.Points[i].AxisLabel, todayLabel, StringComparison.Ordinal))
-                {
-                    todayIndex1Based = i + 1; // Chart verwendet Kategorieindex ab 1
-                    break;
-                }
-            }
-
-            // Alte StripLines löschen, neue setzen.
-            area.AxisX.StripLines.Clear();
-            if (todayIndex1Based > 0)
-            {
-                var todayStrip = new StripLine
-                {
-                    Interval = 0,                                     // einmalige Linie (kein Wiederholungsraster)
-                    IntervalOffset = todayIndex1Based,                // bei dieser Kategorie zeichnen
-                    StripWidth = 0,                                   // 0 = nur die Linie, kein Streifen
-                    BorderColor = Color.FromArgb(180, 110, 130, 160), // Alpha 180 = leicht transparent
-                    BorderWidth = 1,
-                    BorderDashStyle = ChartDashStyle.Dash,
-                    Text = "  Heute",                                 // Beschriftung neben der Linie
-                    ForeColor = Color.FromArgb(110, 130, 160),
-                    Font = new Font("Segoe UI", 7.5f, FontStyle.Regular),
-                    TextAlignment = StringAlignment.Near,
-                    TextLineAlignment = StringAlignment.Near
-                };
-                area.AxisX.StripLines.Add(todayStrip);
-            }
+            DrawTodayStripLine(area, series);
         }
 
         /// <summary>
@@ -1029,6 +1068,115 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 s.LegendText = legendText;
             }
             return s;
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Modernes Erscheinungsbild (rein optisch – keine Logikänderung)
+        // -----------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Wendet ein modernes, ruhiges Erscheinungsbild auf Formular, Beschriftungen
+        /// und Buttons an. Es werden ausschließlich Farben, Schriften und Button-Stile
+        /// gesetzt – Positionen, Steuerelemente und Funktion bleiben unverändert.
+        /// </summary>
+        private void ApplyModernDesign()
+        {
+            // Gemeinsame Farbpalette.
+            Color bg = Color.FromArgb(247, 249, 252);        // heller Formular-Hintergrund
+            Color headline = Color.FromArgb(45, 55, 72);     // dunkles Slate für Überschriften
+            Color accent = Color.FromArgb(70, 120, 215);     // Akzentblau für Werte
+            Color muted = Color.FromArgb(110, 120, 135);     // gedämpft für Hinweistexte
+
+            // Hinweis: Bewusst NICHT die Formular-Schrift (this.Font) ändern – das würde wegen
+            // AutoScaleMode.Font ein Neu-Skalieren aller Steuerelemente auslösen und das Layout verschieben.
+            // Stattdessen werden die Schriften gezielt pro Steuerelement gesetzt.
+            BackColor = bg;
+            dateTimePickerRueckstandAb.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
+
+            // Überschriften.
+            label2.Font = new Font("Segoe UI Semibold", 15f, FontStyle.Regular); // "Rückstand ausgewählt:"
+            label2.ForeColor = headline;
+            label1.Font = new Font("Segoe UI Semibold", 13.5f, FontStyle.Regular); // "Rückstand ausgewählter Belag:"
+            label1.ForeColor = headline;
+            label3.Font = new Font("Segoe UI Semibold", 13.5f, FontStyle.Regular); // "Rückstand Verlauf:"
+            label3.ForeColor = headline;
+
+            // Wertelabels in Akzentfarbe.
+            lblGesamt.Font = new Font("Segoe UI Semibold", 15f, FontStyle.Regular);
+            lblGesamt.ForeColor = accent;
+            lblVergueten.Font = new Font("Segoe UI Semibold", 13.5f, FontStyle.Regular);
+            lblVergueten.ForeColor = accent;
+            lblRueckstandPlusMinusFourtyDays.Font = new Font("Segoe UI Semibold", 13.5f, FontStyle.Regular);
+            lblRueckstandPlusMinusFourtyDays.ForeColor = accent;
+
+            // Hinweis- / Sekundärtexte.
+            label4.Font = new Font("Segoe UI", 8.25f, FontStyle.Italic);
+            label4.ForeColor = muted;
+            label5.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
+            label5.ForeColor = muted;
+            lblGesamtRueckstandAbteilung.Font = new Font("Segoe UI Semibold", 10f, FontStyle.Regular);
+            lblGesamtRueckstandAbteilung.ForeColor = headline;
+
+            // Navigations-Buttons modern + flach (Farbcodierung bleibt erhalten).
+            StyleNavButton(btnEineWocheZurueck, Color.FromArgb(232, 240, 254), Color.FromArgb(40, 80, 170));
+            StyleNavButton(btnEineWocheVor, Color.FromArgb(232, 240, 254), Color.FromArgb(40, 80, 170));
+            StyleNavButton(btnZweiWochenZurueck, Color.FromArgb(255, 238, 224), Color.FromArgb(170, 90, 30));
+            StyleNavButton(btnZweiWochenVor, Color.FromArgb(255, 238, 224), Color.FromArgb(170, 90, 30));
+            StyleNavButton(btnResett, accent, Color.White);
+        }
+
+        /// <summary>
+        /// Setzt einen Button auf einen flachen, modernen Stil (Hintergrund/Schrift/Hover).
+        /// </summary>
+        private void StyleNavButton(Button b, Color back, Color fore)
+        {
+            b.FlatStyle = FlatStyle.Flat;
+            b.FlatAppearance.BorderSize = 0;
+            b.BackColor = back;
+            b.ForeColor = fore;
+            b.Font = new Font("Segoe UI Semibold", 8.5f, FontStyle.Regular);
+            b.FlatAppearance.MouseOverBackColor = ControlPaint.Light(back);
+            b.FlatAppearance.MouseDownBackColor = ControlPaint.Dark(back);
+            b.UseVisualStyleBackColor = false;
+            b.Cursor = Cursors.Hand;
+        }
+
+        /// <summary>
+        /// Modernes, flaches Erscheinungsbild für das Belag-Grid (Kopf, Zeilen, Auswahl).
+        /// Verändert nur die Optik – Spalten, Inhalte und Verhalten bleiben unberührt.
+        /// </summary>
+        private void StyleAuswahlGrid()
+        {
+            var g = dGv_AuswahlBelag;
+
+            g.EnableHeadersVisualStyles = false;
+            g.BorderStyle = BorderStyle.None;
+            g.BackgroundColor = Color.White;
+            g.GridColor = Color.FromArgb(232, 236, 242);
+            g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
+            // Kopfzeile.
+            g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            g.ColumnHeadersHeight = 34;
+            g.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(63, 81, 120);
+            g.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            g.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(63, 81, 120);
+            g.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            g.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 9.5f, FontStyle.Regular);
+            g.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // Datenzeilen.
+            g.DefaultCellStyle.Font = new Font("Segoe UI", 9.5f, FontStyle.Regular);
+            g.DefaultCellStyle.ForeColor = Color.FromArgb(50, 60, 75);
+            g.DefaultCellStyle.BackColor = Color.White;
+            g.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 120, 215);
+            g.DefaultCellStyle.SelectionForeColor = Color.White;
+            g.DefaultCellStyle.Padding = new Padding(2, 0, 2, 0);
+            g.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 247, 251);
+            g.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 120, 215);
+            g.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
+            g.RowTemplate.Height = 28;
         }
 
         // -----------------------------------------------------------------------------------------------------------------

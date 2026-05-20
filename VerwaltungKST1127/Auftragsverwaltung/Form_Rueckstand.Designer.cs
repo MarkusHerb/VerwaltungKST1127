@@ -152,7 +152,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(204, 24);
             this.label3.TabIndex = 11;
-            this.label3.Text = "Rückstand +/- 40 Tage:";
+            this.label3.Text = "Rückstand Verlauf:";
             // 
             // lblRueckstandPlusMinusFourtyDays
             // 
@@ -181,7 +181,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(345, 13);
             this.label4.TabIndex = 14;
-            this.label4.Text = "Wenn Datum ausgewählt: Vergangenheit - Heute oder Heute - Zukunft ";
+            this.label4.Text = "Belag anklicken → Chart: ±1 Woche um Datum (heute markiert)";
             // 
             // btnEineWocheZurueck
             // 
