@@ -31,6 +31,7 @@
 
   html, body {
     margin: 0; padding: 0;
+    height: 100%;
     background: radial-gradient(ellipse at top left, #202a5a 0%, #111731 60%) fixed;
     color: var(--txt-0);
     font-family: "Segoe UI", "Inter", system-ui, sans-serif;
@@ -52,11 +53,19 @@
   }
   @keyframes drift { 0%{transform:translateY(0)} 100%{transform:translateY(-40px)} }
 
-  .layout { position: relative; z-index: 1; padding: 24px 28px 40px; }
+  /* Füllt die gesamte Fensterhöhe und verteilt die Diagramme darin, damit das
+     Dashboard sich an jede Bildschirmgröße anpasst (Spalten via fr, Zeilen via 1fr). */
+  .layout {
+    position: relative; z-index: 1;
+    padding: 18px 28px 22px;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
 
   .header {
     display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 22px;
+    margin-bottom: 14px;
+    flex: 0 0 auto;
   }
   .title {
     font-size: 26px; font-weight: 600; letter-spacing: 0.5px;
@@ -70,7 +79,8 @@
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 14px;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
+    flex: 0 0 auto;
   }
   .kpi {
     background: var(--glass);
@@ -103,8 +113,10 @@
   .grid {
     display: grid;
     grid-template-columns: 1.6fr 1fr;
-    grid-template-rows: auto auto;
+    grid-template-rows: 1fr 1fr;
     gap: 16px;
+    flex: 1 1 auto;
+    min-height: 480px;   /* nicht beliebig klein werden, sonst scrollt der Body */
   }
   .panel {
     background: var(--glass);
@@ -112,17 +124,23 @@
     border-radius: 16px;
     padding: 16px 18px 8px;
     backdrop-filter: blur(10px);
+    display: flex; flex-direction: column;
+    min-height: 0;       /* erlaubt dem Chart-Container, in der Grid-Zelle zu schrumpfen */
+    overflow: hidden;
   }
   .panel-title {
     font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
     color: var(--txt-1); margin: 0 0 8px;
+    flex: 0 0 auto;
   }
   .panel-title span.muted { color: var(--txt-2); text-transform: none; letter-spacing: 0; font-size: 12px; }
 
-  #heatmap     { height: 360px; }
-  #timeline    { height: 520px; }
-  #treemap     { height: 320px; }
-  #rezepte     { height: 520px; }
+  /* Chart-Container füllen die verbleibende Höhe ihres Panels (responsiv).
+     ECharts liest die Pixelhöhe des Containers und wird via resize-Listener
+     bei jeder Fenster-/Bildschirmänderung neu skaliert. */
+  #heatmap, #timeline, #treemap, #rezepte {
+    flex: 1 1 auto; min-height: 0; width: 100%;
+  }
 
   /* leere Daten */
   .empty {
@@ -136,6 +154,8 @@
   .anlage-chips {
     display: flex; flex-wrap: wrap; gap: 6px;
     padding: 6px 4px 4px;
+    flex: 0 0 auto;
+    max-height: 64px; overflow-y: auto;
   }
   .chip {
     display: inline-flex; align-items: center; gap: 6px;
@@ -590,20 +610,8 @@
       return;
     }
 
-    // Container-Höhe an die Anzahl Rezepte anpassen: ~26 px pro Eintrag,
-    // mindestens die ursprünglichen 520 px. So bleiben Labels lesbar,
-    // egal ob 5 oder 50 Rezepte am Tag liefen.
-    const dynH = Math.max(520, rez.length * 26);
-    container.style.height = dynH + 'px';
-
-    // Damit die Timeline daneben nicht "kurz" wirkt: gleiche Höhe geben.
-    if (dynH > 520) {
-      const tlEl = document.getElementById('timeline');
-      tlEl.style.height = dynH + 'px';
-      const tlInst = echarts.getInstanceByDom(tlEl);
-      if (tlInst) tlInst.resize();
-    }
-
+    // Höhe wird jetzt vom responsiven Layout (Grid-Zelle) bestimmt; bei sehr
+    // vielen Rezepten staucht ECharts die Balken, statt die Seite zu vergrößern.
     const chart = echarts.init(container, null, { renderer: 'canvas' });
     chart.setOption({
       tooltip: {
@@ -641,6 +649,10 @@
     });
     window.addEventListener('resize', () => chart.resize());
   })();
+
+  // Nach dem ersten Layout alle Charts einmal auf die tatsächliche Container-
+  // Größe anpassen – die responsiven Höhen stehen dann endgültig fest.
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 60);
 })();
 </script>
 </body>
