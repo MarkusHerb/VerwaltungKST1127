@@ -44,6 +44,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // Tabelle mit den Belägen (Eingabe von außen, wurde dem Konstruktor übergeben).
         private readonly DataTable belagData;
 
+        // An das Grid gebundene Arbeitskopie. Enthält neben den Eingabespalten auch die
+        // beiden berechneten Spalten ("Realer Rücks.", "Brutto Rücks.") als ECHTE Datenspalten,
+        // damit sie beim Sortieren korrekt mitsortiert werden und nicht leer bleiben.
+        private DataTable _gridTable;
+
         // Verbindung zur SQL-Server-Datenbank. "new(...)" ist die Kurzform für "new SqlConnection(...)".
         // Der String dahinter ist der "Connection-String": Server, Datenbank, Authentifizierung.
         private readonly SqlConnection sqlConnectionVerwaltung =
@@ -113,6 +118,9 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // "async" = Methode kann auf langsame Operationen warten, ohne die UI einzufrieren.
         private async void Form_Rueckstand_Load(object sender, EventArgs e)
         {
+            // 0) Modernes Erscheinungsbild anwenden (rein optisch, keine Logikänderung).
+            ApplyModernDesign();
+
             // 1) UI-Grundaufbau (lokal, schnell)
             LoadBelagData();
             dateTimePickerRueckstandAb.Value = DateTime.Today; // DatePicker auf heute setzen
@@ -134,48 +142,48 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // -----------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Bindet das Belag-Grid und legt die zwei zusätzlichen Spalten an (Rückstand gesamt, Soll-Rückstand).
+        /// Bindet das Belag-Grid. Die beiden berechneten Spalten ("Realer Rücks.", "Brutto Rücks.")
+        /// werden als ECHTE Datenspalten in der gebundenen Tabelle angelegt – dadurch werden sie beim
+        /// Sortieren (Klick auf einen Spaltenkopf) korrekt mitsortiert und bleiben nicht leer.
         /// </summary>
         private void LoadBelagData()
         {
+            // Modernes Grid-Styling immer anwenden (unabhängig davon, ob Daten vorhanden sind).
+            StyleAuswahlGrid();
+
             // Wenn keine Daten übergeben wurden, Grid leer lassen und Methode beenden.
             if (belagData == null)
             {
+                _gridTable = null;
                 dGv_AuswahlBelag.DataSource = null;
                 return;
             }
 
-            // ".Copy()" liefert eine unabhängige Kopie der Tabelle – Änderungen im Grid wirken nicht zurück.
-            dGv_AuswahlBelag.DataSource = belagData.Copy();
+            // Unabhängige Arbeitskopie + berechnete Spalten als Datenspalten ergänzen.
+            _gridTable = belagData.Copy();
+            if (!_gridTable.Columns.Contains("Realer Rücks."))
+                _gridTable.Columns.Add("Realer Rücks.", typeof(decimal));
+            if (!_gridTable.Columns.Contains("Brutto Rücks."))
+                _gridTable.Columns.Add("Brutto Rücks.", typeof(decimal));
 
-            // Spalten zentriert ausrichten – nur falls die Spalte überhaupt existiert.
-            if (dGv_AuswahlBelag.Columns.Contains("Realer Rücks."))
-                dGv_AuswahlBelag.Columns["Realer Rücks."].DefaultCellStyle.Alignment =
-                    DataGridViewContentAlignment.MiddleCenter;
+            // Binden (erzeugt automatisch die Grid-Spalten in Tabellen-Reihenfolge).
+            dGv_AuswahlBelag.DataSource = _gridTable;
 
-            if (dGv_AuswahlBelag.Columns.Contains("Brutto Rücks."))
-                dGv_AuswahlBelag.Columns["Brutto Rücks."].DefaultCellStyle.Alignment =
-                    DataGridViewContentAlignment.MiddleCenter;
-
-            // Grid "schreibgeschützt" machen + Optik konfigurieren.
+            // Grid "schreibgeschützt" machen + Verhalten konfigurieren.
             dGv_AuswahlBelag.AllowUserToAddRows = false;        // keine leere Zeile am Ende
             dGv_AuswahlBelag.AllowUserToDeleteRows = false;     // Zeilen können nicht gelöscht werden
             dGv_AuswahlBelag.AllowUserToResizeColumns = false;  // Spaltenbreite fix
             dGv_AuswahlBelag.AllowUserToResizeRows = false;     // Zeilenhöhe fix
-            dGv_AuswahlBelag.ReadOnly = true;                   // keine Bearbeitung möglich
+            dGv_AuswahlBelag.ReadOnly = true;                   // keine Bearbeitung möglich (blockt nur Benutzer, nicht Code)
             dGv_AuswahlBelag.RowHeadersVisible = false;         // den linken grauen Balken ausblenden
             dGv_AuswahlBelag.SelectionMode = DataGridViewSelectionMode.FullRowSelect; // immer ganze Zeile markieren
             dGv_AuswahlBelag.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Spalten füllen Breite
 
-            // Zusatzspalten "Realer Rücks." und "Brutto Rücks." anlegen, falls nicht vorhanden.
-            EnsureDgvTotalsColumns();
-
-            // Optionale Spalte "AVOs": als Ganzzahl ohne Nachkommastellen, zentriert.
-            if (dGv_AuswahlBelag.Columns.Contains("AVOs"))
-            {
-                dGv_AuswahlBelag.Columns["AVOs"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dGv_AuswahlBelag.Columns["AVOs"].DefaultCellStyle.Format = "N0";
-            }
+            // Spaltenformatierung + relative Breiten (FillWeight) setzen.
+            ConfigureGridColumn("Belag", null, DataGridViewContentAlignment.MiddleCenter, 75);
+            ConfigureGridColumn("AVOs", "N0", DataGridViewContentAlignment.MiddleCenter, 55);
+            ConfigureGridColumn("Realer Rücks.", "N2", DataGridViewContentAlignment.MiddleCenter, 95);
+            ConfigureGridColumn("Brutto Rücks.", "N2", DataGridViewContentAlignment.MiddleCenter, 95);
 
             // Alle Spaltenüberschriften zentrieren.
             foreach (DataGridViewColumn c in dGv_AuswahlBelag.Columns)
@@ -183,42 +191,19 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         }
 
         /// <summary>
-        /// Legt die beiden Zusatzspalten an: "Realer Rücks." (echter Rückstand in h) und "Brutto Rücks." (Soll in h).
+        /// Hilfsmethode: setzt Format, Ausrichtung und relative Breite (FillWeight) einer Grid-Spalte,
+        /// sofern diese existiert.
         /// </summary>
-        private void EnsureDgvTotalsColumns()
+        private void ConfigureGridColumn(string name, string format, DataGridViewContentAlignment align, float fillWeight)
         {
-            // Spalte 1: Realer Rückstand
-            const string ColRueck = "Realer Rücks.";
-            if (!dGv_AuswahlBelag.Columns.Contains(ColRueck)) // nur anlegen, wenn noch nicht da
-            {
-                var col = new DataGridViewTextBoxColumn();
-                col.Name = ColRueck;
-                col.HeaderText = "Realer Rücks.";
-                col.ReadOnly = true;
-                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells; // Breite passt sich an Inhalt an
+            if (!dGv_AuswahlBelag.Columns.Contains(name))
+                return;
 
-                // Style "DefaultCellStyle" gilt für alle Zellen dieser Spalte:
-                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                col.DefaultCellStyle.Format = "N2"; // 2 Nachkommastellen (z. B. 12,34)
-
-                dGv_AuswahlBelag.Columns.Add(col);
-            }
-
-            // Spalte 2: Brutto Rückstand (analog)
-            const string ColSoll = "Brutto Rücks.";
-            if (!dGv_AuswahlBelag.Columns.Contains(ColSoll))
-            {
-                var col = new DataGridViewTextBoxColumn();
-                col.Name = ColSoll;
-                col.HeaderText = "Brutto Rücks.";
-                col.ReadOnly = true;
-                col.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-
-                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                col.DefaultCellStyle.Format = "N2";
-
-                dGv_AuswahlBelag.Columns.Add(col);
-            }
+            var col = dGv_AuswahlBelag.Columns[name];
+            col.DefaultCellStyle.Alignment = align;
+            if (!string.IsNullOrEmpty(format))
+                col.DefaultCellStyle.Format = format;
+            col.FillWeight = fillWeight;
         }
 
         /// <summary>
@@ -496,28 +481,29 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // -----------------------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// Füllt die beiden Zusatzspalten im DGV aus den Aggregaten.
+        /// Füllt die beiden berechneten Spalten direkt in der gebundenen Tabelle (_gridTable)
+        /// aus den Aggregaten. Da es echte Datenspalten sind, bleiben die Werte auch nach dem
+        /// Sortieren erhalten.
         /// </summary>
         private void FillBelagTotalsFromCaches()
         {
             const string ColRueck = "Realer Rücks.";
             const string ColSoll = "Brutto Rücks.";
 
-            // Wenn eine der beiden Spalten fehlt, abbrechen.
-            if (!dGv_AuswahlBelag.Columns.Contains(ColRueck) ||
-                !dGv_AuswahlBelag.Columns.Contains(ColSoll))
+            if (_gridTable == null ||
+                !_gridTable.Columns.Contains("Belag") ||
+                !_gridTable.Columns.Contains(ColRueck) ||
+                !_gridTable.Columns.Contains(ColSoll))
                 return;
 
-            // Jede Zeile durchgehen.
-            foreach (DataGridViewRow row in dGv_AuswahlBelag.Rows)
+            // Jede Datenzeile durchgehen.
+            foreach (DataRow row in _gridTable.Rows)
             {
-                if (row.IsNewRow) continue; // die leere "Neue Zeile" überspringen
-
-                string belag = row.Cells["Belag"]?.Value?.ToString();
+                string belag = row["Belag"]?.ToString();
                 if (string.IsNullOrWhiteSpace(belag))
                 {
-                    row.Cells[ColRueck].Value = null;
-                    row.Cells[ColSoll].Value = null;
+                    row[ColRueck] = DBNull.Value;
+                    row[ColSoll] = DBNull.Value;
                     continue;
                 }
 
@@ -528,33 +514,28 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 decimal rueck = _aggBelagRueckstandBisHeuteHours.TryGetValue(clean, out var rr) ? rr : 0m;
                 decimal soll = _aggBelagSollBisHeuteHours.TryGetValue(clean, out var sr) ? sr : 0m;
 
-                row.Cells[ColRueck].Value = Math.Round(rueck, 2);
-                row.Cells[ColSoll].Value = Math.Round(soll, 2);
+                row[ColRueck] = Math.Round(rueck, 2);
+                row[ColSoll] = Math.Round(soll, 2);
             }
         }
 
         /// <summary>
-        /// Summiert die Spalte "Brutto Rücks." im DGV und zeigt das Ergebnis als Stunden im Label an.
+        /// Summiert die Spalte "Brutto Rücks." (aus _gridTable) und zeigt das Ergebnis als Stunden an.
         /// </summary>
         private void UpdateGesamtRueckstandAbteilungLabel()
         {
             const string SollCol = "Brutto Rücks.";
-            if (!dGv_AuswahlBelag.Columns.Contains(SollCol))
+            if (_gridTable == null || !_gridTable.Columns.Contains(SollCol))
             {
                 lblGesamtRueckstandAbteilung.Text = "0,00h";
                 return;
             }
 
             decimal sum = 0m; // 0m = decimal-Null
-            foreach (DataGridViewRow row in dGv_AuswahlBelag.Rows)
+            foreach (DataRow row in _gridTable.Rows)
             {
-                if (row.IsNewRow) continue;
-                object val = row.Cells[SollCol].Value;
-                if (val == null || val == DBNull.Value) continue;
-
-                // Wert in decimal umwandeln; nur addieren, wenn Konvertierung klappt.
-                if (decimal.TryParse(Convert.ToString(val), out decimal d))
-                    sum += d;
+                if (row[SollCol] == DBNull.Value) continue;
+                sum += Convert.ToDecimal(row[SollCol]);
             }
 
             // String-Interpolation: $"...{sum:0.00}h..." formatiert die Zahl.
@@ -583,15 +564,33 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         }
 
         /// <summary>
-        /// ±40-Tage-Chart (unten) aus Aggregat _aggRueckstandAllBelagsByDay, ohne DB.
+        /// Verlauf-Chart (unten) aus Aggregat _aggRueckstandAllBelagsByDay, ohne DB.
+        /// Standardfenster: heute ±40 Tage. Existieren noch ältere Rückstände
+        /// (Enddatum in der Vergangenheit), wird der Startpunkt bis zum frühesten
+        /// vergangenen Rückstandstag zurückgezogen – so wird z. B. ein Februar-Rückstand sichtbar.
         /// </summary>
         private void RefreshRueckstandPlusMinusTwoMonthsChart()
         {
             DateTime today = DateTime.Today;
-            DateTime startDate = today.AddDays(-40);
             DateTime endDate = today.AddDays(+40);
 
-            // Alle Tage aus dem Aggregat im Zeitfenster auf ein Dictionary reduzieren.
+            // Standard-Startpunkt: 40 Tage in die Vergangenheit.
+            DateTime startDate = today.AddDays(-40);
+
+            // Frühesten vergangenen Tag mit echtem Rückstand suchen (Wert > 0).
+            var pastBacklogDays = _aggRueckstandAllBelagsByDay
+                .Where(kv => kv.Key <= today && kv.Value > 0m)
+                .Select(kv => kv.Key)
+                .ToList();
+
+            if (pastBacklogDays.Count > 0)
+            {
+                DateTime earliestPast = pastBacklogDays.Min();
+                if (earliestPast < startDate)
+                    startDate = earliestPast; // Fenster nach hinten erweitern
+            }
+
+            // Alle Tage aus dem Aggregat im (ggf. erweiterten) Zeitfenster reduzieren.
             var dict = _aggRueckstandAllBelagsByDay
                 .Where(kv => kv.Key >= startDate && kv.Key <= endDate)
                 .ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -600,12 +599,15 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             lblRueckstandPlusMinusFourtyDays.Text = $"{dict.Values.Sum():0.00}h";
 
             // Chart zeichnen.
-            UpdatePlusMinusTwoMonthsChart(dict, today);
+            UpdatePlusMinusTwoMonthsChart(dict, startDate, endDate);
         }
 
         /// <summary>
         /// Oberes Chart (Belag) aus Aggregat _aggBelagByDay.
-        /// Vergangenheit: [selected..heute], Zukunft: [heute..selected].
+        /// Zeigt ein gleitendes Zeitfenster von ±1 Woche um das gewählte Datum
+        /// (Klick auf einen Belag bei Datum = heute → heute ±1 Woche).
+        /// Die ±1/±2-Wochen-Buttons verschieben das Fenster wochenweise.
+        /// Es wird nur gezeichnet, wenn der ausgewählte Belag überhaupt einen Rückstand hat.
         /// </summary>
         private void RefreshRueckstandVerguetenChart()
         {
@@ -613,30 +615,47 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 return;
 
             DateTime selectedDate = dateTimePickerRueckstandAb.Value.Date;
-            DateTime today = DateTime.Today;
 
-            // Bereich so wählen, dass Start <= Ende ist (egal ob Stichtag in Vergangenheit oder Zukunft).
-            DateTime start = selectedDate <= today ? selectedDate : today;
-            DateTime end = selectedDate <= today ? today : selectedDate;
+            // Gleitendes Fenster: eine Woche vor und nach dem gewählten Datum.
+            DateTime start = selectedDate.AddDays(-7);
+            DateTime end = selectedDate.AddDays(7);
 
             string clean = selectedBelag.Replace("-", "").ToUpper();
 
-            // Belag-spezifische Tageswerte aus Aggregat (oder leeres Dict, falls Belag unbekannt).
-            var src = _aggBelagByDay.TryGetValue(clean, out var dictBelag)
-                        ? dictBelag
-                        : new Dictionary<DateTime, decimal>();
+            // Guard: Nur zeichnen, wenn für diesen Belag überhaupt ein Rückstand vorhanden ist.
+            if (!_aggBelagByDay.TryGetValue(clean, out var dictBelag) || dictBelag.Values.Sum() <= 0m)
+            {
+                ClearVerguetenChart();
+                return;
+            }
 
             // Zeitbereich filtern.
-            var rangeDict = src
+            var rangeDict = dictBelag
                 .Where(kv => kv.Key >= start && kv.Key <= end)
                 .ToDictionary(kv => kv.Key, kv => kv.Value);
 
             // Lücken (Tage ohne Wert) mit 0 auffüllen, damit die X-Achse durchgehend ist.
             var filled = FillMissingDates(rangeDict, start, end);
 
-            // Sonderfall: Stichtag = heute → nur ein einzelner Balken (Single-Day-Modus).
-            bool singleDay = selectedDate == today;
-            UpdateVerguetenChart(selectedBelag, filled, singleDay, selectedDate);
+            UpdateVerguetenChart(filled);
+        }
+
+        /// <summary>
+        /// Leert das obere Belag-Chart (z. B. wenn der gewählte Belag keinen Rückstand hat).
+        /// </summary>
+        private void ClearVerguetenChart()
+        {
+            var chart = chartVergueten;
+
+            if (chart.Series.IndexOf("Series1") != -1)
+                chart.Series["Series1"].Points.Clear();
+            if (chart.Series.IndexOf("Trend") != -1)
+                chart.Series["Trend"].Points.Clear();
+
+            if (chart.ChartAreas.Count > 0)
+                chart.ChartAreas[0].AxisX.StripLines.Clear();
+
+            lblVergueten.Text = "0,00h";
         }
 
         // -----------------------------------------------------------------------------------------------------------------
@@ -645,14 +664,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
         /// <summary>
         /// Zeichnet das Belag-Chart (oben) – modernisiertes Design.
-        /// Funktionen unverändert: Single-Day-Anzeige, Tagesbalken mit Wertelabel,
-        /// Trendlinie (5-Pkt-Fenster), ToolTips, Summen-Label.
+        /// Zeigt die Tagesbalken im ±1-Wochen-Fenster mit Wertelabel,
+        /// Trendlinie (5-Pkt-Fenster), ToolTips, Summen-Label und einer
+        /// dezenten senkrechten „Heute"-Linie (sofern heute im Fenster liegt).
         /// </summary>
         private void UpdateVerguetenChart(
-            string belag,
-            Dictionary<DateTime, decimal> rueckstandByDate,
-            bool singleDay,
-            DateTime selectedDate)
+            Dictionary<DateTime, decimal> rueckstandByDate)
         {
             // Verweis aufs Chart-Objekt – kürzere Schreibweise.
             var chart = chartVergueten;
@@ -737,24 +754,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             series.ToolTip = "#AXISLABEL: #VAL{N2} h";          // Tooltip beim Hovern
 
             // =============================================================
-            // Single-Day-Modus: nur ein einzelner Balken mit Belag-Namen
-            // =============================================================
-            if (singleDay)
-            {
-                decimal total = rueckstandByDate.Values.Sum();
-                series.Points.AddXY(belag, Math.Round(total, 2));
-
-                lblVergueten.Text = $"{total:0.00}h";
-
-                // Trend-Serie leeren (im Single-Day nicht sinnvoll).
-                if (chart.Series.IndexOf("Trend") != -1)
-                    chart.Series["Trend"].Points.Clear();
-
-                return;
-            }
-
-            // =============================================================
-            // Multi-Day: Tagesbalken befüllen (chronologisch sortiert)
+            // Tagesbalken befüllen (chronologisch sortiert)
             // =============================================================
             foreach (var kv in rueckstandByDate.OrderBy(k => k.Key))
                 series.Points.AddXY(kv.Key.ToString("dd.MM"), Math.Round(kv.Value, 2));
@@ -764,7 +764,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
             // Bei vielen Tagen die X-Achsen-Beschriftung ausdünnen (jede 2. oder 5. Beschriftung).
             int pointCount = series.Points.Count;
-            area.AxisX.Interval = pointCount > 30 ? 5 : (pointCount > 14 ? 2 : 1);
+            area.AxisX.Interval = pointCount > 30 ? 5 : (pointCount > 16 ? 2 : 1);
 
             // =============================================================
             // Trendlinie als Spline (sanft geschwungen)
@@ -794,22 +794,67 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
                 trend.Points.AddXY(dates[i].ToString("dd.MM"), Math.Round(avg, 2));
             }
+
+            // =============================================================
+            // Dezente senkrechte „Heute"-Linie (nur wenn heute im Fenster liegt)
+            // =============================================================
+            DrawTodayStripLine(area, series);
         }
 
         /// <summary>
-        /// Zeichnet das ±40-Tage-Chart (unten) – modernisiertes Design.
+        /// Zeichnet eine dezente, gestrichelte senkrechte Linie an der Position des
+        /// heutigen Tages auf einer kategorialen X-Achse (Labels im Format "dd.MM").
+        /// Liegt „heute" nicht im Punktebereich, werden nur evtl. alte Linien entfernt.
+        /// </summary>
+        private void DrawTodayStripLine(ChartArea area, Series series)
+        {
+            // Alte StripLines entfernen, bevor eine neue gesetzt wird.
+            area.AxisX.StripLines.Clear();
+
+            string todayLabel = DateTime.Today.ToString("dd.MM");
+            int todayIndex1Based = -1;
+            for (int i = 0; i < series.Points.Count; i++)
+            {
+                if (string.Equals(series.Points[i].AxisLabel, todayLabel, StringComparison.Ordinal))
+                {
+                    todayIndex1Based = i + 1; // Chart verwendet Kategorieindex ab 1
+                    break;
+                }
+            }
+
+            if (todayIndex1Based <= 0)
+                return;
+
+            var todayStrip = new StripLine
+            {
+                Interval = 0,                                     // einmalige Linie (kein Wiederholungsraster)
+                IntervalOffset = todayIndex1Based,                // bei dieser Kategorie zeichnen
+                StripWidth = 0,                                   // 0 = nur die Linie, kein Streifen
+                BorderColor = Color.FromArgb(180, 110, 130, 160), // Alpha 180 = leicht transparent
+                BorderWidth = 1,
+                BorderDashStyle = ChartDashStyle.Dash,
+                Text = "  Heute",                                 // Beschriftung neben der Linie
+                ForeColor = Color.FromArgb(110, 130, 160),
+                Font = new Font("Segoe UI", 7.5f, FontStyle.Regular),
+                TextAlignment = StringAlignment.Near,
+                TextLineAlignment = StringAlignment.Near
+            };
+            area.AxisX.StripLines.Add(todayStrip);
+        }
+
+        /// <summary>
+        /// Zeichnet das Verlauf-Chart (unten) – modernisiertes Design.
         /// Funktionen unverändert: Tagesbalken, Trend (lang) 7-Pkt-MA, Trend (kurz) 3-Pkt-Glättung,
         /// Top-3 Hervorhebung, senkrechte „Heute"-Linie, ToolTips.
+        /// Das Zeitfenster [startDate..endDate] wird vom Aufrufer vorgegeben und kann
+        /// zur Anzeige alter Rückstände nach hinten erweitert sein.
         /// </summary>
         private void UpdatePlusMinusTwoMonthsChart(
             Dictionary<DateTime, decimal> rueckstandByDate,
-            DateTime selectedDate)
+            DateTime startDate,
+            DateTime endDate)
         {
             var chart = chartPlusMinusTwoMonths;
-
-            // Datumsfenster ±40 Tage rund um den Stichtag.
-            DateTime startDate = selectedDate.AddDays(-40);
-            DateTime endDate = selectedDate.AddDays(40);
 
             // =============================================================
             // Globale Chart-Optik (analog zum oberen Chart)
@@ -842,14 +887,15 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             area.BackSecondaryColor = Color.Transparent;
             area.BorderColor = Color.Transparent;
 
-            // X-Achse: Beschriftung jeden 5. Tag (Datumsdichte reduzieren).
+            // X-Achse: Beschriftungsdichte an die (ggf. erweiterte) Fensterbreite anpassen.
             area.AxisX.MajorGrid.Enabled = false;
             area.AxisX.LineColor = Color.FromArgb(220, 225, 235);
             area.AxisX.LineWidth = 1;
             area.AxisX.MajorTickMark.Enabled = false;
             area.AxisX.LabelStyle.Font = new Font("Segoe UI", 8.25f, FontStyle.Regular);
             area.AxisX.LabelStyle.ForeColor = Color.FromArgb(110, 120, 135);
-            area.AxisX.Interval = 5;
+            int totalDays = (int)(endDate.Date - startDate.Date).TotalDays + 1;
+            area.AxisX.Interval = totalDays > 120 ? 14 : (totalDays > 90 ? 10 : (totalDays > 60 ? 7 : 5));
 
             // Y-Achse: feine horizontale Gridlines.
             area.AxisY.MajorGrid.LineColor = Color.FromArgb(235, 238, 244);
@@ -965,39 +1011,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             // =============================================================
             // Senkrechte „Heute"-Linie auf der kategorialen X-Achse (dd.MM)
             // =============================================================
-            // Die X-Achse ist hier "kategorial" – sie nummeriert die Kategorien (Tage) ab 1.
-            // Wir suchen die Position des "heute"-Labels im Punkte-Array.
-            string todayLabel = DateTime.Today.ToString("dd.MM");
-            int todayIndex1Based = -1;
-            for (int i = 0; i < series.Points.Count; i++)
-            {
-                if (string.Equals(series.Points[i].AxisLabel, todayLabel, StringComparison.Ordinal))
-                {
-                    todayIndex1Based = i + 1; // Chart verwendet Kategorieindex ab 1
-                    break;
-                }
-            }
-
-            // Alte StripLines löschen, neue setzen.
-            area.AxisX.StripLines.Clear();
-            if (todayIndex1Based > 0)
-            {
-                var todayStrip = new StripLine
-                {
-                    Interval = 0,                                     // einmalige Linie (kein Wiederholungsraster)
-                    IntervalOffset = todayIndex1Based,                // bei dieser Kategorie zeichnen
-                    StripWidth = 0,                                   // 0 = nur die Linie, kein Streifen
-                    BorderColor = Color.FromArgb(180, 110, 130, 160), // Alpha 180 = leicht transparent
-                    BorderWidth = 1,
-                    BorderDashStyle = ChartDashStyle.Dash,
-                    Text = "  Heute",                                 // Beschriftung neben der Linie
-                    ForeColor = Color.FromArgb(110, 130, 160),
-                    Font = new Font("Segoe UI", 7.5f, FontStyle.Regular),
-                    TextAlignment = StringAlignment.Near,
-                    TextLineAlignment = StringAlignment.Near
-                };
-                area.AxisX.StripLines.Add(todayStrip);
-            }
+            DrawTodayStripLine(area, series);
         }
 
         /// <summary>
@@ -1029,6 +1043,115 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 s.LegendText = legendText;
             }
             return s;
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Modernes Erscheinungsbild (rein optisch – keine Logikänderung)
+        // -----------------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// Wendet ein modernes, ruhiges Erscheinungsbild auf Formular, Beschriftungen
+        /// und Buttons an. Es werden ausschließlich Farben, Schriften und Button-Stile
+        /// gesetzt – Positionen, Steuerelemente und Funktion bleiben unverändert.
+        /// </summary>
+        private void ApplyModernDesign()
+        {
+            // Gemeinsame Farbpalette.
+            Color bg = Color.FromArgb(247, 249, 252);        // heller Formular-Hintergrund
+            Color headline = Color.FromArgb(45, 55, 72);     // dunkles Slate für Überschriften
+            Color accent = Color.FromArgb(70, 120, 215);     // Akzentblau für Werte
+            Color muted = Color.FromArgb(110, 120, 135);     // gedämpft für Hinweistexte
+
+            // Hinweis: Bewusst NICHT die Formular-Schrift (this.Font) ändern – das würde wegen
+            // AutoScaleMode.Font ein Neu-Skalieren aller Steuerelemente auslösen und das Layout verschieben.
+            // Stattdessen werden die Schriften gezielt pro Steuerelement gesetzt.
+            BackColor = bg;
+            dateTimePickerRueckstandAb.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
+
+            // Überschriften.
+            label2.Font = new Font("Segoe UI Semibold", 15f, FontStyle.Regular); // "Rückstand ausgewählt:"
+            label2.ForeColor = headline;
+            label1.Font = new Font("Segoe UI Semibold", 13.5f, FontStyle.Regular); // "Rückstand ausgewählter Belag:"
+            label1.ForeColor = headline;
+            label3.Font = new Font("Segoe UI Semibold", 13.5f, FontStyle.Regular); // "Rückstand Verlauf:"
+            label3.ForeColor = headline;
+
+            // Wertelabels in Akzentfarbe.
+            lblGesamt.Font = new Font("Segoe UI Semibold", 15f, FontStyle.Regular);
+            lblGesamt.ForeColor = accent;
+            lblVergueten.Font = new Font("Segoe UI Semibold", 13.5f, FontStyle.Regular);
+            lblVergueten.ForeColor = accent;
+            lblRueckstandPlusMinusFourtyDays.Font = new Font("Segoe UI Semibold", 13.5f, FontStyle.Regular);
+            lblRueckstandPlusMinusFourtyDays.ForeColor = accent;
+
+            // Hinweis- / Sekundärtexte.
+            label4.Font = new Font("Segoe UI", 8.25f, FontStyle.Italic);
+            label4.ForeColor = muted;
+            label5.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
+            label5.ForeColor = muted;
+            lblGesamtRueckstandAbteilung.Font = new Font("Segoe UI Semibold", 10f, FontStyle.Regular);
+            lblGesamtRueckstandAbteilung.ForeColor = headline;
+
+            // Navigations-Buttons modern + flach (Farbcodierung bleibt erhalten).
+            StyleNavButton(btnEineWocheZurueck, Color.FromArgb(232, 240, 254), Color.FromArgb(40, 80, 170));
+            StyleNavButton(btnEineWocheVor, Color.FromArgb(232, 240, 254), Color.FromArgb(40, 80, 170));
+            StyleNavButton(btnZweiWochenZurueck, Color.FromArgb(255, 238, 224), Color.FromArgb(170, 90, 30));
+            StyleNavButton(btnZweiWochenVor, Color.FromArgb(255, 238, 224), Color.FromArgb(170, 90, 30));
+            StyleNavButton(btnResett, accent, Color.White);
+        }
+
+        /// <summary>
+        /// Setzt einen Button auf einen flachen, modernen Stil (Hintergrund/Schrift/Hover).
+        /// </summary>
+        private void StyleNavButton(Button b, Color back, Color fore)
+        {
+            b.FlatStyle = FlatStyle.Flat;
+            b.FlatAppearance.BorderSize = 0;
+            b.BackColor = back;
+            b.ForeColor = fore;
+            b.Font = new Font("Segoe UI Semibold", 8.5f, FontStyle.Regular);
+            b.FlatAppearance.MouseOverBackColor = ControlPaint.Light(back);
+            b.FlatAppearance.MouseDownBackColor = ControlPaint.Dark(back);
+            b.UseVisualStyleBackColor = false;
+            b.Cursor = Cursors.Hand;
+        }
+
+        /// <summary>
+        /// Modernes, flaches Erscheinungsbild für das Belag-Grid (Kopf, Zeilen, Auswahl).
+        /// Verändert nur die Optik – Spalten, Inhalte und Verhalten bleiben unberührt.
+        /// </summary>
+        private void StyleAuswahlGrid()
+        {
+            var g = dGv_AuswahlBelag;
+
+            g.EnableHeadersVisualStyles = false;
+            g.BorderStyle = BorderStyle.None;
+            g.BackgroundColor = Color.White;
+            g.GridColor = Color.FromArgb(232, 236, 242);
+            g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
+            // Kopfzeile (WrapMode erlaubt Umbruch enger Überschriften → keine "..."-Abschneidung).
+            g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            g.ColumnHeadersHeight = 38;
+            g.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(63, 81, 120);
+            g.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            g.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(63, 81, 120);
+            g.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+            g.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI Semibold", 9f, FontStyle.Regular);
+            g.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            g.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+
+            // Datenzeilen.
+            g.DefaultCellStyle.Font = new Font("Segoe UI", 9f, FontStyle.Regular);
+            g.DefaultCellStyle.ForeColor = Color.FromArgb(50, 60, 75);
+            g.DefaultCellStyle.BackColor = Color.White;
+            g.DefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 120, 215);
+            g.DefaultCellStyle.SelectionForeColor = Color.White;
+            g.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 247, 251);
+            g.AlternatingRowsDefaultCellStyle.SelectionBackColor = Color.FromArgb(70, 120, 215);
+            g.AlternatingRowsDefaultCellStyle.SelectionForeColor = Color.White;
+            g.RowTemplate.Height = 28;
         }
 
         // -----------------------------------------------------------------------------------------------------------------
