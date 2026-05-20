@@ -91,6 +91,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.btnHeute.Size = new System.Drawing.Size(72, 27);
             this.btnHeute.TabIndex = 2;
             this.btnHeute.Text = "Heute";
+            this.btnHeute.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnHeute.Padding = new System.Windows.Forms.Padding(0);
             this.btnHeute.UseVisualStyleBackColor = false;
             this.btnHeute.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnHeute.Click += new System.EventHandler(this.btnHeute_Click);
