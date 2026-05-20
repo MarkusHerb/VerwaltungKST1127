@@ -28,7 +28,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private string _htmlTemplate;
 
         // Auto-Refresh: alle 5 Minuten, sekündlicher Countdown im Label.
-        private const int AutoRefreshSekunden = 5 * 60;
+        private const int AutoRefreshSekunden = 1 * 60;
         private int _autoRefreshRest;
 
         public Form_ProduktionsuebersichtGestern()
