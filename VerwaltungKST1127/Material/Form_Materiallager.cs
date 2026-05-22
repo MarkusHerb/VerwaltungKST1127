@@ -28,7 +28,7 @@ namespace VerwaltungKST1127
             BtnSpeichern.Visible = false;
             //BtnLoeschen.Visible = false;
 
-            // Einheitliches Design (Konzept "Sanfte Salbei") anwenden – siehe UiTheme.cs.
+            // Einheitliches Design (Konzept "Hell & Klar") anwenden – siehe UiTheme.cs.
             // Bewusst NACH UpdateDgvMateriallager(), damit das Tabellen-Styling greift.
             UiTheme.Apply(this);
         }

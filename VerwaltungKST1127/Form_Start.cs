@@ -70,7 +70,7 @@ namespace VerwaltungKST1127
             // Hier kommen alle länger dauernden Aufgaben rein, damit das Fenster sofort sichtbar ist.
             this.Load += Form_Start_Load;
 
-            // Einheitliches Design (Konzept "Sanfte Salbei") anwenden – siehe UiTheme.cs.
+            // Einheitliches Design (Konzept "Hell & Klar") anwenden – siehe UiTheme.cs.
             UiTheme.Apply(this);
         }
 

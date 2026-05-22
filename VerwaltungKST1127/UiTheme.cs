@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace VerwaltungKST1127
 {
     // ===================================================================================================
-    // Zentrale Design-Definition fuer das gesamte Projekt – Konzept "Sanfte Salbei".
+    // Zentrale Design-Definition fuer das gesamte Projekt – Konzept "Hell & Klar".
     //
     // Idee: Statt in 30 Designer-Dateien die Farben/Schriften haendisch anzupassen, wird das Aussehen
     // hier EINMAL definiert und zur Laufzeit per UiTheme.Apply(this) auf eine Form angewendet.
@@ -16,23 +16,23 @@ namespace VerwaltungKST1127
     // ===================================================================================================
     public static class UiTheme
     {
-        // ---- Farbpalette (Hex aus dem Mockup) -----------------------------------------------------
-        public static readonly Color Bg          = ColorTranslator.FromHtml("#F2F5F1"); // Fenster-Hintergrund
+        // ---- Farbpalette (Konzept "Hell & Klar", Hex aus dem Mockup) ------------------------------
+        public static readonly Color Bg          = ColorTranslator.FromHtml("#EEF1F6"); // Fenster-Hintergrund
         public static readonly Color Surface     = ColorTranslator.FromHtml("#FFFFFF"); // Karten/Flaechen
-        public static readonly Color Surface2    = ColorTranslator.FromHtml("#F6F8F4"); // sekundaere Flaeche
-        public static readonly Color Primary     = ColorTranslator.FromHtml("#4B8B7B"); // Salbeigruen (Aktion)
-        public static readonly Color PrimaryDark = ColorTranslator.FromHtml("#3C7568"); // Hover/gedrueckt
+        public static readonly Color Surface2    = ColorTranslator.FromHtml("#F7F9FC"); // sekundaere Flaeche
+        public static readonly Color Primary     = ColorTranslator.FromHtml("#2563EB"); // Buero-Blau (Aktion)
+        public static readonly Color PrimaryDark = ColorTranslator.FromHtml("#1D4ED8"); // Hover/gedrueckt
         public static readonly Color OnPrimary   = Color.White;                          // Text auf Primaer
-        public static readonly Color TextColor   = ColorTranslator.FromHtml("#2E3A33"); // Haupttext
-        public static readonly Color Muted       = ColorTranslator.FromHtml("#73807A"); // gedaempfter Text
-        public static readonly Color BorderColor = ColorTranslator.FromHtml("#E4E9E2"); // Rahmen/Linien
-        public static readonly Color TableHeader = ColorTranslator.FromHtml("#EDF2EC"); // Tabellen-Kopf
-        public static readonly Color SelectBg    = ColorTranslator.FromHtml("#DCEDE5"); // Auswahl-Hintergrund
-        public static readonly Color SelectText  = ColorTranslator.FromHtml("#2F6B58"); // Auswahl-Text
-        public static readonly Color Success     = ColorTranslator.FromHtml("#2E9E6B"); // Erfolg
-        public static readonly Color Warning     = ColorTranslator.FromHtml("#E0A33E"); // Warnung
-        public static readonly Color Danger      = ColorTranslator.FromHtml("#D9645B"); // Gefahr/Loeschen
-        public static readonly Color DangerSoft  = ColorTranslator.FromHtml("#FBE7E4"); // heller Loesch-Hintergrund
+        public static readonly Color TextColor   = ColorTranslator.FromHtml("#1F2A37"); // Haupttext
+        public static readonly Color Muted       = ColorTranslator.FromHtml("#6B7280"); // gedaempfter Text
+        public static readonly Color BorderColor = ColorTranslator.FromHtml("#E3E8EF"); // Rahmen/Linien
+        public static readonly Color TableHeader = ColorTranslator.FromHtml("#F4F6F9"); // Tabellen-Kopf
+        public static readonly Color SelectBg    = ColorTranslator.FromHtml("#E8F0FE"); // Auswahl-Hintergrund
+        public static readonly Color SelectText  = ColorTranslator.FromHtml("#1D4ED8"); // Auswahl-Text
+        public static readonly Color Success     = ColorTranslator.FromHtml("#16A34A"); // Erfolg
+        public static readonly Color Warning     = ColorTranslator.FromHtml("#D97706"); // Warnung
+        public static readonly Color Danger      = ColorTranslator.FromHtml("#DC2626"); // Gefahr/Loeschen
+        public static readonly Color DangerSoft  = ColorTranslator.FromHtml("#FDECEC"); // heller Loesch-Hintergrund
 
         // ---- Schrift ------------------------------------------------------------------------------
         public const string FontName = "Segoe UI";
@@ -92,7 +92,7 @@ namespace VerwaltungKST1127
         }
 
         // ---- Buttons ------------------------------------------------------------------------------
-        // Alle Buttons einheitlich im selben Salbei-Ton (Wunsch: gleiche Farbe fuer alle Buttons).
+        // Alle Buttons einheitlich im selben Blau-Ton (Wunsch: gleiche Farbe fuer alle Buttons).
         private static void StyleButton(Button b)
         {
             b.FlatStyle = FlatStyle.Flat;
