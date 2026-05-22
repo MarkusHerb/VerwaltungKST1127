@@ -92,6 +92,7 @@ namespace VerwaltungKST1127
         }
 
         // ---- Buttons ------------------------------------------------------------------------------
+        // Alle Buttons einheitlich im selben Salbei-Ton (Wunsch: gleiche Farbe fuer alle Buttons).
         private static void StyleButton(Button b)
         {
             b.FlatStyle = FlatStyle.Flat;
@@ -99,59 +100,16 @@ namespace VerwaltungKST1127
             b.Cursor = Cursors.Hand;
             b.Font = new Font(FontName, Math.Max(b.Font.Size, 9f), FontStyle.Regular);
 
-            string role = RoleOf(b);
-            switch (role)
-            {
-                case "primary":
-                    b.BackColor = Primary; b.ForeColor = OnPrimary;
-                    b.FlatAppearance.BorderSize = 0;
-                    b.FlatAppearance.MouseOverBackColor = PrimaryDark;
-                    b.FlatAppearance.MouseDownBackColor = PrimaryDark;
-                    break;
-                case "success":
-                    b.BackColor = Success; b.ForeColor = Color.White;
-                    b.FlatAppearance.BorderSize = 0;
-                    b.FlatAppearance.MouseOverBackColor = ControlPaint.Dark(Success, 0.05f);
-                    break;
-                case "danger":
-                    b.BackColor = DangerSoft; b.ForeColor = Danger;
-                    b.FlatAppearance.BorderSize = 1;
-                    b.FlatAppearance.BorderColor = ControlPaint.Light(Danger, 0.4f);
-                    b.FlatAppearance.MouseOverBackColor = ControlPaint.Light(Danger, 0.65f);
-                    break;
-                default: // secondary
-                    b.BackColor = Surface; b.ForeColor = TextColor;
-                    b.FlatAppearance.BorderSize = 1;
-                    b.FlatAppearance.BorderColor = BorderColor;
-                    b.FlatAppearance.MouseOverBackColor = Surface2;
-                    b.FlatAppearance.MouseDownBackColor = BorderColor;
-                    break;
-            }
-        }
-
-        // Rolle aus Tag ("primary"/"success"/"danger"/"secondary") oder per Namens-Heuristik ableiten.
-        private static string RoleOf(Button b)
-        {
-            if (b.Tag is string t)
-            {
-                string tl = t.ToLowerInvariant();
-                if (tl.Contains("primary"))   return "primary";
-                if (tl.Contains("success"))   return "success";
-                if (tl.Contains("danger"))    return "danger";
-                if (tl.Contains("secondary")) return "secondary";
-            }
-
-            string key = ((b.Name ?? "") + " " + (b.Text ?? "")).ToLowerInvariant();
-            if (key.Contains("lösch") || key.Contains("loesch") || key.Contains("entfern"))
-                return "danger";
-            if (key.Contains("speich") || key.Contains("anleg") || key.Contains("erstell")
-                || key.Contains("hinzu") || key.Contains("übernehm") || key.Contains("uebernehm")
-                || key.Contains("suchen"))
-                return "primary";
-            return "secondary";
+            b.BackColor = Primary;
+            b.ForeColor = OnPrimary;
+            b.FlatAppearance.BorderSize = 0;
+            b.FlatAppearance.MouseOverBackColor = PrimaryDark;
+            b.FlatAppearance.MouseDownBackColor = PrimaryDark;
         }
 
         // ---- Tabellen (DataGridView) --------------------------------------------------------------
+        // Nur Farben + Schriftart anpassen. Zeilen-/Kopfhoehe bleibt wie im Original:
+        // keine feste RowTemplate.Height, kein zusaetzliches Padding, Original-Schriftgroesse.
         private static void StyleGrid(DataGridView g)
         {
             g.EnableHeadersVisualStyles = false;
@@ -161,28 +119,27 @@ namespace VerwaltungKST1127
             g.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             g.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             g.RowHeadersVisible = false;
-            g.AllowUserToResizeRows = false;
-            g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            g.ColumnHeadersHeight = 38;
-            g.RowTemplate.Height = 30;
-            g.Font = MakeFont(9.75f);
+
+            // Originale Schriftgroesse beibehalten, nur die Schriftart auf Segoe UI umstellen
+            // (damit die Zeilenhoehe sich nicht veraendert).
+            float baseSize = 8.25f;
+            Font src = g.DefaultCellStyle.Font ?? g.Font;
+            if (src != null) baseSize = src.Size;
+            g.Font = MakeFont(baseSize);
 
             DataGridViewCellStyle head = g.ColumnHeadersDefaultCellStyle;
             head.BackColor = TableHeader;
             head.ForeColor = Muted;
             head.SelectionBackColor = TableHeader;
             head.SelectionForeColor = Muted;
-            head.Font = MakeFont(9.75f, FontStyle.Bold);
-            head.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            head.Padding = new Padding(8, 0, 8, 0);
+            head.Font = MakeFont(baseSize, FontStyle.Bold);
 
             DataGridViewCellStyle cell = g.DefaultCellStyle;
             cell.BackColor = Surface;
             cell.ForeColor = TextColor;
             cell.SelectionBackColor = SelectBg;
             cell.SelectionForeColor = SelectText;
-            cell.Font = MakeFont(9.75f);
-            cell.Padding = new Padding(8, 4, 8, 4);
+            cell.Font = MakeFont(baseSize);
 
             g.AlternatingRowsDefaultCellStyle.BackColor = Surface2;
             g.AlternatingRowsDefaultCellStyle.SelectionBackColor = SelectBg;
