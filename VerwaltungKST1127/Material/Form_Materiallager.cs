@@ -27,6 +27,10 @@ namespace VerwaltungKST1127
             // Sichtbarkeit festlegen
             BtnSpeichern.Visible = false;
             //BtnLoeschen.Visible = false;
+
+            // Einheitliches Design (Konzept "Sanfte Salbei") anwenden – siehe UiTheme.cs.
+            // Bewusst NACH UpdateDgvMateriallager(), damit das Tabellen-Styling greift.
+            UiTheme.Apply(this);
         }
 
         // Methode zur Aktualisierung und Formatierung des DataGridView für das Materiallager

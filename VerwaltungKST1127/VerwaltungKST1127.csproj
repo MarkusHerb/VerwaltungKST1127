@@ -410,6 +410,7 @@
     </Compile>
     <Compile Include="Produktionsauswertung\UebersichtGesternDataService.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="UiTheme.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RingSpannzange\Form_NeuerArtikelZuRing.cs">
       <SubType>Form</SubType>

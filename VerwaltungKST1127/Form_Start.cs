@@ -69,6 +69,9 @@ namespace VerwaltungKST1127
             // Load-Event abonnieren ("+="" = neue Methode an das Ereignis hängen).
             // Hier kommen alle länger dauernden Aufgaben rein, damit das Fenster sofort sichtbar ist.
             this.Load += Form_Start_Load;
+
+            // Einheitliches Design (Konzept "Sanfte Salbei") anwenden – siehe UiTheme.cs.
+            UiTheme.Apply(this);
         }
 
         // -----------------------------------------------------------------------------------------------------------------
