@@ -16,6 +16,8 @@
 // Renderer: WebView2 mit eingebettetem HTML (Resources/TrendDashboard.html).
 // -----------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -32,6 +34,9 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private bool _suppressReload;   // verhindert Doppellauf beim Setzen beider Picker
         private string _htmlTemplate;
 
+        // Pro Anlage eine Checkbox; unangehakt = aus der Auswertung ausgeschlossen.
+        private readonly List<CheckBox> _anlageChecks = new List<CheckBox>();
+
         // Auto-Refresh: alle 5 Minuten, sekündlicher Countdown im Label.
         // Trend-Daten ändern sich langsamer als die Tagesübersicht, daher 5 Min.
         private const int AutoRefreshSekunden = 5 * 60;
@@ -47,6 +52,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             try
             {
                 lblStatus.Text = "Initialisiere WebView2…";
+                BaueAnlagenCheckboxen();
                 await InitWebViewAsync();
 
                 // Standard beim Öffnen: laufende Woche (Montag bis heute), damit
@@ -97,8 +103,13 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 DateTime von = dtpVon.Value.Date;
                 DateTime bis = dtpBis.Value.Date;
 
+                // Ausgeschlossene Anlagen aus den (nicht angehakten) Checkboxen.
+                var ausgeschlossen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var cb in _anlageChecks)
+                    if (!cb.Checked) ausgeschlossen.Add(cb.Text);
+
                 // 1) Datenservice (aggregiert die Tage des Zeitraums)
-                var data = await ProduktionsTrendDataService.LoadAsync(von, bis);
+                var data = await ProduktionsTrendDataService.LoadAsync(von, bis, ausgeschlossen);
 
                 // 2) HTML-Template einmalig laden und cachen
                 if (_htmlTemplate == null)
@@ -136,9 +147,39 @@ namespace VerwaltungKST1127.Produktionsauswertung
             btnGestern.Enabled = aktiv;
             btnHeute.Enabled = aktiv;
             btnMinus2Wochen.Enabled = aktiv;
-            btnPlus2Wochen.Enabled = aktiv;
             btnMinus30Tage.Enabled = aktiv;
-            btnPlus30Tage.Enabled = aktiv;
+            flowAnlagen.Enabled = aktiv;
+        }
+
+        // Baut für jede Anlage eine Checkbox (standardmäßig angehakt). Das Abwählen
+        // schließt die Anlage komplett aus der Auswertung aus.
+        private void BaueAnlagenCheckboxen()
+        {
+            if (_anlageChecks.Count > 0) return;   // nur einmal aufbauen
+
+            foreach (var name in UebersichtGesternDataService.AnlagenNamen)
+            {
+                var cb = new CheckBox
+                {
+                    Text = name,
+                    Checked = true,
+                    AutoSize = true,
+                    ForeColor = Color.FromArgb(230, 235, 250),
+                    Font = new Font("Segoe UI", 9.5F),
+                    BackColor = Color.Transparent,
+                    Cursor = Cursors.Hand,
+                    Margin = new Padding(0, 4, 14, 0),
+                };
+                cb.CheckedChanged += anlageCheck_CheckedChanged;
+                _anlageChecks.Add(cb);
+                flowAnlagen.Controls.Add(cb);
+            }
+        }
+
+        private async void anlageCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!_initialized || _suppressReload) return;
+            await LadeDashboardAsync();
         }
 
         // Setzt beide Picker ohne Zwischen-Reload und lädt danach genau einmal.
@@ -170,45 +211,16 @@ namespace VerwaltungKST1127.Produktionsauswertung
             await SetzeZeitraumAsync(DateTime.Today, DateTime.Today);
         }
 
+        // Letzte 2 Wochen bis heute.
         private async void btnMinus2Wochen_Click(object sender, EventArgs e)
         {
-            await VerschiebeFensterAsync(-14);
+            await SetzeZeitraumAsync(DateTime.Today.AddDays(-14), DateTime.Today);
         }
 
-        private async void btnPlus2Wochen_Click(object sender, EventArgs e)
-        {
-            await VerschiebeFensterAsync(14);
-        }
-
+        // Letzte 30 Tage bis heute.
         private async void btnMinus30Tage_Click(object sender, EventArgs e)
         {
-            await VerschiebeFensterAsync(-30);
-        }
-
-        private async void btnPlus30Tage_Click(object sender, EventArgs e)
-        {
-            await VerschiebeFensterAsync(30);
-        }
-
-        // Verschiebt das aktuelle Von/Bis-Fenster um <tage> Tage und behält die
-        // Spannweite bei. So kann man bequem durch die Vergangenheit blättern.
-        // Vorwärts wird auf "heute" begrenzt – Daten in der Zukunft gibt es nicht.
-        private async Task VerschiebeFensterAsync(int tage)
-        {
-            DateTime von = dtpVon.Value.Date;
-            DateTime bis = dtpBis.Value.Date;
-            int spanne = (bis - von).Days;
-
-            von = von.AddDays(tage);
-            bis = bis.AddDays(tage);
-
-            if (bis > DateTime.Today)
-            {
-                bis = DateTime.Today;
-                von = bis.AddDays(-spanne);
-            }
-
-            await SetzeZeitraumAsync(von, bis);
+            await SetzeZeitraumAsync(DateTime.Today.AddDays(-30), DateTime.Today);
         }
 
         // Montag der Woche, in der das Datum liegt.

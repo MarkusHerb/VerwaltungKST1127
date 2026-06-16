@@ -96,8 +96,13 @@ namespace VerwaltungKST1127.Produktionsauswertung
         /// Lädt alle Tage zwischen <paramref name="von"/> und <paramref name="bis"/>
         /// (jeweils inklusive) und aggregiert sie zu einem Trend-Modell.
         /// Ist von == bis, entsteht eine Ein-Tages-Auswertung.
+        ///
+        /// <paramref name="ausgeschlosseneAnlagen"/> (optional): Anlagen, die komplett
+        /// aus der Auswertung herausgerechnet werden sollen (KPIs, Trend, Ranking,
+        /// Auslastung, Artikel). Null/leer = alle Anlagen einbeziehen.
         /// </summary>
-        public static async Task<TrendDashboardData> LoadAsync(DateTime von, DateTime bis)
+        public static async Task<TrendDashboardData> LoadAsync(
+            DateTime von, DateTime bis, ISet<string> ausgeschlosseneAnlagen = null)
         {
             von = von.Date;
             bis = bis.Date;
@@ -105,6 +110,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
             {
                 var tmp = von; von = bis; bis = tmp;
             }
+
+            // Ausschlussliste in eine case-insensitive Menge normalisieren.
+            var excl = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (ausgeschlosseneAnlagen != null)
+                foreach (var a in ausgeschlosseneAnlagen) excl.Add(a);
 
             // Zeitraum auf MaxTage begrenzen (vom Ende her).
             var tage = new List<DateTime>();
@@ -147,24 +157,33 @@ namespace VerwaltungKST1127.Produktionsauswertung
             // verfälschen damit die Auslastung nicht.
             double kapazitaetStunden = 0;
             int produktionstage = 0;
+            int probenGesamt = 0;
 
             for (int i = 0; i < dayResults.Length; i++)
             {
                 var tag = tage[i];
                 var day = dayResults[i];
 
+                // Nur die einbezogenen Anlagen dieses Tages.
+                var inkl = day.Anlagen.Where(a => !excl.Contains(a.Name)).ToList();
+
+                int tagStk = inkl.Sum(a => a.Stk);
+                int tagChargen = inkl.Sum(a => a.Chargen);
+                int tagProben = inkl.Sum(a => a.Proben);
+                double tagProduktiv = Math.Round(inkl.Sum(a => a.ProduktivStunden), 2);
+                double tagFehler = Math.Round(inkl.Sum(a => a.FehlerStunden), 1);
+                probenGesamt += tagProben;
+
                 // An diesem Tag tatsächlich aktive Anlagen (produktiv gelaufen oder Stk).
-                int aktiveAnlagen = day.Anlagen
-                    .Count(a => a.ProduktivStunden > 0 || a.Stk > 0);
+                int aktiveAnlagen = inkl.Count(a => a.ProduktivStunden > 0 || a.Stk > 0);
                 double tagKapazitaet = aktiveAnlagen * NennstundenProAnlageTag;
                 kapazitaetStunden += tagKapazitaet;
 
-                bool hatProduktion = day.GesamtStk > 0 || day.ProduktivStunden > 0;
-                if (hatProduktion) produktionstage++;
+                if (tagStk > 0 || tagProduktiv > 0) produktionstage++;
 
                 // Tages-Auslastung auf 16h-Basis der aktiven Anlagen.
                 double tagAusl = tagKapazitaet > 0
-                    ? Math.Round(day.ProduktivStunden / tagKapazitaet * 100.0, 1) : 0;
+                    ? Math.Round(tagProduktiv / tagKapazitaet * 100.0, 1) : 0;
 
                 // Tages-Punkt für den Trend-Chart
                 result.Tage.Add(new TrendTag
@@ -172,15 +191,15 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     Datum = tag.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                     DatumKurz = tag.ToString("ddd dd.MM.", deDE),
                     Wochentag = ((int)tag.DayOfWeek + 6) % 7 + 1, // So=7, Mo=1
-                    Stk = day.GesamtStk,
-                    Chargen = day.AnzahlChargen,
-                    ProduktivStunden = day.ProduktivStunden,
-                    FehlerStunden = day.FehlerStunden,
+                    Stk = tagStk,
+                    Chargen = tagChargen,
+                    ProduktivStunden = tagProduktiv,
+                    FehlerStunden = tagFehler,
                     AuslastungProzent = tagAusl,
                 });
 
-                // Anlagen-Ranking aufsummieren
-                foreach (var a in day.Anlagen)
+                // Anlagen-Ranking aufsummieren (nur einbezogene Anlagen)
+                foreach (var a in inkl)
                 {
                     if (!anlagenAgg.TryGetValue(a.Name, out var agg))
                     {
@@ -198,6 +217,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 foreach (var anlageKnoten in day.ArtikelBaum)
                 {
                     if (anlageKnoten.Children == null) continue;
+                    if (excl.Contains(anlageKnoten.Name)) continue;   // Anlage ausgeschlossen
                     foreach (var art in anlageKnoten.Children)
                     {
                         if (string.IsNullOrEmpty(art.Name)) continue;
@@ -206,7 +226,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     }
                 }
 
-                // Verschiedene Rezepte + Häufigkeiten
+                // Verschiedene Rezepte + Häufigkeiten. Hinweis: Die Tages-Rezeptliste
+                // liegt nur anlagen-übergreifend vor; eine ausgeschlossene Anlage kann
+                // hier nicht abgezogen werden. Für nicht-produzierende Anlagen (ohne
+                // Rezepte) ist das irrelevant.
                 foreach (var r in day.Rezepte)
                 {
                     rezeptGesamt.TryGetValue(r.Name, out int v);
@@ -217,7 +240,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             // ── Gesamtwerte ─────────────────────────────────────────────────
             result.GesamtStk = result.Tage.Sum(t => t.Stk);
             result.AnzahlChargen = result.Tage.Sum(t => t.Chargen);
-            result.AnzahlProben = dayResults.Sum(d => d.AnzahlProben);
+            result.AnzahlProben = probenGesamt;
             result.ProduktivStunden = Math.Round(result.Tage.Sum(t => t.ProduktivStunden), 2);
             result.FehlerStunden = Math.Round(result.Tage.Sum(t => t.FehlerStunden), 1);
             result.AnzahlArtikel = artikelGesamt.Count;

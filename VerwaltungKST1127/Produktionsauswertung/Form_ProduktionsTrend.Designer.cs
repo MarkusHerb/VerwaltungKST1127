@@ -11,9 +11,9 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private System.Windows.Forms.Button btnGestern;
         private System.Windows.Forms.Button btnHeute;
         private System.Windows.Forms.Button btnMinus2Wochen;
-        private System.Windows.Forms.Button btnPlus2Wochen;
         private System.Windows.Forms.Button btnMinus30Tage;
-        private System.Windows.Forms.Button btnPlus30Tage;
+        private System.Windows.Forms.Label lblAnlagen;
+        private System.Windows.Forms.FlowLayoutPanel flowAnlagen;
         private System.Windows.Forms.Button btnNeuLaden;
         private System.Windows.Forms.CheckBox chkAutoRefresh;
         private System.Windows.Forms.Label lblAutoRefreshTimer;
@@ -38,12 +38,12 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.lblAutoRefreshTimer = new System.Windows.Forms.Label();
             this.chkAutoRefresh = new System.Windows.Forms.CheckBox();
             this.btnNeuLaden = new System.Windows.Forms.Button();
-            this.btnPlus30Tage = new System.Windows.Forms.Button();
             this.btnMinus30Tage = new System.Windows.Forms.Button();
-            this.btnPlus2Wochen = new System.Windows.Forms.Button();
             this.btnMinus2Wochen = new System.Windows.Forms.Button();
             this.btnHeute = new System.Windows.Forms.Button();
             this.btnGestern = new System.Windows.Forms.Button();
+            this.lblAnlagen = new System.Windows.Forms.Label();
+            this.flowAnlagen = new System.Windows.Forms.FlowLayoutPanel();
             this.dtpBis = new System.Windows.Forms.DateTimePicker();
             this.lblBis = new System.Windows.Forms.Label();
             this.dtpVon = new System.Windows.Forms.DateTimePicker();
@@ -60,10 +60,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.panelToolbar.Controls.Add(this.lblStatus);
             this.panelToolbar.Controls.Add(this.lblAutoRefreshTimer);
             this.panelToolbar.Controls.Add(this.chkAutoRefresh);
+            this.panelToolbar.Controls.Add(this.flowAnlagen);
+            this.panelToolbar.Controls.Add(this.lblAnlagen);
             this.panelToolbar.Controls.Add(this.btnNeuLaden);
-            this.panelToolbar.Controls.Add(this.btnPlus30Tage);
             this.panelToolbar.Controls.Add(this.btnMinus30Tage);
-            this.panelToolbar.Controls.Add(this.btnPlus2Wochen);
             this.panelToolbar.Controls.Add(this.btnMinus2Wochen);
             this.panelToolbar.Controls.Add(this.btnHeute);
             this.panelToolbar.Controls.Add(this.btnGestern);
@@ -74,7 +74,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelToolbar.Location = new System.Drawing.Point(0, 0);
             this.panelToolbar.Name = "panelToolbar";
-            this.panelToolbar.Size = new System.Drawing.Size(1280, 48);
+            this.panelToolbar.Size = new System.Drawing.Size(1280, 84);
             this.panelToolbar.TabIndex = 0;
             //
             // lblVon
@@ -165,29 +165,12 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.btnMinus2Wochen.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
             this.btnMinus2Wochen.Location = new System.Drawing.Point(560, 10);
             this.btnMinus2Wochen.Name = "btnMinus2Wochen";
-            this.btnMinus2Wochen.Size = new System.Drawing.Size(90, 27);
+            this.btnMinus2Wochen.Size = new System.Drawing.Size(104, 27);
             this.btnMinus2Wochen.TabIndex = 6;
-            this.btnMinus2Wochen.Text = "− 2 Wochen";
+            this.btnMinus2Wochen.Text = "letzte 2 Wochen";
             this.btnMinus2Wochen.UseVisualStyleBackColor = false;
             this.btnMinus2Wochen.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnMinus2Wochen.Click += new System.EventHandler(this.btnMinus2Wochen_Click);
-            //
-            // btnPlus2Wochen
-            //
-            this.btnPlus2Wochen.BackColor = System.Drawing.Color.FromArgb(42, 51, 90);
-            this.btnPlus2Wochen.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(122, 215, 255);
-            this.btnPlus2Wochen.FlatAppearance.BorderSize = 1;
-            this.btnPlus2Wochen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPlus2Wochen.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F);
-            this.btnPlus2Wochen.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
-            this.btnPlus2Wochen.Location = new System.Drawing.Point(656, 10);
-            this.btnPlus2Wochen.Name = "btnPlus2Wochen";
-            this.btnPlus2Wochen.Size = new System.Drawing.Size(90, 27);
-            this.btnPlus2Wochen.TabIndex = 7;
-            this.btnPlus2Wochen.Text = "+ 2 Wochen";
-            this.btnPlus2Wochen.UseVisualStyleBackColor = false;
-            this.btnPlus2Wochen.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnPlus2Wochen.Click += new System.EventHandler(this.btnPlus2Wochen_Click);
             //
             // btnMinus30Tage
             //
@@ -197,31 +180,14 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.btnMinus30Tage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMinus30Tage.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F);
             this.btnMinus30Tage.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
-            this.btnMinus30Tage.Location = new System.Drawing.Point(752, 10);
+            this.btnMinus30Tage.Location = new System.Drawing.Point(676, 10);
             this.btnMinus30Tage.Name = "btnMinus30Tage";
-            this.btnMinus30Tage.Size = new System.Drawing.Size(84, 27);
-            this.btnMinus30Tage.TabIndex = 8;
-            this.btnMinus30Tage.Text = "− 30 Tage";
+            this.btnMinus30Tage.Size = new System.Drawing.Size(104, 27);
+            this.btnMinus30Tage.TabIndex = 7;
+            this.btnMinus30Tage.Text = "letzte 30 Tage";
             this.btnMinus30Tage.UseVisualStyleBackColor = false;
             this.btnMinus30Tage.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnMinus30Tage.Click += new System.EventHandler(this.btnMinus30Tage_Click);
-            //
-            // btnPlus30Tage
-            //
-            this.btnPlus30Tage.BackColor = System.Drawing.Color.FromArgb(42, 51, 90);
-            this.btnPlus30Tage.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(122, 215, 255);
-            this.btnPlus30Tage.FlatAppearance.BorderSize = 1;
-            this.btnPlus30Tage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPlus30Tage.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F);
-            this.btnPlus30Tage.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
-            this.btnPlus30Tage.Location = new System.Drawing.Point(842, 10);
-            this.btnPlus30Tage.Name = "btnPlus30Tage";
-            this.btnPlus30Tage.Size = new System.Drawing.Size(84, 27);
-            this.btnPlus30Tage.TabIndex = 9;
-            this.btnPlus30Tage.Text = "+ 30 Tage";
-            this.btnPlus30Tage.UseVisualStyleBackColor = false;
-            this.btnPlus30Tage.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnPlus30Tage.Click += new System.EventHandler(this.btnPlus30Tage_Click);
             //
             // btnNeuLaden
             //
@@ -230,10 +196,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.btnNeuLaden.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNeuLaden.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F);
             this.btnNeuLaden.ForeColor = System.Drawing.Color.FromArgb(11, 16, 32);
-            this.btnNeuLaden.Location = new System.Drawing.Point(942, 10);
+            this.btnNeuLaden.Location = new System.Drawing.Point(800, 10);
             this.btnNeuLaden.Name = "btnNeuLaden";
             this.btnNeuLaden.Size = new System.Drawing.Size(100, 27);
-            this.btnNeuLaden.TabIndex = 10;
+            this.btnNeuLaden.TabIndex = 8;
             this.btnNeuLaden.Text = "Neu laden";
             this.btnNeuLaden.UseVisualStyleBackColor = false;
             this.btnNeuLaden.Cursor = System.Windows.Forms.Cursors.Hand;
@@ -244,10 +210,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.chkAutoRefresh.AutoSize = true;
             this.chkAutoRefresh.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
             this.chkAutoRefresh.Font = new System.Drawing.Font("Segoe UI", 9.5F);
-            this.chkAutoRefresh.Location = new System.Drawing.Point(1058, 14);
+            this.chkAutoRefresh.Location = new System.Drawing.Point(916, 14);
             this.chkAutoRefresh.Name = "chkAutoRefresh";
             this.chkAutoRefresh.Size = new System.Drawing.Size(140, 21);
-            this.chkAutoRefresh.TabIndex = 11;
+            this.chkAutoRefresh.TabIndex = 9;
             this.chkAutoRefresh.Text = "Auto-Aktualisierung";
             this.chkAutoRefresh.UseVisualStyleBackColor = false;
             this.chkAutoRefresh.BackColor = System.Drawing.Color.Transparent;
@@ -259,10 +225,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.lblAutoRefreshTimer.AutoSize = true;
             this.lblAutoRefreshTimer.ForeColor = System.Drawing.Color.FromArgb(122, 215, 255);
             this.lblAutoRefreshTimer.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
-            this.lblAutoRefreshTimer.Location = new System.Drawing.Point(1214, 15);
+            this.lblAutoRefreshTimer.Location = new System.Drawing.Point(1072, 15);
             this.lblAutoRefreshTimer.Name = "lblAutoRefreshTimer";
             this.lblAutoRefreshTimer.Size = new System.Drawing.Size(50, 19);
-            this.lblAutoRefreshTimer.TabIndex = 12;
+            this.lblAutoRefreshTimer.TabIndex = 10;
             this.lblAutoRefreshTimer.Text = "";
             //
             // lblStatus
@@ -270,11 +236,32 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.lblStatus.AutoSize = true;
             this.lblStatus.ForeColor = System.Drawing.Color.FromArgb(170, 177, 200);
             this.lblStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblStatus.Location = new System.Drawing.Point(1298, 15);
+            this.lblStatus.Location = new System.Drawing.Point(1156, 15);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(40, 17);
-            this.lblStatus.TabIndex = 13;
+            this.lblStatus.TabIndex = 11;
             this.lblStatus.Text = "Bereit";
+            //
+            // lblAnlagen
+            //
+            this.lblAnlagen.AutoSize = true;
+            this.lblAnlagen.ForeColor = System.Drawing.Color.FromArgb(170, 177, 200);
+            this.lblAnlagen.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblAnlagen.Location = new System.Drawing.Point(14, 52);
+            this.lblAnlagen.Name = "lblAnlagen";
+            this.lblAnlagen.Size = new System.Drawing.Size(120, 19);
+            this.lblAnlagen.TabIndex = 12;
+            this.lblAnlagen.Text = "Anlagen einbeziehen:";
+            //
+            // flowAnlagen
+            //
+            this.flowAnlagen.BackColor = System.Drawing.Color.Transparent;
+            this.flowAnlagen.Location = new System.Drawing.Point(168, 48);
+            this.flowAnlagen.Name = "flowAnlagen";
+            this.flowAnlagen.Size = new System.Drawing.Size(1100, 30);
+            this.flowAnlagen.TabIndex = 13;
+            this.flowAnlagen.WrapContents = false;
+            this.flowAnlagen.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
             //
             // timerAutoRefresh
             //

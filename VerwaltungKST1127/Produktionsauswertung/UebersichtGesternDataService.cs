@@ -122,6 +122,13 @@ namespace VerwaltungKST1127.Produktionsauswertung
             };
 
         /// <summary>
+        /// Alle bekannten Anlagen-Namen in fester Reihenfolge (A20 … A65).
+        /// Wird z. B. vom Trend-Cockpit verwendet, um Auswahl-Checkboxen zu bauen.
+        /// </summary>
+        public static readonly string[] AnlagenNamen =
+            { "A20", "A25", "A30", "A35", "A40", "A45", "A50", "A60", "A65" };
+
+        /// <summary>
         /// Hauptmethode: Sammelt alle Daten für den gewählten Tag parallel
         /// (SQL pro Anlage + Logdatei pro Anlage) und liefert das fertige
         /// JSON-fähige Modell.
