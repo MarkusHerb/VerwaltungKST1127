@@ -28,7 +28,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
         public string VonDatum { get; set; }            // "01.06.2026"
         public string BisDatum { get; set; }            // "07.06.2026"
         public string ZeitraumLang { get; set; }        // "Mo 01.06. – So 07.06.2026 · 7 Tage"
-        public int AnzahlTage { get; set; }
+        public int AnzahlTage { get; set; }              // Kalendertage im Zeitraum
+        public int Produktionstage { get; set; }         // Tage mit tatsächlicher Produktion (> 0 Stk)
 
         public int GesamtStk { get; set; }
         public int AnzahlChargen { get; set; }
@@ -37,9 +38,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
         public int AnzahlRezepte { get; set; }          // verschiedene Rezepte im Zeitraum
         public double ProduktivStunden { get; set; }
         public double FehlerStunden { get; set; }
-        public double AuslastungProzent { get; set; }   // Ø über Anlagen × Tage (24h-Basis)
+        // Ø Auslastung auf Basis der realen Kapazität (16 h je aktiver Anlage und Tag).
+        public double AuslastungProzent { get; set; }
 
-        public double StkProTag { get; set; }
+        public double StkProTag { get; set; }            // Ø über Produktionstage (nicht über Null-Tage)
         public double ProduktivStundenProTag { get; set; }
 
         public List<TrendTag> Tage { get; set; } = new List<TrendTag>();
@@ -84,6 +86,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
         // Sicherheitsgrenze, damit ein versehentlich riesiger Zeitraum nicht den
         // SQL-Server flutet (z. B. mehrere Jahre). Knapp über 1 Jahr.
         private const int MaxTage = 400;
+
+        // Nominelle Tageskapazität je Anlage. Eine Anlage kann bei uns maximal
+        // ~16 h pro Tag produktiv laufen (Sonderfälle bis 18 h). Diese Kapazität
+        // bildet die Basis für die Auslastungs-Berechnung – nicht 24 h.
+        private const double NennstundenProAnlageTag = 16.0;
 
         /// <summary>
         /// Lädt alle Tage zwischen <paramref name="von"/> und <paramref name="bis"/>
@@ -134,14 +141,30 @@ namespace VerwaltungKST1127.Produktionsauswertung
             var anlagenAgg = new Dictionary<string, TrendAnlage>(StringComparer.OrdinalIgnoreCase);
             var artikelGesamt = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var rezeptGesamt = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            int anlagenProTag = 0;
+
+            // Summe der realen Tageskapazität (16 h je aktiver Anlage und Tag).
+            // Null-Tage (Wochenenden/Feiertage ohne Produktion) tragen 0 bei und
+            // verfälschen damit die Auslastung nicht.
+            double kapazitaetStunden = 0;
+            int produktionstage = 0;
 
             for (int i = 0; i < dayResults.Length; i++)
             {
                 var tag = tage[i];
                 var day = dayResults[i];
 
-                anlagenProTag = Math.Max(anlagenProTag, day.Anlagen.Count);
+                // An diesem Tag tatsächlich aktive Anlagen (produktiv gelaufen oder Stk).
+                int aktiveAnlagen = day.Anlagen
+                    .Count(a => a.ProduktivStunden > 0 || a.Stk > 0);
+                double tagKapazitaet = aktiveAnlagen * NennstundenProAnlageTag;
+                kapazitaetStunden += tagKapazitaet;
+
+                bool hatProduktion = day.GesamtStk > 0 || day.ProduktivStunden > 0;
+                if (hatProduktion) produktionstage++;
+
+                // Tages-Auslastung auf 16h-Basis der aktiven Anlagen.
+                double tagAusl = tagKapazitaet > 0
+                    ? Math.Round(day.ProduktivStunden / tagKapazitaet * 100.0, 1) : 0;
 
                 // Tages-Punkt für den Trend-Chart
                 result.Tage.Add(new TrendTag
@@ -153,7 +176,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                     Chargen = day.AnzahlChargen,
                     ProduktivStunden = day.ProduktivStunden,
                     FehlerStunden = day.FehlerStunden,
-                    AuslastungProzent = day.AuslastungProzent,
+                    AuslastungProzent = tagAusl,
                 });
 
                 // Anlagen-Ranking aufsummieren
@@ -199,17 +222,20 @@ namespace VerwaltungKST1127.Produktionsauswertung
             result.FehlerStunden = Math.Round(result.Tage.Sum(t => t.FehlerStunden), 1);
             result.AnzahlArtikel = artikelGesamt.Count;
             result.AnzahlRezepte = rezeptGesamt.Count;
+            result.Produktionstage = produktionstage;
 
-            result.StkProTag = result.AnzahlTage > 0
-                ? Math.Round((double)result.GesamtStk / result.AnzahlTage, 0) : 0;
-            result.ProduktivStundenProTag = result.AnzahlTage > 0
-                ? Math.Round(result.ProduktivStunden / result.AnzahlTage, 2) : 0;
+            // Ø nur über Tage mit echter Produktion – Null-Tage würden den
+            // Durchschnitt sonst künstlich nach unten ziehen.
+            result.StkProTag = produktionstage > 0
+                ? Math.Round((double)result.GesamtStk / produktionstage, 0) : 0;
+            result.ProduktivStundenProTag = produktionstage > 0
+                ? Math.Round(result.ProduktivStunden / produktionstage, 2) : 0;
 
-            // Ø Auslastung: produktive Stunden / (Anlagen × 24h × Tage)
-            if (anlagenProTag == 0) anlagenProTag = anlagenAgg.Count;
-            double moeglich = anlagenProTag * 24.0 * result.AnzahlTage;
-            result.AuslastungProzent = moeglich > 0
-                ? Math.Round(result.ProduktivStunden / moeglich * 100.0, 1) : 0;
+            // Ø Auslastung: produktive Stunden / reale Kapazität (16 h je aktiver
+            // Anlage und Tag). Sonderfälle bis 18 h können dabei kurzzeitig > 100 %
+            // ergeben – das ist gewollt und korrekt.
+            result.AuslastungProzent = kapazitaetStunden > 0
+                ? Math.Round(result.ProduktivStunden / kapazitaetStunden * 100.0, 1) : 0;
 
             // Anlagen-Ranking (absteigend nach Stk)
             result.Anlagen = anlagenAgg.Values
@@ -245,10 +271,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
             else
             {
                 result.ZeitraumLang = string.Format(
-                    "{0} – {1} · {2} Tage",
+                    "{0} – {1} · {2} Tage · {3} mit Produktion",
                     von.ToString("ddd dd.MM.yyyy", deDE),
                     bis.ToString("ddd dd.MM.yyyy", deDE),
-                    result.AnzahlTage);
+                    result.AnzahlTage, produktionstage);
             }
 
             return result;

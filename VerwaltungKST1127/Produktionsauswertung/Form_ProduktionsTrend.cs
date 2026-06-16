@@ -49,11 +49,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 lblStatus.Text = "Initialisiere WebView2…";
                 await InitWebViewAsync();
 
-                // Standard: gestriger Tag (Von = Bis = gestern). Der ValueChanged-
+                // Standard beim Öffnen: laufende Woche (Montag bis heute), damit
+                // sofort die aktuelle Wochenleistung sichtbar ist. Der ValueChanged-
                 // Handler ist durch _initialized=false noch deaktiviert.
-                DateTime gestern = DateTime.Today.AddDays(-1);
-                dtpVon.Value = gestern;
-                dtpBis.Value = gestern;
+                dtpVon.Value = WochenAnfang(DateTime.Today);
+                dtpBis.Value = DateTime.Today;
 
                 _initialized = true;
                 await LadeDashboardAsync();
@@ -134,10 +134,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
             dtpVon.Enabled = aktiv;
             dtpBis.Enabled = aktiv;
             btnGestern.Enabled = aktiv;
-            btnDieseWoche.Enabled = aktiv;
-            btnLetzteWoche.Enabled = aktiv;
-            btnDieserMonat.Enabled = aktiv;
-            btn30Tage.Enabled = aktiv;
+            btnHeute.Enabled = aktiv;
+            btnMinus2Wochen.Enabled = aktiv;
+            btnPlus2Wochen.Enabled = aktiv;
+            btnMinus30Tage.Enabled = aktiv;
+            btnPlus30Tage.Enabled = aktiv;
         }
 
         // Setzt beide Picker ohne Zwischen-Reload und lädt danach genau einmal.
@@ -164,28 +165,50 @@ namespace VerwaltungKST1127.Produktionsauswertung
             await SetzeZeitraumAsync(g, g);
         }
 
-        private async void btnDieseWoche_Click(object sender, EventArgs e)
+        private async void btnHeute_Click(object sender, EventArgs e)
         {
-            DateTime montag = WochenAnfang(DateTime.Today);
-            await SetzeZeitraumAsync(montag, DateTime.Today);
+            await SetzeZeitraumAsync(DateTime.Today, DateTime.Today);
         }
 
-        private async void btnLetzteWoche_Click(object sender, EventArgs e)
+        private async void btnMinus2Wochen_Click(object sender, EventArgs e)
         {
-            DateTime montagDiese = WochenAnfang(DateTime.Today);
-            DateTime montagLetzte = montagDiese.AddDays(-7);
-            await SetzeZeitraumAsync(montagLetzte, montagLetzte.AddDays(6));
+            await VerschiebeFensterAsync(-14);
         }
 
-        private async void btnDieserMonat_Click(object sender, EventArgs e)
+        private async void btnPlus2Wochen_Click(object sender, EventArgs e)
         {
-            DateTime ersterDesMonats = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-            await SetzeZeitraumAsync(ersterDesMonats, DateTime.Today);
+            await VerschiebeFensterAsync(14);
         }
 
-        private async void btn30Tage_Click(object sender, EventArgs e)
+        private async void btnMinus30Tage_Click(object sender, EventArgs e)
         {
-            await SetzeZeitraumAsync(DateTime.Today.AddDays(-29), DateTime.Today);
+            await VerschiebeFensterAsync(-30);
+        }
+
+        private async void btnPlus30Tage_Click(object sender, EventArgs e)
+        {
+            await VerschiebeFensterAsync(30);
+        }
+
+        // Verschiebt das aktuelle Von/Bis-Fenster um <tage> Tage und behält die
+        // Spannweite bei. So kann man bequem durch die Vergangenheit blättern.
+        // Vorwärts wird auf "heute" begrenzt – Daten in der Zukunft gibt es nicht.
+        private async Task VerschiebeFensterAsync(int tage)
+        {
+            DateTime von = dtpVon.Value.Date;
+            DateTime bis = dtpBis.Value.Date;
+            int spanne = (bis - von).Days;
+
+            von = von.AddDays(tage);
+            bis = bis.AddDays(tage);
+
+            if (bis > DateTime.Today)
+            {
+                bis = DateTime.Today;
+                von = bis.AddDays(-spanne);
+            }
+
+            await SetzeZeitraumAsync(von, bis);
         }
 
         // Montag der Woche, in der das Datum liegt.
