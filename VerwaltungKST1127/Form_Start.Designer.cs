@@ -80,6 +80,7 @@
             this.BtnRFIDAnischtWaschen = new System.Windows.Forms.Button();
             this.btnDatenExportTabellen = new System.Windows.Forms.Button();
             this.btnProduktionGestern = new System.Windows.Forms.Button();
+            this.btnProduktionsTrend = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -616,15 +617,31 @@
             this.btnProduktionGestern.Text = "Produktion gestern \r\nDashboard";
             this.btnProduktionGestern.UseVisualStyleBackColor = false;
             this.btnProduktionGestern.Click += new System.EventHandler(this.btnProduktionGestern_Click);
-            // 
+            //
+            // btnProduktionsTrend
+            //
+            this.btnProduktionsTrend.BackColor = System.Drawing.Color.Silver;
+            this.btnProduktionsTrend.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnProduktionsTrend.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnProduktionsTrend.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnProduktionsTrend.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(16)))), ((int)(((byte)(32)))));
+            this.btnProduktionsTrend.Location = new System.Drawing.Point(336, 571);
+            this.btnProduktionsTrend.Name = "btnProduktionsTrend";
+            this.btnProduktionsTrend.Size = new System.Drawing.Size(239, 66);
+            this.btnProduktionsTrend.TabIndex = 47;
+            this.btnProduktionsTrend.Text = "Produktions-Trend \r\nZeitraum-Cockpit";
+            this.btnProduktionsTrend.UseVisualStyleBackColor = false;
+            this.btnProduktionsTrend.Click += new System.EventHandler(this.btnProduktionsTrend_Click);
+            //
             // Form_Start
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.BackgroundImage = global::VerwaltungKST1127.Properties.Resources.StartHintergrund2;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.btnProduktionsTrend);
             this.Controls.Add(this.btnProduktionGestern);
             this.Controls.Add(this.btnDatenExportTabellen);
             this.Controls.Add(this.BtnRFIDAnischtWaschen);
@@ -727,6 +744,7 @@
         private System.Windows.Forms.Button BtnRFIDAnischtWaschen;
         private System.Windows.Forms.Button btnDatenExportTabellen;
         private System.Windows.Forms.Button btnProduktionGestern;
+        private System.Windows.Forms.Button btnProduktionsTrend;
     }
 }
 

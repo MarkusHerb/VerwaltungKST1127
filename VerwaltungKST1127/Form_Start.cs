@@ -647,6 +647,14 @@ namespace VerwaltungKST1127
             form.Show();
         }
 
+        // Öffnet das "Produktions-Trend"-Zeitraum-Cockpit (WebView2 + ECharts).
+        // Vorbelegt mit gestern; Von/Bis frei wählbar oder per Schnellwahl (Woche/Monat/30 Tage).
+        private void btnProduktionsTrend_Click(object sender, EventArgs e)
+        {
+            var form = new Form_ProduktionsTrend();
+            form.Show();
+        }
+
         private void BtnRFIDAnischtWaschen_Click(object sender, EventArgs e)
         {
             Form_RFIDAnsichtWaschanlagen form_RFIDWaschen = new Form_RFIDAnsichtWaschanlagen();

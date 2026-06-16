@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Produktions-Trend</title>
+<!--
+  Cockpit-Style Dashboard für die Zeitraum-Auswertung ("Produktions-Trend").
+  Funktioniert für einen einzelnen Tag genauso wie für Wochen/Monate oder
+  beliebig weit zurück.
+  Daten werden vom WinForms-Host injiziert: window.__TREND_DATA__
+  Visualisierung: Apache ECharts (CDN). Für Offline-Betrieb kann
+  echarts.min.js neben der EXE abgelegt und der Pfad unten ersetzt werden.
+-->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg-0: #111731;
+    --bg-1: #161d3a;
+    --bg-2: #202a5a;
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-stroke: rgba(255, 255, 255, 0.08);
+    --txt-0: #f3f6ff;
+    --txt-1: #aab1c8;
+    --txt-2: #6b7390;
+    --accent-1: #7ad7ff;   /* cyan */
+    --accent-2: #b283ff;   /* violet */
+    --accent-3: #ffd166;   /* yellow */
+    --accent-4: #06d6a0;   /* green */
+    --accent-5: #ef476f;   /* red */
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    /* Genau die Viewport-Hoehe fuellen, nichts scrollt. Das Dashboard
+       skaliert dadurch beim Wechsel zwischen Monitoren live mit. */
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(ellipse at top left, #1a2350 0%, #0b1020 60%) fixed;
+    color: var(--txt-0);
+    font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+  }
+
+  /* dezenter, animierter Sternen-Hintergrund */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.5), transparent 60%),
+      radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.35), transparent 60%),
+      radial-gradient(1px 1px at 40% 50%, rgba(255,255,255,0.3), transparent 60%),
+      radial-gradient(2px 2px at 90% 30%, rgba(122,215,255,0.25), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 60s linear infinite;
+  }
+  @keyframes drift { 0%{transform:translateY(0)} 100%{transform:translateY(-40px)} }
+
+  .layout {
+    position: relative; z-index: 1;
+    height: 100vh;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex: 0 0 auto;
+  }
+  .title {
+    font-size: clamp(20px, 1.7vw, 28px);
+    font-weight: 600; letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #fff 10%, var(--accent-1) 60%, var(--accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .subtitle { color: var(--txt-1); font-size: clamp(12px, 0.95vw, 14px); margin-top: 2px; }
+
+  /* KPI Cards mit Glassmorphism + Count-Up */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+  .kpi {
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 14px;
+    padding: 8px 14px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+  .kpi:hover { transform: translateY(-2px); }
+  .kpi::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    opacity: 0.85;
+  }
+  .kpi.green::before  { background: linear-gradient(90deg, var(--accent-4), var(--accent-1)); }
+  .kpi.yellow::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-5)); }
+  .kpi.red::before    { background: linear-gradient(90deg, var(--accent-5), var(--accent-2)); }
+
+  .kpi-label { color: var(--txt-2); font-size: clamp(10px, 0.7vw, 12px); text-transform: uppercase; letter-spacing: 1px; }
+  .kpi-value {
+    font-size: clamp(18px, 1.8vw, 30px);
+    font-weight: 600; margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .kpi-suffix { font-size: clamp(11px, 0.85vw, 14px); color: var(--txt-1); margin-left: 4px; font-weight: 400; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .panel {
+    background: var(--glass);
+    border: 1px solid var(--glass-stroke);
+    border-radius: 14px;
+    padding: 8px 12px 6px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .panel-title {
+    font-size: clamp(10px, 0.75vw, 12px); text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--txt-1); margin: 0 0 4px;
+    flex: 0 0 auto;
+  }
+  .panel-title span.muted { color: var(--txt-2); text-transform: none; letter-spacing: 0; font-size: clamp(10px, 0.78vw, 12px); }
+
+  /* Charts füllen das verbleibende Panel — keine festen Pixelhöhen,
+     damit das Layout auf jedem Monitor (1080 / 1440 / mehr) passt. */
+  .chart {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+  }
+  #trend, #ranking, #kalender, #rezepte { width: 100%; height: 100%; }
+
+  @media (max-width: 1500px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .empty {
+    display: flex; align-items: center; justify-content: center;
+    height: 100%;
+    color: var(--txt-2); font-style: italic; font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="header">
+    <div>
+      <div class="title">Produktions-Trend</div>
+      <div class="subtitle" id="hd-subtitle">Lade Daten...</div>
+    </div>
+    <div class="subtitle" id="hd-now"></div>
+  </div>
+
+  <!-- KPI-Karten -->
+  <div class="kpi-row">
+    <div class="kpi green">
+      <div class="kpi-label">Gesamt Stk</div>
+      <div class="kpi-value" id="kpi-stk">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Ø Stk / Tag</div>
+      <div class="kpi-value" id="kpi-stktag">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Chargen</div>
+      <div class="kpi-value" id="kpi-chargen">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Versch. Artikel · Rezepte</div>
+      <div class="kpi-value" style="display:flex;align-items:baseline;gap:12px;">
+        <span><span id="kpi-art">0</span><span class="kpi-suffix" style="margin-left:4px;">Art.</span></span>
+        <span style="color:var(--txt-2);">·</span>
+        <span><span id="kpi-rez">0</span><span class="kpi-suffix" style="margin-left:4px;">Rez.</span></span>
+      </div>
+    </div>
+    <div class="kpi yellow">
+      <div class="kpi-label">Produktivzeit</div>
+      <div class="kpi-value"><span id="kpi-prod">0</span><span class="kpi-suffix">h</span></div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Ø Auslastung</div>
+      <div class="kpi-value"><span id="kpi-ausl">0</span><span class="kpi-suffix">%</span></div>
+    </div>
+  </div>
+
+  <!-- Charts-Grid -->
+  <div class="grid">
+    <div class="panel" style="grid-column: 1 / 2;">
+      <div class="panel-title">Tages-Trend <span class="muted">— Stückzahl (Balken) · Produktivstunden (Linie) · gleitender Ø</span></div>
+      <div class="chart"><div id="trend"></div></div>
+    </div>
+    <div class="panel" style="grid-column: 2 / 3;">
+      <div class="panel-title">Anlagen-Ranking <span class="muted">— Σ Stück je Anlage im Zeitraum</span></div>
+      <div class="chart"><div id="ranking"></div></div>
+    </div>
+    <div class="panel" style="grid-column: 1 / 2;">
+      <div class="panel-title">Auslastungs-Kalender <span class="muted">— Ø Auslastung je Tag (%)</span></div>
+      <div class="chart"><div id="kalender"></div></div>
+    </div>
+    <div class="panel" style="grid-column: 2 / 3;">
+      <div class="panel-title">Rezept-Verteilung <span class="muted">— Anzahl Chargen (Top 18)</span></div>
+      <div class="chart" id="rezepte-wrap" style="overflow:auto;"><div id="rezepte"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ─── Daten-Bezug ───────────────────────────────────────────────────────────
+  const data = window.__TREND_DATA__ || null;
+
+  if (!data) {
+    document.querySelector('.layout').innerHTML =
+      '<div class="empty" style="height:80vh">Keine Daten verfügbar.</div>';
+    return;
+  }
+
+  document.getElementById('hd-subtitle').textContent = data.ZeitraumLang || '';
+  document.getElementById('hd-now').textContent =
+    'Stand: ' + new Date().toLocaleString('de-DE');
+
+  // ─── KPI Count-Up Animation ───────────────────────────────────────────────
+  function countUp(el, target, decimals) {
+    decimals = decimals || 0;
+    const dur = 1100;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = target * eased;
+      el.textContent = decimals > 0
+        ? val.toFixed(decimals).replace('.', ',')
+        : Math.round(val).toLocaleString('de-DE');
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  countUp(document.getElementById('kpi-stk'),     data.GesamtStk || 0);
+  countUp(document.getElementById('kpi-stktag'),  data.StkProTag || 0);
+  countUp(document.getElementById('kpi-chargen'), data.AnzahlChargen || 0);
+  countUp(document.getElementById('kpi-art'),     data.AnzahlArtikel || 0);
+  countUp(document.getElementById('kpi-rez'),     data.AnzahlRezepte || 0);
+  countUp(document.getElementById('kpi-prod'),    data.ProduktivStunden || 0, 1);
+  countUp(document.getElementById('kpi-ausl'),    data.AuslastungProzent || 0, 1);
+
+  // ─── Resize-Helper ────────────────────────────────────────────────────────
+  const chartInstances = [];
+  function bindResize(chart, el) {
+    chartInstances.push(chart);
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => {
+        requestAnimationFrame(() => chart.resize());
+      });
+      ro.observe(el);
+    }
+  }
+  window.addEventListener('resize', () => {
+    chartInstances.forEach(c => c.resize());
+  });
+
+  // ─── Globale Chart-Optionen ───────────────────────────────────────────────
+  const textColor = '#aab1c8';
+  const axisLine  = 'rgba(255,255,255,0.08)';
+  const splitLine = 'rgba(255,255,255,0.05)';
+
+  const baseTooltip = {
+    backgroundColor: 'rgba(17, 23, 46, 0.95)',
+    borderColor: 'rgba(122,215,255,0.4)',
+    borderWidth: 1,
+    textStyle: { color: '#f3f6ff', fontSize: 12 },
+    extraCssText: 'backdrop-filter: blur(8px); border-radius: 8px;',
+  };
+
+  const fmt = n => Number(n || 0).toLocaleString('de-DE');
+
+  // ─── 1) Tages-Trend: Stk (Balken) + Produktivstunden (Linie) + gleit. Ø ────
+  (function renderTrend() {
+    const tage = data.Tage || [];
+    const container = document.getElementById('trend');
+    if (tage.length === 0) {
+      container.innerHTML = '<div class="empty">Keine Tagesdaten</div>';
+      return;
+    }
+
+    const labels = tage.map(t => t.DatumKurz);
+    const stk = tage.map(t => t.Stk);
+    const prod = tage.map(t => Number((t.ProduktivStunden || 0).toFixed(2)));
+
+    // Gleitender Durchschnitt der Stückzahl (Fenster 7 bzw. kleiner bei
+    // kurzen Zeiträumen). Bei einem einzelnen Tag entfällt die Linie.
+    const win = Math.min(7, Math.max(2, Math.round(tage.length / 4)));
+    let avg = null;
+    if (tage.length >= 3) {
+      avg = stk.map((_, i) => {
+        const from = Math.max(0, i - win + 1);
+        const slice = stk.slice(from, i + 1);
+        const m = slice.reduce((a, b) => a + b, 0) / slice.length;
+        return Math.round(m);
+      });
+    }
+
+    const series = [
+      {
+        name: 'Stück', type: 'bar', yAxisIndex: 0,
+        data: stk,
+        itemStyle: {
+          borderRadius: [6, 6, 0, 0],
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(122,215,255,0.95)' },
+            { offset: 1, color: 'rgba(178,131,255,0.35)' },
+          ]),
+        },
+        barMaxWidth: 46,
+      },
+      {
+        name: 'Produktiv (h)', type: 'line', yAxisIndex: 1,
+        data: prod, smooth: true, symbol: 'circle', symbolSize: 6,
+        lineStyle: { color: '#06d6a0', width: 2.5 },
+        itemStyle: { color: '#06d6a0' },
+      },
+    ];
+    if (avg) {
+      series.push({
+        name: 'Ø Stück (gleitend)', type: 'line', yAxisIndex: 0,
+        data: avg, smooth: true, symbol: 'none',
+        lineStyle: { color: '#ffd166', width: 2, type: 'dashed' },
+      });
+    }
+
+    const chart = echarts.init(container, null, { renderer: 'canvas' });
+    chart.setOption({
+      tooltip: { ...baseTooltip, trigger: 'axis', axisPointer: { type: 'shadow' } },
+      legend: {
+        top: 0, right: 4, textStyle: { color: textColor, fontSize: 11 },
+        itemWidth: 14, itemHeight: 8,
+      },
+      grid: { top: 28, left: 8, right: 8, bottom: 24, containLabel: true },
+      dataZoom: tage.length > 31 ? [{ type: 'inside' }, {
+        type: 'slider', height: 14, bottom: 4,
+        borderColor: 'transparent',
+        fillerColor: 'rgba(122,215,255,0.18)',
+        handleStyle: { color: '#7ad7ff' },
+        textStyle: { color: textColor, fontSize: 9 },
+      }] : undefined,
+      xAxis: {
+        type: 'category', data: labels,
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: {
+          color: textColor, fontSize: 10,
+          interval: tage.length > 24 ? 'auto' : 0,
+          rotate: tage.length > 10 ? 40 : 0,
+        },
+      },
+      yAxis: [
+        {
+          type: 'value', name: 'Stück', nameTextStyle: { color: textColor, fontSize: 10 },
+          axisLabel: { color: textColor, fontSize: 10 },
+          splitLine: { lineStyle: { color: splitLine } },
+        },
+        {
+          type: 'value', name: 'h', nameTextStyle: { color: textColor, fontSize: 10 },
+          axisLabel: { color: textColor, fontSize: 10 },
+          splitLine: { show: false },
+        },
+      ],
+      series: series,
+      animationDuration: 900,
+    });
+    bindResize(chart, container);
+  })();
+
+  // ─── 2) Anlagen-Ranking (horizontale Balken) ──────────────────────────────
+  (function renderRanking() {
+    const anl = (data.Anlagen || []).filter(a => a.Stk > 0)
+      .slice().sort((a, b) => a.Stk - b.Stk);  // aufsteigend: größte oben
+    const container = document.getElementById('ranking');
+    if (anl.length === 0) {
+      container.innerHTML = '<div class="empty">Keine Anlagendaten</div>';
+      return;
+    }
+
+    const chart = echarts.init(container, null, { renderer: 'canvas' });
+    chart.setOption({
+      tooltip: {
+        ...baseTooltip,
+        formatter: p => {
+          const a = anl[p.dataIndex];
+          return `<b>${a.Name}</b><br/>
+            <span style="color:#7ad7ff">${fmt(a.Stk)} Stk</span><br/>
+            <span style="color:#6b7390">${fmt(a.Chargen)} Chargen · ${
+              (a.ProduktivStunden || 0).toFixed(1).replace('.', ',')} h produktiv</span>`;
+        },
+      },
+      grid: { top: 8, left: 8, right: 48, bottom: 8, containLabel: true },
+      xAxis: {
+        type: 'value',
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 10, formatter: v => fmt(v) },
+        splitLine: { lineStyle: { color: splitLine } },
+      },
+      yAxis: {
+        type: 'category', data: anl.map(a => a.Name),
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 12, fontWeight: 600 },
+      },
+      series: [{
+        type: 'bar',
+        data: anl.map(a => a.Stk),
+        itemStyle: {
+          borderRadius: [0, 6, 6, 0],
+          color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+            { offset: 0, color: 'rgba(6,214,160,0.35)' },
+            { offset: 1, color: 'rgba(122,215,255,0.95)' },
+          ]),
+        },
+        label: { show: true, position: 'right', color: '#f3f6ff', fontSize: 11,
+                 formatter: p => fmt(p.value) },
+        animationDuration: 1000,
+        animationDelay: idx => idx * 60,
+      }]
+    });
+    bindResize(chart, container);
+  })();
+
+  // ─── 3) Auslastungs-Kalender (Kalender-Heatmap) ────────────────────────────
+  (function renderKalender() {
+    const tage = data.Tage || [];
+    const container = document.getElementById('kalender');
+    if (tage.length === 0) {
+      container.innerHTML = '<div class="empty">Keine Tagesdaten</div>';
+      return;
+    }
+
+    const werte = tage.map(t => [t.Datum, Number((t.AuslastungProzent || 0).toFixed(1))]);
+    // Einzeltag: ganzen Monat zeigen (Tag im Kontext, robuster in ECharts).
+    const range = tage.length === 1
+      ? tage[0].Datum.substring(0, 7)
+      : [tage[0].Datum, tage[tage.length - 1].Datum];
+    const maxAusl = Math.max(10, ...werte.map(w => w[1]));
+
+    // Stk je Tag für den Tooltip
+    const stkByDate = {};
+    tage.forEach(t => { stkByDate[t.Datum] = t.Stk; });
+
+    const chart = echarts.init(container, null, { renderer: 'canvas' });
+    chart.setOption({
+      tooltip: {
+        ...baseTooltip,
+        formatter: p => {
+          const d = p.value[0];
+          const dt = new Date(d + 'T00:00:00');
+          const lbl = dt.toLocaleDateString('de-DE',
+            { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
+          return `<b>${lbl}</b><br/>
+            <span style="color:#7ad7ff">${fmt(stkByDate[d])} Stk</span><br/>
+            <span style="color:#06d6a0">${p.value[1].toFixed(1).replace('.', ',')} % Auslastung</span>`;
+        },
+      },
+      visualMap: {
+        min: 0, max: maxAusl,
+        orient: 'horizontal', left: 'center', bottom: 2,
+        itemWidth: 12, itemHeight: 90,
+        textStyle: { color: textColor, fontSize: 10 },
+        inRange: { color: ['#202a5a', '#7ad7ff', '#06d6a0', '#ffd166', '#ef476f'] },
+        text: ['hoch', 'niedrig'],
+      },
+      calendar: {
+        top: 30, bottom: 44, left: 36, right: 12,
+        cellSize: ['auto', 'auto'],
+        range: range,
+        orient: 'horizontal',
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.18)' } },
+        itemStyle: {
+          color: 'rgba(255,255,255,0.02)',
+          borderColor: 'rgba(11,16,32,0.9)', borderWidth: 2,
+        },
+        yearLabel: { show: false },
+        monthLabel: { color: textColor, fontSize: 11, nameMap: 'de' },
+        dayLabel: {
+          color: textColor, fontSize: 10, firstDay: 1,
+          nameMap: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+        },
+      },
+      series: [{
+        type: 'heatmap', coordinateSystem: 'calendar',
+        data: werte,
+        label: { show: false },
+        animationDuration: 900,
+      }]
+    });
+    bindResize(chart, container);
+  })();
+
+  // ─── 4) Rezept-Verteilung (horizontale Balken, Top 18) ─────────────────────
+  (function renderRezepte() {
+    const alle = (data.Rezepte || []).slice();
+    const total = alle.length;
+    const rez = alle
+      .sort((a, b) => b.Anzahl - a.Anzahl)   // größte zuerst …
+      .slice(0, 18)
+      .sort((a, b) => a.Anzahl - b.Anzahl);  // … dann aufsteigend für die y-Achse
+    const container = document.getElementById('rezepte');
+    const wrap = document.getElementById('rezepte-wrap');
+    if (rez.length === 0) {
+      container.innerHTML = '<div class="empty">Keine Rezeptdaten</div>';
+      return;
+    }
+
+    // Mindesthöhe pro Eintrag, damit Labels lesbar bleiben; ist mehr Platz
+    // verfügbar, füllt der Chart das Panel.
+    const minH = rez.length * 26;
+    const wrapH = wrap ? wrap.clientHeight : minH;
+    container.style.height = Math.max(minH, wrapH) + 'px';
+
+    const chart = echarts.init(container, null, { renderer: 'canvas' });
+    chart.setOption({
+      tooltip: {
+        ...baseTooltip,
+        formatter: p => `<b>${p.name}</b><br/><span style="color:#7ad7ff">${fmt(p.value)} Chargen</span>`,
+      },
+      grid: { top: 8, left: 8, right: 40, bottom: 16, containLabel: true },
+      xAxis: {
+        type: 'value',
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 10 },
+        splitLine: { lineStyle: { color: splitLine } },
+      },
+      yAxis: {
+        type: 'category', data: rez.map(r => r.Name),
+        axisLine: { lineStyle: { color: axisLine } },
+        axisLabel: { color: textColor, fontSize: 11 },
+      },
+      series: [{
+        type: 'bar',
+        data: rez.map(r => r.Anzahl),
+        itemStyle: {
+          borderRadius: [0, 6, 6, 0],
+          color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+            { offset: 0, color: 'rgba(122,215,255,0.4)' },
+            { offset: 1, color: 'rgba(178,131,255,0.95)' },
+          ]),
+        },
+        label: { show: true, position: 'right', color: '#f3f6ff', fontSize: 11 },
+        animationDuration: 1100,
+        animationDelay: idx => idx * 50,
+      }]
+    });
+    if (typeof ResizeObserver !== 'undefined' && wrap) {
+      const ro = new ResizeObserver(() => {
+        requestAnimationFrame(() => {
+          container.style.height = Math.max(minH, wrap.clientHeight) + 'px';
+          chart.resize();
+        });
+      });
+      ro.observe(wrap);
+    }
+    chartInstances.push(chart);
+
+    // Hinweis, wenn mehr Rezepte existieren als angezeigt werden.
+    if (total > rez.length) {
+      const t = wrap.closest('.panel').querySelector('.panel-title .muted');
+      if (t) t.textContent = `— Anzahl Chargen (Top 18 von ${total})`;
+    }
+  })();
+
+  // Nach dem ersten Layout alle Charts einmal auf die tatsächliche Container-
+  // Größe anpassen – die responsiven Höhen stehen dann endgültig fest.
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 60);
+})();
+</script>
+</body>
+</html>
