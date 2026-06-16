@@ -461,7 +461,7 @@
           borderRadius: 3,
         }
       }));
-
+      // Die Blöcke (Produktivzeit/Fehlerzeit) werden als Custom Series mit Rechtecken
     function renderItem(params, api) {
       const categoryIndex = api.value(0);
       const start = api.coord([api.value(1), categoryIndex]);
@@ -480,6 +480,7 @@
       };
     }
 
+    // Hilfsfunktion: Millisekunden in "hh:mm:ss" umwandeln, damit die Tooltip-Zeiten lesbar sind.
     function fmtMs(ms) {
       const total = Math.round(ms / 1000);
       const hh = String(Math.floor(total / 3600)).padStart(2, '0');
@@ -500,7 +501,13 @@
             <span style="color:#7ad7ff">${p.name}</span>`;
         }
       },
-      grid: { top: 22, left: 132, right: 24, bottom: 40 },
+        grid: { top: 22, left: 132, right: 24, bottom: 60 },
+        // HIER EINFÜGEN: Das neue dataZoom-Array
+        dataZoom: [
+            { type: 'inside', filterMode: 'weakFilter' },
+            { type: 'slider', height: 12, bottom: 8 }
+        ],
+        // ENDE EINFÜGEN
       xAxis: {
         type: 'value', min: 0, max: 24 * 3600 * 1000,
         interval: 2 * 3600 * 1000,

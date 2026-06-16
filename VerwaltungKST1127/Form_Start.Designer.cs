@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -206,11 +206,11 @@
             this.LblQualitaet.AutoSize = true;
             this.LblQualitaet.BackColor = System.Drawing.Color.Transparent;
             this.LblQualitaet.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblQualitaet.Location = new System.Drawing.Point(405, 166);
+            this.LblQualitaet.Location = new System.Drawing.Point(341, 166);
             this.LblQualitaet.Name = "LblQualitaet";
-            this.LblQualitaet.Size = new System.Drawing.Size(95, 26);
+            this.LblQualitaet.Size = new System.Drawing.Size(227, 26);
             this.LblQualitaet.TabIndex = 12;
-            this.LblQualitaet.Text = "Qualität";
+            this.LblQualitaet.Text = "Qualität/Auswertung";
             // 
             // panel4
             // 
@@ -380,17 +380,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.Transparent;
             this.chartPerformance.BorderlineColor = System.Drawing.Color.Transparent;
-            chartArea1.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea1);
-            legend1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend1.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend1);
+            chartArea3.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea3);
+            legend3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend3.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend3);
             this.chartPerformance.Location = new System.Drawing.Point(309, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartPerformance.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.chartPerformance.Series.Add(series3);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";
@@ -491,7 +491,7 @@
             this.BtnGlasWaschDaten.Cursor = System.Windows.Forms.Cursors.Hand;
             this.BtnGlasWaschDaten.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.BtnGlasWaschDaten.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnGlasWaschDaten.Location = new System.Drawing.Point(336, 283);
+            this.BtnGlasWaschDaten.Location = new System.Drawing.Point(36, 499);
             this.BtnGlasWaschDaten.Name = "BtnGlasWaschDaten";
             this.BtnGlasWaschDaten.Size = new System.Drawing.Size(239, 66);
             this.BtnGlasWaschDaten.TabIndex = 35;
@@ -610,31 +610,31 @@
             this.btnProduktionGestern.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnProduktionGestern.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnProduktionGestern.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(16)))), ((int)(((byte)(32)))));
-            this.btnProduktionGestern.Location = new System.Drawing.Point(36, 571);
+            this.btnProduktionGestern.Location = new System.Drawing.Point(336, 571);
             this.btnProduktionGestern.Name = "btnProduktionGestern";
             this.btnProduktionGestern.Size = new System.Drawing.Size(239, 66);
             this.btnProduktionGestern.TabIndex = 46;
-            this.btnProduktionGestern.Text = "Produktion gestern \r\nDashboard";
+            this.btnProduktionGestern.Text = "Anlagenauswertung\r\nEinzelner Tag";
             this.btnProduktionGestern.UseVisualStyleBackColor = false;
             this.btnProduktionGestern.Click += new System.EventHandler(this.btnProduktionGestern_Click);
-            //
+            // 
             // btnProduktionsTrend
-            //
+            // 
             this.btnProduktionsTrend.BackColor = System.Drawing.Color.Silver;
             this.btnProduktionsTrend.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnProduktionsTrend.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnProduktionsTrend.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnProduktionsTrend.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(11)))), ((int)(((byte)(16)))), ((int)(((byte)(32)))));
-            this.btnProduktionsTrend.Location = new System.Drawing.Point(336, 571);
+            this.btnProduktionsTrend.Location = new System.Drawing.Point(336, 499);
             this.btnProduktionsTrend.Name = "btnProduktionsTrend";
             this.btnProduktionsTrend.Size = new System.Drawing.Size(239, 66);
             this.btnProduktionsTrend.TabIndex = 47;
-            this.btnProduktionsTrend.Text = "Produktions-Trend \r\nZeitraum-Cockpit";
+            this.btnProduktionsTrend.Text = "Anlagenauswertung\r\nZeitrum";
             this.btnProduktionsTrend.UseVisualStyleBackColor = false;
             this.btnProduktionsTrend.Click += new System.EventHandler(this.btnProduktionsTrend_Click);
-            //
+            // 
             // Form_Start
-            //
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
