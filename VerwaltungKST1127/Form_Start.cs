@@ -661,6 +661,14 @@ namespace VerwaltungKST1127
             form_RFIDWaschen.Show();
         }
 
+        // Öffnet das "Waschanlagen-Dashboard" (WebView2 + ECharts) als Live-Tagesansicht
+        // der Anlagen Elma Aceton / UCM497. Vorbelegt mit heute; Auto-Aktualisierung optional.
+        private void btnWaschanlagenDashboard_Click(object sender, EventArgs e)
+        {
+            var form = new Form_AnsichtWaschanlagenDashboard();
+            form.Show();
+        }
+
         private void btnDatenExportTabellen_Click(object sender, EventArgs e)
         {
             Form_DatenExportExcel form_DatenExportExcel = new Form_DatenExportExcel();

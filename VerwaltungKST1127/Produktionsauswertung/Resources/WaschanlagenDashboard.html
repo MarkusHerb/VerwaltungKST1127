@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Waschanlagen-Dashboard</title>
+<!--
+  Live-Dashboard für die Glas-Waschanlagen (Elma Aceton / UCM497).
+  Daten werden vom WinForms-Host injiziert: window.__WASCH_DATA__
+  (siehe WaschanlagenDashboardDataService.cs).
+  Visualisierung: Apache ECharts (CDN, identisch zum TrendDashboard.html).
+-->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg-0: #111731;
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-stroke: rgba(255, 255, 255, 0.08);
+    --txt-0: #f3f6ff;
+    --txt-1: #aab1c8;
+    --txt-2: #6b7390;
+    --accent-1: #7ad7ff;   /* cyan   */
+    --accent-2: #b283ff;   /* violet */
+    --accent-3: #ffd166;   /* gelb   */
+    --accent-4: #06d6a0;   /* grün   */
+    --accent-5: #ef476f;   /* rot    */
+    --idle: #6b7390;       /* inaktiv (grau) */
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; height: 100%; overflow: hidden;
+    background: radial-gradient(ellipse at top left, #1a2350 0%, #0b1020 60%) fixed;
+    color: var(--txt-0);
+    font-family: "Segoe UI", "Inter", system-ui, sans-serif;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.5), transparent 60%),
+      radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.35), transparent 60%),
+      radial-gradient(1px 1px at 40% 50%, rgba(255,255,255,0.3), transparent 60%),
+      radial-gradient(2px 2px at 90% 30%, rgba(122,215,255,0.25), transparent 60%);
+    animation: drift 60s linear infinite;
+  }
+  @keyframes drift { 0%{transform:translateY(0)} 100%{transform:translateY(-40px)} }
+
+  .layout { position: relative; z-index: 1; height: 100vh; padding: 12px 16px;
+            display: flex; flex-direction: column; gap: 10px; }
+
+  .header { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; }
+  .title {
+    font-size: clamp(20px, 1.7vw, 28px); font-weight: 600; letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #fff 10%, var(--accent-1) 60%, var(--accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .subtitle { color: var(--txt-1); font-size: clamp(12px, 0.95vw, 14px); margin-top: 2px; }
+
+  /* ---- KPI-Karten ---- */
+  .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; flex: 0 0 auto; }
+  .kpi { background: var(--glass); border: 1px solid var(--glass-stroke); border-radius: 14px;
+         padding: 8px 14px; backdrop-filter: blur(10px); position: relative; overflow: hidden;
+         transition: transform 0.2s ease; }
+  .kpi:hover { transform: translateY(-2px); }
+  .kpi::before { content:""; position:absolute; top:0; left:0; right:0; height:3px;
+                 background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); opacity:0.85; }
+  .kpi.green::before  { background: linear-gradient(90deg, var(--accent-4), var(--accent-1)); }
+  .kpi-label { color: var(--txt-2); font-size: clamp(10px, 0.7vw, 12px); text-transform: uppercase; letter-spacing: 1px; }
+  .kpi-value { font-size: clamp(18px, 1.8vw, 30px); font-weight: 600; margin-top: 2px;
+               font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .kpi-suffix { font-size: clamp(11px, 0.85vw, 14px); color: var(--txt-1); margin-left: 4px; font-weight: 400; }
+
+  /* ---- Hauptraster ---- */
+  .grid { display: grid; grid-template-columns: 1.15fr 1fr 1fr;
+          grid-template-rows: 1.05fr 1fr; gap: 10px; flex: 1 1 auto; min-height: 0; }
+  .panel { background: var(--glass); border: 1px solid var(--glass-stroke); border-radius: 14px;
+           padding: 8px 12px 6px; backdrop-filter: blur(10px);
+           display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .panel-title { font-size: clamp(10px, 0.75vw, 12px); text-transform: uppercase; letter-spacing: 1.2px;
+                 color: var(--txt-1); margin: 0 0 6px; flex: 0 0 auto; display:flex; justify-content:space-between; }
+  .panel-title span.muted { color: var(--txt-2); text-transform: none; letter-spacing: 0; }
+  .chart { flex: 1 1 auto; min-height: 0; width: 100%; }
+
+  .area-status   { grid-column: 1 / 4; grid-row: 1; }
+  .area-heatmap  { grid-column: 1 / 2; grid-row: 2; }
+  .area-donut    { grid-column: 2 / 3; grid-row: 2; }
+  .area-ticker   { grid-column: 3 / 4; grid-row: 2; }
+
+  /* ---- Anlagen-Statuskacheln (2 Anlagen) ---- */
+  .anlagen { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; flex:1 1 auto; min-height:0; }
+  .anlage { position:relative; border-radius:12px; padding:12px 16px; overflow:hidden;
+            background: rgba(255,255,255,0.03); border:1px solid var(--glass-stroke);
+            display:grid; grid-template-columns: 1fr 150px; align-items:center; gap:10px; }
+  .anlage .info { display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .anlage .name { font-size:18px; font-weight:600; display:flex; align-items:center; gap:9px; }
+  .dot { width:12px; height:12px; border-radius:50%; box-shadow:0 0 10px currentColor; flex:0 0 auto; }
+  .anlage .meta { color: var(--txt-1); font-size:13px; line-height:1.6; }
+  .anlage .meta b { color: var(--txt-0); font-weight:600; }
+  .anlage .stats { display:flex; gap:18px; margin-top:2px; }
+  .anlage .stat .v { font-size:22px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .anlage .stat .l { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--txt-2); }
+  .gauge { height:120px; width:100%; }
+  .stripe { position:absolute; left:0; top:0; bottom:0; width:4px; }
+
+  /* ---- Live-Ticker (RFID-Tragerl-Fluss) ---- */
+  .ticker { flex:1 1 auto; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:5px; }
+  .trow { display:grid; grid-template-columns: 50px 1fr auto; gap:8px; align-items:center;
+          padding:6px 8px; border-radius:9px; background:rgba(255,255,255,0.03);
+          border:1px solid var(--glass-stroke); animation: slidein 0.4s ease; }
+  @keyframes slidein { from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:none;} }
+  .trow .time { color:var(--txt-2); font-size:12px; font-variant-numeric:tabular-nums; }
+  .trow .art  { font-weight:600; font-size:14px; font-variant-numeric:tabular-nums; }
+  .trow .sub  { color:var(--txt-1); font-size:11px; }
+  .trow .tag  { font-size:11px; padding:2px 8px; border-radius:999px; white-space:nowrap;
+                background:rgba(122,215,255,0.12); color:var(--accent-1); border:1px solid rgba(122,215,255,0.25); }
+  .legend { display:flex; gap:14px; font-size:11px; color:var(--txt-1); flex:0 0 auto; margin-top:4px; }
+  .legend span { display:inline-flex; align-items:center; gap:5px; }
+  .legend i { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .empty { display:flex; align-items:center; justify-content:center; height:100%;
+           color:var(--txt-2); font-style:italic; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <div class="header">
+    <div>
+      <div class="title">Waschanlagen · Live-Dashboard</div>
+      <div class="subtitle" id="hd-subtitle">Lade Daten…</div>
+    </div>
+    <div class="subtitle" id="hd-now"></div>
+  </div>
+
+  <!-- KPI-Karten -->
+  <div class="kpi-row">
+    <div class="kpi green">
+      <div class="kpi-label">Tragerl</div>
+      <div class="kpi-value" id="kpi-tragerl">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Stück</div>
+      <div class="kpi-value" id="kpi-stk">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Aktive Anlagen</div>
+      <div class="kpi-value"><span id="kpi-anlagen">0</span><span class="kpi-suffix" id="kpi-anlagen-max">/ 2</span></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Versch. Artikel</div>
+      <div class="kpi-value" id="kpi-artikel">0</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Letzte Buchung</div>
+      <div class="kpi-value" id="kpi-letzte">—</div>
+    </div>
+  </div>
+
+  <!-- Hauptraster -->
+  <div class="grid">
+    <div class="panel area-status">
+      <div class="panel-title">Anlagen-Status <span class="muted">Auslastungs-Anteil · letzte Buchung</span></div>
+      <div class="anlagen" id="anlagen"></div>
+    </div>
+
+    <div class="panel area-heatmap">
+      <div class="panel-title">Tragerl nach Stunde <span class="muted" id="hm-tag"></span></div>
+      <div class="chart" id="heatmap"></div>
+    </div>
+
+    <div class="panel area-donut">
+      <div class="panel-title">Artikel <span class="muted">Anteil Tragerl</span></div>
+      <div class="chart" id="donut"></div>
+    </div>
+
+    <div class="panel area-ticker">
+      <div class="panel-title">RFID-Tragerl-Fluss <span class="muted">zuletzt gebucht</span></div>
+      <div class="ticker" id="ticker"></div>
+      <div class="legend">
+        <span><i style="background:var(--accent-4)"></i>läuft</span>
+        <span><i style="background:var(--idle)"></i>inaktiv</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const C = getComputedStyle(document.documentElement);
+const col = n => C.getPropertyValue(n).trim();
+const statusColor = s => s === "run" ? col("--accent-4") : col("--idle");
+const statusText  = s => s === "run" ? "läuft" : "inaktiv";
+
+// Uhr in der Kopfzeile
+function tick(){
+  const d = new Date();
+  document.getElementById("hd-now").textContent = d.toLocaleTimeString("de-DE");
+}
+tick(); setInterval(tick, 1000);
+
+function fmt(n){ return (n||0).toLocaleString("de-DE"); }
+
+function render(D){
+  // Kopf
+  document.getElementById("hd-subtitle").textContent =
+    D.DatumLang + (D.Stand ? "  ·  " + D.Stand : "");
+  document.getElementById("hm-tag").textContent = D.IstHeute ? "heute" : "";
+
+  // KPIs
+  document.getElementById("kpi-tragerl").textContent = fmt(D.TragerlGesamt);
+  document.getElementById("kpi-stk").textContent      = fmt(D.StkGesamt);
+  document.getElementById("kpi-anlagen").textContent  = D.AktiveAnlagen;
+  document.getElementById("kpi-anlagen-max").textContent = "/ " + D.AnzahlAnlagen;
+  document.getElementById("kpi-artikel").textContent  = fmt(D.AnzahlArtikel);
+  document.getElementById("kpi-letzte").textContent   = D.LetzteBuchung || "—";
+
+  renderAnlagen(D.Anlagen || []);
+  renderHeatmap(D);
+  renderDonut(D.Artikel || []);
+  renderFluss(D.Fluss || []);
+}
+
+// ---- Anlagen-Kacheln + Gauges ----
+let gauges = [];
+function renderAnlagen(anlagen){
+  const wrap = document.getElementById("anlagen");
+  gauges.forEach(g => g.dispose()); gauges = [];
+  wrap.innerHTML = "";
+
+  anlagen.forEach((a, i) => {
+    const el = document.createElement("div");
+    el.className = "anlage";
+    el.innerHTML = `
+      <div class="stripe" style="background:${statusColor(a.Status)}"></div>
+      <div class="info">
+        <div class="name"><span class="dot" style="color:${statusColor(a.Status)}"></span>${a.Name}</div>
+        <div class="stats">
+          <div class="stat"><div class="v">${fmt(a.Tragerl)}</div><div class="l">Tragerl</div></div>
+          <div class="stat"><div class="v">${fmt(a.Stk)}</div><div class="l">Stück</div></div>
+        </div>
+        <div class="meta">
+          Status: <b>${statusText(a.Status)}</b><br>
+          Letzte Buchung: <b>${a.LetzteBuchung}</b> · Art.: <b>${a.LetzterArtikel}</b>
+        </div>
+      </div>
+      <div class="gauge" id="g${i}"></div>`;
+    wrap.appendChild(el);
+
+    const g = echarts.init(document.getElementById("g"+i));
+    g.setOption({
+      series: [{
+        type:"gauge", startAngle:210, endAngle:-30, min:0, max:100,
+        radius:"95%", center:["50%","60%"],
+        progress:{ show:true, width:10, itemStyle:{ color: statusColor(a.Status) } },
+        axisLine:{ lineStyle:{ width:10, color:[[1, "rgba(255,255,255,0.08)"]] } },
+        axisTick:{ show:false }, splitLine:{ show:false }, axisLabel:{ show:false },
+        pointer:{ show:false }, anchor:{ show:false }, title:{ show:false },
+        detail:{ valueAnimation:true, offsetCenter:[0,0], fontSize:22, fontWeight:600,
+                 color: col("--txt-0"), formatter:"{value}%" },
+        data:[{ value:a.AnteilProzent }]
+      }]
+    });
+    gauges.push(g);
+    window.addEventListener("resize", ()=>g.resize());
+  });
+}
+
+// ---- Heatmap Anlage x Stunde ----
+let hm = null;
+function renderHeatmap(D){
+  if (!hm) hm = echarts.init(document.getElementById("heatmap"));
+  const maxVal = Math.max(1, ...(D.Heat||[]).map(h => h[2]));
+  hm.setOption({
+    tooltip:{ position:"top", formatter: p =>
+      `${(D.Anlagen[p.value[1]]||{}).Name||""} · ${D.Stunden[p.value[0]]}:00<br><b>${p.value[2]}</b> Tragerl` },
+    grid:{ left:88, right:12, top:8, bottom:24 },
+    xAxis:{ type:"category", data:D.Stunden, axisLabel:{ color:col("--txt-2"), fontSize:9 },
+            axisLine:{ lineStyle:{ color:"rgba(255,255,255,0.1)" } }, splitArea:{show:false} },
+    yAxis:{ type:"category", data:(D.Anlagen||[]).map(a=>a.Name),
+            axisLabel:{ color:col("--txt-1"), fontSize:11 },
+            axisLine:{ lineStyle:{ color:"rgba(255,255,255,0.1)" } } },
+    visualMap:{ min:0, max:maxVal, show:false,
+                inRange:{ color:["#152044", col("--accent-2"), col("--accent-1"), col("--accent-4")] } },
+    series:[{ type:"heatmap", data:D.Heat,
+              label:{ show:true, color:"#0b1020", fontSize:9,
+                      formatter: p => p.value[2] > 0 ? p.value[2] : "" },
+              itemStyle:{ borderColor:"#0b1020", borderWidth:2, borderRadius:3 },
+              emphasis:{ itemStyle:{ shadowBlur:8, shadowColor:"rgba(122,215,255,0.5)" } } }]
+  });
+  window.addEventListener("resize", ()=>hm.resize());
+}
+
+// ---- Artikel-Donut ----
+let dn = null;
+function renderDonut(artikel){
+  if (!dn) dn = echarts.init(document.getElementById("donut"));
+  const palette = [col("--accent-1"), col("--accent-2"), col("--accent-4"), col("--accent-3"),
+                   col("--accent-5"), "#5b8def", "#ff9f7f", "#9b8cff", col("--idle")];
+  dn.setOption({
+    tooltip:{ trigger:"item", formatter:"{b}: {c} Tragerl ({d}%)" },
+    legend:{ type:"scroll", bottom:0, textStyle:{ color:col("--txt-1"), fontSize:10 }, icon:"circle" },
+    series:[{
+      type:"pie", radius:["46%","72%"], center:["50%","44%"], avoidLabelOverlap:true,
+      itemStyle:{ borderColor:"#0b1020", borderWidth:2, borderRadius:6 },
+      label:{ color:col("--txt-0"), fontSize:11, formatter:"{d}%" },
+      labelLine:{ lineStyle:{ color:"rgba(255,255,255,0.2)" } },
+      data: artikel.map((a,i)=>({ name:a.Name, value:a.Wert,
+                                   itemStyle:{ color: palette[i % palette.length] } }))
+    }]
+  });
+  window.addEventListener("resize", ()=>dn.resize());
+}
+
+// ---- RFID-Tragerl-Fluss (Live-Ticker, mit Artikelnummer) ----
+function renderFluss(fluss){
+  const tk = document.getElementById("ticker");
+  tk.innerHTML = "";
+  if (!fluss.length){
+    tk.innerHTML = '<div class="empty">Keine Buchungen für diesen Tag.</div>';
+    return;
+  }
+  fluss.slice(0,9).forEach(f => {
+    const row = document.createElement("div");
+    row.className = "trow";
+    row.innerHTML = `
+      <div class="time">${f.Zeit}</div>
+      <div>
+        <div class="art" style="color:${statusColor(f.Status)}">${f.Artikel}</div>
+        <div class="sub">${f.Anlage} · Auftr. ${f.Auftrag}</div>
+      </div>
+      <div class="tag">${fmt(f.Stk)} Stk</div>`;
+    tk.appendChild(row);
+  });
+}
+
+// Host injiziert window.__WASCH_DATA__ vor diesem Script.
+if (window.__WASCH_DATA__) {
+  render(window.__WASCH_DATA__);
+} else {
+  document.getElementById("hd-subtitle").textContent = "Keine Daten empfangen.";
+}
+</script>
+</body>
+</html>

@@ -78,6 +78,7 @@
             this.btnProduktionsauswertung = new System.Windows.Forms.Button();
             this.BtnArtikelAendern = new System.Windows.Forms.Button();
             this.BtnRFIDAnischtWaschen = new System.Windows.Forms.Button();
+            this.btnWaschanlagenDashboard = new System.Windows.Forms.Button();
             this.btnDatenExportTabellen = new System.Windows.Forms.Button();
             this.btnProduktionGestern = new System.Windows.Forms.Button();
             this.btnProduktionsTrend = new System.Windows.Forms.Button();
@@ -588,6 +589,20 @@
             this.BtnRFIDAnischtWaschen.Text = "RFID Waschanlagen";
             this.BtnRFIDAnischtWaschen.UseVisualStyleBackColor = false;
             this.BtnRFIDAnischtWaschen.Click += new System.EventHandler(this.BtnRFIDAnischtWaschen_Click);
+            //
+            // btnWaschanlagenDashboard
+            //
+            this.btnWaschanlagenDashboard.BackColor = System.Drawing.Color.Silver;
+            this.btnWaschanlagenDashboard.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnWaschanlagenDashboard.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnWaschanlagenDashboard.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnWaschanlagenDashboard.Location = new System.Drawing.Point(336, 427);
+            this.btnWaschanlagenDashboard.Name = "btnWaschanlagenDashboard";
+            this.btnWaschanlagenDashboard.Size = new System.Drawing.Size(239, 66);
+            this.btnWaschanlagenDashboard.TabIndex = 48;
+            this.btnWaschanlagenDashboard.Text = "Waschanlagen\r\nDashboard";
+            this.btnWaschanlagenDashboard.UseVisualStyleBackColor = false;
+            this.btnWaschanlagenDashboard.Click += new System.EventHandler(this.btnWaschanlagenDashboard_Click);
             // 
             // btnDatenExportTabellen
             // 
@@ -644,6 +659,7 @@
             this.Controls.Add(this.btnProduktionsTrend);
             this.Controls.Add(this.btnProduktionGestern);
             this.Controls.Add(this.btnDatenExportTabellen);
+            this.Controls.Add(this.btnWaschanlagenDashboard);
             this.Controls.Add(this.BtnRFIDAnischtWaschen);
             this.Controls.Add(this.BtnArtikelAendern);
             this.Controls.Add(this.btnProduktionsauswertung);
@@ -742,6 +758,7 @@
         private System.Windows.Forms.Button btnProduktionsauswertung;
         private System.Windows.Forms.Button BtnArtikelAendern;
         private System.Windows.Forms.Button BtnRFIDAnischtWaschen;
+        private System.Windows.Forms.Button btnWaschanlagenDashboard;
         private System.Windows.Forms.Button btnDatenExportTabellen;
         private System.Windows.Forms.Button btnProduktionGestern;
         private System.Windows.Forms.Button btnProduktionsTrend;

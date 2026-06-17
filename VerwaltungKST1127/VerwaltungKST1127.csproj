@@ -409,6 +409,13 @@
       <DependentUpon>Form_ProduktionsTrend.cs</DependentUpon>
     </Compile>
     <Compile Include="Produktionsauswertung\ProduktionsTrendDataService.cs" />
+    <Compile Include="Produktionsauswertung\Form_AnsichtWaschanlagenDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Produktionsauswertung\Form_AnsichtWaschanlagenDashboard.Designer.cs">
+      <DependentUpon>Form_AnsichtWaschanlagenDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Produktionsauswertung\WaschanlagenDashboardDataService.cs" />
     <Compile Include="Produktionsauswertung\Form_StkVorAvo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -508,6 +515,9 @@
     <EmbeddedResource Include="Produktionsauswertung\Form_ProduktionsTrend.resx">
       <DependentUpon>Form_ProduktionsTrend.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Produktionsauswertung\Form_AnsichtWaschanlagenDashboard.resx">
+      <DependentUpon>Form_AnsichtWaschanlagenDashboard.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Produktionsauswertung\Form_StkVorAvo.resx">
       <DependentUpon>Form_StkVorAvo.cs</DependentUpon>
     </EmbeddedResource>
@@ -516,6 +526,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Produktionsauswertung\Resources\TrendDashboard.html">
       <LogicalName>VerwaltungKST1127.Produktionsauswertung.Resources.TrendDashboard.html</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Produktionsauswertung\Resources\WaschanlagenDashboard.html">
+      <LogicalName>VerwaltungKST1127.Produktionsauswertung.Resources.WaschanlagenDashboard.html</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
