@@ -4,6 +4,7 @@ using System.Data; // Importieren des System.Data-Namespace für Datenoperatione
 using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für den Zugriff auf SQL Server-Datenbanken (z.B. zum Arbeiten mit SQL-Verbindungen, Befehlen und Datenlesern in ADO.NET)
 using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Farben, Bilder, Schriften und andere grafische Ressourcen)
 using System.IO; // Importieren des System.IO-Namespace für Dateioperationen und Stream-E/A (z.B. zum Lesen und Schreiben von Dateien, Arbeiten mit Verzeichnissen)
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel; // Importieren des Microsoft.Office.Interop.Excel-Namespace für den Zugriff auf Excel-Objekte und -Funktionen (z.B. Excel-Anwendungen, Arbeitsmappen, Tabellen)
 using VerwaltungKST1127.Material; // Importieren des System.Windows.Forms-Namespace für Windows Forms-Steuerelemente und Benutzeroberflächen (z.B. Button, TextBox, Label für GUI-Entwicklung)
@@ -14,7 +15,7 @@ namespace VerwaltungKST1127
     public partial class Form_Materiallager : Form
     {
         // Verbindungszeichenfolge für die SQL Server-Datenbank
-        private readonly SqlConnection sqlConnection = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Chargenprotokoll;Integrated Security=True;Encrypt=False");
+        private const string ConnectionString = @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Chargenprotokoll;Integrated Security=True;Encrypt=False";
 
         // Variable für die aktuelle ID im DataGridView
         int currentId;
@@ -22,24 +23,26 @@ namespace VerwaltungKST1127
         public Form_Materiallager()
         {
             InitializeComponent();
-            // Aktualisieren des DataGridView
-            UpdateDgvMateriallager();
+            Load += Form_Materiallager_Load;
             // Sichtbarkeit festlegen
             BtnSpeichern.Visible = false;
             //BtnLoeschen.Visible = false;
         }
 
+        private async void Form_Materiallager_Load(object sender, EventArgs e)
+        {
+            await UpdateDgvMateriallagerAsync();
+        }
+
         // Methode zur Aktualisierung und Formatierung des DataGridView für das Materiallager
-        public void UpdateDgvMateriallager()
+        public async Task UpdateDgvMateriallagerAsync()
         {
             try
             {
-                sqlConnection.Open(); // Verbindung zur Datenbank öffnen
-                string query = "SELECT * FROM MaterialLager"; // SQL-Abfrage für die Daten
-                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(query, sqlConnection); // SQLDataAdapter für die Datenbankabfrage
-                DataSet dataSet = new DataSet(); // Neues DataSet erstellen
-                sqlDataAdapter.Fill(dataSet); // Daten in das DataSet einfügen
-                DgvMateriallager.DataSource = dataSet.Tables[0]; // Datenquelle für das DataGridView festlegen
+                DataTable table = await Task.Run(LoadMateriallagerTable);
+
+                DgvMateriallager.SuspendLayout();
+                DgvMateriallager.DataSource = table; // Datenquelle für das DataGridView festlegen
                 DgvMateriallager.Sort(DgvMateriallager.Columns[1], ListSortDirection.Ascending); // DataGridView nach Kategorie sortieren
                 // DataGridView-Formatierung: Header-Schriftart und Ausrichtung
                 DgvMateriallager.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font(DataGridView.DefaultFont, FontStyle.Bold);
@@ -48,56 +51,9 @@ namespace VerwaltungKST1127
                 DgvMateriallager.Columns[0].Width = 30;
                 DgvMateriallager.Columns[2].Width = 220;
                 DgvMateriallager.Columns[7].Width = 445;
+                DgvMateriallager.ResumeLayout();
 
-                // Überprüfen, ob Lagerbestand den Mindestbestand unterschreitet und Datenbank aktualisieren
-                foreach (DataRow row in dataSet.Tables[0].Rows)
-                {
-                    int lagerstand = Convert.ToInt32(row["Lagerstand"]);
-                    int mindestbestand = Convert.ToInt32(row["Mindestbestand"]);
-
-                    if (lagerstand <= mindestbestand) //
-                    {
-                        row["BestellStatus"] = "Bestellen";
-                        // SQL-Update-Befehl für "Bestellen"
-                        string updateQuery = "UPDATE MaterialLager SET BestellStatus = 'Bestellen' WHERE ID = @ID";
-                        SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection);
-                        updateCommand.Parameters.AddWithValue("@ID", row["ID"]);
-                        updateCommand.ExecuteNonQuery();
-                    }
-                    else
-                    {
-                        row["BestellStatus"] = string.Empty;
-                        // SQL-Update-Befehl für leeren BestellStatus
-                        string updateQuery = "UPDATE MaterialLager SET BestellStatus = '' WHERE ID = @ID";
-                        SqlCommand updateCommand = new SqlCommand(updateQuery, sqlConnection);
-                        updateCommand.Parameters.AddWithValue("@ID", row["ID"]);
-                        updateCommand.ExecuteNonQuery();
-                    }
-                }
-
-                // lblAnzahlArtikelBestellen aktualisieren (Anzahl der Artikel, die bestellt werden müssen)
-                int anzahlArtikelBestellen = 0;
-                foreach (DataRow row in dataSet.Tables[0].Rows)
-                {
-                    if (row["BestellStatus"].ToString() == "Bestellen")
-                    {
-                        anzahlArtikelBestellen++;
-                        lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen.ToString() + " Artikel müssen bestellt werden!";
-                    }
-                    // Wenn in der Reihe "Bemerkungen" in einer Zeile das Wort "bestellt, Bestellt vorkommt, dann soll die variable anzahlArtikelBestellen um 1 verringert werden
-                    if (row["Bemerkungen"].ToString().ToLower().Contains("bestellt am"))
-                    {
-                        anzahlArtikelBestellen--;
-                        lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen.ToString() + " Artikel müssen bestellt werden!";
-                    }
-                    // Wenn nur ein Artikel bestellt werden muss
-                    if (anzahlArtikelBestellen == 1)
-                    {
-                        lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen.ToString() + " Artikel muss bestellt werden!";
-                    }
-                }
-
-                sqlConnection.Close(); // Datenbankverbindung trennen
+                UpdateBestellLabel(table);
             }
             catch (Exception ex)
             {
@@ -105,15 +61,62 @@ namespace VerwaltungKST1127
             }
         }
 
+        private DataTable LoadMateriallagerTable()
+        {
+            const string query = @"
+                SELECT
+                    ID,
+                    Kategorie,
+                    Artikel,
+                    Lagerstand,
+                    Mindestbestand,
+                    Einheit,
+                    CASE WHEN Lagerstand <= Mindestbestand THEN 'Bestellen' ELSE '' END AS BestellStatus,
+                    Bemerkungen
+                FROM MaterialLager
+                ORDER BY Kategorie, Artikel";
+
+            using (var connection = new SqlConnection(ConnectionString))
+            using (var adapter = new SqlDataAdapter(query, connection))
+            {
+                var table = new DataTable();
+                adapter.Fill(table);
+                return table;
+            }
+        }
+
+        private void UpdateBestellLabel(DataTable table)
+        {
+            int anzahlArtikelBestellen = 0;
+
+            foreach (DataRow row in table.Rows)
+            {
+                bool mussBestelltWerden = row["BestellStatus"].ToString() == "Bestellen";
+                bool istBereitsBestellt = row["Bemerkungen"].ToString().IndexOf("bestellt am", StringComparison.OrdinalIgnoreCase) >= 0;
+
+                if (mussBestelltWerden && !istBereitsBestellt)
+                {
+                    anzahlArtikelBestellen++;
+                }
+            }
+
+            lblAnzahlArtikelBestellen.Text = anzahlArtikelBestellen == 1
+                ? "1 Artikel muss bestellt werden!"
+                : anzahlArtikelBestellen + " Artikel müssen bestellt werden!";
+        }
+
         // Methode zur Ausführung einer SQL-Abfrage
-        private void ExecuteQuery(string query)
+        private async Task ExecuteNonQueryAsync(string query, Action<SqlParameterCollection> addParameters)
         {
             try
             {
-                sqlConnection.Open(); // Öffne die SQL-Verbindung
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection); // Erstelle ein SqlCommand-Objekt mit der übergebenen Abfrage
-                sqlCommand.ExecuteNonQuery(); // Führe die Abfrage aus, ohne ein Ergebnis zurückzugeben
-                sqlConnection.Close(); // Schließe die SQL-Verbindung
+                using (var connection = new SqlConnection(ConnectionString))
+                using (var command = new SqlCommand(query, connection))
+                {
+                    addParameters?.Invoke(command.Parameters);
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -123,23 +126,16 @@ namespace VerwaltungKST1127
         }
 
         // Methode zur Ermittlung der nächsthöheren verfügbaren ID
-        private int GetNextId()
+        private async Task<int> GetNextIdAsync()
         {
             try
             {
-                sqlConnection.Open(); // Verbindung zur Datenbank öffnen
-                string query = "SELECT MAX(Id) FROM MaterialLager"; // SQL-Abfrage, um die höchste ID zu ermitteln
-                SqlCommand command = new SqlCommand(query, sqlConnection);
-                object result = command.ExecuteScalar(); // Ergebnis der Abfrage abrufen
-                sqlConnection.Close(); // Datenbankverbindung trennen
-
-                if (result != DBNull.Value)
+                using (var connection = new SqlConnection(ConnectionString))
+                using (var command = new SqlCommand("SELECT MAX(Id) FROM MaterialLager", connection))
                 {
-                    return Convert.ToInt32(result) + 1; // Nächste ID zurückgeben
-                }
-                else
-                {
-                    return 1; // Falls keine ID vorhanden, mit 1 beginnen
+                    await connection.OpenAsync();
+                    object result = await command.ExecuteScalarAsync();
+                    return result != DBNull.Value ? Convert.ToInt32(result) + 1 : 1;
                 }
             }
             catch (Exception ex)
@@ -150,7 +146,7 @@ namespace VerwaltungKST1127
         }
 
         // Event-Handler wenn der Button "Material austragen" gedrückt wird
-        private void BtnAustragen_Click(object sender, EventArgs e)
+        private async void BtnAustragen_Click(object sender, EventArgs e)
         {
             if (currentId == 0)
             {
@@ -165,14 +161,19 @@ namespace VerwaltungKST1127
                     if (int.TryParse(inputMenge.InputValue, out int abzugMenge))
                     {
                         int neueMenge = int.Parse(TextBoxLagerstand.Text) - abzugMenge;
-                        string query = $"UPDATE MaterialLager SET Lagerstand = {neueMenge} WHERE Id = {currentId}";
-                        ExecuteQuery(query);
+                        int mindestbestand = int.Parse(TextBoxMindestbestand.Text);
 
-                        // Überprüfen, ob Lagerstand <= Mindestbestand ist und BestellStatus setzen
-                        CheckAndUpdateBestellStatus(neueMenge, int.Parse(TextBoxMindestbestand.Text));
+                        await ExecuteNonQueryAsync(
+                            "UPDATE MaterialLager SET Lagerstand = @Lagerstand, BestellStatus = CASE WHEN @Lagerstand <= @Mindestbestand THEN 'Bestellen' ELSE '' END WHERE Id = @Id",
+                            parameters =>
+                            {
+                                parameters.AddWithValue("@Lagerstand", neueMenge);
+                                parameters.AddWithValue("@Mindestbestand", mindestbestand);
+                                parameters.AddWithValue("@Id", currentId);
+                            });
 
                         MessageBox.Show("Erfolgreich " + abzugMenge + " " + TextBoxEinheit1.Text + " abgezogen!");
-                        UpdateDgvMateriallager();
+                        await UpdateDgvMateriallagerAsync();
                         ClearTextBoxes();
                     }
                 }
@@ -181,12 +182,12 @@ namespace VerwaltungKST1127
 
 
         // Event-Handler für den Button "Hinzufügen"
-        private void BtnHinzufuegen_Click(object sender, EventArgs e)
+        private async void BtnHinzufuegen_Click(object sender, EventArgs e)
         {
             // Textfelder leeren, um neue Daten einzugeben
             ClearTextBoxes();
             // Setze die aktuelle ID auf die nächsthöhere verfügbare ID
-            currentId = GetNextId();
+            currentId = await GetNextIdAsync();
             TextBoxId.Text = currentId.ToString(); // Setze die neue ID in das ID-Textfeld
 
             // Speicherbutton sichtbar machen
@@ -197,7 +198,7 @@ namespace VerwaltungKST1127
         }
 
         // Event-Handler für den Button "Ändern"
-        private void BtnAendern_Click(object sender, EventArgs e)
+        private async void BtnAendern_Click(object sender, EventArgs e)
         {
             try
             {
@@ -222,19 +223,33 @@ namespace VerwaltungKST1127
                 // Nur fortfahren, wenn der Benutzer "Ja" auswählt
                 if (result == DialogResult.Yes)
                 {
-                    // SQL-Update-Statement erstellen
-                    string query = $"UPDATE MaterialLager SET Kategorie = '{kategorie}', Artikel = '{artikel}', " +
-                                   $"Lagerstand = {lagerstand}, Mindestbestand = {mindestbestand}, " +
-                                   $"Einheit = '{einheit}', Bemerkungen = '{bemerkung}' WHERE Id = {currentId}";
-
                     // SQL-Abfrage ausführen
-                    ExecuteQuery(query);
+                    await ExecuteNonQueryAsync(
+                        @"UPDATE MaterialLager
+                          SET Kategorie = @Kategorie,
+                              Artikel = @Artikel,
+                              Lagerstand = @Lagerstand,
+                              Mindestbestand = @Mindestbestand,
+                              Einheit = @Einheit,
+                              Bemerkungen = @Bemerkungen,
+                              BestellStatus = CASE WHEN @Lagerstand <= @Mindestbestand THEN 'Bestellen' ELSE '' END
+                          WHERE Id = @Id",
+                        parameters =>
+                        {
+                            parameters.AddWithValue("@Kategorie", kategorie);
+                            parameters.AddWithValue("@Artikel", artikel);
+                            parameters.AddWithValue("@Lagerstand", lagerstand);
+                            parameters.AddWithValue("@Mindestbestand", mindestbestand);
+                            parameters.AddWithValue("@Einheit", einheit);
+                            parameters.AddWithValue("@Bemerkungen", bemerkung);
+                            parameters.AddWithValue("@Id", currentId);
+                        });
 
                     // Erfolgsnachricht anzeigen
                     MessageBox.Show("Änderungen erfolgreich gespeichert.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     // Aktualisiere das DataGridView, um die Änderungen anzuzeigen
-                    UpdateDgvMateriallager();
+                    await UpdateDgvMateriallagerAsync();
                 }
             }
             catch (Exception ex)
@@ -245,17 +260,17 @@ namespace VerwaltungKST1127
         }
 
         // Event-Handler für den Button "Speichern"
-        private void BtnSpeichern_Click(object sender, EventArgs e)
+        private async void BtnSpeichern_Click(object sender, EventArgs e)
         {
             // Neues Material speichern
-            SpeichereNeuesMaterial();
+            await SpeichereNeuesMaterialAsync();
 
             // Speicherbutton nach dem Speichern wieder ausblenden
             BtnSpeichern.Visible = false;
         }
 
         // Event-Handler für den Button "Löschen"
-        private void BtnLoeschen_Click(object sender, EventArgs e)
+        private async void BtnLoeschen_Click(object sender, EventArgs e)
         {
             try
             {
@@ -283,17 +298,16 @@ namespace VerwaltungKST1127
                             // Überprüfen, ob das eingegebene Passwort korrekt ist
                             if (passwordPrompt.Passwort == correctPassword)
                             {
-                                // SQL-Delete-Statement erstellen
-                                string query = $"DELETE FROM MaterialLager WHERE Id = {currentId}";
-
                                 // SQL-Abfrage ausführen
-                                ExecuteQuery(query);
+                                await ExecuteNonQueryAsync(
+                                    "DELETE FROM MaterialLager WHERE Id = @Id",
+                                    parameters => parameters.AddWithValue("@Id", currentId));
 
                                 // Erfolgsnachricht anzeigen
                                 MessageBox.Show("Eintrag erfolgreich gelöscht.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                                 // Aktualisiere das DataGridView, um die Änderungen anzuzeigen
-                                UpdateDgvMateriallager();
+                                await UpdateDgvMateriallagerAsync();
 
                                 // Textfelder leeren
                                 ClearTextBoxes();
@@ -318,7 +332,7 @@ namespace VerwaltungKST1127
         }
 
         // Methode zum Speichern eines neuen Materials
-        private void SpeichereNeuesMaterial()
+        private async Task SpeichereNeuesMaterialAsync()
         {
             try
             {
@@ -329,33 +343,26 @@ namespace VerwaltungKST1127
                 string einheit = TextBoxEinheit1.Text;
                 string bemerkung = RichTextBoxBemerkung.Text;
 
-                string query = $"INSERT INTO MaterialLager (Kategorie, Artikel, Lagerstand, Mindestbestand, Einheit, Bemerkungen) " +
-                               $"VALUES ('{kategorie}', '{artikel}', {lagerstand}, {mindestbestand}, '{einheit}', '{bemerkung}')";
-                ExecuteQuery(query);
-
-                // Überprüfen, ob der Lagerstand den Mindestbestand unterschreitet und ggf. Bestellstatus setzen
-                CheckAndUpdateBestellStatus(lagerstand, mindestbestand);
+                await ExecuteNonQueryAsync(
+                    @"INSERT INTO MaterialLager (Kategorie, Artikel, Lagerstand, Mindestbestand, Einheit, Bemerkungen, BestellStatus)
+                      VALUES (@Kategorie, @Artikel, @Lagerstand, @Mindestbestand, @Einheit, @Bemerkungen,
+                              CASE WHEN @Lagerstand <= @Mindestbestand THEN 'Bestellen' ELSE '' END)",
+                    parameters =>
+                    {
+                        parameters.AddWithValue("@Kategorie", kategorie);
+                        parameters.AddWithValue("@Artikel", artikel);
+                        parameters.AddWithValue("@Lagerstand", lagerstand);
+                        parameters.AddWithValue("@Mindestbestand", mindestbestand);
+                        parameters.AddWithValue("@Einheit", einheit);
+                        parameters.AddWithValue("@Bemerkungen", bemerkung);
+                    });
 
                 MessageBox.Show("Neues Material erfolgreich hinzugefügt.", "Erfolg", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                UpdateDgvMateriallager();
+                await UpdateDgvMateriallagerAsync();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Fehler beim Hinzufügen des neuen Materials: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void CheckAndUpdateBestellStatus(int lagerstand, int mindestbestand)
-        {
-            try
-            {
-                string bestellStatus = lagerstand <= mindestbestand ? "Bestellen" : string.Empty;
-                string query = $"UPDATE MaterialLager SET BestellStatus = '{bestellStatus}' WHERE Id = {currentId}";
-                ExecuteQuery(query);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Fehler beim Aktualisieren des Bestellstatus: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -382,57 +389,47 @@ namespace VerwaltungKST1127
                     TextBoxEinheit2.Text = TextBoxEinheit1.Text;
                     RichTextBoxBemerkung.Text = selectedRow.Cells[7].Value.ToString();
 
-                    // Pfad zum Bild
-                    string imagePath = "";
-
-                    // Überprüfen, welcher Artikel ausgewählt wurde und den entsprechenden Bildpfad zuweisen
-                    if (TextBoxArtikel.Text == "Mo Liner 0 95 023")
-                    {
-                        imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 023.png";
-                    }
-                    else if (TextBoxArtikel.Text == "Mo Liner 0 95 025")
-                    {
-                        imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 025.png";
-                    }
-                    else if (TextBoxArtikel.Text == "Mo Liner 0 95 033")
-                    {
-                        imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 033.png";
-                    }
-                    else if (TextBoxArtikel.Text == "Mo Liner 0 95 058")
-                    {
-                        imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 058.png";
-                    }
-                    else if (TextBoxArtikel.Text == "Mo Liner 0 95 110")
-                    {
-                        imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 110.png";
-                    }
-                    else if (TextBoxArtikel.Text == "Deckel für Liner")
-                    {
-                        imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Deckel für Liner.png";
-                    }
-                    else
-                    {
-                        imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Ansicht.png";
-                    }
-
-                    // Überprüfen, ob ein gültiger Bildpfad gefunden wurde und das Bild existiert
-                    if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
-                    {
-                        // Das Bild der PictureBox zuweisen
-                        PictureBoxInfo.Image = new Bitmap(imagePath);
-                        PictureBoxInfo.Refresh();
-                    }
-                    else
-                    {
-                        // Anderenfalls die PictureBox leeren oder ein Platzhalterbild anzeigen
-                        PictureBoxInfo.Image = null;
-                    }
+                    LoadMaterialImage(TextBoxArtikel.Text);
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
             }
+        }
+
+        private void LoadMaterialImage(string artikel)
+        {
+            string imagePath;
+
+            switch (artikel)
+            {
+                case "Mo Liner 0 95 023":
+                    imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 023.png";
+                    break;
+                case "Mo Liner 0 95 025":
+                    imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 025.png";
+                    break;
+                case "Mo Liner 0 95 033":
+                    imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 033.png";
+                    break;
+                case "Mo Liner 0 95 058":
+                    imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 058.png";
+                    break;
+                case "Mo Liner 0 95 110":
+                    imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Mo Liner 0 95 110.png";
+                    break;
+                case "Deckel für Liner":
+                    imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Deckel für Liner.png";
+                    break;
+                default:
+                    imagePath = @"P:\TEDuTOZ\Auftragsverwaltung Daten\VerwaltungKst1127\Bilder\Ansicht.png";
+                    break;
+            }
+
+            Image previousImage = PictureBoxInfo.Image;
+            PictureBoxInfo.Image = File.Exists(imagePath) ? new Bitmap(imagePath) : null;
+            previousImage?.Dispose();
         }
 
         // Event-Handler-Methode, die ausgeführt wird, wenn das DataGridView geladen wird
@@ -478,7 +475,7 @@ namespace VerwaltungKST1127
                             break;
                     }
                 }
-                if (e.ColumnIndex == DgvMateriallager.Columns["BestellStatus"].Index && e.Value.ToString() == "Bestellen")
+                if (e.ColumnIndex == DgvMateriallager.Columns["BestellStatus"].Index && e.Value?.ToString() == "Bestellen")
                 {
                     e.CellStyle.BackColor = Color.Red;
                     e.CellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;

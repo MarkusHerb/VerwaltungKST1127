@@ -734,6 +734,135 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
 
         // -----------------------------------------------------------------------------------------------------------------
+        // Schreibt EINEN Satz (eine Vergüten-AVO) in die Schnittstellen-Tabelle ProdOrders_Stamm.
+        // Diese Tabelle wird von anderen Abteilungs-Programmen gelesen.
+        // Entspricht SetNeuenSatz_ProdOrder_Stamm() aus dem alten Programm Admin_Meister_127.
+        // Hinweis: Die Spaltenliste stammt aus dem alten Programm – bei Bedarf an das reale
+        // Schema von SOA127_Verwaltung2022.ProdOrders_Stamm anpassen.
+        // -----------------------------------------------------------------------------------------------------------------
+        private void SchreibeInProdOrdersStamm(string avoNummer, string avoInfo, string refoAvonr,
+                                               string seite, Dictionary<string, string> serienlinsenDaten)
+        {
+            // Werte aus den Serienlinsen-Stammdaten (mit Standard "" falls nicht vorhanden).
+            string glassorte = serienlinsenDaten != null ? serienlinsenDaten["GLASSORTE"] : "";
+            string dm = serienlinsenDaten != null ? serienlinsenDaten["DM"] : "";
+            string nd = serienlinsenDaten != null ? serienlinsenDaten["ND"] : "";
+            string gNummer = serienlinsenDaten != null ? serienlinsenDaten["G_Nummer"] : "";
+
+            string insert = @"
+                INSERT INTO ProdOrders_Stamm
+                    (opsta_avostat, Auftrag, AvoNummer, txta_avoinfo, refo_avotext, ARTNR, Seite,
+                     STK, Gesamt, Teilenummer, Teilebezeichnung, Glassorte, DM, ND, Material, Vergbelag,
+                     G_Nummer, Endtermin, Waschen_Status, Strichcode, StrichCodeRei, refo_avonr, Erstellt)
+                VALUES
+                    (@status, @auftrag, @avonr, @avoinfo, @refotext, @artnr, @seite,
+                     '0', @gesamt, @teilenr, @teilebez, @glassorte, @dm, @nd, @material, @belag,
+                     @gnummer, @endtermin, 'waschen', @strichcode, @strichcodeRei, @refoavonr, @erstellt)";
+
+            using (SqlCommand cmd = new SqlCommand(insert, sqlConnectionVerwaltung))
+            {
+                cmd.Parameters.AddWithValue("@status", "Gestartet");
+                cmd.Parameters.AddWithValue("@auftrag", auftragsNr);
+                cmd.Parameters.AddWithValue("@avonr", avoNummer ?? "");
+                cmd.Parameters.AddWithValue("@avoinfo", avoInfo ?? "");
+                cmd.Parameters.AddWithValue("@refotext", "");
+                cmd.Parameters.AddWithValue("@artnr", artikel);
+                cmd.Parameters.AddWithValue("@seite", seite ?? "");
+                cmd.Parameters.AddWithValue("@gesamt", sollStk ?? "");
+                cmd.Parameters.AddWithValue("@teilenr", artikel);
+                cmd.Parameters.AddWithValue("@teilebez", teilebez ?? "");
+                cmd.Parameters.AddWithValue("@glassorte", glassorte);
+                cmd.Parameters.AddWithValue("@dm", dm);
+                cmd.Parameters.AddWithValue("@nd", nd);
+                cmd.Parameters.AddWithValue("@material", material ?? "");
+                cmd.Parameters.AddWithValue("@belag", selectedBelagValue ?? "");
+                cmd.Parameters.AddWithValue("@gnummer", gNummer);
+                cmd.Parameters.AddWithValue("@endtermin", enddatum ?? "");
+                cmd.Parameters.AddWithValue("@strichcode", auftragsNr + avoNummer);
+                cmd.Parameters.AddWithValue("@strichcodeRei", "*" + auftragsNr + avoNummer + "*");
+                cmd.Parameters.AddWithValue("@refoavonr", refoAvonr ?? "");
+                cmd.Parameters.AddWithValue("@erstellt", DateTime.Now.ToString());
+
+                if (sqlConnectionVerwaltung.State != ConnectionState.Open) sqlConnectionVerwaltung.Open();
+                cmd.ExecuteNonQuery();
+                sqlConnectionVerwaltung.Close();
+            }
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Spiegelt die komplette Tabelle ProdOrders_Stamm aus SOA127_Verwaltung2022 in die alte
+        // Datenbank SOA127_Verwaltung (für Programme, die noch von dort lesen).
+        // Vorgehen wie im alten Programm: alten Stand komplett löschen und neu aus 2022 befüllen.
+        // Entspricht KopiereDatenInTabelle_ProdOrders_Stamm_AlterServer().
+        // -----------------------------------------------------------------------------------------------------------------
+        private void SpiegleProdOrdersStammAufAltenServer()
+        {
+            try
+            {
+                // 1) Alten Stand auf dem Spiegel-Server löschen.
+                using (SqlCommand del = new SqlCommand("DELETE FROM ProdOrders_Stamm", sqlConnectionVerwaltungAlt))
+                {
+                    if (sqlConnectionVerwaltungAlt.State != ConnectionState.Open) sqlConnectionVerwaltungAlt.Open();
+                    del.ExecuteNonQuery();
+                    sqlConnectionVerwaltungAlt.Close();
+                }
+
+                // 2) Aktuellen Stand aus 2022 lesen (nur die Spalten, die der alte Server kennt).
+                var saetze = new List<string[]>();
+                using (SqlCommand sel = new SqlCommand(
+                    "SELECT Auftrag, txta_avoinfo, Teilenummer, Gesamt, Endtermin FROM ProdOrders_Stamm", sqlConnectionVerwaltung))
+                {
+                    if (sqlConnectionVerwaltung.State != ConnectionState.Open) sqlConnectionVerwaltung.Open();
+                    using (SqlDataReader reader = sel.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            saetze.Add(new[]
+                            {
+                                reader["Auftrag"].ToString(),
+                                reader["txta_avoinfo"].ToString(),
+                                reader["Teilenummer"].ToString(),
+                                reader["Gesamt"].ToString(),
+                                reader["Endtermin"].ToString()
+                            });
+                        }
+                    }
+                    sqlConnectionVerwaltung.Close();
+                }
+
+                // 3) Sätze in den alten Server schreiben.
+                string insertAlt = @"
+                    INSERT INTO ProdOrders_Stamm (Auftrag, txta_avoinfo, Teilenummer, Gesamt, ENDTERMIN)
+                    VALUES (@auftrag, @avoinfo, @teilenr, @gesamt, @endtermin)";
+
+                if (sqlConnectionVerwaltungAlt.State != ConnectionState.Open) sqlConnectionVerwaltungAlt.Open();
+                foreach (var s in saetze)
+                {
+                    using (SqlCommand ins = new SqlCommand(insertAlt, sqlConnectionVerwaltungAlt))
+                    {
+                        ins.Parameters.AddWithValue("@auftrag", s[0]);
+                        ins.Parameters.AddWithValue("@avoinfo", s[1]);
+                        ins.Parameters.AddWithValue("@teilenr", s[2]);
+                        ins.Parameters.AddWithValue("@gesamt", s[3]);
+                        ins.Parameters.AddWithValue("@endtermin", s[4]);
+                        ins.ExecuteNonQuery();
+                    }
+                }
+                sqlConnectionVerwaltungAlt.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fehler beim Spiegeln von ProdOrders_Stamm auf den alten Server: {ex.Message}",
+                    "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (sqlConnectionVerwaltung.State == ConnectionState.Open) sqlConnectionVerwaltung.Close();
+                if (sqlConnectionVerwaltungAlt.State == ConnectionState.Open) sqlConnectionVerwaltungAlt.Close();
+            }
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
         // Erzeugt aus einem Text einen Code-128-Barcode als Bild (Image).
         // Wird oben für die Strichcode-Bilder in Excel verwendet.
         // -----------------------------------------------------------------------------------------------------------------
