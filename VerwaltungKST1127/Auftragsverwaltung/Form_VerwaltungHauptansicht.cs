@@ -735,6 +735,13 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             var selectedRow = DgvAnsichtAuftraege.SelectedRows[0];
             string auftragsNummer = selectedRow.Cells["Auftragsnr."].Value.ToString();
 
+            // Auftrag zuerst in der Datenbank abschließen (archivieren + aus ProdOrders_Stamm löschen).
+            // Schlägt das fehl, brechen wir ab und lassen die JSON-Liste unverändert.
+            if (!SchliesseAuftragInDbAb(auftragsNummer))
+            {
+                return;
+            }
+
             string jsonPfad = "letzteAuftragsnummern.json";
 
             if (File.Exists(jsonPfad))
@@ -771,6 +778,70 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             else
             {
                 MessageBox.Show($"Die Datei '{jsonPfad}' existiert nicht.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Schließt einen Auftrag in der Datenbank ab:
+        //  1) archiviert alle AVOs des Auftrags aus LN_ProdOrders_PRD in ProdOrder_Fertig_A (Status "Abgeschlossen")
+        //  2) löscht den Auftrag aus der Schnittstellen-Tabelle ProdOrders_Stamm (neue + alte DB)
+        // Entspricht SetAuftragFertig() aus dem alten Programm Admin_Meister_127.
+        // WICHTIG: Erst archivieren, dann löschen – schlägt das Archivieren fehl, wird nichts gelöscht.
+        // Hinweis: Die Spaltenliste bei Bedarf an das reale Schema von ProdOrder_Fertig_A anpassen.
+        // -----------------------------------------------------------------------------------------------------------------
+        private bool SchliesseAuftragInDbAb(string auftragsNr)
+        {
+            try
+            {
+                // 1) Archiv-Kopie aus LN_ProdOrders_PRD nach ProdOrder_Fertig_A.
+                string archiv = @"
+                    INSERT INTO ProdOrder_Fertig_A
+                        (pdno_prodnr, opsta_avostat, txta_avoinfo, refo_avonr, opno_avonr,
+                         mitm_teilenr, dsca_teilebez, qplo_sollstk, qcmp_iststk, trdf_enddate)
+                    SELECT
+                        pdno_prodnr, 'Abgeschlossen', txta_avoinfo, refo_avonr, opno_avonr,
+                        mitm_teilenr, dsca_teilebez, qplo_sollstk, qcmp_iststk, trdf_enddate
+                    FROM LN_ProdOrders_PRD
+                    WHERE pdno_prodnr = @Auftrag";
+
+                using (SqlCommand cmd = new SqlCommand(archiv, sqlConnectionVerwaltung))
+                {
+                    cmd.Parameters.AddWithValue("@Auftrag", auftragsNr);
+                    if (sqlConnectionVerwaltung.State != ConnectionState.Open) sqlConnectionVerwaltung.Open();
+                    cmd.ExecuteNonQuery();
+                    sqlConnectionVerwaltung.Close();
+                }
+
+                // 2a) Aus Schnittstellen-Tabelle in der neuen DB löschen.
+                using (SqlCommand cmd = new SqlCommand("DELETE FROM ProdOrders_Stamm WHERE Auftrag = @Auftrag", sqlConnectionVerwaltung))
+                {
+                    cmd.Parameters.AddWithValue("@Auftrag", auftragsNr);
+                    if (sqlConnectionVerwaltung.State != ConnectionState.Open) sqlConnectionVerwaltung.Open();
+                    cmd.ExecuteNonQuery();
+                    sqlConnectionVerwaltung.Close();
+                }
+
+                // 2b) Aus Schnittstellen-Tabelle in der alten DB (Spiegel) löschen.
+                using (SqlCommand cmd = new SqlCommand("DELETE FROM ProdOrders_Stamm WHERE Auftrag = @Auftrag", sqlConnectionVerwaltungAlt))
+                {
+                    cmd.Parameters.AddWithValue("@Auftrag", auftragsNr);
+                    if (sqlConnectionVerwaltungAlt.State != ConnectionState.Open) sqlConnectionVerwaltungAlt.Open();
+                    cmd.ExecuteNonQuery();
+                    sqlConnectionVerwaltungAlt.Close();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fehler beim Abschließen des Auftrags in der Datenbank: {ex.Message}",
+                    "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            finally
+            {
+                if (sqlConnectionVerwaltung.State == ConnectionState.Open) sqlConnectionVerwaltung.Close();
+                if (sqlConnectionVerwaltungAlt.State == ConnectionState.Open) sqlConnectionVerwaltungAlt.Close();
             }
         }
 
