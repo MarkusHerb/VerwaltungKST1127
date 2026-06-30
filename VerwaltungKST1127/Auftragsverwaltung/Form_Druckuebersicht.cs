@@ -31,7 +31,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // -----------------------------------------------------------------------------------------------------------------
         private readonly SqlConnection sqlConnectionVerwaltung = new SqlConnection(
             @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False");
-
+        private readonly SqlConnection sqlConnectionVerwaltungAlt = new SqlConnection(
+            @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung;Integrated Security=True;Encrypt=False");
         // -----------------------------------------------------------------------------------------------------------------
         // Klassenvariablen ("Felder"): speichern die im Konstruktor übergebenen Werte,
         // damit auch andere Methoden in dieser Klasse darauf zugreifen können.
