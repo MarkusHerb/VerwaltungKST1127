@@ -17,7 +17,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private const string ConnectionString =
             @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Waschtragerl;Integrated Security=True;Encrypt=False";
 
-        private DataTable _rfidTable;
+        private System.Data.DataTable _rfidTable;
         private DataView _rfidView;
         private bool _columnsConfigured;
 
@@ -119,7 +119,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
         // Artikelnummer (DB4+DB5) und Auftragsnummer (DB28+DB29+DB30) werden direkt im SQL
         // zusammengesetzt; der C#-Zeilendurchlauf entfällt damit vollständig.
         // Nur benötigte Spalten werden abgefragt (kein SELECT *).
-        private static DataTable FetchDataFromDb(DateTime datumAb, DateTime datumBis)
+        private static System.Data.DataTable FetchDataFromDb(DateTime datumAb, DateTime datumBis)
         {
             const string query = @"
                 SELECT
@@ -145,7 +145,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
                     using (var adapter = new SqlDataAdapter(command))
                     {
-                        var table = new DataTable();
+                        var table = new System.Data.DataTable();
                         adapter.Fill(table);
                         return table;
                     }
@@ -285,7 +285,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
 
         private void cListBoxWaschanlage_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            BeginInvoke(new Action(ApplyCombinedFilter));
+            BeginInvoke(new System.Action(ApplyCombinedFilter));
         }
 
         // -----------------------------------------------------------------------------------------------------------------
