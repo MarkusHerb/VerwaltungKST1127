@@ -33,6 +33,7 @@
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.lblDateTime = new System.Windows.Forms.Label();
             this.dGvRFID = new System.Windows.Forms.DataGridView();
+            this.btnExportXlsx = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -215,7 +216,20 @@
             this.btnLoescheFilter.Text = "Filter löschen";
             this.btnLoescheFilter.UseVisualStyleBackColor = false;
             this.btnLoescheFilter.Click += new System.EventHandler(this.btnLoescheFilter_Click);
-            // 
+            //
+            // btnExportXlsx
+            //
+            this.btnExportXlsx.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(78)))), ((int)(((byte)(120)))));
+            this.btnExportXlsx.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExportXlsx.ForeColor = System.Drawing.Color.White;
+            this.btnExportXlsx.Location = new System.Drawing.Point(254, 77);
+            this.btnExportXlsx.Name = "btnExportXlsx";
+            this.btnExportXlsx.Size = new System.Drawing.Size(72, 55);
+            this.btnExportXlsx.TabIndex = 32;
+            this.btnExportXlsx.Text = "Export\nXLSX";
+            this.btnExportXlsx.UseVisualStyleBackColor = false;
+            this.btnExportXlsx.Click += new System.EventHandler(this.btnExportXlsx_Click);
+            //
             // label8
             // 
             this.label8.AutoSize = true;
@@ -385,6 +399,7 @@
             this.Controls.Add(this.lblEingeleseneWaschkoerbe);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
+            this.Controls.Add(this.btnExportXlsx);
             this.Controls.Add(this.btnLoescheFilter);
             this.Controls.Add(this.txtBoxWaschprogramm);
             this.Controls.Add(this.label7);
@@ -429,6 +444,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox txtBoxWaschprogramm;
         private System.Windows.Forms.Button btnLoescheFilter;
+        private System.Windows.Forms.Button btnExportXlsx;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label lblEingeleseneWaschkoerbe;

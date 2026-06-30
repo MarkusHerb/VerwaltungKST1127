@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Office.Interop.Excel;
 
 namespace VerwaltungKST1127.Produktionsauswertung
 {
@@ -320,6 +323,124 @@ namespace VerwaltungKST1127.Produktionsauswertung
             lblEingeleseneWaschkoerbeRundoptik.Text  = $"Waschträger Rundoptik: {count125}";
             lblEingeleseneWaschkoerbeMontagen.Text   = $"Waschträger Montagen: {countMontage}";
             lblEingelesenOhneZuordnung.Text          = $"Ohne KST: {countEmptyKST}";
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Aktuell angezeigte (gefilterte) Daten als xlsx in Excel öffnen – User speichert selbst.
+        // -----------------------------------------------------------------------------------------------------------------
+        private async void btnExportXlsx_Click(object sender, EventArgs e)
+        {
+            if (_rfidView == null || _rfidView.Count == 0)
+            {
+                MessageBox.Show("Keine Daten zum Exportieren vorhanden.", "Export",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Sichtbare Spalten in aktueller Anzeigereihenfolge ermitteln.
+            var sichtbareSpalten = new List<DataGridViewColumn>();
+            foreach (DataGridViewColumn col in dGvRFID.Columns)
+                if (col.Visible) sichtbareSpalten.Add(col);
+            sichtbareSpalten.Sort((a, b) => a.DisplayIndex.CompareTo(b.DisplayIndex));
+
+            int spaltenAnzahl = sichtbareSpalten.Count;
+            int zeilenAnzahl  = _rfidView.Count;
+
+            string[] headers = new string[spaltenAnzahl];
+            for (int c = 0; c < spaltenAnzahl; c++)
+                headers[c] = sichtbareSpalten[c].HeaderText;
+
+            // Daten im Hintergrund in ein 2D-Array packen (schneller Bulk-Write nach Excel).
+            object[,] data = await Task.Run(() =>
+            {
+                var arr = new object[zeilenAnzahl, spaltenAnzahl];
+                for (int r = 0; r < zeilenAnzahl; r++)
+                {
+                    DataRowView rowView = _rfidView[r];
+                    for (int c = 0; c < spaltenAnzahl; c++)
+                    {
+                        string prop = sichtbareSpalten[c].DataPropertyName;
+                        if (string.IsNullOrEmpty(prop)) continue;
+                        object val = rowView[prop];
+                        arr[r, c] = val == DBNull.Value ? null : val;
+                    }
+                }
+                return arr;
+            });
+
+            Microsoft.Office.Interop.Excel.Application excelApp = null;
+            Workbook  workbook  = null;
+            Worksheet worksheet = null;
+
+            try
+            {
+                btnExportXlsx.Enabled = false;
+                Cursor = Cursors.WaitCursor;
+
+                excelApp         = new Microsoft.Office.Interop.Excel.Application();
+                excelApp.Visible = false;
+                workbook         = excelApp.Workbooks.Add(Type.Missing);
+                worksheet        = (Worksheet)workbook.ActiveSheet;
+                worksheet.Name   = "RFID Waschanlagen";
+
+                // Header-Zeile formatieren (dunkles Blau / weisse Schrift).
+                for (int c = 0; c < spaltenAnzahl; c++)
+                {
+                    var cell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[1, c + 1];
+                    cell.Value              = headers[c];
+                    cell.Font.Bold          = true;
+                    cell.Font.Color         = ColorTranslator.ToOle(Color.White);
+                    cell.Interior.Color     = ColorTranslator.ToOle(Color.FromArgb(0x1F, 0x4E, 0x78));
+                    cell.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                    Marshal.ReleaseComObject(cell);
+                }
+
+                ((Microsoft.Office.Interop.Excel.Range)worksheet.Rows[1]).RowHeight = 22;
+
+                // AutoFilter + erste Zeile einfrieren.
+                var headerRange = worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, spaltenAnzahl]];
+                headerRange.AutoFilter(1, Type.Missing, XlAutoFilterOperator.xlAnd, Type.Missing, true);
+                Marshal.ReleaseComObject(headerRange);
+                excelApp.ActiveWindow.SplitRow    = 1;
+                excelApp.ActiveWindow.FreezePanes = true;
+
+                // Daten als Block schreiben – deutlich schneller als zellweise.
+                if (zeilenAnzahl > 0)
+                {
+                    var dataRange = worksheet.Range[worksheet.Cells[2, 1], worksheet.Cells[zeilenAnzahl + 1, spaltenAnzahl]];
+                    dataRange.Value = data;
+                    Marshal.ReleaseComObject(dataRange);
+                }
+
+                // Spaltenbreiten auf Inhalt anpassen.
+                var usedRange = worksheet.UsedRange;
+                usedRange.Columns.AutoFit();
+                Marshal.ReleaseComObject(usedRange);
+
+                excelApp.Visible = true;
+
+                MessageBox.Show(
+                    $"Export abgeschlossen – {zeilenAnzahl} Zeilen wurden in Excel geöffnet.\nSpeichern Sie die Datei direkt aus Excel.",
+                    "Export abgeschlossen",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                try { workbook?.Close(false); excelApp?.Quit(); } catch { }
+                MessageBox.Show("Fehler beim Excel-Export:\n" + ex.Message, "Fehler",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                if (worksheet != null) Marshal.ReleaseComObject(worksheet);
+                if (workbook  != null) Marshal.ReleaseComObject(workbook);
+                if (excelApp  != null) Marshal.ReleaseComObject(excelApp);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                btnExportXlsx.Enabled = true;
+                Cursor = Cursors.Default;
+            }
         }
     }
 }
