@@ -218,7 +218,7 @@
       <div class="chart"><div id="ranking"></div></div>
     </div>
     <div class="panel" style="grid-column: 1 / 2;">
-      <div class="panel-title">Auslastungs-Kalender <span class="muted">— Ø Auslastung je Tag (%)</span></div>
+      <div class="panel-title">Auslastungs-Kalender <span class="muted" id="kal-note">— Ø Auslastung je Tag (%)</span></div>
       <div class="chart"><div id="kalender"></div></div>
     </div>
     <div class="panel" style="grid-column: 2 / 3;">
@@ -242,6 +242,17 @@
   document.getElementById('hd-subtitle').textContent = data.ZeitraumLang || '';
   document.getElementById('hd-now').textContent =
     'Stand: ' + new Date().toLocaleString('de-DE');
+
+  // Kapazitäts-Basis der Auslastung transparent machen. Sie ist wochentags-
+  // abhängig: Mo–Do 16 h, Fr 11 h (verkürzter Tag) je Anlage. Der Samstag zählt
+  // nur, wenn er im Cockpit zugeschaltet ist; Sonntag wird generell ignoriert.
+  (function () {
+    const note = document.getElementById('kal-note');
+    if (!note) return;
+    note.textContent = data.SamstagEinbezogen
+      ? '— Ø je Tag (%) · Basis: Mo–Do 16 h, Fr/Sa 11 h je Anlage'
+      : '— Ø je Tag (%) · Basis: Mo–Do 16 h, Fr 11 h je Anlage · Sa/So ausgeblendet';
+  })();
 
   // ─── KPI Count-Up Animation ───────────────────────────────────────────────
   function countUp(el, target, decimals) {

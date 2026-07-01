@@ -14,6 +14,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private System.Windows.Forms.Button btnMinus30Tage;
         private System.Windows.Forms.Label lblAnlagen;
         private System.Windows.Forms.FlowLayoutPanel flowAnlagen;
+        private System.Windows.Forms.CheckBox chkSamstag;
         private System.Windows.Forms.Button btnNeuLaden;
         private System.Windows.Forms.CheckBox chkAutoRefresh;
         private System.Windows.Forms.Label lblAutoRefreshTimer;
@@ -44,6 +45,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.btnGestern = new System.Windows.Forms.Button();
             this.lblAnlagen = new System.Windows.Forms.Label();
             this.flowAnlagen = new System.Windows.Forms.FlowLayoutPanel();
+            this.chkSamstag = new System.Windows.Forms.CheckBox();
             this.dtpBis = new System.Windows.Forms.DateTimePicker();
             this.lblBis = new System.Windows.Forms.Label();
             this.dtpVon = new System.Windows.Forms.DateTimePicker();
@@ -60,6 +62,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.panelToolbar.Controls.Add(this.lblStatus);
             this.panelToolbar.Controls.Add(this.lblAutoRefreshTimer);
             this.panelToolbar.Controls.Add(this.chkAutoRefresh);
+            this.panelToolbar.Controls.Add(this.chkSamstag);
             this.panelToolbar.Controls.Add(this.flowAnlagen);
             this.panelToolbar.Controls.Add(this.lblAnlagen);
             this.panelToolbar.Controls.Add(this.btnNeuLaden);
@@ -258,10 +261,25 @@ namespace VerwaltungKST1127.Produktionsauswertung
             this.flowAnlagen.BackColor = System.Drawing.Color.Transparent;
             this.flowAnlagen.Location = new System.Drawing.Point(168, 48);
             this.flowAnlagen.Name = "flowAnlagen";
-            this.flowAnlagen.Size = new System.Drawing.Size(1100, 30);
+            this.flowAnlagen.Size = new System.Drawing.Size(940, 30);
             this.flowAnlagen.TabIndex = 13;
             this.flowAnlagen.WrapContents = false;
             this.flowAnlagen.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
+            //
+            // chkSamstag
+            //
+            this.chkSamstag.AutoSize = true;
+            this.chkSamstag.ForeColor = System.Drawing.Color.FromArgb(230, 235, 250);
+            this.chkSamstag.Font = new System.Drawing.Font("Segoe UI", 9.5F);
+            this.chkSamstag.Location = new System.Drawing.Point(1120, 52);
+            this.chkSamstag.Name = "chkSamstag";
+            this.chkSamstag.Size = new System.Drawing.Size(140, 21);
+            this.chkSamstag.TabIndex = 14;
+            this.chkSamstag.Text = "Samstag einbeziehen";
+            this.chkSamstag.UseVisualStyleBackColor = false;
+            this.chkSamstag.BackColor = System.Drawing.Color.Transparent;
+            this.chkSamstag.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.chkSamstag.CheckedChanged += new System.EventHandler(this.chkSamstag_CheckedChanged);
             //
             // timerAutoRefresh
             //
