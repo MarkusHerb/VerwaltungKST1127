@@ -1,211 +1,449 @@
-﻿using Microsoft.Office.Interop.Excel; // Importieren der Excel-Interop-Bibliothek für die Automatisierung und Interaktion mit Microsoft Excel (z.B. zum Erstellen, Lesen und Bearbeiten von Excel-Dateien)
-using System; // Importieren des System-Namespace für grundlegende .NET-Klassen und -Typen (z.B. grundlegende Datentypen wie String, Integer, Exception-Handling)
-using System.Collections.Generic; // Importieren des System.Collections.Generic-Namespace für generische Sammlungen (z.B. List<T>, Dictionary<TKey, TValue>)
-using System.ComponentModel; // Importieren des System.ComponentModel-Namespace für Komponentenmodelle und Datenbindung (z.B. zum Arbeiten mit Events und benachrichtigungsfähigen Eigenschaften)
-using System.Data; // Importieren des System.Data-Namespace für den Zugriff auf Datenbankfunktionalitäten (z.B. DataTable, DataSet und andere ADO.NET-Funktionen)
-using System.Data.SqlClient; // Importieren des System.Data.SqlClient-Namespace für die Arbeit mit SQL Server-Datenbanken (z.B. für die Verwaltung von SQL-Verbindungen, -Befehlen und -Abfragen)
-using System.Diagnostics; // Importieren des System.Diagnostics-Namespace für die Diagnose und Protokollierung (z.B. zum Starten von Prozessen, Debuggen und Ereignisprotokollierung)
-using System.Drawing; // Importieren des System.Drawing-Namespace für Grafiken und Bildverarbeitung (z.B. Arbeiten mit Farben, Schriften, und Bildern in der GUI)
-using System.Linq; // Importieren des System.Linq-Namespace für LINQ-Abfragen (z.B. für die Abfrage von Datenquellen wie Arrays, Listen und Datenbanken in einer deklarativen Syntax)
-using System.Runtime.InteropServices; // Importieren des System.Runtime.InteropServices-Namespace für den Zugriff auf nicht verwalteten Code und Interoperabilität mit COM-Objekten (z.B. für die Interaktion mit Windows-APIs oder älteren Systemen)
-using System.Threading.Tasks; // Importieren des System.Threading.Tasks-Namespace für die Arbeit mit asynchronen Tasks und paralleler Programmierung (z.B. zur Ausführung von Aufgaben im Hintergrund)
-using System.Windows.Forms; // Importieren des System.Windows.Forms-Namespace für die Erstellung von Benutzeroberflächen (GUI) mit Windows Forms-Steuerelementen (z.B. Button, TextBox, Form)
+using Microsoft.Office.Interop.Excel;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace VerwaltungKST1127.Farbauswertung
 {
     public partial class Form_Farbauswertung : Form
     {
-        // Variable für die aktuelle ID im DataGridView
         int currentId;
-        // Verbindungszeichenfolge für die SQL Server-Datenbank
-        private readonly SqlConnection sqlConnection = new SqlConnection(@"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Auswertung;Integrated Security=True;Encrypt=False");
-        // Feld für den PerformanceCounter
+        private readonly string _connectionString = @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Auswertung;Integrated Security=True;Encrypt=False";
         private PerformanceCounter cpuCounter;
-        // Feld für den PerformanceCounter
         private PerformanceCounter memoryCounter;
-        // Deklaration der Instanzvariablen originalDataTable für die ursprünglichen Daten
         private readonly System.Data.DataTable originalDataTable = new System.Data.DataTable();
+
+        // Cached dates – avoids DateTime.Now.Date per rendered cell in CellFormatting
+        private DateTime _cachedToday = DateTime.Now.Date;
+        private DateTime _cachedYesterday = DateTime.Now.Date.AddDays(-1);
+
+        // --- Design-Feature 1: Ladeoverlay ---
+        private Panel _pnlLoading;
+        private Label _lblLoading;
+
+        // --- Design-Feature 3: Statusleiste ---
+        private StatusStrip _statusStrip;
+        private ToolStripStatusLabel _statusConnection;
+        private ToolStripStatusLabel _statusRecordCount;
+        private ToolStripStatusLabel _statusLastLoad;
+
+        // --- Design-Feature 5: Anlage-Badge-Farben ---
+        private static readonly Dictionary<string, Color> AnlageColors = new Dictionary<string, Color>
+        {
+            { "20", Color.CornflowerBlue },
+            { "25", Color.SteelBlue },
+            { "30", Color.MediumSeaGreen },
+            { "35", Color.MediumOrchid },
+            { "40", Color.Coral },
+            { "45", Color.Goldenrod },
+            { "50", Color.CadetBlue },
+            { "60", Color.IndianRed },
+            { "65", Color.MediumPurple }
+        };
 
         public Form_Farbauswertung()
         {
-            InitializeComponent(); // Initialisierung der Komponenten des Formulars
-            Timer1.Start(); // Starten des Timers für die Uhranzeige
-            UpdateDateTime(); // Aktualisieren des Datums und der Uhrzeit
-            UpdateDgvFarbauswertung(); // Aktualisieren des DataGridView für die Farbauswertung
-            FillComboBoxBelag(); // Befüllen der ComboBoxBelag mit den Werten für die Filterung
-            FillComboBoxProzess(); // Befüllen der ComboBoxProzess mit den Werten für die Filterung
-            DateTimePickerDgv.Value = new DateTime(2021, 1, 4); // Setzen des Datums für DateTimePickerDgv auf den 04.01.2021
-            CountChargen(); // Chargen von Heute und von Gestern zählen
+            InitializeComponent();
 
-            // Initialisieren der Leistungsindikatoren - CPU
+            Timer1.Start();
+            UpdateDateTime();
+            DateTimePickerDgv.Value = new DateTime(2021, 1, 4);
+
             InitializePerformanceCounters();
-            // Initialisieren der Leistungsindikatoren - RAM
             InitializeMemoryCounter();
-            // Starten des Timers für die CPU-Auslastung
-            //TimerCpu.Interval = 1000; // Aktualisierung alle 1 Sekunde
             TimerCpu.Start();
-            // Starten des Timers für die RAM-Auslastung
-            //TimerMemory.Interval = 1000; // Aktualisierung alle 1 Sekunde
             TimerMemory.Start();
+
+            // Flicker-freies Scrollen im DataGridView
+            typeof(DataGridView).InvokeMember(
+                "DoubleBuffered",
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
+                null, DgvFarbauswertung, new object[] { true });
+
+            CreateLoadingOverlay();   // Design 1
+            CreateStatusBar();        // Design 3
+            StyleAnlageBadges();      // Design 5
         }
 
-        // Funktion für die instanziierung des PerformanceCounters
+        // =====================================================================
+        // Design-Feature 1: Ladeoverlay
+        // Halbdunkles Panel über dem DataGridView, sichtbar während SQL lädt.
+        // =====================================================================
+        private void CreateLoadingOverlay()
+        {
+            _lblLoading = new Label
+            {
+                Text = "Daten werden geladen...",
+                ForeColor = Color.White,
+                Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Fill
+            };
+
+            _pnlLoading = new Panel
+            {
+                BackColor = Color.FromArgb(55, 55, 55),
+                Location = DgvFarbauswertung.Location,
+                Size = DgvFarbauswertung.Size,
+                Visible = false
+            };
+            _pnlLoading.Controls.Add(_lblLoading);
+            Controls.Add(_pnlLoading);
+            _pnlLoading.BringToFront();
+        }
+
+        // =====================================================================
+        // Design-Feature 3: Statusleiste
+        // Zeigt Verbindungsstatus, Datensatzanzahl und letzten Ladezeitpunkt.
+        // =====================================================================
+        private void CreateStatusBar()
+        {
+            _statusConnection = new ToolStripStatusLabel
+            {
+                Text = "● Nicht verbunden",
+                ForeColor = Color.OrangeRed,
+                Font = new Font("Microsoft Sans Serif", 8.25f, FontStyle.Bold)
+            };
+
+            _statusRecordCount = new ToolStripStatusLabel
+            {
+                Text = "Datensätze: –",
+                ForeColor = Color.White
+            };
+
+            _statusLastLoad = new ToolStripStatusLabel
+            {
+                Text = "Letztes Laden: –",
+                ForeColor = Color.LightGray,
+                Spring = true,
+                TextAlign = ContentAlignment.MiddleRight
+            };
+
+            _statusStrip = new StatusStrip
+            {
+                BackColor = Color.FromArgb(30, 30, 30),
+                Dock = DockStyle.Bottom,
+                SizingGrip = false
+            };
+            _statusStrip.Items.Add(_statusConnection);
+            _statusStrip.Items.Add(new ToolStripSeparator());
+            _statusStrip.Items.Add(_statusRecordCount);
+            _statusStrip.Items.Add(new ToolStripSeparator());
+            _statusStrip.Items.Add(_statusLastLoad);
+
+            Controls.Add(_statusStrip);
+        }
+
+        // =====================================================================
+        // Design-Feature 5: Anlage-Badges
+        // Vorhandene Anlage-Labels (LblA??Heute / LblA??Vortag) werden als
+        // farbige, anklickbare Chips gestylt. Klick setzt den Anlage-Filter.
+        // =====================================================================
+        private void StyleAnlageBadges()
+        {
+            var mapping = new[]
+            {
+                ("20", LblA20Heute, LblA20Vortag),
+                ("30", LblA30Heute, LblA30Vortag),
+                ("35", LblA35Heute, LblA35Vortag),
+                ("40", LblA40Heute, LblA40Vortag),
+                ("45", LblA45Heute, LblA45Vortag),
+                ("50", LblA50Heute, LblA50Vortag),
+                ("60", LblA60Heute, LblA60Vortag),
+                ("65", LblA65Heute, LblA65Vortag),
+            };
+
+            foreach (var (prefix, lblHeute, lblVortag) in mapping)
+            {
+                Color badgeColor = AnlageColors.TryGetValue(prefix, out Color c) ? c : Color.Gray;
+                StyleBadgeLabel(lblHeute, badgeColor, prefix);
+                StyleBadgeLabel(lblVortag, ControlPaint.Dark(badgeColor, 0.3f), prefix);
+            }
+        }
+
+        private void StyleBadgeLabel(Label lbl, Color backColor, string anlagePrefix)
+        {
+            lbl.BackColor = backColor;
+            lbl.ForeColor = Color.White;
+            lbl.Cursor = Cursors.Hand;
+            lbl.Padding = new Padding(4, 2, 4, 2);
+            lbl.AutoSize = true;
+
+            lbl.Click += (sender, e) =>
+            {
+                // Toggle: nochmaliger Klick auf dasselbe Anlage hebt den Filter auf
+                if (ComboBoxAnlage.SelectedItem?.ToString() == anlagePrefix)
+                {
+                    ComboBoxAnlage.SelectedIndex = -1;
+                    ComboBoxAnlage.Text = string.Empty;
+                    ApplyFiltersAndUpdateTotalRowCount();
+                }
+                else
+                {
+                    foreach (var item in ComboBoxAnlage.Items)
+                    {
+                        if (item.ToString() == anlagePrefix)
+                        {
+                            ComboBoxAnlage.SelectedItem = item;
+                            return; // SelectedIndexChanged übernimmt den Rest
+                        }
+                    }
+                    ComboBoxAnlage.Text = anlagePrefix;
+                    ApplyFiltersAndUpdateTotalRowCount();
+                }
+            };
+        }
+
+        // =====================================================================
+        // Performance-Counter
+        // =====================================================================
         private void InitializePerformanceCounters()
         {
-            // Instanziieren des PerformanceCounter-Objekts für die CPU-Auslastung
             cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
         }
 
-        // Initialisierung des PerformanceCounters für den Arbeitsspeicher
         private void InitializeMemoryCounter()
         {
-            // Instanziieren des PerformanceCounter-Objekts für die Arbeitsspeicher-Auslastung
             memoryCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
         }
 
-        // Tick-Event des Timers für die Uhranzeige
         private void Timer1_Tick(object sender, EventArgs e)
         {
-            UpdateDateTime(); // Aktualisieren der Uhrzeit
+            UpdateDateTime();
+            _cachedToday = DateTime.Now.Date;
+            _cachedYesterday = _cachedToday.AddDays(-1);
         }
 
-        // Tick-Event für die sekündliche Aktualisierung der CPU Auslasung
         private void TimerCpu_Tick(object sender, EventArgs e)
         {
-            // Überprüfen, ob cpuCounter initialisiert wurde
             if (cpuCounter != null)
-            {
-                // Abrufen des aktuellen CPU-Auslastungswerts
-                float cpuUsage = cpuCounter.NextValue();
-
-                // Anzeigen der CPU-Auslastung auf einem Label
-                LblCpuUsage.Text = string.Format("CPU-Auslastung:   {0}%", cpuUsage);
-            }
+                LblCpuUsage.Text = string.Format("CPU-Auslastung:   {0:F1}%", cpuCounter.NextValue());
             else
-            {
-                // Wenn cpuCounter nicht initialisiert wurde, eine Fehlermeldung anzeigen
                 MessageBox.Show("cpuCounter wurde nicht initialisiert.");
-            }
         }
 
-        // Tick-Event für die sekündliche Aktualisierung der RAM Auslastung
         private void TimerMemory_Tick(object sender, EventArgs e)
         {
-            // Überprüfen, ob memoryCounter initialisiert wurde
             if (memoryCounter != null)
-            {
-                // Abrufen des aktuellen RAM-Auslastungswerts
-                float memoryUsage = memoryCounter.NextValue();
+                LblMemoryUsage.Text = string.Format("RAM-Auslastung:  {0:F1}%", memoryCounter.NextValue());
+            else
+                MessageBox.Show("memoryCounter wurde nicht initialisiert.");
+        }
 
-                // Anzeigen der RAM-Auslastung auf einem Label
-                LblMemoryUsage.Text = string.Format("RAM-Auslastung:  {0}%", memoryUsage);
+        // =====================================================================
+        // Datenladen – asynchron, UI friert nicht ein
+        // =====================================================================
+
+        // Form_Load: async, damit alle abhängigen Initialisierungen
+        // erst nach dem Datenladen laufen (FillComboBox, CountChargen).
+        private async void Form_Farbauswertung_Load(object sender, EventArgs e)
+        {
+            LblChargenAb.Text = "Eingelesen ab: 04.01.2021";
+            await UpdateDgvFarbauswertungAsync();
+            FillComboBoxBelag();
+            FillComboBoxProzess();
+            CountChargen();
+        }
+
+        // Kernmethode – SQL läuft auf Background-Thread, Overlay und
+        // Statusleiste werden synchron im UI-Thread aktualisiert.
+        public async Task UpdateDgvFarbauswertungAsync()
+        {
+            try
+            {
+                if (_pnlLoading != null) _pnlLoading.Visible = true;
+                SetConnectionStatus(false, true);
+                Cursor = Cursors.WaitCursor;
+
+                System.Data.DataTable table = null;
+                await Task.Run(() =>
+                {
+                    using (var conn = new SqlConnection(_connectionString))
+                    {
+                        conn.Open();
+                        // WITH (NOLOCK): schnellere Lesezugriffe ohne Share-Locks
+                        using (var adapter = new SqlDataAdapter(
+                            "SELECT * FROM Geamtauswertungstabelle WITH (NOLOCK)", conn))
+                        {
+                            table = new System.Data.DataTable();
+                            adapter.Fill(table);
+                        }
+                    }
+                });
+
+                originalDataTable.Clear();
+                originalDataTable.Merge(table);
+
+                DgvFarbauswertung.DataSource = table;
+                DgvFarbauswertung.Sort(DgvFarbauswertung.Columns[0], ListSortDirection.Descending);
+
+                ApplyColumnSettings();
+                UpdateTotalRowCount();
+
+                SetConnectionStatus(true, false);
+                if (_statusLastLoad != null)
+                    _statusLastLoad.Text = $"Letztes Laden: {DateTime.Now:dd.MM.yyyy HH:mm:ss}";
+            }
+            catch (Exception ex)
+            {
+                SetConnectionStatus(false, false);
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                if (_pnlLoading != null) _pnlLoading.Visible = false;
+                Cursor = Cursors.Default;
+            }
+        }
+
+        // Öffentliche Wrapper-Methode für externe/fire-and-forget-Aufrufe
+        public void UpdateDgvFarbauswertung()
+        {
+            _ = UpdateDgvFarbauswertungAsync();
+        }
+
+        private void SetConnectionStatus(bool connected, bool connecting)
+        {
+            if (_statusConnection == null) return;
+            if (connecting)
+            {
+                _statusConnection.Text = "● Verbinde...";
+                _statusConnection.ForeColor = Color.Yellow;
+            }
+            else if (connected)
+            {
+                _statusConnection.Text = "● Verbunden";
+                _statusConnection.ForeColor = Color.LimeGreen;
             }
             else
             {
-                // Wenn memoryCounter nicht initialisiert wurde, eine Fehlermeldung anzeigen
-                MessageBox.Show("memoryCounter wurde nicht initialisiert.");
+                _statusConnection.Text = "● Verbindungsfehler";
+                _statusConnection.ForeColor = Color.OrangeRed;
             }
         }
 
-        // Diese Methode ruft die Daten aus dem DataGridView ab und gibt sie zurück
-        private System.Data.DataTable GetDataGridViewData()
+        // Spaltenbreiten / Sichtbarkeit – einmalig nach dem Datenladen angewendet
+        private void ApplyColumnSettings()
         {
-            System.Data.DataTable dt = new System.Data.DataTable();
-            // Hier gehen wir davon aus, dass Ihr DataGridView "DgvFarbauswertung" heißt
-            if (DgvFarbauswertung.DataSource != null && DgvFarbauswertung.Rows.Count > 0)
+            var columnSettings = new (int Index, bool Visible, int Width)[]
             {
-                dt = (System.Data.DataTable)DgvFarbauswertung.DataSource;
+                (0, false, 60),  (1, false, 0),   (2, false, 0),
+                (3, true, 60),   (4, true, 140),  (5, true, 65),
+                (6, false, 0),   (7, true, 65),   (8, true, 65),
+                (9, true, 65),   (10, true, 97),  (11, true, 60),
+                (12, true, 60),  (13, true, 60),  (14, true, 60),
+                (15, true, 60),  (16, true, 70),  (17, false, 0),
+                (18, false, 0),  (19, false, 0),  (20, false, 0),
+                (21, true, 60),  (22, true, 80),  (23, true, 60),
+                (24, true, 60),  (25, true, 60),  (26, true, 75),
+                (27, false, 0),  (28, false, 0),  (29, false, 0),
+                (30, false, 0),  (31, true, 65),  (32, true, 80),
+                (33, false, 0),  (34, false, 0),  (35, true, 110),
+                (36, false, 0)
+            };
+
+            foreach (var (Index, Visible, Width) in columnSettings)
+            {
+                if (Index < DgvFarbauswertung.Columns.Count)
+                {
+                    DgvFarbauswertung.Columns[Index].Visible = Visible;
+                    if (Visible)
+                        DgvFarbauswertung.Columns[Index].Width = Width;
+                }
             }
-            return dt;
+
+            DgvFarbauswertung.ColumnHeadersDefaultCellStyle.Font =
+                new Font(DataGridView.DefaultFont, FontStyle.Bold);
+            DgvFarbauswertung.ColumnHeadersDefaultCellStyle.Alignment =
+                DataGridViewContentAlignment.MiddleCenter;
         }
 
-        // Funktion um die Chargen von Heute und vom Vortag zu zählen
+        // ExecuteQuery nutzt pro Aufruf eine eigene Verbindung (thread-sicher)
+        public void ExecuteQuery(string query)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new SqlCommand(query, conn))
+                        cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        // =====================================================================
+        // Chargen-Zählung – direkt aus originalDataTable (nicht DGV-Rows)
+        // =====================================================================
         public void CountChargen()
         {
-            // Zähler für die Anzahl der Chargen von heute und gestern
             int countToday = 0;
             int countYesterday = 0;
 
-            // Dictionarys zur Speicherung der Zählung der Präfixe für heute und gestern
-            Dictionary<string, int> todayPrefixCounts = new Dictionary<string, int>();
-            Dictionary<string, int> yesterdayPrefixCounts = new Dictionary<string, int>();
+            var prefixes = new List<string> { "20", "30", "35", "40", "45", "50", "60", "65" };
+            var todayPrefixCounts = new Dictionary<string, int>();
+            var yesterdayPrefixCounts = new Dictionary<string, int>();
+            foreach (var p in prefixes) { todayPrefixCounts[p] = 0; yesterdayPrefixCounts[p] = 0; }
 
-            // Liste der Präfixe, die gezählt werden sollen
-            List<string> prefixes = new List<string> { "20", "30", "35", "40", "45", "50", "60", "65" };
+            DateTime currentDate = _cachedToday;
+            DateTime previousDate = _cachedYesterday;
 
-            // Initialisiere Dictionarys mit Präfixen und setze die Zähler auf 0
-            foreach (var prefix in prefixes)
+            foreach (DataRow row in originalDataTable.Rows)
             {
-                todayPrefixCounts[prefix] = 0;
-                yesterdayPrefixCounts[prefix] = 0;
-            }
+                if (row["Datum"] == DBNull.Value) continue;
+                if (!DateTime.TryParse(row["Datum"].ToString(), out DateTime cellDate)) continue;
 
-            // Holen des aktuellen Datums und des Vortages
-            DateTime currentDate = DateTime.Now.Date;
-            DateTime previousDate = currentDate.AddDays(-1);
+                string chargeValue = row["Charge"] == DBNull.Value ? null : row["Charge"].ToString();
+                if (chargeValue == null) continue;
 
-            // Schleife durch alle Zeilen des DataGridView (DgvFarbauswertung)
-            foreach (DataGridViewRow row in DgvFarbauswertung.Rows)
-            {
-                // Überprüfen, ob das Datum in der Zeile gültig ist
-                if (row.Cells["Datum"].Value != null && DateTime.TryParse(row.Cells["Datum"].Value.ToString(), out DateTime cellDate))
+                if (cellDate.Date == currentDate)
                 {
-                    // Hole den Wert der Charge-Spalte, falls vorhanden
-                    string chargeValue = row.Cells["Charge"].Value?.ToString();
-                    if (chargeValue == null)
-                        continue; // Überspringe die Zeile, falls die Charge leer ist
-
-                    // Überprüfen, ob das Datum dem heutigen Datum entspricht
-                    if (cellDate.Date == currentDate)
-                    {
-                        countToday++; // Inkrementiere den Zähler für heute
-                        CountPrefixes(chargeValue, todayPrefixCounts); // Zähle Präfixe für heute
-                    }
-                    // Überprüfen, ob das Datum dem Vortag entspricht
-                    else if (cellDate.Date == previousDate)
-                    {
-                        countYesterday++; // Inkrementiere den Zähler für den Vortag
-                        CountPrefixes(chargeValue, yesterdayPrefixCounts); // Zähle Präfixe für den Vortag
-                    }
+                    countToday++;
+                    CountPrefixes(chargeValue, todayPrefixCounts);
+                }
+                else if (cellDate.Date == previousDate)
+                {
+                    countYesterday++;
+                    CountPrefixes(chargeValue, yesterdayPrefixCounts);
                 }
             }
 
-            // Aktualisiere die Labels für die Gesamtanzahl der Chargen heute
-            LblHeute.Text = "Chargen Heute: " + countToday.ToString();
+            LblHeute.Text = "Chargen Heute: " + countToday;
             LblHeute.ForeColor = Color.Orange;
-
-            // Aktualisiere die Labels für die Präfix-Zählungen heute
             UpdatePrefixLabels(todayPrefixCounts, "Heute");
 
-            // Aktualisiere die Labels für die Gesamtanzahl der Chargen gestern
-            LblVortag.Text = "Chargen gestern: " + countYesterday.ToString();
+            LblVortag.Text = "Chargen gestern: " + countYesterday;
             LblVortag.ForeColor = Color.Yellow;
-
-            // Aktualisiere die Labels für die Präfix-Zählungen gestern
             UpdatePrefixLabels(yesterdayPrefixCounts, "Vortag");
         }
 
-        // Methode zur Zählung der Präfixe in der Chargennummer
         private void CountPrefixes(string chargeValue, Dictionary<string, int> prefixCounts)
         {
-            // Schleife durch alle definierten Präfixe
             foreach (var prefix in prefixCounts.Keys.ToList())
             {
-                // Wenn die Chargennummer mit dem Präfix beginnt, Zähler erhöhen
                 if (chargeValue.StartsWith(prefix))
-                {
                     prefixCounts[prefix]++;
-                }
             }
         }
 
-        // Methode zur Aktualisierung der Labels basierend auf den Präfix-Zählungen
         private void UpdatePrefixLabels(Dictionary<string, int> prefixCounts, string dayLabel)
         {
-            // Schleife durch jedes Präfix und aktualisiere das entsprechende Label
             foreach (var prefix in prefixCounts)
             {
-                // Je nach Tag (Heute oder Vortag) das passende Label aktualisieren
                 if (dayLabel == "Heute")
                 {
                     switch (prefix.Key)
@@ -236,90 +474,52 @@ namespace VerwaltungKST1127.Farbauswertung
                 }
             }
         }
-        private void Form_Farbauswertung_Load(object sender, EventArgs e)
-        {
-            LblChargenAb.Text = "Eingelesen ab: 04.01.2021";
-        }
 
-        // Event-Handler für den Button BtnHeute
+        // =====================================================================
+        // Button-Handler
+        // =====================================================================
         private void BtnHeute_Click(object sender, EventArgs e)
         {
             DateTimePickerDgv.Value = DateTime.Today;
             DateTimePickerDgvBis.Value = DateTime.Today;
-            // Entferne das Event-Handling für das CellFormatting-Ereignis
             DgvFarbauswertung.CellFormatting -= DgvFarbauswertung_CellFormatting;
         }
 
-        // Event-Handler für den Button BtnGestern
         private void BtnGestern_Click(object sender, EventArgs e)
         {
-            // Heutiges Datum
-            DateTime today = DateTime.Now;
-
-            // Datum von gestern
-            DateTime yesterday = today.AddDays(-1);
+            DateTime yesterday = DateTime.Now.AddDays(-1);
             DateTimePickerDgv.Value = yesterday;
             DateTimePickerDgvBis.Value = yesterday;
         }
 
-        // Event-Handler damit die Monatsauswertung aufgeht
         private void BtnMonatsAuswertung_Click(object sender, EventArgs e)
         {
             Form_Monatsuebersicht form_Monatsuebersicht = new Form_Monatsuebersicht();
             form_Monatsuebersicht.SetDataFromInputForm(GetDataGridViewData());
             form_Monatsuebersicht.Show();
-            // DataGridView nach der ID absteigend sortieren
             DgvFarbauswertung.Sort(DgvFarbauswertung.Columns[0], ListSortDirection.Descending);
         }
 
-        // Event-Handler wenn im DGV doppelt geklickt wird
-        private void DgvFarbauswertung_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        private async void BtnClearAllFilters_Click(object sender, EventArgs e)
         {
-            SaveDataForMessurement();
-        }
+            ComboBoxAnlage.SelectedIndex = -1;
+            ComboBoxBelag.SelectedIndex = -1;
+            ComboBoxProzess.SelectedIndex = -1;
+            ComboBoxAnlage.Text = string.Empty;
+            ComboBoxBelag.Text = string.Empty;
+            ComboBoxProzess.Text = string.Empty;
+            DateTimePickerDgv.Value = DateTime.Now;
+            DateTimePickerDgvBis.Value = DateTime.Now;
 
-        // Funktion die die Werte für das Messbild abspeichert
-        private void SaveDataForMessurement()
-        {
-            // Hole die Werte aus den Textboxen
-            string dateValue = TextBoxDatum.Text;
-            string chargValue = TextBoxCharge.Text;
-            string XiValue = TextBoxXi.Text;
-            string XaValue = TextBoxXa.Text;
-            string YiValue = TextBoxYi.Text;
-            string YaValue = TextBoxYa.Text;
-            string ZiValue = TextBoxZi.Text;
-            string ZaValue = TextBoxZa.Text;
-            string belag = TextBoxBelag.Text;
-            string process = TextBoxProzess.Text;
-            string anlage = TextBoxAnlage.Text;
-            // Neue Instanz zu Form_Messbild - Values übergeben
-            Form_Messbild form_Messbild = new Form_Messbild(dateValue, chargValue, XiValue, XaValue, YiValue,
-                YaValue, ZiValue, ZaValue, belag, process, anlage);
-            form_Messbild.Show(); // Formular anzeigen
-        }
-
-        // Event-Handler-Methode, die ausgelöst wird, wenn der Button zum Löschen aller Filter geklickt wird
-        private void BtnClearAllFilters_Click(object sender, EventArgs e)
-        {
-            ComboBoxAnlage.SelectedIndex = -1; // Auswahl in ComboBox "Anlage" löschen und Index zurücksetzen
-            ComboBoxBelag.SelectedIndex = -1; // Auswahl in ComboBox "Belag" löschen und Index zurücksetzen
-            ComboBoxProzess.SelectedIndex = -1; // Auswahl in ComboBox "Prozess" löschen und Index zurücksetzen
-            ComboBoxAnlage.Text = string.Empty; // Auswahl in ComboBox "Anlage" löschen
-            ComboBoxBelag.Text = string.Empty; // Auswahl in ComboBox "Belag" löschen
-            ComboBoxProzess.Text = string.Empty; // Auswahl in ComboBox "Prozess" löschen
-            DateTimePickerDgv.Value = DateTime.Now; // Datum im DateTimePicker auf das aktuelle Datum setzen
-            DateTimePickerDgvBis.Value = DateTime.Now; // Datum im DateTimePickerBis auf das aktuelle Datum setzen
-            UpdateDgvFarbauswertung(); // DataGridView aktualisieren und alle Filter löschen
+            await UpdateDgvFarbauswertungAsync();
             UpdateTotalRowCount();
-            // Setzen des Datums für DateTimePickerDgv auf den 04.01.2021
+
             DateTimePickerDgv.Value = new DateTime(2021, 1, 4);
             LblChargenAb.Text = "Chargen ab 04.01.2021: ";
 
-            // Daten aus den Textboxen löschen
             TextBoxId.Text = string.Empty;
             TextBoxAnlage.Text = string.Empty;
-            TextBoxDatum.Text = string.Empty; ;
+            TextBoxDatum.Text = string.Empty;
             TextBoxCharge.Text = string.Empty;
             TextBoxBelag.Text = string.Empty;
             TextBoxProzess.Text = string.Empty;
@@ -340,479 +540,258 @@ namespace VerwaltungKST1127.Farbauswertung
             TextBoxEgun1.Text = string.Empty;
             TextBoxEgun2.Text = string.Empty;
             TextBoxReinigung.Text = string.Empty;
-            // Hinzufügen des Event-Handling für das CellFormatting-Ereignis
+
             DgvFarbauswertung.CellFormatting += DgvFarbauswertung_CellFormatting;
-            // ListBoxXYZ löschen
+
             for (int i = 0; i < ListBoxXYZ.Items.Count; i++)
-            {
                 ListBoxXYZ.SetItemChecked(i, false);
-            }
-            // Chargenanzahl nochmals aktualisieren
+
             CountChargen();
         }
 
-        // Methode zur Aktualisierung der Uhrzeit
-        private void UpdateDateTime()
+        private void BtnInformaitonMessungen_Click(object sender, EventArgs e)
         {
-            DateTime current = DateTime.Now; // Aktuelle Zeit abrufen
-            LblTimeDate.Text = current.ToString("dd.MM.yyyy HH:mm:ss"); // Anzeige der Zeit im entsprechenden Label
+            Form_InformationZuMessung form_InformationZuMessung = new Form_InformationZuMessung();
+            form_InformationZuMessung.Show();
         }
 
-        // Hier werden die Funktionen, die für die Aktualisierung,
-        // bzw. für das Filtern des DataGridVies zuständig sind
-        // aufgelistet. 
-
-        // Ruft immer die aktuellen Daten aus der Tabelle Farbauswertung ab
-        // Formatiert den Header
-        // Methode zur Aktualisierung und Formatierung des DataGridView für die Farbauswertung
-        public void UpdateDgvFarbauswertung()
+        // =====================================================================
+        // DGV-Events
+        // =====================================================================
+        private void DgvFarbauswertung_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            try
-            {
-                // Öffne die Verbindung zur SQL-Datenbank, falls sie noch nicht geöffnet ist
-                if (sqlConnection.State != ConnectionState.Open)
-                    sqlConnection.Open();
-
-                // SQL-Abfrage: alle Daten aus der Auswertungstabelle abrufen
-                string query = "SELECT * FROM Geamtauswertungstabelle";
-
-                // Adapter zum Ausführen der Abfrage und zum Befüllen der DataTable
-                SqlDataAdapter adapter = new SqlDataAdapter(query, sqlConnection);
-
-                // Neue temporäre DataTable zur Aufnahme der Daten
-                System.Data.DataTable table = new System.Data.DataTable();
-                adapter.Fill(table); // Daten aus Datenbank holen
-
-                // Bestehende Daten in der originalen DataTable löschen und mit neuen Daten füllen
-                originalDataTable.Clear();
-                originalDataTable.Merge(table);
-
-                // DataGridView mit den neuen Daten befüllen
-                DgvFarbauswertung.DataSource = table;
-
-                // Nach der ersten Spalte (vermutlich ID) absteigend sortieren
-                DgvFarbauswertung.Sort(DgvFarbauswertung.Columns[0], ListSortDirection.Descending);
-
-                // Konfiguration der Sichtbarkeit und Spaltenbreite
-                // Format: (Spaltenindex, Sichtbar?, Breite)
-                var columnSettings = new (int Index, bool Visible, int Width)[]
-                {
-                    (0, false, 60),  (1, false, 0),   (2, false, 0),
-                    (3, true, 60),   (4, true, 140),  (5, true, 65),
-                    (6, false, 0),   (7, true, 65),   (8, true, 65),
-                    (9, true, 65),   (10, true, 97),  (11, true, 60),
-                    (12, true, 60),  (13, true, 60),  (14, true, 60),
-                    (15, true, 60),  (16, true, 70),  (17, false, 0),
-                    (18, false, 0),  (19, false, 0),  (20, false, 0),
-                    (21, true, 60),  (22, true, 80),  (23, true, 60),
-                    (24, true, 60),  (25, true, 60),  (26, true, 75),
-                    (27, false, 0),  (28, false, 0),  (29, false, 0),
-                    (30, false, 0),  (31, true, 65),  (32, true, 80),
-                    (33, false, 0),  (34, false, 0),  (35, true, 110),
-                    (36, false, 0)
-                };
-
-                // Anwenden der Spalteneinstellungen auf das DataGridView
-                foreach (var (Index, Visible, Width) in columnSettings)
-                {
-                    if (Index < DgvFarbauswertung.Columns.Count)
-                    {
-                        DgvFarbauswertung.Columns[Index].Visible = Visible;
-                        if (Visible)
-                            DgvFarbauswertung.Columns[Index].Width = Width;
-                    }
-                }
-
-                // Formatierung der Spaltenüberschriften: Fett und zentriert
-                DgvFarbauswertung.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font(DataGridView.DefaultFont, FontStyle.Bold);
-                DgvFarbauswertung.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                // Aktualisiere ggf. eine Anzeige für die Gesamtanzahl der Zeilen
-                UpdateTotalRowCount();
-
-                // Verbindung zur Datenbank wieder schließen
-                sqlConnection.Close();
-            }
-            catch (Exception ex)
-            {
-                // Zeigt eine Fehlermeldung an, wenn ein Fehler während der Ausführung auftritt
-                MessageBox.Show(ex.Message);
-            }
+            SaveDataForMessurement();
         }
 
-
-        // Methode zur Ausführung einer SQL-Abfrage
-        public void ExecuteQuery(string query)
-        {
-            try
-            {
-                sqlConnection.Open(); // Verbindung zur Datenbank öffnen
-                SqlCommand sqlCommand = new SqlCommand(query, sqlConnection); // SqlCommand-Objekt für die Abfrage erstellen
-                sqlCommand.ExecuteNonQuery(); // Ausführen der SQL-Abfrage ohne Rückgabewert
-                sqlConnection.Close(); // Datenbankverbindung schließen
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
-            }
-        }
-
-        // Event-Handler-Methode, die ausgelöst wird, wenn auf den Inhalt einer Zelle im DataGridView geklickt wird
         private void DgvFarbauswertung_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
-                // Überprüfen, ob eine Zeile ausgewählt wurde und ob der Index der Zeile gültig ist
                 if (DgvFarbauswertung.SelectedRows.Count > 0 && e.RowIndex >= 0)
-                {
-                    // ID der ausgewählten Zeile im DataGridView speichern
-                    currentId = (int)DgvFarbauswertung.SelectedRows[0].Cells[0].Value;
-                    // Daten aus der ausgewählten Zeile in die entsprechenden Textboxen laden
-                    TextBoxId.Text = currentId.ToString();
-                    TextBoxAnlage.Text = DgvFarbauswertung.SelectedRows[0].Cells[3].Value.ToString();
-                    // Datum formatieren, bevor es in die Textbox geladen wird
-                    string dateValue = DgvFarbauswertung.SelectedRows[0].Cells[4].Value.ToString();
-                    if (DateTime.TryParse(dateValue, out DateTime parsedDate))
-                    {
-                        TextBoxDatum.Text = parsedDate.ToString("dd.MM.yyyy"); // Nur Datum anzeigen
-                    }
-                    else
-                    {
-                        TextBoxDatum.Text = dateValue; // Falls nicht geparst, den Originalwert anzeigen
-                    }
-                    TextBoxCharge.Text = DgvFarbauswertung.SelectedRows[0].Cells[5].Value.ToString();
-                    TextBoxBelag.Text = DgvFarbauswertung.SelectedRows[0].Cells[7].Value.ToString();
-                    TextBoxProzess.Text = DgvFarbauswertung.SelectedRows[0].Cells[8].Value.ToString();
-                    TextBoxTestlinse.Text = DgvFarbauswertung.SelectedRows[0].Cells[9].Value.ToString();
-                    TextBoxMessgeraet.Text = DgvFarbauswertung.SelectedRows[0].Cells[35].Value.ToString();
-                    TextBoxXi.Text = DgvFarbauswertung.SelectedRows[0].Cells[13].Value.ToString();
-                    TextBoxYi.Text = DgvFarbauswertung.SelectedRows[0].Cells[14].Value.ToString();
-                    TextBoxZi.Text = DgvFarbauswertung.SelectedRows[0].Cells[15].Value.ToString();
-                    TextBoxCabI.Text = DgvFarbauswertung.SelectedRows[0].Cells[21].Value.ToString();
-                    TextBoxWinkelI.Text = DgvFarbauswertung.SelectedRows[0].Cells[22].Value.ToString();
-                    TextBoxMessI.Text = DgvFarbauswertung.SelectedRows[0].Cells[16].Value.ToString();
-                    TextBoxXa.Text = DgvFarbauswertung.SelectedRows[0].Cells[23].Value.ToString();
-                    TextBoxYa.Text = DgvFarbauswertung.SelectedRows[0].Cells[24].Value.ToString();
-                    TextBoxZa.Text = DgvFarbauswertung.SelectedRows[0].Cells[25].Value.ToString();
-                    TextBoxCabA.Text = DgvFarbauswertung.SelectedRows[0].Cells[31].Value.ToString();
-                    TextBoxWinkelA.Text = DgvFarbauswertung.SelectedRows[0].Cells[32].Value.ToString();
-                    TextBoxMessA.Text = DgvFarbauswertung.SelectedRows[0].Cells[26].Value.ToString();
-                    TextBoxEgun1.Text = DgvFarbauswertung.SelectedRows[0].Cells[11].Value.ToString();
-                    TextBoxEgun2.Text = DgvFarbauswertung.SelectedRows[0].Cells[12].Value.ToString();
-                    TextBoxReinigung.Text = DgvFarbauswertung.SelectedRows[0].Cells[10].Value.ToString();
-                }
+                    PopulateTextBoxesFromRow(DgvFarbauswertung.SelectedRows[0]);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
-        // Event-Handler-Methode, die ausgelöst wird, wenn auf eine Zelle im DataGridView geklickt wird
         private void DgvFarbauswertung_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
-                // Überprüfen, ob der Index der Zeile gültig ist
                 if (e.RowIndex >= 0)
-                {
-                    // Ausgewählte Zeile im DataGridView abrufen
-                    DataGridViewRow selectedRow = DgvFarbauswertung.Rows[e.RowIndex];
-                    // ID der ausgewählten Zeile speichern
-                    currentId = (int)selectedRow.Cells[0].Value;
-                    // Daten aus der ausgewählten Zeile in die entsprechenden Textboxen laden
-                    TextBoxId.Text = currentId.ToString();
-                    TextBoxAnlage.Text = selectedRow.Cells[3].Value.ToString();
-                    // Datum formatieren, bevor es in die Textbox geladen wird
-                    if (DateTime.TryParse(selectedRow.Cells[4].Value.ToString(), out DateTime parsedDate))
-                    {
-                        TextBoxDatum.Text = parsedDate.ToString("dd.MM.yyyy");
-                    }
-                    else
-                    {
-                        TextBoxDatum.Text = selectedRow.Cells[4].Value.ToString(); // Falls das Datum nicht geparst werden kann, originalen Wert setzen
-                    }
-                    TextBoxCharge.Text = selectedRow.Cells[5].Value.ToString();
-                    TextBoxBelag.Text = selectedRow.Cells[7].Value.ToString();
-                    TextBoxProzess.Text = selectedRow.Cells[8].Value.ToString();
-                    TextBoxTestlinse.Text = selectedRow.Cells[9].Value.ToString();
-                    TextBoxMessgeraet.Text = selectedRow.Cells[35].Value.ToString();
-                    TextBoxXi.Text = selectedRow.Cells[13].Value.ToString();
-                    TextBoxYi.Text = selectedRow.Cells[14].Value.ToString();
-                    TextBoxZi.Text = selectedRow.Cells[15].Value.ToString();
-                    TextBoxCabI.Text = selectedRow.Cells[21].Value.ToString();
-                    TextBoxWinkelI.Text = selectedRow.Cells[22].Value.ToString();
-                    TextBoxMessI.Text = selectedRow.Cells[16].Value.ToString();
-                    TextBoxXa.Text = selectedRow.Cells[23].Value.ToString();
-                    TextBoxYa.Text = selectedRow.Cells[24].Value.ToString();
-                    TextBoxZa.Text = selectedRow.Cells[25].Value.ToString();
-                    TextBoxCabA.Text = selectedRow.Cells[31].Value.ToString();
-                    TextBoxWinkelA.Text = selectedRow.Cells[32].Value.ToString();
-                    TextBoxMessA.Text = selectedRow.Cells[26].Value.ToString();
-                    TextBoxEgun1.Text = selectedRow.Cells[11].Value.ToString();
-                    TextBoxEgun2.Text = selectedRow.Cells[12].Value.ToString();
-                    TextBoxReinigung.Text = selectedRow.Cells[10].Value.ToString();
-                }
+                    PopulateTextBoxesFromRow(DgvFarbauswertung.Rows[e.RowIndex]);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
-        // Methode zur grafischen Gestaltung des DGV
+        // Zusammengeführt aus CellClick + CellContentClick (war doppelter Code)
+        private void PopulateTextBoxesFromRow(DataGridViewRow row)
+        {
+            currentId = (int)row.Cells[0].Value;
+            TextBoxId.Text = currentId.ToString();
+            TextBoxAnlage.Text = row.Cells[3].Value.ToString();
+
+            if (DateTime.TryParse(row.Cells[4].Value.ToString(), out DateTime parsedDate))
+                TextBoxDatum.Text = parsedDate.ToString("dd.MM.yyyy");
+            else
+                TextBoxDatum.Text = row.Cells[4].Value.ToString();
+
+            TextBoxCharge.Text = row.Cells[5].Value.ToString();
+            TextBoxBelag.Text = row.Cells[7].Value.ToString();
+            TextBoxProzess.Text = row.Cells[8].Value.ToString();
+            TextBoxTestlinse.Text = row.Cells[9].Value.ToString();
+            TextBoxMessgeraet.Text = row.Cells[35].Value.ToString();
+            TextBoxXi.Text = row.Cells[13].Value.ToString();
+            TextBoxYi.Text = row.Cells[14].Value.ToString();
+            TextBoxZi.Text = row.Cells[15].Value.ToString();
+            TextBoxCabI.Text = row.Cells[21].Value.ToString();
+            TextBoxWinkelI.Text = row.Cells[22].Value.ToString();
+            TextBoxMessI.Text = row.Cells[16].Value.ToString();
+            TextBoxXa.Text = row.Cells[23].Value.ToString();
+            TextBoxYa.Text = row.Cells[24].Value.ToString();
+            TextBoxZa.Text = row.Cells[25].Value.ToString();
+            TextBoxCabA.Text = row.Cells[31].Value.ToString();
+            TextBoxWinkelA.Text = row.Cells[32].Value.ToString();
+            TextBoxMessA.Text = row.Cells[26].Value.ToString();
+            TextBoxEgun1.Text = row.Cells[11].Value.ToString();
+            TextBoxEgun2.Text = row.Cells[12].Value.ToString();
+            TextBoxReinigung.Text = row.Cells[10].Value.ToString();
+        }
+
+        // CellFormatting: mit gecachten Datumswerten – kein DateTime.Now.Date per Zelle
         private void DgvFarbauswertung_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            // Überprüfen, ob es sich um eine Zeile handelt und ob die Zelle das Datum enthält
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || e.Value == null) return;
+            if (DgvFarbauswertung.Columns[e.ColumnIndex].Name != "Datum") return;
+
+            if (DateTime.TryParse(e.Value.ToString(), out DateTime cellDate))
             {
-                string dateColumnName = "Datum"; // Name der Datumsspalte
-
-                // Überprüfen, ob die aktuelle Zelle sich in der Datumsspalte befindet
-                if (DgvFarbauswertung.Columns[e.ColumnIndex].Name == dateColumnName)
-                {
-                    DateTime currentDate = DateTime.Now.Date; // Aktuelles Datum ohne Zeitkomponente
-                    DateTime previousDate = currentDate.AddDays(-1); // Datum des Vortages
-
-                    // Wert der Zelle als Datum interpretieren
-                    if (DateTime.TryParse(e.Value.ToString(), out DateTime cellDate))
-                    {
-                        // Wenn das Datum in der Zelle dem aktuellen Datum entspricht, die gesamte Zeile einfärben
-                        if (cellDate.Date == currentDate)
-                        {
-                            DgvFarbauswertung.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightSalmon;
-                        }
-                        // Wenn das Datum in der Zelle dem Vortag entspricht, die gesamte Zeile in Gelb einfärben
-                        else if (cellDate.Date == previousDate)
-                        {
-                            DgvFarbauswertung.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGoldenrodYellow;
-                        }
-                    }
-                }
+                if (cellDate.Date == _cachedToday)
+                    DgvFarbauswertung.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightSalmon;
+                else if (cellDate.Date == _cachedYesterday)
+                    DgvFarbauswertung.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGoldenrodYellow;
             }
         }
 
-        // Methode zum Befüllen der ComboBox mit eindeutigen Werten aus der Spalte "Belag" des DataGridViews
+        // =====================================================================
+        // ComboBox / Filter
+        // =====================================================================
+
+        // FillComboBox liest direkt aus DataTable – iterieren über DGV-Rows ist langsamer
         private void FillComboBoxBelag()
         {
             try
             {
-                HashSet<string> uniqueValues = new HashSet<string>(); // HashSet zum Speichern eindeutiger Werte erstellen
-
-                // DataGridView durchlaufen und eindeutige Werte zum HashSet hinzufügen
-                foreach (DataGridViewRow row in DgvFarbauswertung.Rows)
-                {
-                    // Überprüfen, ob die Zelle gültig ist und nicht null ist
-                    if (row.Cells[7].Value != null)
-                    {
-                        string value = row.Cells[7].Value.ToString(); // Wert der Zelle abrufen
-                        uniqueValues.Add(value); // Eindeutigen Wert zur HashSet hinzufügen
-                    }
-                }
-
-                // Fügen Sie die eindeutigen Werte aus dem HashSet zur ComboBox hinzu
-                foreach (string value in uniqueValues)
-                {
-                    ComboBoxBelag.Items.Add(value); // Eindeutigen Wert zur ComboBox hinzufügen
-                }
-                ComboBoxBelag.Sorted = true; // Sortieren Sie die ComboBox-Einträge
+                var uniqueValues = new HashSet<string>();
+                foreach (DataRow row in originalDataTable.Rows)
+                    if (row[7] != DBNull.Value) uniqueValues.Add(row[7].ToString());
+                foreach (string v in uniqueValues) ComboBoxBelag.Items.Add(v);
+                ComboBoxBelag.Sorted = true;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
-        // Methode zum Befüllen der ComboBox mit eindeutigen Werten aus der Spalte "Prozess" des DataGridViews
         private void FillComboBoxProzess()
         {
             try
             {
-                HashSet<string> uniqueValues = new HashSet<string>(); // HashSet zum Speichern eindeutiger Werte erstellen
-
-                // DataGridView durchlaufen und eindeutige Werte zum HashSet hinzufügen
-                foreach (DataGridViewRow row in DgvFarbauswertung.Rows)
-                {
-                    // Überprüfen, ob die Zelle gültig ist und nicht null ist
-                    if (row.Cells[8].Value != null)
-                    {
-                        string value = row.Cells[8].Value.ToString(); // Wert der Zelle abrufen
-                        uniqueValues.Add(value); // Eindeutigen Wert zur HashSet hinzufügen
-                    }
-                }
-
-                // Fügen Sie die eindeutigen Werte aus dem HashSet zur ComboBox hinzu
-                foreach (string value in uniqueValues)
-                {
-                    ComboBoxProzess.Items.Add(value); // Eindeutigen Wert zur ComboBox hinzufügen
-                }
-                ComboBoxProzess.Sorted = true; // Sortieren Sie die ComboBox-Einträge
+                var uniqueValues = new HashSet<string>();
+                foreach (DataRow row in originalDataTable.Rows)
+                    if (row[8] != DBNull.Value) uniqueValues.Add(row[8].ToString());
+                foreach (string v in uniqueValues) ComboBoxProzess.Items.Add(v);
+                ComboBoxProzess.Sorted = true;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
-        // Methode zum Anwenden von Filtern basierend auf Benutzereingaben für Belag, Anlage und/oder Datum
         private void ApplyFilters()
         {
             try
             {
-                // Filter für Belag
-                string belagFilter = ComboBoxBelag.SelectedItem != null ?
-                    $"Belag = '{ComboBoxBelag.SelectedItem}'" :
-                    string.Empty;
+                string belagFilter = ComboBoxBelag.SelectedItem != null
+                    ? $"Belag = '{ComboBoxBelag.SelectedItem}'" : string.Empty;
 
-                // Filter für Anlage
-                string anlageFilter = ComboBoxAnlage.SelectedItem != null ?
-                    int.TryParse(ComboBoxAnlage.SelectedItem.ToString(), out int anlage) ?
-                        $"Anlage = '{anlage}'" :
-                        "1 = 0" : // Füge einen Filter hinzu, der immer falsch ist, wenn die Anlage nicht gültig ist
-                    string.Empty;
+                string anlageFilter = ComboBoxAnlage.SelectedItem != null
+                    ? int.TryParse(ComboBoxAnlage.SelectedItem.ToString(), out int anlage)
+                        ? $"Anlage = '{anlage}'"
+                        : "1 = 0"
+                    : string.Empty;
 
-                // Filter für Prozess
-                string prozessFilter = ComboBoxProzess.SelectedItem != null ?
-                    $"Prozess = '{ComboBoxProzess.SelectedItem}'" :
-                    string.Empty;
+                string prozessFilter = ComboBoxProzess.SelectedItem != null
+                    ? $"Prozess = '{ComboBoxProzess.SelectedItem}'" : string.Empty;
 
-                // Filter für Datum
-                string datumFilter = DateTimePickerDgv.Checked && DateTimePickerDgvBis.Checked ?
-                    $"[Datum] >= #{DateTimePickerDgv.Value.Date:MM/dd/yyyy}# AND [Datum] <= #{DateTimePickerDgvBis.Value.Date:MM/dd/yyyy}#" :
-                    string.Empty;
+                string datumFilter = DateTimePickerDgv.Checked && DateTimePickerDgvBis.Checked
+                    ? $"[Datum] >= #{DateTimePickerDgv.Value.Date:MM/dd/yyyy}# AND [Datum] <= #{DateTimePickerDgvBis.Value.Date:MM/dd/yyyy}#"
+                    : string.Empty;
 
-                // Kombinieren aller Filter
-                List<string> filters = new List<string>();
+                var filters = new List<string>();
+                if (!string.IsNullOrEmpty(belagFilter)) filters.Add(belagFilter);
+                if (!string.IsNullOrEmpty(anlageFilter)) filters.Add(anlageFilter);
+                if (!string.IsNullOrEmpty(prozessFilter)) filters.Add(prozessFilter);
+                if (!string.IsNullOrEmpty(datumFilter)) filters.Add(datumFilter);
 
-                if (!string.IsNullOrEmpty(belagFilter))
-                    filters.Add(belagFilter);
-                if (!string.IsNullOrEmpty(anlageFilter))
-                    filters.Add(anlageFilter);
-                if (!string.IsNullOrEmpty(prozessFilter))
-                    filters.Add(prozessFilter);
-                if (!string.IsNullOrEmpty(datumFilter))
-                    filters.Add(datumFilter);
-
-                string combinedFilter = string.Join(" AND ", filters);
-
-                // Filter auf DataView anwenden und DataSource des DataGridViews aktualisieren
-                DataView dataView = new DataView(originalDataTable)
+                // DataView direkt als DataSource – spart das Erstellen einer neuen DataTable
+                var dataView = new DataView(originalDataTable)
                 {
-                    RowFilter = combinedFilter, // Filterbedingung auf DataView anwenden                    
-                    Sort = "Datum DESC, Charge DESC" // Ergebnisse nach Datum absteigend sortieren, dann nach Charge
+                    RowFilter = string.Join(" AND ", filters),
+                    Sort = "Datum DESC, Charge DESC"
                 };
-
-                DgvFarbauswertung.DataSource = dataView.ToTable(); // DataView als neue DataSource für das DataGridView festlegen
+                DgvFarbauswertung.DataSource = dataView;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message); // Fehlermeldung anzeigen, falls ein Fehler auftritt
-            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
-        // Methode zum Aktualisieren der Anzeige der Gesamtanzahl von Datensätzen im DataGridView
         private void UpdateTotalRowCount()
         {
-            int totalRowCount = DgvFarbauswertung.Rows.Count;
-            TextBoxChargenGesamtNachBelag.Text = totalRowCount.ToString();
+            int count = DgvFarbauswertung.Rows.Count;
+            TextBoxChargenGesamtNachBelag.Text = count.ToString();
             TextBoxChargenGesamtNachBelag.TextAlign = HorizontalAlignment.Center;
+            if (_statusRecordCount != null)
+                _statusRecordCount.Text = $"Datensätze: {count:N0}";
         }
 
-        // Methode zum Anwenden von Filtern und Aktualisieren der Gesamtanzahl von Datensätzen
         private void ApplyFiltersAndUpdateTotalRowCount()
         {
-            ApplyFilters(); // Filter anwenden
-            UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
+            ApplyFilters();
+            UpdateTotalRowCount();
         }
 
-        // Event-Handler-Methode, die ausgelöst wird, wenn die Auswahl in der ComboBox "Belag" geändert wird
         private void ComboBoxBelag_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Überprüfen, ob mindestens ein DateTimePicker aktiv ist
             if (DateTimePickerDgv.Checked || DateTimePickerDgvBis.Checked)
-            {
-                ApplyFilters(); // Filter anwenden, wenn eine neue Auswahl getroffen wird
-                UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
-            }
-            else
-            {
-                UpdateDgvFarbauswertung(); // Aktualisieren des DataGridViews ohne Filter, wenn keine DateTimePicker aktiv sind
-                UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
-            }
+                ApplyFiltersAndUpdateTotalRowCount();
+            else { UpdateDgvFarbauswertung(); UpdateTotalRowCount(); }
         }
 
-        // Event-Handler-Methode, die ausgelöst wird, wenn die Auswahl in der ComboBox "Anlage" geändert wird
         private void ComboBoxAnlage_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Überprüfen, ob mindestens ein DateTimePicker aktiv ist
             if (DateTimePickerDgv.Checked || DateTimePickerDgvBis.Checked)
-            {
-                ApplyFilters(); // Filter anwenden, wenn eine neue Auswahl getroffen wird
-                UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
-            }
-            else
-            {
-                UpdateDgvFarbauswertung(); // Aktualisieren des DataGridViews ohne Filter, wenn keine DateTimePicker aktiv sind
-                UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
-            }
+                ApplyFiltersAndUpdateTotalRowCount();
+            else { UpdateDgvFarbauswertung(); UpdateTotalRowCount(); }
         }
 
-        // Event-Handler-Methode, die ausgelöst wird, wenn die Auswahl in der ComboBox "Prozes" geändert wird
         private void ComboBoxProzess_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Überprüfen, ob mindestens ein DateTimePicker aktiv ist
             if (DateTimePickerDgv.Checked || DateTimePickerDgvBis.Checked)
-            {
-                ApplyFilters(); // Filter anwenden, wenn eine neue Auswahl getroffen wird
-                UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
-            }
-            else
-            {
-                UpdateDgvFarbauswertung(); // Aktualisieren des DataGridViews ohne Filter, wenn keine DateTimePicker aktiv sind
-                UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
-            }
+                ApplyFiltersAndUpdateTotalRowCount();
+            else { UpdateDgvFarbauswertung(); UpdateTotalRowCount(); }
         }
 
-        // Event-Handler-Methode, die ausgelöst wird, wenn die Auswahl in der ComboBox "Belag" geändert wird
         private void ComboBoxBelag_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            // Überprüfen, ob mindestens ein DateTimePicker aktiv ist
             if (DateTimePickerDgv.Checked || DateTimePickerDgvBis.Checked)
-            {
-                ApplyFilters(); // Filter anwenden, wenn eine neue Auswahl getroffen wird
-                UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
-            }
-            else
-            {
-                UpdateDgvFarbauswertung(); // Aktualisieren des DataGridViews ohne Filter, wenn keine DateTimePicker aktiv sind
-                UpdateTotalRowCount(); // Anzahl der Datensätze aktualisieren
-            }
+                ApplyFiltersAndUpdateTotalRowCount();
+            else { UpdateDgvFarbauswertung(); UpdateTotalRowCount(); }
         }
 
-        // Event-Handler-Methode, die ausgelöst wird, wenn das Datum im DateTimePickerAb geändert wird
+        // Doppelaufruf von ApplyFilters() entfernt – nur noch via AndUpdateTotalRowCount
         private void DateTimePickerDgv_ValueChanged(object sender, EventArgs e)
         {
-            ApplyFilters(); // Filter anwenden, wenn ein neues Datum ausgewählt wird
             ApplyFiltersAndUpdateTotalRowCount();
-            // Aktualisieren des Labels mit dem ausgewählten Datum
             LblChargenAb.Text = $"Eingelesen ab {DateTimePickerDgv.Value:dd.MM.yyyy}:";
         }
 
-        // Event-Handler-Methode, die ausgelöst wird, wenn das Datum im DateTimePickerBis geändert wird
         private void DateTimePickerDgvBis_ValueChanged(object sender, EventArgs e)
         {
-            // Sicherstellen, dass das Bis Datum nicht kleinern als das Ab Datum ist
             if (DateTimePickerDgvBis.Value < DateTimePickerDgv.Value)
             {
                 DateTimePickerDgvBis.Value = DateTime.Today;
                 return;
             }
-
-            ApplyFilters(); // Filter anwenden, wenn ein neues Datum ausgewählt wird
             ApplyFiltersAndUpdateTotalRowCount();
         }
 
-        // Event-Handler-Methode, die ausgelöst wird, wenn der Button zum Exportieren der Daten in ein Excel-File geklickt wird
+        // =====================================================================
+        // Hilfsmethoden
+        // =====================================================================
+        private void UpdateDateTime()
+        {
+            LblTimeDate.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
+        }
+
+        // Liefert die aktuelle DataTable auch wenn DataSource eine DataView ist
+        private System.Data.DataTable GetDataGridViewData()
+        {
+            if (DgvFarbauswertung.DataSource is System.Data.DataTable dt && dt.Rows.Count > 0)
+                return dt;
+            if (DgvFarbauswertung.DataSource is DataView dv)
+                return dv.ToTable();
+            return new System.Data.DataTable();
+        }
+
+        private void SaveDataForMessurement()
+        {
+            Form_Messbild form_Messbild = new Form_Messbild(
+                TextBoxDatum.Text, TextBoxCharge.Text,
+                TextBoxXi.Text, TextBoxXa.Text,
+                TextBoxYi.Text, TextBoxYa.Text,
+                TextBoxZi.Text, TextBoxZa.Text,
+                TextBoxBelag.Text, TextBoxProzess.Text, TextBoxAnlage.Text);
+            form_Messbild.Show();
+        }
+
+        // =====================================================================
+        // Excel-Export
+        // =====================================================================
         private async void BtnExportExcel_Click(object sender, EventArgs e)
         {
             Workbook workbook = null;
@@ -820,161 +799,100 @@ namespace VerwaltungKST1127.Farbauswertung
             var excelApp = new Microsoft.Office.Interop.Excel.Application();
             try
             {
-                // Anzeige einer Warnung vor dem Exportvorgang und Prüfung auf Benutzerreaktion
                 DialogResult result = MessageBox.Show(
                     "Das Exportieren kann bei einer großen Datenmenge etwas länger dauern.\n\nKlicken Sie auf 'OK', um fortzufahren, oder auf 'Abbrechen', um den Vorgang abzubrechen.",
-                    "Hinweis",
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Information);
+                    "Hinweis", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+                if (result == DialogResult.Cancel) return;
 
-                // Überprüfen, ob der Benutzer den Export fortsetzen möchte
-                if (result == DialogResult.Cancel)
-                {
-                    return; // Vorgang abbrechen, wenn der Benutzer auf 'Abbrechen' klickt
-                }
-
-                // Erstellung einer neuen Instanz der Excel-Anwendung
-                excelApp.Visible = false; // Excel-Anwendung nicht sofort öffnen
-
-                // Erstellung eines neuen Arbeitsblatts in Excel
+                excelApp.Visible = false;
                 workbook = excelApp.Workbooks.Add(Type.Missing);
                 worksheet = (Worksheet)workbook.ActiveSheet;
 
-                // Kopieren des Headers aus dem DataGridView in das Excel-Arbeitsblatt
                 int columnCount = 1;
                 foreach (DataGridViewColumn column in DgvFarbauswertung.Columns)
                 {
                     if (column.Visible)
                     {
-                        // Formatierung der Header-Zelle
                         var headerRange = (Range)worksheet.Cells[1, columnCount];
-                        headerRange.Font.Bold = true; // Fettschrift für den Text
-                        headerRange.Value = column.HeaderText; // Header-Text setzen
-                        headerRange.Font.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.DarkBlue); // Textfarbe ändern
-                        headerRange.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.WhiteSmoke); // Hintergrundfarbe der Zelle ändern
-                        headerRange.HorizontalAlignment = XlHAlign.xlHAlignCenter; // Text zentrieren
-                        headerRange.Font.Size = 12; // Schriftgröße ändern
-
-                        // Unterstrichene Linie unter dem Header hinzufügen
+                        headerRange.Font.Bold = true;
+                        headerRange.Value = column.HeaderText;
+                        headerRange.Font.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.DarkBlue);
+                        headerRange.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.WhiteSmoke);
+                        headerRange.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                        headerRange.Font.Size = 12;
                         Borders borders = headerRange.Borders;
                         borders[XlBordersIndex.xlEdgeBottom].LineStyle = XlLineStyle.xlContinuous;
                         borders[XlBordersIndex.xlEdgeBottom].Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
                         borders[XlBordersIndex.xlEdgeBottom].Weight = XlBorderWeight.xlThick;
-
-                        columnCount++; // Spaltenzähler erhöhen
-
-                        // Freigeben der verwendeten COM-Objekte
+                        columnCount++;
                         Marshal.ReleaseComObject(headerRange);
                         Marshal.ReleaseComObject(borders);
                     }
                 }
 
-                // Aktivieren der Filterfunktion im Header
                 var headerRangeForFilter = worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, columnCount - 1]];
                 headerRangeForFilter.AutoFilter(1, Type.Missing, XlAutoFilterOperator.xlAnd, Type.Missing, true);
 
-                // Asynchrones Kopieren der Daten aus dem DataGridView in das Excel-Arbeitsblatt
                 await CopyDataToExcelAsync(worksheet);
 
-                // Erstellen des Liniendiagramms durch Auswahl aus der ListBox
-                if (ListBoxXYZ.CheckedItems.Contains("X-Werte"))
-                {
-                    CreateLineChartX(worksheet);
-                }
-                if (ListBoxXYZ.CheckedItems.Contains("Y-Werte"))
-                {
-                    CreateLineChartY(worksheet);
-                }
-                if (ListBoxXYZ.CheckedItems.Contains("Z-Werte"))
-                {
-                    CreateLineChartZ(worksheet);
-                }
-                if (ListBoxXYZ.CheckedItems.Contains("C_AB"))
-                {
-                    CreateLineChartCAB(worksheet);
-                }
+                if (ListBoxXYZ.CheckedItems.Contains("X-Werte")) CreateLineChartX(worksheet);
+                if (ListBoxXYZ.CheckedItems.Contains("Y-Werte")) CreateLineChartY(worksheet);
+                if (ListBoxXYZ.CheckedItems.Contains("Z-Werte")) CreateLineChartZ(worksheet);
+                if (ListBoxXYZ.CheckedItems.Contains("C_AB")) CreateLineChartCAB(worksheet);
 
-                // Erfolgsmeldung anzeigen
                 MessageBox.Show("Das Excelfile wurde erstellt.\nOk drücken um das File zu öffnen");
-
-                // Öffnen der Excel-Anwendung
                 excelApp.Visible = true;
-
-                // Labeltext anpassen
                 LblProgress.Text = "0%";
             }
             catch (Exception ex)
             {
-                // Fehlermeldung anzeigen, wenn ein Fehler auftritt
                 MessageBox.Show("Fehler beim Exportieren der Daten: " + ex.Message);
             }
             finally
             {
-                // Sicherstellen, dass alle Excel-Objekte freigegeben werden
                 if (worksheet != null) Marshal.ReleaseComObject(worksheet);
                 if (workbook != null) Marshal.ReleaseComObject(workbook);
                 if (excelApp != null) Marshal.ReleaseComObject(excelApp);
-
-                worksheet = null;
-                workbook = null;
-                excelApp = null;
-
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                worksheet = null; workbook = null; excelApp = null;
+                GC.Collect(); GC.WaitForPendingFinalizers();
+                GC.Collect(); GC.WaitForPendingFinalizers();
             }
         }
 
-        // Asynchrone Methode zum Kopieren der Daten aus dem DataGridView in das Excel-Arbeitsblatt
         private async Task CopyDataToExcelAsync(Worksheet worksheet)
         {
             try
             {
-                // Anzahl der Zeilen und sichtbaren Spalten im DataGridView abrufen
                 int rowCount = DgvFarbauswertung.Rows.Count;
-                int columnCount = DgvFarbauswertung.Columns.Cast<DataGridViewColumn>().Count(column => column.Visible);
+                int columnCount = DgvFarbauswertung.Columns.Cast<DataGridViewColumn>().Count(c => c.Visible);
 
-                // Fortschrittsbalken initialisieren
                 ProgressBarImport.Minimum = 0;
                 ProgressBarImport.Maximum = rowCount;
                 ProgressBarImport.Value = 0;
                 ProgressBarImport.Step = 1;
 
-                // Erstellung eines zweidimensionalen Arrays zur Speicherung der Daten
                 var data = new object[rowCount, columnCount];
 
-                // Die Daten werden in einem asynchronen Task kopiert, um die Benutzeroberfläche reaktionsschnell zu halten
                 await Task.Run(() =>
                 {
-                    // Schleife durchläuft jede Zeile des DataGridViews
                     for (int i = 0; i < rowCount; i++)
                     {
-                        int visibleColumnIndex = 0; // Index für sichtbare Spalten initialisieren
-
-                        // Schleife durchläuft jede Spalte des DataGridViews
+                        int visibleColumnIndex = 0;
                         for (int j = 0; j < DgvFarbauswertung.Columns.Count; j++)
                         {
-                            // Überprüfen, ob die Spalte sichtbar ist
                             if (DgvFarbauswertung.Columns[j].Visible)
                             {
-                                // Daten aus dem DataGridView werden in das Array kopiert
                                 data[i, visibleColumnIndex] = DgvFarbauswertung.Rows[i].Cells[j].Value;
-                                visibleColumnIndex++; // Inkrementiere den Index für sichtbare Spalten
+                                visibleColumnIndex++;
                             }
                         }
-
-                        // Fortschrittsbalken aktualisieren
                         ProgressBarImport.Invoke((System.Action)(() =>
                         {
-                            ProgressBarImport.PerformStep(); // Schritt des Fortschrittsbalkens erhöhen
-                                                             // Fortschritt in Prozent berechnen und im Label anzeigen
-                            double progressbarPercentage = (double)(i + 1) / rowCount * 100;
-                            LblProgress.Text = $"Fortschritt: {progressbarPercentage:F2}% in Zwischenspeicher kopiert!";
-                            // Überprüfen, ob der Fortschrittsbalken den maximalen Wert erreicht hat
+                            ProgressBarImport.PerformStep();
+                            double pct = (double)(i + 1) / rowCount * 100;
+                            LblProgress.Text = $"Fortschritt: {pct:F2}% in Zwischenspeicher kopiert!";
                             if (ProgressBarImport.Value == ProgressBarImport.Maximum)
                             {
-                                // Fortschrittsbalken zurücksetzen
                                 ProgressBarImport.Value = 0;
                                 LblProgress.Text = "Daten vollständig in Zwischenspeicher abgelegt. Excel wird erstellt";
                             }
@@ -982,300 +900,132 @@ namespace VerwaltungKST1127.Farbauswertung
                     }
                 });
 
-                // Kopieren der Daten aus dem Array in das Excel-Arbeitsblatt
                 Range dataRange = worksheet.Range[worksheet.Cells[2, 1], worksheet.Cells[rowCount + 1, columnCount]];
                 dataRange.Value = data;
-
-                // Zellenformatierung: Textausrichtung zentrieren
                 dataRange.HorizontalAlignment = XlHAlign.xlHAlignCenter;
-
-                // Freigeben der verwendeten COM-Objekte
                 Marshal.ReleaseComObject(dataRange);
             }
-            catch (Exception ex)
-            {
-                // Fehlermeldung anzeigen, wenn ein Fehler auftritt
-                MessageBox.Show("Fehler beim Kopieren der Daten in Excel: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show("Fehler beim Kopieren der Daten in Excel: " + ex.Message); }
         }
 
-        // Methode zum Erstellen des Liniendiagramms_Z
         private void CreateLineChartZ(Worksheet worksheet)
         {
             try
             {
-                // Erstellen des Chart-Objekts
                 ChartObjects chartObjects = (ChartObjects)worksheet.ChartObjects(Type.Missing);
                 ChartObject chartObject = chartObjects.Add(400, 40, 600, 300);
                 Chart chart = chartObject.Chart;
-
-                // Diagrammtyp festlegen
                 chart.ChartType = XlChartType.xlLine;
-
-                // Datenbereich für das Diagramm festlegen
                 int dataRowCount = DgvFarbauswertung.Rows.Count;
-                Range yRange1 = worksheet.Range["L2:L" + (dataRowCount + 1)]; // Erster Wert
-                Range yRange2 = worksheet.Range["R2:R" + (dataRowCount + 1)]; // Zweiter Wert
-
-                // Fortlaufende numerische Werte für die X-Achse festlegen
+                Range yRange1 = worksheet.Range["L2:L" + (dataRowCount + 1)];
+                Range yRange2 = worksheet.Range["R2:R" + (dataRowCount + 1)];
                 object[] xValues = new object[dataRowCount];
-                for (int i = 0; i < dataRowCount; i++)
-                {
-                    xValues[i] = i + 1;
-                }
-
-                // Erste Linie hinzufügen
+                for (int i = 0; i < dataRowCount; i++) xValues[i] = i + 1;
                 Series series1 = (Series)chart.SeriesCollection().NewSeries();
-                series1.XValues = xValues;
-                series1.Values = yRange1;
-                series1.Name = "Z_I"; // Name der ersten Linie
-
-                // Zweite Linie hinzufügen
+                series1.XValues = xValues; series1.Values = yRange1; series1.Name = "Z_I";
                 Series series2 = (Series)chart.SeriesCollection().NewSeries();
-                series2.XValues = xValues;
-                series2.Values = yRange2;
-                series2.Name = "Z_A"; // Name der zweiten Linie
-
-                // Trendlinie zur ersten Linie hinzufügen
+                series2.XValues = xValues; series2.Values = yRange2; series2.Name = "Z_A";
                 Trendline trendline1 = (Trendline)series1.Trendlines().Add();
-                trendline1.Type = XlTrendlineType.xlLinear; // Typ der Trendlinie festlegen
-                trendline1.Name = "Trend_Z_I";
-                trendline1.Border.Color = Color.DarkBlue;
-
-                // Trendlinie zur ersten Linie hinzufügen
+                trendline1.Type = XlTrendlineType.xlLinear; trendline1.Name = "Trend_Z_I"; trendline1.Border.Color = Color.DarkBlue;
                 Trendline trendline2 = (Trendline)series2.Trendlines().Add();
-                trendline2.Type = XlTrendlineType.xlLinear; // Typ der Trendlinie festlegen
-                trendline2.Name = "Trend_Z_A";
-                trendline2.Border.Color = Color.DarkOrange;
-
-                // Diagrammtitel setzen
-                chart.HasTitle = true;
-                chart.ChartTitle.Text = "Z-Werte";
-
-                // Achsenbeschriftungen setzen
+                trendline2.Type = XlTrendlineType.xlLinear; trendline2.Name = "Trend_Z_A"; trendline2.Border.Color = Color.DarkOrange;
+                chart.HasTitle = true; chart.ChartTitle.Text = "Z-Werte";
                 Axis xAxis = (Axis)chart.Axes(XlAxisType.xlCategory, XlAxisGroup.xlPrimary);
-                xAxis.HasTitle = true;
-                xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
-
+                xAxis.HasTitle = true; xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
                 Axis yAxis = (Axis)chart.Axes(XlAxisType.xlValue, XlAxisGroup.xlPrimary);
-                yAxis.HasTitle = true;
-                yAxis.AxisTitle.Text = "Wert";
+                yAxis.HasTitle = true; yAxis.AxisTitle.Text = "Wert";
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message); }
         }
 
-        // Methode zum Erstellen des Liniendiagramms_Y
         private void CreateLineChartY(Worksheet worksheet)
         {
             try
             {
-                // Erstellen des Chart-Objekts
                 ChartObjects chartObjects = (ChartObjects)worksheet.ChartObjects(Type.Missing);
                 ChartObject chartObject = chartObjects.Add(500, 100, 600, 300);
                 Chart chart = chartObject.Chart;
-
-                // Diagrammtyp festlegen
                 chart.ChartType = XlChartType.xlLine;
-
-                // Datenbereich für das Diagramm festlegen
                 int dataRowCount = DgvFarbauswertung.Rows.Count;
-                Range yRange1 = worksheet.Range["K2:K" + (dataRowCount + 1)]; // Erster Wert
-                Range yRange2 = worksheet.Range["Q2:Q" + (dataRowCount + 1)]; // Zweiter Wert
-
-                // Fortlaufende numerische Werte für die X-Achse festlegen
+                Range yRange1 = worksheet.Range["K2:K" + (dataRowCount + 1)];
+                Range yRange2 = worksheet.Range["Q2:Q" + (dataRowCount + 1)];
                 object[] xValues = new object[dataRowCount];
-                for (int i = 0; i < dataRowCount; i++)
-                {
-                    xValues[i] = i + 1;
-                }
-
-                // Erste Linie hinzufügen
+                for (int i = 0; i < dataRowCount; i++) xValues[i] = i + 1;
                 Series series1 = (Series)chart.SeriesCollection().NewSeries();
-                series1.XValues = xValues;
-                series1.Values = yRange1;
-                series1.Name = "Y_I"; // Name der ersten Linie
-
-                // Zweite Linie hinzufügen
+                series1.XValues = xValues; series1.Values = yRange1; series1.Name = "Y_I";
                 Series series2 = (Series)chart.SeriesCollection().NewSeries();
-                series2.XValues = xValues;
-                series2.Values = yRange2;
-                series2.Name = "Y_A"; // Name der zweiten Linie
-
-                // Trendlinie zur ersten Linie hinzufügen
+                series2.XValues = xValues; series2.Values = yRange2; series2.Name = "Y_A";
                 Trendline trendline1 = (Trendline)series1.Trendlines().Add();
-                trendline1.Type = XlTrendlineType.xlLinear; // Typ der Trendlinie festlegen
-                trendline1.Name = "Trend_A_I";
-                trendline1.Border.Color = Color.DarkBlue;
-
-                // Trendlinie zur ersten Linie hinzufügen
+                trendline1.Type = XlTrendlineType.xlLinear; trendline1.Name = "Trend_A_I"; trendline1.Border.Color = Color.DarkBlue;
                 Trendline trendline2 = (Trendline)series2.Trendlines().Add();
-                trendline2.Type = XlTrendlineType.xlLinear; // Typ der Trendlinie festlegen
-                trendline2.Name = "Trend_A_A";
-                trendline2.Border.Color = Color.DarkOrange;
-
-                // Diagrammtitel setzen
-                chart.HasTitle = true;
-                chart.ChartTitle.Text = "Y-Werte";
-
-                // Achsenbeschriftungen setzen
+                trendline2.Type = XlTrendlineType.xlLinear; trendline2.Name = "Trend_A_A"; trendline2.Border.Color = Color.DarkOrange;
+                chart.HasTitle = true; chart.ChartTitle.Text = "Y-Werte";
                 Axis xAxis = (Axis)chart.Axes(XlAxisType.xlCategory, XlAxisGroup.xlPrimary);
-                xAxis.HasTitle = true;
-                xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->            Altäre Chargen";
-
+                xAxis.HasTitle = true; xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->            Altäre Chargen";
                 Axis yAxis = (Axis)chart.Axes(XlAxisType.xlValue, XlAxisGroup.xlPrimary);
-                yAxis.HasTitle = true;
-                yAxis.AxisTitle.Text = "Wert";
+                yAxis.HasTitle = true; yAxis.AxisTitle.Text = "Wert";
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message); }
         }
 
-        // Methode zum Erstellen des Liniendiagramms_X
         private void CreateLineChartX(Worksheet worksheet)
         {
             try
             {
-                // Erstellen des Chart-Objekts
                 ChartObjects chartObjects = (ChartObjects)worksheet.ChartObjects(Type.Missing);
                 ChartObject chartObject = chartObjects.Add(600, 160, 600, 300);
                 Chart chart = chartObject.Chart;
-
-                // Diagrammtyp festlegen
                 chart.ChartType = XlChartType.xlLine;
-
-                // Datenbereich für das Diagramm festlegen
                 int dataRowCount = DgvFarbauswertung.Rows.Count;
-                Range yRange1 = worksheet.Range["J2:J" + (dataRowCount + 1)]; // Erster Wert
-                Range yRange2 = worksheet.Range["P2:P" + (dataRowCount + 1)]; // Zweiter Wert
-
-                // Fortlaufende numerische Werte für die X-Achse festlegen
+                Range yRange1 = worksheet.Range["J2:J" + (dataRowCount + 1)];
+                Range yRange2 = worksheet.Range["P2:P" + (dataRowCount + 1)];
                 object[] xValues = new object[dataRowCount];
-                for (int i = 0; i < dataRowCount; i++)
-                {
-                    xValues[i] = i + 1;
-                }
-
-                // Erste Linie hinzufügen
+                for (int i = 0; i < dataRowCount; i++) xValues[i] = i + 1;
                 Series series1 = (Series)chart.SeriesCollection().NewSeries();
-                series1.XValues = xValues;
-                series1.Values = yRange1;
-                series1.Name = "X_I"; // Name der ersten Linie
-
-                // Zweite Linie hinzufügen
+                series1.XValues = xValues; series1.Values = yRange1; series1.Name = "X_I";
                 Series series2 = (Series)chart.SeriesCollection().NewSeries();
-                series2.XValues = xValues;
-                series2.Values = yRange2;
-                series2.Name = "X_A"; // Name der zweiten Linie
-
-                // Trendlinie zur ersten Linie hinzufügen
+                series2.XValues = xValues; series2.Values = yRange2; series2.Name = "X_A";
                 Trendline trendline1 = (Trendline)series1.Trendlines().Add();
-                trendline1.Type = XlTrendlineType.xlLinear; // Typ der Trendlinie festlegen
-                trendline1.Name = "Trend_X_I";
-                trendline1.Border.Color = Color.DarkBlue;
-
-                // Trendlinie zur ersten Linie hinzufügen
+                trendline1.Type = XlTrendlineType.xlLinear; trendline1.Name = "Trend_X_I"; trendline1.Border.Color = Color.DarkBlue;
                 Trendline trendline2 = (Trendline)series2.Trendlines().Add();
-                trendline2.Type = XlTrendlineType.xlLinear; // Typ der Trendlinie festlegen
-                trendline2.Name = "Trend_X_A";
-                trendline2.Border.Color = Color.DarkOrange;
-
-                // Diagrammtitel setzen
-                chart.HasTitle = true;
-                chart.ChartTitle.Text = "X-Werte";
-
-                // Achsenbeschriftungen setzen
+                trendline2.Type = XlTrendlineType.xlLinear; trendline2.Name = "Trend_X_A"; trendline2.Border.Color = Color.DarkOrange;
+                chart.HasTitle = true; chart.ChartTitle.Text = "X-Werte";
                 Axis xAxis = (Axis)chart.Axes(XlAxisType.xlCategory, XlAxisGroup.xlPrimary);
-                xAxis.HasTitle = true;
-                xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
-
+                xAxis.HasTitle = true; xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
                 Axis yAxis = (Axis)chart.Axes(XlAxisType.xlValue, XlAxisGroup.xlPrimary);
-                yAxis.HasTitle = true;
-                yAxis.AxisTitle.Text = "Wert";
+                yAxis.HasTitle = true; yAxis.AxisTitle.Text = "Wert";
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message); }
         }
 
-        // Methode zum Erstellen des Liniendiagramms_C_AB
         private void CreateLineChartCAB(Worksheet worksheet)
         {
             try
             {
-                // Erstellen des Chart-Objekts
                 ChartObjects chartObjects = (ChartObjects)worksheet.ChartObjects(Type.Missing);
                 ChartObject chartObject = chartObjects.Add(700, 220, 600, 300);
                 Chart chart = chartObject.Chart;
-
-                // Diagrammtyp festlegen
                 chart.ChartType = XlChartType.xlLine;
-
-                // Datenbereich für das Diagramm festlegen
                 int dataRowCount = DgvFarbauswertung.Rows.Count;
-                Range yRange1 = worksheet.Range["N2:N" + (dataRowCount + 1)]; // Erster Wert
-                Range yRange2 = worksheet.Range["T2:T" + (dataRowCount + 1)]; // Zweiter Wert
-
-                // Fortlaufende numerische Werte für die X-Achse festlegen
+                Range yRange1 = worksheet.Range["N2:N" + (dataRowCount + 1)];
+                Range yRange2 = worksheet.Range["T2:T" + (dataRowCount + 1)];
                 object[] xValues = new object[dataRowCount];
-                for (int i = 0; i < dataRowCount; i++)
-                {
-                    xValues[i] = i + 1; // Index für die X-Achse festlegen  
-                }
-
-                // Erste Linie hinzufügen
+                for (int i = 0; i < dataRowCount; i++) xValues[i] = i + 1;
                 Series series1 = (Series)chart.SeriesCollection().NewSeries();
-                series1.XValues = xValues;
-                series1.Values = yRange1;
-                series1.Name = "C_AB_I"; // Name der ersten Linie
-
-                // Zweite Linie hinzufügen
+                series1.XValues = xValues; series1.Values = yRange1; series1.Name = "C_AB_I";
                 Series series2 = (Series)chart.SeriesCollection().NewSeries();
-                series2.XValues = xValues;
-                series2.Values = yRange2;
-                series2.Name = "C_AB_A"; // Name der zweiten Linie
-
-                // Trendlinie zur ersten Linie hinzufügen
+                series2.XValues = xValues; series2.Values = yRange2; series2.Name = "C_AB_A";
                 Trendline trendline1 = (Trendline)series1.Trendlines().Add();
-                trendline1.Type = XlTrendlineType.xlLinear; // Typ der Trendlinie festlegen
-                trendline1.Name = "Trend_C_AB_I";
-                trendline1.Border.Color = Color.DarkBlue;
-
-                // Trendlinie zur ersten Linie hinzufügen
+                trendline1.Type = XlTrendlineType.xlLinear; trendline1.Name = "Trend_C_AB_I"; trendline1.Border.Color = Color.DarkBlue;
                 Trendline trendline2 = (Trendline)series2.Trendlines().Add();
-                trendline2.Type = XlTrendlineType.xlLinear; // Typ der Trendlinie festlegen
-                trendline2.Name = "Trend_C_AB_A";
-                trendline2.Border.Color = Color.DarkOrange;
-
-                // Diagrammtitel setzen
-                chart.HasTitle = true;
-                chart.ChartTitle.Text = "C_AB-Werte";
-
-                // Achsenbeschriftungen setzen
+                trendline2.Type = XlTrendlineType.xlLinear; trendline2.Name = "Trend_C_AB_A"; trendline2.Border.Color = Color.DarkOrange;
+                chart.HasTitle = true; chart.ChartTitle.Text = "C_AB-Werte";
                 Axis xAxis = (Axis)chart.Axes(XlAxisType.xlCategory, XlAxisGroup.xlPrimary);
-                xAxis.HasTitle = true;
-                xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
-
+                xAxis.HasTitle = true; xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
                 Axis yAxis = (Axis)chart.Axes(XlAxisType.xlValue, XlAxisGroup.xlPrimary);
-                yAxis.HasTitle = true;
-                yAxis.AxisTitle.Text = "Wert";
+                yAxis.HasTitle = true; yAxis.AxisTitle.Text = "Wert";
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message);
-            }
-        }
-
-        // Um das Formular Form_Informationsmessungen zu öffnen
-        private void BtnInformaitonMessungen_Click(object sender, EventArgs e)
-        {
-            Form_InformationZuMessung form_InformationZuMessung = new Form_InformationZuMessung();
-            form_InformationZuMessung.Show();
+            catch (Exception ex) { MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message); }
         }
     }
 }
