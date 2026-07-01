@@ -1,4 +1,4 @@
-using Microsoft.Office.Interop.Excel;
+using Excel = Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,9 +11,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-// Aliase lösen den Namenskonflikt zwischen Excel-Interop und WinForms/Drawing
-using Font = System.Drawing.Font;
-using Label = System.Windows.Forms.Label;
 
 namespace VerwaltungKST1127.Farbauswertung
 {
@@ -797,9 +794,9 @@ namespace VerwaltungKST1127.Farbauswertung
         // =====================================================================
         private async void BtnExportExcel_Click(object sender, EventArgs e)
         {
-            Workbook workbook = null;
-            Worksheet worksheet = null;
-            var excelApp = new Microsoft.Office.Interop.Excel.Application();
+            Excel.Workbook workbook = null;
+            Excel.Worksheet worksheet = null;
+            var excelApp = new Excel.Application();
             try
             {
                 DialogResult result = MessageBox.Show(
@@ -809,24 +806,24 @@ namespace VerwaltungKST1127.Farbauswertung
 
                 excelApp.Visible = false;
                 workbook = excelApp.Workbooks.Add(Type.Missing);
-                worksheet = (Worksheet)workbook.ActiveSheet;
+                worksheet = (Excel.Worksheet)workbook.ActiveSheet;
 
                 int columnCount = 1;
                 foreach (DataGridViewColumn column in DgvFarbauswertung.Columns)
                 {
                     if (column.Visible)
                     {
-                        var headerRange = (Range)worksheet.Cells[1, columnCount];
+                        var headerRange = (Excel.Range)worksheet.Cells[1, columnCount];
                         headerRange.Font.Bold = true;
                         headerRange.Value = column.HeaderText;
                         headerRange.Font.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.DarkBlue);
                         headerRange.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.WhiteSmoke);
-                        headerRange.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                        headerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
                         headerRange.Font.Size = 12;
-                        Borders borders = headerRange.Borders;
-                        borders[XlBordersIndex.xlEdgeBottom].LineStyle = XlLineStyle.xlContinuous;
-                        borders[XlBordersIndex.xlEdgeBottom].Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
-                        borders[XlBordersIndex.xlEdgeBottom].Weight = XlBorderWeight.xlThick;
+                        Excel.Borders borders = headerRange.Borders;
+                        borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+                        borders[Excel.XlBordersIndex.xlEdgeBottom].Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.Black);
+                        borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlThick;
                         columnCount++;
                         Marshal.ReleaseComObject(headerRange);
                         Marshal.ReleaseComObject(borders);
@@ -834,7 +831,7 @@ namespace VerwaltungKST1127.Farbauswertung
                 }
 
                 var headerRangeForFilter = worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, columnCount - 1]];
-                headerRangeForFilter.AutoFilter(1, Type.Missing, XlAutoFilterOperator.xlAnd, Type.Missing, true);
+                headerRangeForFilter.AutoFilter(1, Type.Missing, Excel.XlAutoFilterOperator.xlAnd, Type.Missing, true);
 
                 await CopyDataToExcelAsync(worksheet);
 
@@ -862,7 +859,7 @@ namespace VerwaltungKST1127.Farbauswertung
             }
         }
 
-        private async Task CopyDataToExcelAsync(Worksheet worksheet)
+        private async Task CopyDataToExcelAsync(Excel.Worksheet worksheet)
         {
             try
             {
@@ -903,129 +900,129 @@ namespace VerwaltungKST1127.Farbauswertung
                     }
                 });
 
-                Range dataRange = worksheet.Range[worksheet.Cells[2, 1], worksheet.Cells[rowCount + 1, columnCount]];
+                Excel.Range dataRange = worksheet.Range[worksheet.Cells[2, 1], worksheet.Cells[rowCount + 1, columnCount]];
                 dataRange.Value = data;
-                dataRange.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                dataRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
                 Marshal.ReleaseComObject(dataRange);
             }
             catch (Exception ex) { MessageBox.Show("Fehler beim Kopieren der Daten in Excel: " + ex.Message); }
         }
 
-        private void CreateLineChartZ(Worksheet worksheet)
+        private void CreateLineChartZ(Excel.Worksheet worksheet)
         {
             try
             {
-                ChartObjects chartObjects = (ChartObjects)worksheet.ChartObjects(Type.Missing);
-                ChartObject chartObject = chartObjects.Add(400, 40, 600, 300);
-                Chart chart = chartObject.Chart;
-                chart.ChartType = XlChartType.xlLine;
+                Excel.ChartObjects chartObjects = (Excel.ChartObjects)worksheet.ChartObjects(Type.Missing);
+                Excel.ChartObject chartObject = chartObjects.Add(400, 40, 600, 300);
+                Excel.Chart chart = chartObject.Chart;
+                chart.ChartType = Excel.XlChartType.xlLine;
                 int dataRowCount = DgvFarbauswertung.Rows.Count;
-                Range yRange1 = worksheet.Range["L2:L" + (dataRowCount + 1)];
-                Range yRange2 = worksheet.Range["R2:R" + (dataRowCount + 1)];
+                Excel.Range yRange1 = worksheet.Range["L2:L" + (dataRowCount + 1)];
+                Excel.Range yRange2 = worksheet.Range["R2:R" + (dataRowCount + 1)];
                 object[] xValues = new object[dataRowCount];
                 for (int i = 0; i < dataRowCount; i++) xValues[i] = i + 1;
-                Series series1 = (Series)chart.SeriesCollection().NewSeries();
+                Excel.Series series1 = (Excel.Series)chart.SeriesCollection().NewSeries();
                 series1.XValues = xValues; series1.Values = yRange1; series1.Name = "Z_I";
-                Series series2 = (Series)chart.SeriesCollection().NewSeries();
+                Excel.Series series2 = (Excel.Series)chart.SeriesCollection().NewSeries();
                 series2.XValues = xValues; series2.Values = yRange2; series2.Name = "Z_A";
-                Trendline trendline1 = (Trendline)series1.Trendlines().Add();
-                trendline1.Type = XlTrendlineType.xlLinear; trendline1.Name = "Trend_Z_I"; trendline1.Border.Color = Color.DarkBlue;
-                Trendline trendline2 = (Trendline)series2.Trendlines().Add();
-                trendline2.Type = XlTrendlineType.xlLinear; trendline2.Name = "Trend_Z_A"; trendline2.Border.Color = Color.DarkOrange;
+                Excel.Trendline trendline1 = (Excel.Trendline)series1.Trendlines().Add();
+                trendline1.Type = Excel.XlTrendlineType.xlLinear; trendline1.Name = "Trend_Z_I"; trendline1.Border.Color = Color.DarkBlue;
+                Excel.Trendline trendline2 = (Excel.Trendline)series2.Trendlines().Add();
+                trendline2.Type = Excel.XlTrendlineType.xlLinear; trendline2.Name = "Trend_Z_A"; trendline2.Border.Color = Color.DarkOrange;
                 chart.HasTitle = true; chart.ChartTitle.Text = "Z-Werte";
-                Axis xAxis = (Axis)chart.Axes(XlAxisType.xlCategory, XlAxisGroup.xlPrimary);
+                Excel.Axis xAxis = (Excel.Axis)chart.Axes(Excel.XlAxisType.xlCategory, Excel.XlAxisGroup.xlPrimary);
                 xAxis.HasTitle = true; xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
-                Axis yAxis = (Axis)chart.Axes(XlAxisType.xlValue, XlAxisGroup.xlPrimary);
+                Excel.Axis yAxis = (Excel.Axis)chart.Axes(Excel.XlAxisType.xlValue, Excel.XlAxisGroup.xlPrimary);
                 yAxis.HasTitle = true; yAxis.AxisTitle.Text = "Wert";
             }
             catch (Exception ex) { MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message); }
         }
 
-        private void CreateLineChartY(Worksheet worksheet)
+        private void CreateLineChartY(Excel.Worksheet worksheet)
         {
             try
             {
-                ChartObjects chartObjects = (ChartObjects)worksheet.ChartObjects(Type.Missing);
-                ChartObject chartObject = chartObjects.Add(500, 100, 600, 300);
-                Chart chart = chartObject.Chart;
-                chart.ChartType = XlChartType.xlLine;
+                Excel.ChartObjects chartObjects = (Excel.ChartObjects)worksheet.ChartObjects(Type.Missing);
+                Excel.ChartObject chartObject = chartObjects.Add(500, 100, 600, 300);
+                Excel.Chart chart = chartObject.Chart;
+                chart.ChartType = Excel.XlChartType.xlLine;
                 int dataRowCount = DgvFarbauswertung.Rows.Count;
-                Range yRange1 = worksheet.Range["K2:K" + (dataRowCount + 1)];
-                Range yRange2 = worksheet.Range["Q2:Q" + (dataRowCount + 1)];
+                Excel.Range yRange1 = worksheet.Range["K2:K" + (dataRowCount + 1)];
+                Excel.Range yRange2 = worksheet.Range["Q2:Q" + (dataRowCount + 1)];
                 object[] xValues = new object[dataRowCount];
                 for (int i = 0; i < dataRowCount; i++) xValues[i] = i + 1;
-                Series series1 = (Series)chart.SeriesCollection().NewSeries();
+                Excel.Series series1 = (Excel.Series)chart.SeriesCollection().NewSeries();
                 series1.XValues = xValues; series1.Values = yRange1; series1.Name = "Y_I";
-                Series series2 = (Series)chart.SeriesCollection().NewSeries();
+                Excel.Series series2 = (Excel.Series)chart.SeriesCollection().NewSeries();
                 series2.XValues = xValues; series2.Values = yRange2; series2.Name = "Y_A";
-                Trendline trendline1 = (Trendline)series1.Trendlines().Add();
-                trendline1.Type = XlTrendlineType.xlLinear; trendline1.Name = "Trend_A_I"; trendline1.Border.Color = Color.DarkBlue;
-                Trendline trendline2 = (Trendline)series2.Trendlines().Add();
-                trendline2.Type = XlTrendlineType.xlLinear; trendline2.Name = "Trend_A_A"; trendline2.Border.Color = Color.DarkOrange;
+                Excel.Trendline trendline1 = (Excel.Trendline)series1.Trendlines().Add();
+                trendline1.Type = Excel.XlTrendlineType.xlLinear; trendline1.Name = "Trend_A_I"; trendline1.Border.Color = Color.DarkBlue;
+                Excel.Trendline trendline2 = (Excel.Trendline)series2.Trendlines().Add();
+                trendline2.Type = Excel.XlTrendlineType.xlLinear; trendline2.Name = "Trend_A_A"; trendline2.Border.Color = Color.DarkOrange;
                 chart.HasTitle = true; chart.ChartTitle.Text = "Y-Werte";
-                Axis xAxis = (Axis)chart.Axes(XlAxisType.xlCategory, XlAxisGroup.xlPrimary);
+                Excel.Axis xAxis = (Excel.Axis)chart.Axes(Excel.XlAxisType.xlCategory, Excel.XlAxisGroup.xlPrimary);
                 xAxis.HasTitle = true; xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->            Altäre Chargen";
-                Axis yAxis = (Axis)chart.Axes(XlAxisType.xlValue, XlAxisGroup.xlPrimary);
+                Excel.Axis yAxis = (Excel.Axis)chart.Axes(Excel.XlAxisType.xlValue, Excel.XlAxisGroup.xlPrimary);
                 yAxis.HasTitle = true; yAxis.AxisTitle.Text = "Wert";
             }
             catch (Exception ex) { MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message); }
         }
 
-        private void CreateLineChartX(Worksheet worksheet)
+        private void CreateLineChartX(Excel.Worksheet worksheet)
         {
             try
             {
-                ChartObjects chartObjects = (ChartObjects)worksheet.ChartObjects(Type.Missing);
-                ChartObject chartObject = chartObjects.Add(600, 160, 600, 300);
-                Chart chart = chartObject.Chart;
-                chart.ChartType = XlChartType.xlLine;
+                Excel.ChartObjects chartObjects = (Excel.ChartObjects)worksheet.ChartObjects(Type.Missing);
+                Excel.ChartObject chartObject = chartObjects.Add(600, 160, 600, 300);
+                Excel.Chart chart = chartObject.Chart;
+                chart.ChartType = Excel.XlChartType.xlLine;
                 int dataRowCount = DgvFarbauswertung.Rows.Count;
-                Range yRange1 = worksheet.Range["J2:J" + (dataRowCount + 1)];
-                Range yRange2 = worksheet.Range["P2:P" + (dataRowCount + 1)];
+                Excel.Range yRange1 = worksheet.Range["J2:J" + (dataRowCount + 1)];
+                Excel.Range yRange2 = worksheet.Range["P2:P" + (dataRowCount + 1)];
                 object[] xValues = new object[dataRowCount];
                 for (int i = 0; i < dataRowCount; i++) xValues[i] = i + 1;
-                Series series1 = (Series)chart.SeriesCollection().NewSeries();
+                Excel.Series series1 = (Excel.Series)chart.SeriesCollection().NewSeries();
                 series1.XValues = xValues; series1.Values = yRange1; series1.Name = "X_I";
-                Series series2 = (Series)chart.SeriesCollection().NewSeries();
+                Excel.Series series2 = (Excel.Series)chart.SeriesCollection().NewSeries();
                 series2.XValues = xValues; series2.Values = yRange2; series2.Name = "X_A";
-                Trendline trendline1 = (Trendline)series1.Trendlines().Add();
-                trendline1.Type = XlTrendlineType.xlLinear; trendline1.Name = "Trend_X_I"; trendline1.Border.Color = Color.DarkBlue;
-                Trendline trendline2 = (Trendline)series2.Trendlines().Add();
-                trendline2.Type = XlTrendlineType.xlLinear; trendline2.Name = "Trend_X_A"; trendline2.Border.Color = Color.DarkOrange;
+                Excel.Trendline trendline1 = (Excel.Trendline)series1.Trendlines().Add();
+                trendline1.Type = Excel.XlTrendlineType.xlLinear; trendline1.Name = "Trend_X_I"; trendline1.Border.Color = Color.DarkBlue;
+                Excel.Trendline trendline2 = (Excel.Trendline)series2.Trendlines().Add();
+                trendline2.Type = Excel.XlTrendlineType.xlLinear; trendline2.Name = "Trend_X_A"; trendline2.Border.Color = Color.DarkOrange;
                 chart.HasTitle = true; chart.ChartTitle.Text = "X-Werte";
-                Axis xAxis = (Axis)chart.Axes(XlAxisType.xlCategory, XlAxisGroup.xlPrimary);
+                Excel.Axis xAxis = (Excel.Axis)chart.Axes(Excel.XlAxisType.xlCategory, Excel.XlAxisGroup.xlPrimary);
                 xAxis.HasTitle = true; xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
-                Axis yAxis = (Axis)chart.Axes(XlAxisType.xlValue, XlAxisGroup.xlPrimary);
+                Excel.Axis yAxis = (Excel.Axis)chart.Axes(Excel.XlAxisType.xlValue, Excel.XlAxisGroup.xlPrimary);
                 yAxis.HasTitle = true; yAxis.AxisTitle.Text = "Wert";
             }
             catch (Exception ex) { MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message); }
         }
 
-        private void CreateLineChartCAB(Worksheet worksheet)
+        private void CreateLineChartCAB(Excel.Worksheet worksheet)
         {
             try
             {
-                ChartObjects chartObjects = (ChartObjects)worksheet.ChartObjects(Type.Missing);
-                ChartObject chartObject = chartObjects.Add(700, 220, 600, 300);
-                Chart chart = chartObject.Chart;
-                chart.ChartType = XlChartType.xlLine;
+                Excel.ChartObjects chartObjects = (Excel.ChartObjects)worksheet.ChartObjects(Type.Missing);
+                Excel.ChartObject chartObject = chartObjects.Add(700, 220, 600, 300);
+                Excel.Chart chart = chartObject.Chart;
+                chart.ChartType = Excel.XlChartType.xlLine;
                 int dataRowCount = DgvFarbauswertung.Rows.Count;
-                Range yRange1 = worksheet.Range["N2:N" + (dataRowCount + 1)];
-                Range yRange2 = worksheet.Range["T2:T" + (dataRowCount + 1)];
+                Excel.Range yRange1 = worksheet.Range["N2:N" + (dataRowCount + 1)];
+                Excel.Range yRange2 = worksheet.Range["T2:T" + (dataRowCount + 1)];
                 object[] xValues = new object[dataRowCount];
                 for (int i = 0; i < dataRowCount; i++) xValues[i] = i + 1;
-                Series series1 = (Series)chart.SeriesCollection().NewSeries();
+                Excel.Series series1 = (Excel.Series)chart.SeriesCollection().NewSeries();
                 series1.XValues = xValues; series1.Values = yRange1; series1.Name = "C_AB_I";
-                Series series2 = (Series)chart.SeriesCollection().NewSeries();
+                Excel.Series series2 = (Excel.Series)chart.SeriesCollection().NewSeries();
                 series2.XValues = xValues; series2.Values = yRange2; series2.Name = "C_AB_A";
-                Trendline trendline1 = (Trendline)series1.Trendlines().Add();
-                trendline1.Type = XlTrendlineType.xlLinear; trendline1.Name = "Trend_C_AB_I"; trendline1.Border.Color = Color.DarkBlue;
-                Trendline trendline2 = (Trendline)series2.Trendlines().Add();
-                trendline2.Type = XlTrendlineType.xlLinear; trendline2.Name = "Trend_C_AB_A"; trendline2.Border.Color = Color.DarkOrange;
+                Excel.Trendline trendline1 = (Excel.Trendline)series1.Trendlines().Add();
+                trendline1.Type = Excel.XlTrendlineType.xlLinear; trendline1.Name = "Trend_C_AB_I"; trendline1.Border.Color = Color.DarkBlue;
+                Excel.Trendline trendline2 = (Excel.Trendline)series2.Trendlines().Add();
+                trendline2.Type = Excel.XlTrendlineType.xlLinear; trendline2.Name = "Trend_C_AB_A"; trendline2.Border.Color = Color.DarkOrange;
                 chart.HasTitle = true; chart.ChartTitle.Text = "C_AB-Werte";
-                Axis xAxis = (Axis)chart.Axes(XlAxisType.xlCategory, XlAxisGroup.xlPrimary);
+                Excel.Axis xAxis = (Excel.Axis)chart.Axes(Excel.XlAxisType.xlCategory, Excel.XlAxisGroup.xlPrimary);
                 xAxis.HasTitle = true; xAxis.AxisTitle.Text = "Neuesten Chargen        <- Anzahl ->        Altäre Chargen";
-                Axis yAxis = (Axis)chart.Axes(XlAxisType.xlValue, XlAxisGroup.xlPrimary);
+                Excel.Axis yAxis = (Excel.Axis)chart.Axes(Excel.XlAxisType.xlValue, Excel.XlAxisGroup.xlPrimary);
                 yAxis.HasTitle = true; yAxis.AxisTitle.Text = "Wert";
             }
             catch (Exception ex) { MessageBox.Show("Fehler beim Erstellen des Liniendiagramms: " + ex.Message); }
