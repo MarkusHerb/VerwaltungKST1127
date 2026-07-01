@@ -11,6 +11,9 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+// Aliase lösen den Namenskonflikt zwischen Excel-Interop und WinForms/Drawing
+using Font = System.Drawing.Font;
+using Label = System.Windows.Forms.Label;
 
 namespace VerwaltungKST1127.Farbauswertung
 {
