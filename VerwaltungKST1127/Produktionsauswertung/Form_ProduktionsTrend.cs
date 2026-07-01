@@ -108,8 +108,13 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 foreach (var cb in _anlageChecks)
                     if (!cb.Checked) ausgeschlossen.Add(cb.Text);
 
+                // Samstag nur einbeziehen, wenn das Häkchen gesetzt ist (Sonntag
+                // wird generell ignoriert). Standardmäßig ist der Samstag aus.
+                bool samstagEinbeziehen = chkSamstag.Checked;
+
                 // 1) Datenservice (aggregiert die Tage des Zeitraums)
-                var data = await ProduktionsTrendDataService.LoadAsync(von, bis, ausgeschlossen);
+                var data = await ProduktionsTrendDataService.LoadAsync(
+                    von, bis, ausgeschlossen, samstagEinbeziehen);
 
                 // 2) HTML-Template einmalig laden und cachen
                 if (_htmlTemplate == null)
@@ -149,6 +154,14 @@ namespace VerwaltungKST1127.Produktionsauswertung
             btnMinus2Wochen.Enabled = aktiv;
             btnMinus30Tage.Enabled = aktiv;
             flowAnlagen.Enabled = aktiv;
+            chkSamstag.Enabled = aktiv;
+        }
+
+        // Samstag zu-/abschalten: Auswertung neu laden (Wochenend-Sonderfall).
+        private async void chkSamstag_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!_initialized || _suppressReload) return;
+            await LadeDashboardAsync();
         }
 
         // Baut für jede Anlage eine Checkbox (standardmäßig angehakt). Das Abwählen
