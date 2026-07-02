@@ -1018,7 +1018,8 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // -----------------------------------------------------------------------------------------------------------------
         // Lädt die Aufträge zum gewählten Belag aus der DB (große, optimierte Abfrage).
         // - holt VorStk per OUTER APPLY
-        // - JOIN mit Serienlinsen (Material) und Ansicht_Bildschirm (Dringend)
+        // - Material (Serienlinsen) und Dringend (Ansicht_Bildschirm) ebenfalls per OUTER APPLY mit TOP (1),
+        //   damit doppelte Datensätze in diesen Tabellen keine doppelten Auftragszeilen erzeugen
         // - ergänzt anschließend die Spalte "Zukauf" anhand einer JSON-Datei
         // -----------------------------------------------------------------------------------------------------------------
         private void UpdateDgvAnsichtAuftraege(string selectedBelagValue)
@@ -1093,10 +1094,17 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     ISNULL(ab.Dringend, '')    AS Dringend,
                     base.Aktualisiert
                 FROM base
-                LEFT JOIN Serienlinsen sl
-                    ON sl.ARTNR = base.Artikel AND sl.Seite = base.Seite
-                LEFT JOIN Ansicht_Bildschirm ab
-                    ON ab.Auftrag = base.[Auftragsnr.]
+                OUTER APPLY (                              -- TOP (1) statt JOIN: doppelte Stammdatensätze
+                    SELECT TOP (1) s.MATERIAL              -- in Serienlinsen dürfen keine Doppelzeilen erzeugen
+                    FROM Serienlinsen s
+                    WHERE s.ARTNR = base.Artikel AND s.Seite = base.Seite
+                ) AS sl
+                OUTER APPLY (                              -- ebenso für Ansicht_Bildschirm; zusätzlich über
+                    SELECT TOP (1) b.Dringend              -- Teilenummer eingeschränkt, damit Dringend nicht auf
+                    FROM Ansicht_Bildschirm b              -- andere Artikel derselben Auftragsnr. abfärbt
+                    WHERE b.Auftrag = base.[Auftragsnr.]
+                      AND b.Teilenummer = base.Artikel
+                ) AS ab
                 ORDER BY base.Enddatum ASC;";
 
                 var dt = new DataTable();
