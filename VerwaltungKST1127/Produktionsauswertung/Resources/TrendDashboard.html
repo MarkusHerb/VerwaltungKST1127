@@ -311,6 +311,38 @@
     const stk = tage.map(t => t.Stk);
     const prod = tage.map(t => Number((t.ProduktivStunden || 0).toFixed(2)));
 
+    // ISO-Kalenderwoche (KW) samt Wochen-Jahr, damit der Jahreswechsel
+    // (KW 52/53 → KW 1) keine Woche fälschlich zusammenzieht.
+    function isoWeekKey(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dow = (t.getUTCDay() + 6) % 7;               // Mo = 0 … So = 6
+      t.setUTCDate(t.getUTCDate() - dow + 3);            // Donnerstag dieser Woche
+      const week1 = new Date(Date.UTC(t.getUTCFullYear(), 0, 4));
+      const kw = 1 + Math.round(((t - week1) / 864e5 - 3 + ((week1.getUTCDay() + 6) % 7)) / 7);
+      return { key: t.getUTCFullYear() + '-' + kw, kw: kw };
+    }
+
+    // Aufeinanderfolgende Tage derselben KW zu Blöcken gruppieren.
+    const wochen = [];
+    tage.forEach((t, i) => {
+      const w = isoWeekKey(t.Datum);
+      const last = wochen[wochen.length - 1];
+      if (last && last.key === w.key) last.bis = i;
+      else wochen.push({ key: w.key, kw: w.kw, von: i, bis: i });
+    });
+
+    // Zebra-Hintergrund: jede zweite Woche dezent aufgehellt, jede Woche
+    // bekommt ihr KW-Label. Bei nur einer Woche bleibt der Hintergrund ruhig.
+    const weekAreas = wochen.map((w, i) => [
+      {
+        name: 'KW ' + w.kw,
+        xAxis: w.von,
+        itemStyle: { color: i % 2 === 1 ? 'rgba(122,215,255,0.07)' : 'rgba(255,255,255,0)' },
+      },
+      { xAxis: w.bis },
+    ]);
+
     // Gleitender Durchschnitt der Stückzahl (Fenster 7 bzw. kleiner bei
     // kurzen Zeiträumen). Bei einem einzelnen Tag entfällt die Linie.
     const win = Math.min(7, Math.max(2, Math.round(tage.length / 4)));
@@ -336,6 +368,15 @@
           ]),
         },
         barMaxWidth: 46,
+        markArea: {
+          silent: true,
+          label: {
+            show: true, position: 'insideTop', distance: 4,
+            color: 'rgba(170,177,200,0.8)', fontSize: 10,
+            fontWeight: 600, letterSpacing: 1,
+          },
+          data: weekAreas,
+        },
       },
       {
         name: 'Produktiv (h)', type: 'line', yAxisIndex: 1,
