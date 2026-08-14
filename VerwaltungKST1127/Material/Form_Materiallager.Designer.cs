@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Materiallager));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.TextBoxArtikel = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.RichTextBoxBemerkung = new System.Windows.Forms.RichTextBox();
@@ -56,8 +56,13 @@
             this.lblAnzahlArtikelBestellen = new System.Windows.Forms.Label();
             this.BtnInventur = new System.Windows.Forms.Button();
             this.BtnInfoMateriallager = new System.Windows.Forms.Button();
+            this.DgvBestellRadar = new System.Windows.Forms.DataGridView();
+            this.lblKritisch = new System.Windows.Forms.Label();
+            this.lblBeobachten = new System.Windows.Forms.Label();
+            this.lblOk = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvMateriallager)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvBestellRadar)).BeginInit();
             this.SuspendLayout();
             // 
             // TextBoxArtikel
@@ -294,14 +299,14 @@
             this.DgvMateriallager.AllowUserToAddRows = false;
             this.DgvMateriallager.AllowUserToDeleteRows = false;
             this.DgvMateriallager.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.GrayText;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.GrayText;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle5;
             this.DgvMateriallager.Location = new System.Drawing.Point(12, 204);
             this.DgvMateriallager.MultiSelect = false;
             this.DgvMateriallager.Name = "DgvMateriallager";
@@ -348,12 +353,54 @@
             this.BtnInfoMateriallager.UseVisualStyleBackColor = false;
             this.BtnInfoMateriallager.Click += new System.EventHandler(this.BtnInfoMateriallager_Click);
             // 
+            // DgvBestellRadar
+            // 
+            this.DgvBestellRadar.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DgvBestellRadar.Location = new System.Drawing.Point(1274, 94);
+            this.DgvBestellRadar.Name = "DgvBestellRadar";
+            this.DgvBestellRadar.Size = new System.Drawing.Size(329, 630);
+            this.DgvBestellRadar.TabIndex = 85;
+            this.DgvBestellRadar.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBestellRadar_CellClick);
+            this.DgvBestellRadar.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvBestellRadar_CellFormatting);
+            this.DgvBestellRadar.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvBestellRadar_CellMouseEnter);
+            // 
+            // lblKritisch
+            // 
+            this.lblKritisch.AutoSize = true;
+            this.lblKritisch.Location = new System.Drawing.Point(1271, 11);
+            this.lblKritisch.Name = "lblKritisch";
+            this.lblKritisch.Size = new System.Drawing.Size(35, 13);
+            this.lblKritisch.TabIndex = 86;
+            this.lblKritisch.Text = "label9";
+            // 
+            // lblBeobachten
+            // 
+            this.lblBeobachten.AutoSize = true;
+            this.lblBeobachten.Location = new System.Drawing.Point(1271, 37);
+            this.lblBeobachten.Name = "lblBeobachten";
+            this.lblBeobachten.Size = new System.Drawing.Size(35, 13);
+            this.lblBeobachten.TabIndex = 87;
+            this.lblBeobachten.Text = "label9";
+            // 
+            // lblOk
+            // 
+            this.lblOk.AutoSize = true;
+            this.lblOk.Location = new System.Drawing.Point(1271, 65);
+            this.lblOk.Name = "lblOk";
+            this.lblOk.Size = new System.Drawing.Size(35, 13);
+            this.lblOk.TabIndex = 88;
+            this.lblOk.Text = "label9";
+            // 
             // Form_Materiallager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ClientSize = new System.Drawing.Size(1279, 736);
+            this.ClientSize = new System.Drawing.Size(1612, 736);
+            this.Controls.Add(this.lblOk);
+            this.Controls.Add(this.lblBeobachten);
+            this.Controls.Add(this.lblKritisch);
+            this.Controls.Add(this.DgvBestellRadar);
             this.Controls.Add(this.BtnInfoMateriallager);
             this.Controls.Add(this.BtnInventur);
             this.Controls.Add(this.lblAnzahlArtikelBestellen);
@@ -380,13 +427,14 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.MaximumSize = new System.Drawing.Size(1295, 775);
+            this.MaximumSize = new System.Drawing.Size(1650, 775);
             this.MinimumSize = new System.Drawing.Size(1295, 775);
             this.Name = "Form_Materiallager";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Materiallager";
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxInfo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvMateriallager)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DgvBestellRadar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -420,5 +468,9 @@
         private System.Windows.Forms.Label lblAnzahlArtikelBestellen;
         private System.Windows.Forms.Button BtnInventur;
         private System.Windows.Forms.Button BtnInfoMateriallager;
+        private System.Windows.Forms.DataGridView DgvBestellRadar;
+        private System.Windows.Forms.Label lblKritisch;
+        private System.Windows.Forms.Label lblBeobachten;
+        private System.Windows.Forms.Label lblOk;
     }
 }

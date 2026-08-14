@@ -23,10 +23,17 @@ namespace VerwaltungKST1127
         public Form_Materiallager()
         {
             InitializeComponent();
+            // Event-Handler für das Laden des Formulars hinzufügen
             Load += Form_Materiallager_Load;
+            // Event-Handler für die Zellformatierung des DataGridView "DgvMateriallager" hinzufügen
+            DgvBestellRadar.CellFormatting += DgvBestellRadar_CellFormatting;
+            // Event-Handler für das MouseEnter-Ereignis des DataGridView "DgvBestellRadar" hinzufügen
+            DgvBestellRadar.CellMouseEnter += DgvBestellRadar_CellMouseEnter;
+            // Event-Handler für das CellClick-Ereignis des DataGridView "DgvBestellRadar" hinzufügen
+            DgvBestellRadar.CellClick += DgvBestellRadar_CellClick;
             // Sichtbarkeit festlegen
             BtnSpeichern.Visible = false;
-            //BtnLoeschen.Visible = false;
+            // BtnLoeschen.Visible = false;
         }
 
         private async void Form_Materiallager_Load(object sender, EventArgs e)
@@ -54,6 +61,8 @@ namespace VerwaltungKST1127
                 DgvMateriallager.ResumeLayout();
 
                 UpdateBestellLabel(table);
+                UpdateRadarDashboard(table);
+                UpdateBestellRadar();
             }
             catch (Exception ex)
             {
@@ -511,7 +520,7 @@ namespace VerwaltungKST1127
             // Excel - Anwendung erstellen
             Excel.Application excelApp = new Excel.Application
             {
-                Visible = true              
+                Visible = true
             };
 
             // Neue Arbeitsmappe hinzufügen
@@ -577,6 +586,340 @@ namespace VerwaltungKST1127
         {
             Form_InfoMateriallager infoMateriallager = new Form_InfoMateriallager();
             infoMateriallager.ShowDialog();
+        }
+
+        // Methode zum Aktualisieren des Bestell-Radars.
+        //
+        // Zweck:
+        // Das DataGridView "DgvBestellRadar" zeigt alle im Materiallager vorhandenen
+        // Artikel an und sortiert diese automatisch nach ihrer Kritikalität.
+        //
+        // Die Sortierung erfolgt über das Verhältnis:
+        //
+        // Lagerstand / Mindestbestand
+        //
+        // Beispiel:
+        // Lagerstand = 12
+        // Mindestbestand = 10
+        // Ergebnis = 120 %
+        //
+        // Dadurch stehen die Artikel, die am nächsten an der Mindestbestellmenge liegen,
+        // immer ganz oben in der Liste.
+        //
+        // Vorteile:
+        // - Kritische Artikel werden sofort sichtbar
+        // - Lagerengpässe können frühzeitig erkannt werden
+        // - Kein manuelles Kontrollieren aller Lagerbestände notwendig
+        private void UpdateBestellRadar()
+        {
+            try
+            {
+                // SQL-Abfrage zum Laden aller Materiallager-Artikel
+                const string query = @"
+        SELECT
+            Artikel,
+                CAST (Lagerstand AS VARCHAR(20)) + ' / ' + CAST (Mindestbestand AS VARCHAR(20)) AS Bestand,
+            Lagerstand,
+            Mindestbestand,
+
+            -- Berechnung des Lagerbestandes in Prozent
+            -- Beispiel:
+            -- Lagerstand = 15
+            -- Mindestbestand = 10
+            -- Ergebnis = 150 %
+            CAST(
+                CASE
+                    WHEN Mindestbestand > 0
+                    THEN (Lagerstand * 100.0 / Mindestbestand)
+                    ELSE 0
+                END
+            AS INT) AS BestandProzent
+
+        FROM MaterialLager
+
+        -- Sortierung nach Kritikalität:
+        -- Die kleinsten Prozentwerte erscheinen zuerst.
+        -- Damit stehen die kritischsten Artikel automatisch ganz oben.
+        ORDER BY
+            CASE
+                WHEN Lagerstand <= Mindestbestand
+                THEN 0
+                ELSE 1
+            END,
+            CASE
+                WHEN Mindestbestand > 0
+                THEN CAST(Lagerstand AS FLOAT) / Mindestbestand
+                ELSE 999999
+            END ASC";
+
+                // Verbindung zur SQL-Datenbank herstellen
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+
+                // SqlDataAdapter verwenden, um die Daten abzufragen
+                using (SqlDataAdapter adapter = new SqlDataAdapter(query, connection))
+                {
+                    // Neues DataTable-Objekt erstellen
+                    DataTable table = new DataTable();
+
+                    // SQL-Abfrage ausführen und Ergebnis in DataTable laden
+                    adapter.Fill(table);
+
+                    // DataTable als Datenquelle für das Bestell-Radar festlegen
+                    DgvBestellRadar.DataSource = table;
+
+                    // Zeilenköpfe (graue Auswahlspalte links) ausblenden
+                    DgvBestellRadar.RowHeadersVisible = false;
+
+                    // Benutzer darf keine neuen Zeilen hinzufügen
+                    DgvBestellRadar.AllowUserToAddRows = false;
+
+                    // Benutzer darf keine Zeilen löschen
+                    DgvBestellRadar.AllowUserToDeleteRows = false;
+
+                    // Benutzer darf die Zeilenhöhe nicht verändern
+                    DgvBestellRadar.AllowUserToResizeRows = false;
+
+                    // DataGridView dient nur zur Anzeige
+                    DgvBestellRadar.ReadOnly = true;
+
+                    // Es darf immer nur eine Zeile markiert werden
+                    DgvBestellRadar.MultiSelect = false;
+
+                    // Gesamte Zeile markieren statt einzelner Zellen
+                    DgvBestellRadar.SelectionMode =
+                        DataGridViewSelectionMode.FullRowSelect;
+
+                    // Benutzerfreundliche Spaltenüberschriften festlegen
+                    DgvBestellRadar.Columns["Artikel"].HeaderText = "Artikel";
+                    DgvBestellRadar.Columns["BestandProzent"].HeaderText = "%";
+
+                    // Spaltenbreiten festlegen
+                    DgvBestellRadar.Columns["Artikel"].Width = 163;
+                    DgvBestellRadar.Columns["Bestand"].Width = 90;
+                    DgvBestellRadar.Columns["BestandProzent"].Width = 55;
+
+                    // Spaltenüberschrift für die Spalte "Bestand" ändern
+                    DgvBestellRadar.Columns["Bestand"].HeaderText = "Lager";
+
+                    // Zentrierte Ausrichtung der Prozentwerte festlegen
+                    DgvBestellRadar.Columns["BestandProzent"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+                    // Technische Hilfsspalten ausblenden,
+                    // da diese für den Benutzer nicht relevant sind
+                    DgvBestellRadar.Columns["Lagerstand"].Visible = false;
+                    DgvBestellRadar.Columns["Mindestbestand"].Visible = false;
+
+                    // Zentrierte Ausrichtung der Spaltenüberschriften
+                    DgvBestellRadar.ColumnHeadersDefaultCellStyle.Alignment =
+                        DataGridViewContentAlignment.MiddleCenter;
+
+                    // Überschriften fett darstellen
+                    DgvBestellRadar.ColumnHeadersDefaultCellStyle.Font =
+                        new Font(DataGridView.DefaultFont, FontStyle.Bold);
+
+                    // Nach dem Laden keine Zeile vorauswählen
+                    DgvBestellRadar.ClearSelection();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fehler beim Laden des Bestell-Radars anzeigen
+                MessageBox.Show(
+                    "Fehler beim Laden des Bestellradars:\n" + ex.Message,
+                    "Fehler",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+
+        // Formatierung des Bestell-Radars.
+        //
+        // Die Prozentwerte werden je nach Lagerreserve farblich markiert:
+        //
+        // Rot   = Kritisch (<= 120 %)
+        // Gelb  = Beobachten (<= 200 %)
+        // Grün  = Ausreichender Lagerbestand (> 200 %)
+        //
+        // Beispiele:
+        // 90 %  -> Rot
+        // 150 % -> Gelb
+        // 350 % -> Grün
+        private void DgvBestellRadar_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            try
+            {
+                // Nur die Prozentspalte formatieren
+                if (DgvBestellRadar.Columns[e.ColumnIndex].Name == "BestandProzent")
+                {
+                    // Prozentwert aus der aktuellen Zelle lesen
+                    int prozent = Convert.ToInt32(e.Value);
+
+                    // Kritischer Bereich
+                    if (prozent <= 120)
+                    {
+                        e.CellStyle.BackColor = Color.Red;
+                        e.CellStyle.ForeColor = Color.White;
+                        // Fett darstellen, um die Dringlichkeit zu unterstreichen
+                        e.CellStyle.Font = new Font(DgvBestellRadar.Font, FontStyle.Bold);
+                    }
+                    // Beobachtungsbereich
+                    else if (prozent <= 200)
+                    {
+                        e.CellStyle.BackColor = Color.Gold;
+                        e.CellStyle.ForeColor = Color.Black;
+                    }
+                    // Ausreichender Lagerbestand
+                    else
+                    {
+                        e.CellStyle.BackColor = Color.LightGreen;
+                        e.CellStyle.ForeColor = Color.Black;
+                    }
+
+                    // Prozentwert mittig ausrichten
+                    e.CellStyle.Alignment =
+                        DataGridViewContentAlignment.MiddleCenter;
+
+                    // Prozentzeichen ergänzen
+                    e.Value = prozent + "%";
+
+                    // Kennzeichnen, dass die Formatierung bereits erfolgt ist
+                    e.FormattingApplied = true;
+                }
+
+            }
+            catch
+            {
+                // Fehler bewusst ignorieren,
+                // damit ein fehlerhafter Datensatz das Grid nicht blockiert
+            }
+        }
+
+
+
+        private void DgvBestellRadar_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0)
+                    return;
+
+                DataGridViewRow row = DgvBestellRadar.Rows[e.RowIndex];
+
+                string artikel =
+                row.Cells["Artikel"].Value?.ToString();
+
+                string lagerstand =
+                row.Cells["Lagerstand"].Value?.ToString();
+
+                string mindestbestand =
+                row.Cells["Mindestbestand"].Value?.ToString();
+
+                int differenz =
+                Convert.ToInt32(lagerstand) -
+                Convert.ToInt32(mindestbestand);
+
+                row.Cells["Artikel"].ToolTipText =
+                $"Artikel: {artikel}\n" +
+                $"Lagerstand: {lagerstand}\n" +
+                $"Mindestbestand: {mindestbestand}\n" +
+                $"Reserve: {differenz}";
+            }
+            catch
+            {
+            }
+        }
+
+        private void DgvBestellRadar_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0)
+                    return;
+
+                string artikel =
+                DgvBestellRadar
+                .Rows[e.RowIndex]
+                .Cells["Artikel"]
+                .Value
+                .ToString();
+
+                foreach (DataGridViewRow row in DgvMateriallager.Rows)
+                {
+                    if (row.Cells["Artikel"].Value?.ToString() == artikel)
+                    {
+                        DgvMateriallager.ClearSelection();
+
+                        row.Selected = true;
+                        DgvMateriallager_CellClick(DgvMateriallager, new DataGridViewCellEventArgs(0, row.Index));
+
+                        DgvMateriallager.CurrentCell =
+                        row.Cells["Artikel"];
+
+                        DgvMateriallager.FirstDisplayedScrollingRowIndex =
+                        row.Index;
+
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void UpdateRadarDashboard(DataTable table)
+        {
+            int kritisch = 0;
+            int beobachten = 0;
+            int ok = 0;
+
+            foreach (DataRow row in table.Rows)
+            {
+                int lagerstand =
+                    Convert.ToInt32(row["Lagerstand"]);
+
+                int mindestbestand =
+                    Convert.ToInt32(row["Mindestbestand"]);
+
+                if (mindestbestand == 0)
+                {
+                    ok++;
+                    continue;
+                }
+
+                double reserve =
+                    (double)lagerstand / mindestbestand;
+
+                if (reserve <= 1.2)
+                {
+                    kritisch++;
+                }
+                else if (reserve <= 2.0)
+                {
+                    beobachten++;
+                }
+                else
+                {
+                    ok++;
+                }
+            }
+
+            lblKritisch.Text =
+                $"🔴 Kritisch: {kritisch}";
+            lblKritisch.ForeColor = Color.Red;
+            // Fett geschrieben
+            lblKritisch.Font = new Font(lblKritisch.Font, FontStyle.Bold);
+
+            lblBeobachten.Text =
+                $"🟡 Beobachten: {beobachten}";
+            lblBeobachten.ForeColor = Color.DarkOrange;
+            lblBeobachten.Font = new Font(lblBeobachten.Font, FontStyle.Bold);
+
+            lblOk.Text =
+                $"🟢 OK: {ok}";
+            lblOk.ForeColor = Color.Green;
+            lblOk.Font = new Font(lblOk.Font, FontStyle.Bold);
         }
     }
 }

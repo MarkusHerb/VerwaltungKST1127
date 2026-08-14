@@ -259,12 +259,14 @@ namespace VerwaltungKST1127.Produktionsauswertung
             }
         }
 
+        // Setzt den Countdown auf die volle AutoRefresh-Sekundenanzahl zurück und aktualisiert das Label.
         private void ResetAutoRefreshCountdown()
         {
             _autoRefreshRest = AutoRefreshSekunden;
             AktualisiereTimerLabel();
         }
 
+        // Aktualisiert das Label mit dem Countdown im Format mm:ss.
         private void AktualisiereTimerLabel()
         {
             int m = _autoRefreshRest / 60;
@@ -272,6 +274,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             lblAutoRefreshTimer.Text = string.Format("{0:00}:{1:00}", m, s);
         }
 
+        // Tick-Event des Timers: Countdown runterzählen, bei 0 Dashboard neu laden.
         private async void timerAutoRefresh_Tick(object sender, EventArgs e)
         {
             if (!chkAutoRefresh.Checked) return;
