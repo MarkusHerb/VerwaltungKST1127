@@ -30,9 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Start));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.pictureBoxLinsenPrismen = new System.Windows.Forms.PictureBox();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
             this.LblUeberschrift = new System.Windows.Forms.Label();
@@ -253,7 +253,7 @@
             this.BtnInformation.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnInformation.Location = new System.Drawing.Point(1058, 643);
             this.BtnInformation.Name = "BtnInformation";
-            this.BtnInformation.Size = new System.Drawing.Size(105, 56);
+            this.BtnInformation.Size = new System.Drawing.Size(107, 56);
             this.BtnInformation.TabIndex = 16;
             this.BtnInformation.Text = "Information";
             this.BtnInformation.UseVisualStyleBackColor = false;
@@ -267,7 +267,7 @@
             this.BtnLupe.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnLupe.Location = new System.Drawing.Point(945, 643);
             this.BtnLupe.Name = "BtnLupe";
-            this.BtnLupe.Size = new System.Drawing.Size(105, 56);
+            this.BtnLupe.Size = new System.Drawing.Size(107, 56);
             this.BtnLupe.TabIndex = 17;
             this.BtnLupe.Text = "Intranet";
             this.BtnLupe.UseVisualStyleBackColor = false;
@@ -380,17 +380,17 @@
             // 
             this.chartPerformance.BackColor = System.Drawing.Color.Transparent;
             this.chartPerformance.BorderlineColor = System.Drawing.Color.Transparent;
-            chartArea3.Name = "ChartArea1";
-            this.chartPerformance.ChartAreas.Add(chartArea3);
-            legend3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            legend3.Name = "Legend1";
-            this.chartPerformance.Legends.Add(legend3);
+            chartArea2.Name = "ChartArea1";
+            this.chartPerformance.ChartAreas.Add(chartArea2);
+            legend2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            legend2.Name = "Legend1";
+            this.chartPerformance.Legends.Add(legend2);
             this.chartPerformance.Location = new System.Drawing.Point(309, 77);
             this.chartPerformance.Name = "chartPerformance";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.chartPerformance.Series.Add(series3);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chartPerformance.Series.Add(series2);
             this.chartPerformance.Size = new System.Drawing.Size(318, 65);
             this.chartPerformance.TabIndex = 27;
             this.chartPerformance.Text = "chart1";

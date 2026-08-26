@@ -49,9 +49,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         public Form_VerwaltungHauptansicht()
         {
             InitializeComponent();             // erzeugt alle UI-Steuerelemente (in der Designer-Datei definiert)
+            ApplyModernDesign();                // modernes Design (rundere Buttons, Schatten, Hover-Effekte ...)
             LoadDataForDgvAuftragZuBelag();    // Linkes Grid (Belag-Übersicht) befüllen
             ZaehleGestarteteAuftraege();       // "Gestartete"-Label aktualisieren
         }
+
+
 
         // -----------------------------------------------------------------------------------------------------------------
         // Wendet Filter (Zukauf-Checkbox + ignorierte Auftragsnummern) auf die geladene Tabelle an
@@ -169,16 +172,6 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // finally läuft IMMER (auch im Fehlerfall) → Label wird zuverlässig gesetzt.
                 lblGestartet.Text = activeCount.ToString();
             }
-        }
-
-        // -----------------------------------------------------------------------------------------------------------------
-        // Klick auf "Zukauf"-Button → eigenes Fenster zur Verwaltung von R-/T-Lager öffnen.
-        // ShowDialog() = modal (das Hauptfenster wartet, bis der Dialog geschlossen wird).
-        // -----------------------------------------------------------------------------------------------------------------
-        private void BtnZukauf_Click(object sender, EventArgs e)
-        {
-            Form_RLTL rltlForm = new Form_RLTL();
-            rltlForm.ShowDialog();
         }
 
         // Checkbox geändert → Filter erneut anwenden.
@@ -372,7 +365,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             {
                 if (e.Value != null && e.Value.ToString() == "Active")
                 {
-                    e.CellStyle.BackColor = Color.LightGreen;
+                    e.CellStyle.BackColor = Color.FromArgb(198, 239, 206);
                 }
             }
 
@@ -381,7 +374,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             {
                 if (e.Value != null && e.Value.ToString() == "Gestartet")
                 {
-                    e.CellStyle.BackColor = Color.LightSkyBlue;
+                    e.CellStyle.BackColor = Color.FromArgb(221, 235, 247);
                 }
             }
 
@@ -403,11 +396,11 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             {
                 if (e.Value != null && e.Value.ToString() == "1")
                 {
-                    e.CellStyle.BackColor = Color.Orange;
+                    e.CellStyle.BackColor = Color.FromArgb(255, 99, 71);
                 }
                 else if (e.Value != null && e.Value.ToString() == "2")
                 {
-                    e.CellStyle.BackColor = Color.Yellow;
+                    e.CellStyle.BackColor = Color.FromArgb(255, 235, 156);
                 }
             }
 
@@ -1040,64 +1033,167 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 // const string = SQL-Statement (mit Common Table Expression "WITH base").
                 // OUTER APPLY hängt zu jeder Zeile a den passenden Vorbereiten-VorStk-Wert dran.
                 const string sql = @"
-                ;WITH base AS (
+                    ;WITH base AS
+                    (
+                        SELECT
+                            CONVERT(date, a.trdf_enddate) AS Enddatum,
+                            a.dsca_teilebez               AS [Teilebez.],
+                            a.pdno_prodnr                 AS [Auftragsnr.],
+                            a.mitm_teilenr                AS Artikel,
+                            a.opsta_avostat               AS Status,
+                            a.txta_avoinfo                AS AVOinfo,
+
+                            CASE
+                                WHEN a.txta_avoinfo LIKE '%III%'
+                                  OR a.txta_avoinfo LIKE '%Iii%'
+                                  OR a.txta_avoinfo LIKE '%IIi%'
+                                  OR a.txta_avoinfo LIKE '%iii%'
+                                  OR a.txta_avoinfo LIKE '%iII%'
+                                    THEN '0'
+
+                                WHEN a.txta_avoinfo LIKE '%Ii%'
+                                  OR a.txta_avoinfo LIKE '%iI%'
+                                  OR a.txta_avoinfo LIKE '%ii%'
+                                  OR a.txta_avoinfo LIKE '%II%'
+                                    THEN '2'
+
+                                WHEN a.txta_avoinfo LIKE '%i%'
+                                  OR a.txta_avoinfo LIKE '%I%'
+                                    THEN '1'
+
+                                ELSE '0'
+                            END AS Seite,
+
+                            a.qplo_sollstk            AS [SollStk.],
+                            a.qcmp_iststk             AS [IstStk.],
+                            pv.qcmp2_vorstk           AS [VorStk.],
+                            a.qhnd1_stk_teilelager    AS Teilelager,
+                            a.qana_bereitstellbestand AS Bereitstell,
+                            a.demand_jahresbedarf     AS Jahresbedarf,
+                            CONVERT(date, a.import_date) AS Aktualisiert,
+
+                            ISNULL(zk.Zukauf, '') AS Zukauf
+
+                        FROM LN_ProdOrders_PRD a
+
+
+                        -- ============================================================
+                        -- VorStk. aus der vorherigen Vorbereiten-AVO holen
+                        -- ============================================================
+                        OUTER APPLY
+                        (
+                            SELECT TOP (1)
+                                b.qcmp2_vorstk
+                            FROM LN_ProdOrders_PRD b
+                            WHERE b.pdno_prodnr = a.pdno_prodnr
+                              AND b.txta_avoinfo LIKE '%Vorbereiten%'
+                              AND b.trdf_enddate < a.trdf_enddate
+                            ORDER BY b.trdf_enddate DESC
+                        ) AS pv
+
+
+                        -- ============================================================
+                        -- Zukauf automatisch aus der Schnittstelle ermitteln
+                        --
+                        -- Es werden ALLE AVOs des Auftrags durchsucht.
+                        --
+                        -- sitm_rohteil beginnt mit R = R-Lager
+                        -- sitm_rohteil gefüllt, aber nicht R = T-Lager
+                        -- ============================================================
+                        OUTER APPLY
+                        (
+                            SELECT TOP (1)
+
+                                CASE
+                                    WHEN LTRIM(RTRIM(z.sitm_rohteil)) LIKE 'R%'
+                                        THEN 'R-Lager'
+
+                                    ELSE 'T-Lager'
+                                END AS Zukauf
+
+                            FROM LN_ProdOrders_PRD z
+
+                            WHERE z.pdno_prodnr = a.pdno_prodnr
+
+                              -- Rohteil muss vorhanden sein
+                              AND NULLIF(
+                                    LTRIM(RTRIM(z.sitm_rohteil)),
+                                    ''
+                                  ) IS NOT NULL
+
+                              -- Nur relevante KST / Anlage
+                              AND LTRIM(RTRIM(ISNULL(z.mtyp_anlage, ''))) LIKE '127%'
+
+                            ORDER BY z.trdf_enddate DESC
+
+                        ) AS zk
+
+
+                        -- ============================================================
+                        -- Nur aktive / geplante / freigegebene Vergüte-AVOs
+                        -- des ausgewählten Belags
+                        -- ============================================================
+                        WHERE a.opsta_avostat IN
+                        (
+                            'Active',
+                            'Planned',
+                            'Released'
+                        )
+
+                        AND
+                        (
+                            a.txta_avoinfo LIKE @BelagPattern1
+                            OR
+                            a.txta_avoinfo LIKE @BelagPattern2
+                        )
+
+                        AND a.txta_avoinfo LIKE '%Vergüten%'
+                    )
+
+
+                    -- ================================================================
+                    -- Endgültige Ausgabe
+                    -- ================================================================
                     SELECT
-                        CONVERT(date, a.trdf_enddate)         AS Enddatum,
-                        a.dsca_teilebez                       AS [Teilebez.],
-                        a.pdno_prodnr                         AS [Auftragsnr.],
-                        a.mitm_teilenr                        AS Artikel,
-                        a.opsta_avostat                       AS Status,
-                        a.txta_avoinfo                        AS AVOinfo,
-                        CASE
-                            WHEN a.txta_avoinfo LIKE '%III%' OR a.txta_avoinfo LIKE '%Iii%' OR a.txta_avoinfo LIKE '%IIi%' OR a.txta_avoinfo LIKE '%iii%' OR a.txta_avoinfo LIKE '%iII%' THEN '0'
-                            WHEN a.txta_avoinfo LIKE '%Ii%'  OR a.txta_avoinfo LIKE '%iI%'  OR a.txta_avoinfo LIKE '%ii%'  OR a.txta_avoinfo LIKE '%II%'  THEN '2'
-                            WHEN a.txta_avoinfo LIKE '%i%'   OR a.txta_avoinfo LIKE '%I%'   THEN '1'
-                            ELSE '0'
-                        END                                    AS Seite,
-                        a.qplo_sollstk                         AS [SollStk.],
-                        a.qcmp_iststk                          AS [IstStk.],
-                        pv.qcmp2_vorstk                        AS [VorStk.],
-                        a.qhnd1_stk_teilelager                 AS Teilelager,
-                        a.qana_bereitstellbestand              AS Bereitstell,
-                        a.demand_jahresbedarf                  AS Jahresbedarf,
-                        CONVERT(date, a.import_date)           AS Aktualisiert
-                    FROM LN_ProdOrders_PRD a
-                    OUTER APPLY (
-                        SELECT TOP (1) b.qcmp2_vorstk
-                        FROM LN_ProdOrders_PRD b
-                        WHERE b.pdno_prodnr = a.pdno_prodnr
-                          AND b.txta_avoinfo LIKE '%Vorbereiten%'
-                          AND b.trdf_enddate < a.trdf_enddate
-                        ORDER BY b.trdf_enddate DESC
-                    ) AS pv
-                    WHERE a.opsta_avostat IN ('Active','Planned','Released')
-                      AND (a.txta_avoinfo LIKE @BelagPattern1 OR a.txta_avoinfo LIKE @BelagPattern2)
-                      AND a.txta_avoinfo LIKE '%Vergüten%'
-                )
-                SELECT
-                    base.Enddatum,
-                    base.[Teilebez.],
-                    base.[Auftragsnr.],
-                    base.Artikel,
-                    base.Status,
-                    base.AVOinfo,
-                    ISNULL(sl.MATERIAL, '')    AS Material,
-                    base.Seite,
-                    base.[SollStk.],
-                    base.[IstStk.],
-                    base.[VorStk.],
-                    base.Teilelager,
-                    base.Bereitstell,
-                    base.Jahresbedarf,
-                    CAST('' AS nvarchar(20))   AS Zukauf,   -- wird danach im Code gesetzt (RL/TL)
-                    ISNULL(ab.Dringend, '')    AS Dringend,
-                    base.Aktualisiert
-                FROM base
-                LEFT JOIN Serienlinsen sl
-                    ON sl.ARTNR = base.Artikel AND sl.Seite = base.Seite
-                LEFT JOIN Ansicht_Bildschirm ab
-                    ON ab.Auftrag = base.[Auftragsnr.]
-                ORDER BY base.Enddatum ASC;";
+                        base.Enddatum,
+                        base.[Teilebez.],
+                        base.[Auftragsnr.],
+                        base.Artikel,
+                        base.Status,
+                        base.AVOinfo,
+
+                        ISNULL(sl.MATERIAL, '') AS Material,
+
+                        base.Seite,
+                        base.[SollStk.],
+                        base.[IstStk.],
+                        base.[VorStk.],
+                        base.Teilelager,
+                        base.Bereitstell,
+                        base.Jahresbedarf,
+
+                        base.Zukauf,
+
+                        ISNULL(ab.Dringend, '') AS Dringend,
+
+                        base.Aktualisiert
+
+                    FROM base
+
+
+                    -- Material aus Serienlinsen
+                    LEFT JOIN Serienlinsen sl
+                        ON sl.ARTNR = base.Artikel
+                       AND sl.Seite = base.Seite
+
+
+                    -- Dringend-Status
+                    LEFT JOIN Ansicht_Bildschirm ab
+                        ON ab.Auftrag = base.[Auftragsnr.]
+
+
+                    ORDER BY base.Enddatum ASC;
+                    ";
 
                 var dt = new DataTable();
 
@@ -1118,29 +1214,30 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     }
                 }
 
-                // ----- RL/TL aus JSON nachtragen → Spalte "Zukauf" -----
-                RLTLData rltlData;
-                var jsonFilePath2 = "rltl_data.json";
-                if (File.Exists(jsonFilePath2))
-                {
-                    var json = File.ReadAllText(jsonFilePath2);
-                    rltlData = JsonConvert.DeserializeObject<RLTLData>(json) ?? new RLTLData();
-                }
-                else
-                {
-                    rltlData = new RLTLData();
-                }
+                //// Zukauf als Json -------- Voerst ausgestellt ----------------#############################################
+                ////// ----- RL/TL aus JSON nachtragen → Spalte "Zukauf" -----
+                ////RLTLData rltlData;
+                ////var jsonFilePath2 = "rltl_data.json";
+                ////if (File.Exists(jsonFilePath2))
+                ////{
+                ////    var json = File.ReadAllText(jsonFilePath2);
+                ////    rltlData = JsonConvert.DeserializeObject<RLTLData>(json) ?? new RLTLData();
+                ////}
+                ////else
+                ////{
+                ////    rltlData = new RLTLData();
+                ////}
 
-                foreach (DataRow row in dt.Rows)
-                {
-                    var artikelNr = row["Artikel"]?.ToString() ?? string.Empty;
-                    if (artikelNr.Length == 0) continue;
+                ////foreach (DataRow row in dt.Rows)
+                ////{
+                ////    var artikelNr = row["Artikel"]?.ToString() ?? string.Empty;
+                ////    if (artikelNr.Length == 0) continue;
 
-                    if (rltlData.RL != null && rltlData.RL.Contains(artikelNr))
-                        row["Zukauf"] = "R-Lager";
-                    else if (rltlData.TL != null && rltlData.TL.Contains(artikelNr))
-                        row["Zukauf"] = "T-Lager";
-                }
+                ////    if (rltlData.RL != null && rltlData.RL.Contains(artikelNr))
+                ////        row["Zukauf"] = "R-Lager";
+                ////    else if (rltlData.TL != null && rltlData.TL.Contains(artikelNr))
+                ////        row["Zukauf"] = "T-Lager";
+                ////}
 
                 // Tabelle merken (für Filterung).
                 _auftraegeDataTable = dt;
@@ -1329,6 +1426,118 @@ namespace VerwaltungKST1127.Auftragsverwaltung
 
             Form_Rueckstand form_Rueckstand = new Form_Rueckstand(belagTable);
             form_Rueckstand.Show();
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Modernes Design anwenden: Farben, Schriftarten, FlatStyle, etc.
+        // -----------------------------------------------------------------------------------------------------------------
+        private void ApplyModernDesign()
+        {
+            // Formular
+            this.BackColor = Color.FromArgb(245, 246, 248);
+            this.Font = new Font("Segoe UI", 9F);
+
+            // --------------------------------------------------
+            // Belag Grid
+            // --------------------------------------------------
+            DgvLadeBelaege.EnableHeadersVisualStyles = false;
+            DgvLadeBelaege.BackgroundColor = Color.White;
+            DgvLadeBelaege.BorderStyle = BorderStyle.None;
+            DgvLadeBelaege.GridColor = Color.FromArgb(230, 230, 230);
+
+            DgvLadeBelaege.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(32, 55, 100);
+            DgvLadeBelaege.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            DgvLadeBelaege.ColumnHeadersDefaultCellStyle.Font =
+                new Font("Segoe UI", 9F, FontStyle.Bold);
+
+            DgvLadeBelaege.DefaultCellStyle.SelectionBackColor =
+                Color.FromArgb(220, 235, 255);
+
+            DgvLadeBelaege.DefaultCellStyle.SelectionForeColor = Color.Black;
+
+            DgvLadeBelaege.RowTemplate.Height = 28;
+
+            // --------------------------------------------------
+            // Auftrags Grid
+            // --------------------------------------------------
+            DgvAnsichtAuftraege.EnableHeadersVisualStyles = false;
+            DgvAnsichtAuftraege.BackgroundColor = Color.White;
+            DgvAnsichtAuftraege.BorderStyle = BorderStyle.None;
+            DgvAnsichtAuftraege.GridColor = Color.FromArgb(230, 230, 230);
+
+            DgvAnsichtAuftraege.ColumnHeadersDefaultCellStyle.BackColor =
+                Color.FromArgb(32, 55, 100);
+
+            DgvAnsichtAuftraege.ColumnHeadersDefaultCellStyle.ForeColor =
+                Color.White;
+
+            DgvAnsichtAuftraege.ColumnHeadersDefaultCellStyle.Font =
+                new Font("Segoe UI", 9F, FontStyle.Bold);
+
+            DgvAnsichtAuftraege.DefaultCellStyle.SelectionBackColor =
+                Color.FromArgb(220, 235, 255);
+
+            DgvAnsichtAuftraege.DefaultCellStyle.SelectionForeColor =
+                Color.Black;
+
+            DgvAnsichtAuftraege.RowTemplate.Height = 30;
+
+            DgvAnsichtAuftraege.AlternatingRowsDefaultCellStyle.BackColor =
+                Color.FromArgb(248, 248, 248);
+
+            // --------------------------------------------------
+            // Info Grid
+            // --------------------------------------------------
+            DgvInformationZuAuftrag.EnableHeadersVisualStyles = false;
+            DgvInformationZuAuftrag.BackgroundColor = Color.White;
+            DgvInformationZuAuftrag.BorderStyle = BorderStyle.None;
+            DgvInformationZuAuftrag.GridColor = Color.FromArgb(230, 230, 230);
+
+            DgvInformationZuAuftrag.ColumnHeadersDefaultCellStyle.BackColor =
+                Color.FromArgb(32, 55, 100);
+
+            DgvInformationZuAuftrag.ColumnHeadersDefaultCellStyle.ForeColor =
+                Color.White;
+
+            DgvInformationZuAuftrag.ColumnHeadersDefaultCellStyle.Font =
+                new Font("Segoe UI", 9F, FontStyle.Bold);
+
+            DgvInformationZuAuftrag.RowTemplate.Height = 28;
+
+            // --------------------------------------------------
+            // Buttons
+            // --------------------------------------------------
+            btnShowStkOffen.FlatStyle = FlatStyle.Flat;
+            btnShowStkOffen.FlatAppearance.BorderSize = 0;
+            btnShowStkOffen.BackColor = Color.FromArgb(255, 193, 7);
+            btnShowStkOffen.ForeColor = Color.Black;
+            btnShowStkOffen.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+
+            btnRueckstand.FlatStyle = FlatStyle.Flat;
+            btnRueckstand.FlatAppearance.BorderSize = 0;
+            btnRueckstand.BackColor = Color.FromArgb(255, 152, 0);
+            btnRueckstand.ForeColor = Color.White;
+            btnRueckstand.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+
+            // --------------------------------------------------
+            // Status Labels
+            // --------------------------------------------------
+            lblGestartet.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            lblGestarteAuftraege.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+
+            lblGestartet.ForeColor = Color.FromArgb(0, 120, 215);
+            lblGestarteAuftraege.ForeColor = Color.FromArgb(0, 120, 215);
+
+            // --------------------------------------------------
+            // Checkbox
+            // --------------------------------------------------
+            checkBoxShowZukauf.Font = new Font("Segoe UI", 10F);
+
+            // --------------------------------------------------
+            // Zeichnung
+            // --------------------------------------------------
+            PictureBoxZeichnung.BorderStyle = BorderStyle.FixedSingle;
+            PictureBoxZeichnung.BackColor = Color.White;
         }
     }
 }

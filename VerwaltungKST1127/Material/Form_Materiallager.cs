@@ -796,130 +796,253 @@ namespace VerwaltungKST1127
         }
 
 
-
+        // Event-Handler, der ausgelöst wird, sobald die Maus über eine Zelle
+        // des Bestell-Radars bewegt wird.
+        //
+        // Zweck:
+        // Dem Benutzer zusätzliche Informationen zum ausgewählten Artikel anzeigen,
+        // ohne dass dafür ein Klick notwendig ist.
+        //
+        // Angezeigt werden:
+        // - Artikelbezeichnung
+        // - Aktueller Lagerstand
+        // - Hinterlegte Mindestbestandsmenge
+        // - Tatsächliche Reserve (Lagerstand - Mindestbestand)
+        //
+        // Beispiel:
+        // Lagerstand = 230
+        // Mindestbestand = 100
+        //
+        // Reserve = 130
+        //
+        // Die Informationen werden als Tooltip direkt am Artikel angezeigt.
         private void DgvBestellRadar_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
+                // Prüfen ob sich die Maus auf einer gültigen Datenzeile befindet.
+                // Zeilenindex kleiner 0 bedeutet beispielsweise Spaltenüberschrift.
                 if (e.RowIndex < 0)
                     return;
 
+                // Ausgewählte Zeile aus dem Bestell-Radar lesen
                 DataGridViewRow row = DgvBestellRadar.Rows[e.RowIndex];
 
+                // Artikelbezeichnung auslesen
                 string artikel =
-                row.Cells["Artikel"].Value?.ToString();
+                    row.Cells["Artikel"].Value?.ToString();
 
+                // Aktuellen Lagerstand auslesen
                 string lagerstand =
-                row.Cells["Lagerstand"].Value?.ToString();
+                    row.Cells["Lagerstand"].Value?.ToString();
 
+                // Hinterlegten Mindestbestand auslesen
                 string mindestbestand =
-                row.Cells["Mindestbestand"].Value?.ToString();
+                    row.Cells["Mindestbestand"].Value?.ToString();
 
+                // Berechnen der Reservemenge
+                // Positiver Wert = ausreichend Bestand vorhanden
+                // Negativer Wert = Mindestbestand bereits unterschritten
                 int differenz =
-                Convert.ToInt32(lagerstand) -
-                Convert.ToInt32(mindestbestand);
+                    Convert.ToInt32(lagerstand) -
+                    Convert.ToInt32(mindestbestand);
 
+                // Tooltip mit Detailinformationen erzeugen
                 row.Cells["Artikel"].ToolTipText =
-                $"Artikel: {artikel}\n" +
-                $"Lagerstand: {lagerstand}\n" +
-                $"Mindestbestand: {mindestbestand}\n" +
-                $"Reserve: {differenz}";
+                    $"Artikel: {artikel}\n" +
+                    $"Lagerstand: {lagerstand}\n" +
+                    $"Mindestbestand: {mindestbestand}\n" +
+                    $"Reserve: {differenz}";
             }
             catch
             {
+                // Fehler werden bewusst ignoriert,
+                // damit die Bedienung des Grids nicht beeinflusst wird.
             }
         }
 
+        // Event-Handler für einen Mausklick auf einen Artikel
+        // im Bestell-Radar.
+        //
+        // Zweck:
+        // Das Bestell-Radar dient nicht nur als Anzeige,
+        // sondern gleichzeitig als Schnellnavigation.
+        //
+        // Wird rechts ein Artikel angeklickt:
+        //
+        // 1. Passender Datensatz im Haupt-DataGridView suchen
+        // 2. Zeile markieren
+        // 3. Zu der Zeile scrollen
+        // 4. Textfelder aktualisieren
+        // 5. Bild des Artikels laden
+        //
+        // Dadurch gelangt der Benutzer mit nur einem Klick
+        // direkt zu dem gewünschten Material.
         private void DgvBestellRadar_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
+                // Prüfen ob eine gültige Datenzeile angeklickt wurde
                 if (e.RowIndex < 0)
                     return;
 
+                // Artikelname aus dem Bestell-Radar ermitteln
                 string artikel =
-                DgvBestellRadar
-                .Rows[e.RowIndex]
-                .Cells["Artikel"]
-                .Value
-                .ToString();
+                    DgvBestellRadar
+                    .Rows[e.RowIndex]
+                    .Cells["Artikel"]
+                    .Value
+                    .ToString();
 
+                // Gesamte Materialliste durchsuchen
                 foreach (DataGridViewRow row in DgvMateriallager.Rows)
                 {
+                    // Prüfen ob der Artikel identisch ist
                     if (row.Cells["Artikel"].Value?.ToString() == artikel)
                     {
+                        // Vorhandene Auswahl entfernen
                         DgvMateriallager.ClearSelection();
 
+                        // Gefundene Zeile markieren
                         row.Selected = true;
-                        DgvMateriallager_CellClick(DgvMateriallager, new DataGridViewCellEventArgs(0, row.Index));
 
+                        // Bereits vorhandene CellClick-Methode aufrufen,
+                        // damit alle vorhandenen Funktionen ausgeführt werden:
+                        // - TextBoxen befüllen
+                        // - currentId setzen
+                        // - Bild laden
+                        DgvMateriallager_CellClick(
+                            DgvMateriallager,
+                            new DataGridViewCellEventArgs(0, row.Index));
+
+                        // Fokus auf die gefundene Zeile setzen
                         DgvMateriallager.CurrentCell =
-                        row.Cells["Artikel"];
+                            row.Cells["Artikel"];
 
+                        // Automatisch zur Zeile scrollen,
+                        // falls diese momentan nicht sichtbar ist
                         DgvMateriallager.FirstDisplayedScrollingRowIndex =
-                        row.Index;
+                            row.Index;
 
+                        // Schleife verlassen, da Artikel gefunden wurde
                         break;
                     }
                 }
             }
             catch
             {
+                // Fehler bewusst unterdrücken,
+                // damit das Bestell-Radar jederzeit bedienbar bleibt.
             }
         }
 
+        // Methode zum Aktualisieren des Dashboard-Bereiches
+        // oberhalb des Bestell-Radars.
+        //
+        // Zweck:
+        // Auf einen Blick anzeigen:
+        //
+        // 🔴 Wie viele Artikel kritisch sind
+        // 🟡 Wie viele Artikel beobachtet werden sollten
+        // 🟢 Wie viele Artikel ausreichend Lagerbestand besitzen
+        //
+        // Die Einteilung erfolgt anhand des Verhältnisses:
+        //
+        // Lagerstand / Mindestbestand
+        //
+        // <= 120 %   -> Kritisch
+        // <= 200 %   -> Beobachten
+        // > 200 %    -> OK
+        //
+        // Artikel mit Mindestbestand = 0
+        // werden aktuell automatisch der Kategorie OK zugeordnet,
+        // da diese Materialien derzeit nicht verwendet werden.
         private void UpdateRadarDashboard(DataTable table)
         {
+            // Anzahl kritischer Artikel
             int kritisch = 0;
+
+            // Anzahl beobachtungswürdiger Artikel
             int beobachten = 0;
+
+            // Anzahl Artikel mit ausreichend Bestand
             int ok = 0;
 
+            // Alle Datensätze der Materialliste durchlaufen
             foreach (DataRow row in table.Rows)
             {
+                // Lagerstand auslesen
                 int lagerstand =
                     Convert.ToInt32(row["Lagerstand"]);
 
+                // Mindestbestand auslesen
                 int mindestbestand =
                     Convert.ToInt32(row["Mindestbestand"]);
 
+                // Materialien mit Mindestbestand = 0
+                // werden aktuell nicht verwendet.
+                // Deshalb werden diese nicht als kritisch bewertet.
                 if (mindestbestand == 0)
                 {
                     ok++;
                     continue;
                 }
 
+                // Verhältnis zwischen Lagerstand und Mindestbestand berechnen
                 double reserve =
                     (double)lagerstand / mindestbestand;
 
+                // Kritischer Bereich
                 if (reserve <= 1.2)
                 {
                     kritisch++;
                 }
+
+                // Beobachtungsbereich
                 else if (reserve <= 2.0)
                 {
                     beobachten++;
                 }
+
+                // Ausreichender Lagerbestand
                 else
                 {
                     ok++;
                 }
             }
 
+            // Kritische Artikel anzeigen
             lblKritisch.Text =
                 $"🔴 Kritisch: {kritisch}";
-            lblKritisch.ForeColor = Color.Red;
-            // Fett geschrieben
-            lblKritisch.Font = new Font(lblKritisch.Font, FontStyle.Bold);
 
+            // Rot einfärben
+            lblKritisch.ForeColor = Color.Red;
+
+            // Fett darstellen
+            lblKritisch.Font =
+                new Font(lblKritisch.Font, FontStyle.Bold);
+
+            // Beobachtungsartikel anzeigen
             lblBeobachten.Text =
                 $"🟡 Beobachten: {beobachten}";
-            lblBeobachten.ForeColor = Color.DarkOrange;
-            lblBeobachten.Font = new Font(lblBeobachten.Font, FontStyle.Bold);
 
+            // Orange einfärben
+            lblBeobachten.ForeColor = Color.DarkOrange;
+
+            // Fett darstellen
+            lblBeobachten.Font =
+                new Font(lblBeobachten.Font, FontStyle.Bold);
+
+            // Artikel mit ausreichend Bestand anzeigen
             lblOk.Text =
                 $"🟢 OK: {ok}";
+
+            // Grün einfärben
             lblOk.ForeColor = Color.Green;
-            lblOk.Font = new Font(lblOk.Font, FontStyle.Bold);
+
+            // Fett darstellen
+            lblOk.Font =
+                new Font(lblOk.Font, FontStyle.Bold);
         }
     }
 }

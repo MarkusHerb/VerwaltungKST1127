@@ -29,13 +29,9 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.lblGestartet = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.lblPfad = new System.Windows.Forms.Label();
-            this.BtnZukauf = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -59,7 +55,7 @@
             // 
             this.lblGestartet.AutoSize = true;
             this.lblGestartet.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGestartet.Location = new System.Drawing.Point(1304, 11);
+            this.lblGestartet.Location = new System.Drawing.Point(1304, 8);
             this.lblGestartet.Name = "lblGestartet";
             this.lblGestartet.Size = new System.Drawing.Size(18, 20);
             this.lblGestartet.TabIndex = 24;
@@ -84,18 +80,6 @@
             this.lblPfad.Size = new System.Drawing.Size(58, 9);
             this.lblPfad.TabIndex = 22;
             this.lblPfad.Text = "Zeichnungspfad";
-            // 
-            // BtnZukauf
-            // 
-            this.BtnZukauf.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.BtnZukauf.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnZukauf.Location = new System.Drawing.Point(11, 755);
-            this.BtnZukauf.Name = "BtnZukauf";
-            this.BtnZukauf.Size = new System.Drawing.Size(277, 44);
-            this.BtnZukauf.TabIndex = 21;
-            this.BtnZukauf.Text = "Zukauf hinzufügen / löschen";
-            this.BtnZukauf.UseVisualStyleBackColor = false;
-            this.BtnZukauf.Click += new System.EventHandler(this.BtnZukauf_Click);
             // 
             // label4
             // 
@@ -148,14 +132,6 @@
             // 
             // DgvInformationZuAuftrag
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DgvInformationZuAuftrag.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.DgvInformationZuAuftrag.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgvInformationZuAuftrag.Location = new System.Drawing.Point(294, 608);
             this.DgvInformationZuAuftrag.Name = "DgvInformationZuAuftrag";
@@ -166,23 +142,15 @@
             // 
             // DgvAnsichtAuftraege
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DgvAnsichtAuftraege.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.DgvAnsichtAuftraege.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.Desktop;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DgvAnsichtAuftraege.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.Desktop;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DgvAnsichtAuftraege.DefaultCellStyle = dataGridViewCellStyle1;
             this.DgvAnsichtAuftraege.Location = new System.Drawing.Point(294, 37);
             this.DgvAnsichtAuftraege.Name = "DgvAnsichtAuftraege";
             this.DgvAnsichtAuftraege.ReadOnly = true;
@@ -201,14 +169,6 @@
             this.DgvLadeBelaege.AllowUserToDeleteRows = false;
             this.DgvLadeBelaege.AllowUserToResizeColumns = false;
             this.DgvLadeBelaege.AllowUserToResizeRows = false;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.DgvLadeBelaege.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.DgvLadeBelaege.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DgvLadeBelaege.Location = new System.Drawing.Point(12, 37);
             this.DgvLadeBelaege.Name = "DgvLadeBelaege";
@@ -245,7 +205,7 @@
             // 
             this.lblGestarteAuftraege.AutoSize = true;
             this.lblGestarteAuftraege.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGestarteAuftraege.Location = new System.Drawing.Point(1613, 9);
+            this.lblGestarteAuftraege.Location = new System.Drawing.Point(1613, 6);
             this.lblGestarteAuftraege.Name = "lblGestarteAuftraege";
             this.lblGestarteAuftraege.Size = new System.Drawing.Size(18, 20);
             this.lblGestarteAuftraege.TabIndex = 28;
@@ -277,7 +237,7 @@
             // 
             // Form_VerwaltungHauptansicht
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1838, 906);
@@ -289,7 +249,6 @@
             this.Controls.Add(this.lblGestartet);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.lblPfad);
-            this.Controls.Add(this.BtnZukauf);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -298,6 +257,7 @@
             this.Controls.Add(this.DgvInformationZuAuftrag);
             this.Controls.Add(this.DgvAnsichtAuftraege);
             this.Controls.Add(this.DgvLadeBelaege);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Name = "Form_VerwaltungHauptansicht";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Auftragsverwaltung Kst1127";
@@ -314,7 +274,6 @@
         private System.Windows.Forms.Label lblGestartet;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label lblPfad;
-        private System.Windows.Forms.Button BtnZukauf;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
