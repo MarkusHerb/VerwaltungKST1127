@@ -81,6 +81,7 @@
             this.btnDatenExportTabellen = new System.Windows.Forms.Button();
             this.btnProduktionGestern = new System.Windows.Forms.Button();
             this.btnProduktionsTrend = new System.Windows.Forms.Button();
+            this.BtnRingSegmentVerwaltung = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLinsenPrismen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxBestellung)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPerformance)).BeginInit();
@@ -633,6 +634,20 @@
             this.btnProduktionsTrend.UseVisualStyleBackColor = false;
             this.btnProduktionsTrend.Click += new System.EventHandler(this.btnProduktionsTrend_Click);
             // 
+            // BtnRingSegmentVerwaltung
+            // 
+            this.BtnRingSegmentVerwaltung.BackColor = System.Drawing.Color.Silver;
+            this.BtnRingSegmentVerwaltung.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnRingSegmentVerwaltung.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.BtnRingSegmentVerwaltung.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnRingSegmentVerwaltung.Location = new System.Drawing.Point(637, 355);
+            this.BtnRingSegmentVerwaltung.Name = "BtnRingSegmentVerwaltung";
+            this.BtnRingSegmentVerwaltung.Size = new System.Drawing.Size(239, 66);
+            this.BtnRingSegmentVerwaltung.TabIndex = 48;
+            this.BtnRingSegmentVerwaltung.Text = "Ring / Segment verwaltung";
+            this.BtnRingSegmentVerwaltung.UseVisualStyleBackColor = false;
+            this.BtnRingSegmentVerwaltung.Click += new System.EventHandler(this.BtnRingSegmentVerwaltung_Click);
+            // 
             // Form_Start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -641,6 +656,7 @@
             this.BackgroundImage = global::VerwaltungKST1127.Properties.Resources.StartHintergrund2;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1197, 721);
+            this.Controls.Add(this.BtnRingSegmentVerwaltung);
             this.Controls.Add(this.btnProduktionsTrend);
             this.Controls.Add(this.btnProduktionGestern);
             this.Controls.Add(this.btnDatenExportTabellen);
@@ -745,6 +761,7 @@
         private System.Windows.Forms.Button btnDatenExportTabellen;
         private System.Windows.Forms.Button btnProduktionGestern;
         private System.Windows.Forms.Button btnProduktionsTrend;
+        private System.Windows.Forms.Button BtnRingSegmentVerwaltung;
     }
 }
 

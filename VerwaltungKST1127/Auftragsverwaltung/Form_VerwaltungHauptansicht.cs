@@ -109,7 +109,16 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                 }
 
                 dv.RowFilter = filter;
+
+                // ZUERST eindeutig nach Enddatum sortieren
+                dv.Sort = "[Enddatum] ASC";
+
+                // DANACH ans Grid binden
                 DgvAnsichtAuftraege.DataSource = dv;
+
+                // Erst jetzt die Gruppen färben
+                FaerbeAuftragsgruppen();
+                DgvAnsichtAuftraege.Invalidate(); // Grid neu zeichnen, damit CellFormatting greift
 
                 // ----- 3) Optik & Spaltenformatierung -----
                 if (DgvAnsichtAuftraege.DataSource != null && DgvAnsichtAuftraege.Columns.Count > 0)
@@ -360,6 +369,7 @@ namespace VerwaltungKST1127.Auftragsverwaltung
         // -----------------------------------------------------------------------------------------------------------------
         private void DgvAnsichtAuftraege_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
+            
             // ---- Status: "Active" → grün ----
             if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "Status")
             {
@@ -415,16 +425,12 @@ namespace VerwaltungKST1127.Auftragsverwaltung
                     {
                         if (endDate.Date < DateTime.Today)
                         {
-                            e.CellStyle.BackColor = System.Drawing.Color.LightGray;
-                        }
-                        else
-                        {
-                            e.CellStyle.BackColor = DgvAnsichtAuftraege.DefaultCellStyle.BackColor;
+                            e.CellStyle.BackColor = Color.LightGray;
                         }
                     }
                 }
 
-                // ---- VorStk., IstStk., SollStk. → fett ----
+                // --- SollStk., IstStk., VorStk. → fett ----
                 if (DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "VorStk." ||
                     DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "IstStk." ||
                     DgvAnsichtAuftraege.Columns[e.ColumnIndex].Name == "SollStk.")
@@ -1538,6 +1544,46 @@ namespace VerwaltungKST1127.Auftragsverwaltung
             // --------------------------------------------------
             PictureBoxZeichnung.BorderStyle = BorderStyle.FixedSingle;
             PictureBoxZeichnung.BackColor = Color.White;
+        }
+
+        // -----------------------------------------------------------------------------------------------------------------
+        // Setzt die Hintergrundfarbe jeder Zeile im Auftrags-Grid basierend auf der Auftragsnummer.
+        // -----------------------------------------------------------------------------------------------------------------
+        private void FaerbeAuftragsgruppen()
+        {
+            string vorherigeAuftragsNr = null;
+
+            // Erste Gruppe hellgrau
+            bool grau = true;
+
+            foreach (DataGridViewRow row in DgvAnsichtAuftraege.Rows)
+            {
+                if (row.IsNewRow)
+                    continue;
+
+                string aktuelleAuftragsNr =
+                    row.Cells["Auftragsnr."].Value?.ToString();
+
+                if (string.IsNullOrWhiteSpace(aktuelleAuftragsNr))
+                    continue;
+
+                // Nur wenn sich die Nummer gegenüber der vorherigen Zeile ändert,
+                // wird die Farbe gewechselt.
+                if (vorherigeAuftragsNr != null &&
+                    !string.Equals(
+                        aktuelleAuftragsNr,
+                        vorherigeAuftragsNr,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    grau = !grau;
+                }
+
+                row.DefaultCellStyle.BackColor = grau
+                    ? Color.FromArgb(242, 242, 242)
+                    : Color.White;
+
+                vorherigeAuftragsNr = aktuelleAuftragsNr;
+            }
         }
     }
 }

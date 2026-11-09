@@ -333,6 +333,12 @@
     <Compile Include="GlasWaschDaten\Form_GlasWaschDaten.Designer.cs">
       <DependentUpon>Form_GlasWaschDaten.cs</DependentUpon>
     </Compile>
+    <Compile Include="Kardex\Frm_Statuspflege.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Kardex\Frm_Statuspflege.Designer.cs">
+      <DependentUpon>Frm_Statuspflege.cs</DependentUpon>
+    </Compile>
     <Compile Include="Material\Form_InfoMateriallager.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -467,6 +473,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GlasWaschDaten\Form_GlasWaschDaten.resx">
       <DependentUpon>Form_GlasWaschDaten.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Kardex\Frm_Statuspflege.resx">
+      <DependentUpon>Frm_Statuspflege.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Material\Form_InfoMateriallager.resx">
       <DependentUpon>Form_InfoMateriallager.cs</DependentUpon>

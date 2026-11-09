@@ -28,6 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle gridHeaderStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle gridAlternatingStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle gridHeaderStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle gridAlternatingStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle gridHeaderStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle gridAlternatingStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -80,111 +86,122 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(51, 27);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(125, 24);
             this.label1.TabIndex = 0;
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(31, 55, 97);
             this.label1.Text = "Eingabe Ring";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(427, 27);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(193, 24);
             this.label2.TabIndex = 1;
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(31, 55, 97);
             this.label2.Text = "Eingabe Spannzange";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(52, 86);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(108, 18);
             this.label3.TabIndex = 2;
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label3.Text = "Vorrichtungsnr.";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(52, 124);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(71, 18);
             this.label4.TabIndex = 3;
+            this.label4.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label4.Text = "DM Innen";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(52, 276);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(112, 18);
             this.label5.TabIndex = 4;
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label5.Text = "Anzahl pro Ring";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.Location = new System.Drawing.Point(52, 162);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(78, 18);
             this.label6.TabIndex = 5;
+            this.label6.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label6.Text = "DM Außen";
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.Location = new System.Drawing.Point(52, 200);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(109, 18);
             this.label7.TabIndex = 6;
+            this.label7.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label7.Text = "DM Freibereich";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.Location = new System.Drawing.Point(52, 238);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(132, 18);
             this.label8.TabIndex = 7;
+            this.label8.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label8.Text = "DM Loch Segment";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label12.Location = new System.Drawing.Point(428, 162);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(105, 18);
             this.label12.TabIndex = 10;
+            this.label12.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label12.Text = "Stk. pro Zange";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label13.Location = new System.Drawing.Point(428, 124);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(71, 18);
             this.label13.TabIndex = 9;
+            this.label13.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label13.Text = "DM Innen";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label14.Location = new System.Drawing.Point(428, 86);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(108, 18);
             this.label14.TabIndex = 8;
+            this.label14.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label14.Text = "Vorrichtungsnr.";
             // 
             // txtBoxVorrichtungsNummerRing
@@ -245,22 +262,30 @@
             // 
             // btnRingSave
             // 
-            this.btnRingSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.btnRingSave.Location = new System.Drawing.Point(211, 335);
             this.btnRingSave.Name = "btnRingSave";
             this.btnRingSave.Size = new System.Drawing.Size(65, 23);
             this.btnRingSave.TabIndex = 20;
+            this.btnRingSave.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
+            this.btnRingSave.ForeColor = System.Drawing.Color.White;
+            this.btnRingSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRingSave.FlatAppearance.BorderSize = 0;
+            this.btnRingSave.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRingSave.Text = "Save";
             this.btnRingSave.UseVisualStyleBackColor = false;
             this.btnRingSave.Click += new System.EventHandler(this.BtnRingSave_Click);
             // 
             // btnSpannzangeSave
             // 
-            this.btnSpannzangeSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
             this.btnSpannzangeSave.Location = new System.Drawing.Point(586, 188);
             this.btnSpannzangeSave.Name = "btnSpannzangeSave";
             this.btnSpannzangeSave.Size = new System.Drawing.Size(65, 23);
             this.btnSpannzangeSave.TabIndex = 21;
+            this.btnSpannzangeSave.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
+            this.btnSpannzangeSave.ForeColor = System.Drawing.Color.White;
+            this.btnSpannzangeSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSpannzangeSave.FlatAppearance.BorderSize = 0;
+            this.btnSpannzangeSave.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSpannzangeSave.Text = "Save";
             this.btnSpannzangeSave.UseVisualStyleBackColor = false;
             this.btnSpannzangeSave.Click += new System.EventHandler(this.BtnSpannzangeSave_Click);
@@ -301,7 +326,7 @@
             // 
             // panel3
             // 
-            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(0)))));
+            this.panel3.BackColor = System.Drawing.Color.FromArgb(216, 223, 232);
             this.panel3.Location = new System.Drawing.Point(351, 42);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(1, 300);
@@ -310,11 +335,12 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.Location = new System.Drawing.Point(51, 376);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(290, 24);
             this.label9.TabIndex = 23;
+            this.label9.ForeColor = System.Drawing.Color.FromArgb(31, 55, 97);
             this.label9.Text = "Ansicht aller Ringe/Spannzangen";
             // 
             // DgvAnsichtAlleRingeSpannzangen
@@ -324,7 +350,22 @@
             this.DgvAnsichtAlleRingeSpannzangen.Name = "DgvAnsichtAlleRingeSpannzangen";
             this.DgvAnsichtAlleRingeSpannzangen.RowHeadersVisible = false;
             this.DgvAnsichtAlleRingeSpannzangen.Size = new System.Drawing.Size(596, 150);
+            gridHeaderStyle1.BackColor = System.Drawing.Color.FromArgb(31, 55, 97);
+            gridHeaderStyle1.ForeColor = System.Drawing.Color.White;
+            gridHeaderStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(31, 55, 97);
+            gridHeaderStyle1.SelectionForeColor = System.Drawing.Color.White;
+            gridHeaderStyle1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold);
+            this.DgvAnsichtAlleRingeSpannzangen.ColumnHeadersDefaultCellStyle = gridHeaderStyle1;
+            gridAlternatingStyle1.BackColor = System.Drawing.Color.FromArgb(239, 241, 244);
+            this.DgvAnsichtAlleRingeSpannzangen.AlternatingRowsDefaultCellStyle = gridAlternatingStyle1;
             this.DgvAnsichtAlleRingeSpannzangen.TabIndex = 24;
+            this.DgvAnsichtAlleRingeSpannzangen.BackgroundColor = System.Drawing.Color.White;
+            this.DgvAnsichtAlleRingeSpannzangen.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DgvAnsichtAlleRingeSpannzangen.GridColor = System.Drawing.Color.FromArgb(216, 223, 232);
+            this.DgvAnsichtAlleRingeSpannzangen.EnableHeadersVisualStyles = false;
+            this.DgvAnsichtAlleRingeSpannzangen.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.DgvAnsichtAlleRingeSpannzangen.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.DgvAnsichtAlleRingeSpannzangen.ColumnHeadersHeight = 27;
             this.DgvAnsichtAlleRingeSpannzangen.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvAnsichtAlleRingeSpannzangen_CellClick);
             // 
             // DgvBoxen
@@ -335,7 +376,22 @@
             this.DgvBoxen.RowHeadersVisible = false;
             this.DgvBoxen.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DgvBoxen.Size = new System.Drawing.Size(297, 150);
+            gridHeaderStyle2.BackColor = System.Drawing.Color.FromArgb(31, 55, 97);
+            gridHeaderStyle2.ForeColor = System.Drawing.Color.White;
+            gridHeaderStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(31, 55, 97);
+            gridHeaderStyle2.SelectionForeColor = System.Drawing.Color.White;
+            gridHeaderStyle2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold);
+            this.DgvBoxen.ColumnHeadersDefaultCellStyle = gridHeaderStyle2;
+            gridAlternatingStyle2.BackColor = System.Drawing.Color.FromArgb(239, 241, 244);
+            this.DgvBoxen.AlternatingRowsDefaultCellStyle = gridAlternatingStyle2;
             this.DgvBoxen.TabIndex = 25;
+            this.DgvBoxen.BackgroundColor = System.Drawing.Color.White;
+            this.DgvBoxen.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DgvBoxen.GridColor = System.Drawing.Color.FromArgb(216, 223, 232);
+            this.DgvBoxen.EnableHeadersVisualStyles = false;
+            this.DgvBoxen.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.DgvBoxen.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.DgvBoxen.ColumnHeadersHeight = 27;
             // 
             // DgvArtikel
             // 
@@ -344,46 +400,71 @@
             this.DgvArtikel.Name = "DgvArtikel";
             this.DgvArtikel.RowHeadersVisible = false;
             this.DgvArtikel.Size = new System.Drawing.Size(297, 150);
+            gridHeaderStyle3.BackColor = System.Drawing.Color.FromArgb(31, 55, 97);
+            gridHeaderStyle3.ForeColor = System.Drawing.Color.White;
+            gridHeaderStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(31, 55, 97);
+            gridHeaderStyle3.SelectionForeColor = System.Drawing.Color.White;
+            gridHeaderStyle3.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold);
+            this.DgvArtikel.ColumnHeadersDefaultCellStyle = gridHeaderStyle3;
+            gridAlternatingStyle3.BackColor = System.Drawing.Color.FromArgb(239, 241, 244);
+            this.DgvArtikel.AlternatingRowsDefaultCellStyle = gridAlternatingStyle3;
             this.DgvArtikel.TabIndex = 26;
+            this.DgvArtikel.BackgroundColor = System.Drawing.Color.White;
+            this.DgvArtikel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DgvArtikel.GridColor = System.Drawing.Color.FromArgb(216, 223, 232);
+            this.DgvArtikel.EnableHeadersVisualStyles = false;
+            this.DgvArtikel.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.DgvArtikel.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.DgvArtikel.ColumnHeadersHeight = 27;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label10.Location = new System.Drawing.Point(51, 583);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(132, 24);
             this.label10.TabIndex = 27;
+            this.label10.ForeColor = System.Drawing.Color.FromArgb(31, 55, 97);
             this.label10.Text = "Ansicht Boxen";
             // 
             // blb
             // 
             this.blb.AutoSize = true;
-            this.blb.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blb.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.blb.Location = new System.Drawing.Point(350, 583);
             this.blb.Name = "blb";
             this.blb.Size = new System.Drawing.Size(161, 24);
             this.blb.TabIndex = 28;
+            this.blb.ForeColor = System.Drawing.Color.FromArgb(31, 55, 97);
             this.blb.Text = "Zuordnung Artikel";
             // 
             // BtnNeuerArtikelZuRing
             // 
-            this.BtnNeuerArtikelZuRing.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.BtnNeuerArtikelZuRing.Location = new System.Drawing.Point(467, 766);
             this.BtnNeuerArtikelZuRing.Name = "BtnNeuerArtikelZuRing";
             this.BtnNeuerArtikelZuRing.Size = new System.Drawing.Size(89, 23);
             this.BtnNeuerArtikelZuRing.TabIndex = 29;
+            this.BtnNeuerArtikelZuRing.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
+            this.BtnNeuerArtikelZuRing.ForeColor = System.Drawing.Color.White;
+            this.BtnNeuerArtikelZuRing.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnNeuerArtikelZuRing.FlatAppearance.BorderSize = 0;
+            this.BtnNeuerArtikelZuRing.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnNeuerArtikelZuRing.Text = "Neuer Artikel";
             this.BtnNeuerArtikelZuRing.UseVisualStyleBackColor = false;
             this.BtnNeuerArtikelZuRing.Click += new System.EventHandler(this.BtnNeuerArtikelZuRing_Click);
             // 
             // BtnArtikelLoeschen
             // 
-            this.BtnArtikelLoeschen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.BtnArtikelLoeschen.Location = new System.Drawing.Point(562, 766);
             this.BtnArtikelLoeschen.Name = "BtnArtikelLoeschen";
             this.BtnArtikelLoeschen.Size = new System.Drawing.Size(89, 23);
             this.BtnArtikelLoeschen.TabIndex = 30;
+            this.BtnArtikelLoeschen.BackColor = System.Drawing.Color.FromArgb(255, 152, 0);
+            this.BtnArtikelLoeschen.ForeColor = System.Drawing.Color.White;
+            this.BtnArtikelLoeschen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnArtikelLoeschen.FlatAppearance.BorderSize = 0;
+            this.BtnArtikelLoeschen.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnArtikelLoeschen.Text = "Lösche Artikel";
             this.BtnArtikelLoeschen.UseVisualStyleBackColor = false;
             this.BtnArtikelLoeschen.Click += new System.EventHandler(this.BtnArtikelLoeschen_Click);
@@ -398,16 +479,17 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.Location = new System.Drawing.Point(52, 309);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(99, 18);
             this.label11.TabIndex = 31;
+            this.label11.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
             this.label11.Text = "Ringe gesamt";
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.Color.Black;
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(216, 223, 232);
             this.panel1.Location = new System.Drawing.Point(358, 238);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(336, 1);
@@ -416,11 +498,12 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label15.Location = new System.Drawing.Point(384, 252);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(180, 24);
             this.label15.TabIndex = 34;
+            this.label15.ForeColor = System.Drawing.Color.FromArgb(31, 55, 97);
             this.label15.Text = "Suche Ringnummer";
             // 
             // txtBoxSucheArtikelRingNummer
@@ -440,13 +523,14 @@
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(101, 13);
             this.label16.TabIndex = 36;
+            this.label16.ForeColor = System.Drawing.Color.FromArgb(83, 100, 121);
             this.label16.Text = "Mit Enter bestätigen";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.label17.ForeColor = System.Drawing.Color.FromArgb(0, 120, 215);
             this.label17.Location = new System.Drawing.Point(385, 316);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(273, 26);
@@ -469,11 +553,15 @@
             // 
             // BtnNeueBoxSave
             // 
-            this.BtnNeueBoxSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             this.BtnNeueBoxSave.Location = new System.Drawing.Point(267, 766);
             this.BtnNeueBoxSave.Name = "BtnNeueBoxSave";
             this.BtnNeueBoxSave.Size = new System.Drawing.Size(85, 23);
             this.BtnNeueBoxSave.TabIndex = 40;
+            this.BtnNeueBoxSave.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
+            this.BtnNeueBoxSave.ForeColor = System.Drawing.Color.White;
+            this.BtnNeueBoxSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnNeueBoxSave.FlatAppearance.BorderSize = 0;
+            this.BtnNeueBoxSave.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnNeueBoxSave.Text = "Box speichern";
             this.BtnNeueBoxSave.UseVisualStyleBackColor = false;
             this.BtnNeueBoxSave.Click += new System.EventHandler(this.BtnNeueBoxSave_Click);
@@ -485,6 +573,7 @@
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(51, 13);
             this.label18.TabIndex = 41;
+            this.label18.ForeColor = System.Drawing.Color.FromArgb(83, 100, 121);
             this.label18.Text = "Boxname";
             // 
             // label19
@@ -494,15 +583,20 @@
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(67, 13);
             this.label19.TabIndex = 42;
+            this.label19.ForeColor = System.Drawing.Color.FromArgb(83, 100, 121);
             this.label19.Text = "Stück in Box";
             // 
             // BtnDeleteBox
             // 
-            this.BtnDeleteBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
             this.BtnDeleteBox.Location = new System.Drawing.Point(267, 788);
             this.BtnDeleteBox.Name = "BtnDeleteBox";
             this.BtnDeleteBox.Size = new System.Drawing.Size(85, 23);
             this.BtnDeleteBox.TabIndex = 43;
+            this.BtnDeleteBox.BackColor = System.Drawing.Color.FromArgb(255, 152, 0);
+            this.BtnDeleteBox.ForeColor = System.Drawing.Color.White;
+            this.BtnDeleteBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnDeleteBox.FlatAppearance.BorderSize = 0;
+            this.BtnDeleteBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnDeleteBox.Text = "Lösche Box";
             this.BtnDeleteBox.UseVisualStyleBackColor = false;
             this.BtnDeleteBox.Click += new System.EventHandler(this.BtnDeleteBox_Click);
@@ -511,6 +605,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(244, 246, 249);
             this.ClientSize = new System.Drawing.Size(705, 824);
             this.Controls.Add(this.BtnDeleteBox);
             this.Controls.Add(this.label19);

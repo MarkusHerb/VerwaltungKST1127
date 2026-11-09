@@ -39,11 +39,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
             dateTimePickerDatumAb.ValueChanged += DateFilterChanged_ReloadFromDb;
             dateTimePickerDatumBis.ValueChanged += DateFilterChanged_ReloadFromDb;
 
-            txtBoxArtikelnummer.KeyDown      += TextFilter_KeyDown;
-            txtBoxAuftragsnummer.KeyDown     += TextFilter_KeyDown;
-            txtBoxWaschprogramm.KeyDown      += TextFilter_KeyDown;
+            txtBoxArtikelnummer.KeyDown += TextFilter_KeyDown;
+            txtBoxAuftragsnummer.KeyDown += TextFilter_KeyDown;
+            txtBoxWaschprogramm.KeyDown += TextFilter_KeyDown;
             txtBoxWaschprogrammAceton.KeyDown += TextFilter_KeyDown;
-            txtBoxUID.KeyDown                += TextFilter_KeyDown;
+            txtBoxUID.KeyDown += TextFilter_KeyDown;
 
             LoadRFIDData();
         }
@@ -62,10 +62,10 @@ namespace VerwaltungKST1127.Produktionsauswertung
         // -----------------------------------------------------------------------------------------------------------------
         private void SetUIBusy(bool busy)
         {
-            btnLoescheFilter.Enabled          = !busy;
-            dateTimePickerDatumAb.Enabled     = !busy;
-            dateTimePickerDatumBis.Enabled    = !busy;
-            cListBoxWaschanlage.Enabled       = !busy;
+            btnLoescheFilter.Enabled = !busy;
+            dateTimePickerDatumAb.Enabled = !busy;
+            dateTimePickerDatumBis.Enabled = !busy;
+            cListBoxWaschanlage.Enabled = !busy;
             if (busy) lblEingeleseneWaschkoerbe.Text = "Lade Daten ...";
             Cursor = busy ? Cursors.WaitCursor : Cursors.Default;
         }
@@ -79,22 +79,21 @@ namespace VerwaltungKST1127.Produktionsauswertung
             try
             {
                 // Datum-Werte auf dem UI-Thread lesen, bevor wir in den Thread-Pool wechseln.
-                var datumAb  = dateTimePickerDatumAb.Value.Date;
+                var datumAb = dateTimePickerDatumAb.Value.Date;
                 var datumBis = dateTimePickerDatumBis.Value.Date.AddDays(1).AddSeconds(-1);
 
                 // DB-Abfrage im Hintergrund → kein Einfrieren der Anwendung.
                 var dataTable = await Task.Run(() => FetchDataFromDb(datumAb, datumBis));
 
                 _rfidTable = dataTable;
-                _rfidView  = new DataView(_rfidTable);
+                _rfidView = new DataView(_rfidTable);
 
                 // DataSource setzen; Spalten nur beim allerersten Laden konfigurieren.
                 dGvRFID.DataSource = _rfidView;
                 if (!_columnsConfigured)
                 {
                     ConfigureColumns();
-                    // Einmalige Breitenberechnung nur auf sichtbaren Zellen – deutlich schneller als AllCells.
-                    dGvRFID.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+                    // Keine inhaltsbasierte Breitenberechnung: alle Spalten nutzen die verfügbare Tabellenbreite.
                     // Kein automatisches Neuerstellen der Spalten bei späteren Ladevorgängen.
                     dGvRFID.AutoGenerateColumns = false;
                     _columnsConfigured = true;
@@ -176,9 +175,9 @@ namespace VerwaltungKST1127.Produktionsauswertung
             foreach (var kvp in renameMap)
             {
                 if (!dGvRFID.Columns.Contains(kvp.Key)) continue;
-                var col        = dGvRFID.Columns[kvp.Key];
+                var col = dGvRFID.Columns[kvp.Key];
                 col.HeaderText = kvp.Value;
-                col.Name       = kvp.Value;
+                col.Name = kvp.Value;
                 // DataPropertyName bleibt unverändert (z. B. "DB22") → Bindung zur DataTable stimmt weiter.
             }
 
@@ -194,8 +193,42 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 if (dGvRFID.Columns.Contains(name))
                     dGvRFID.Columns[name].DisplayIndex = idx++;
 
-            // None = keine automatische Breitenberechnung beim Scrollen (AllCells war sehr langsam).
-            dGvRFID.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            // Reine Layoutanpassung: alle 17 angezeigten Spalten passen sich an die verfügbare
+            // Tabellenbreite an (auch beim Ändern der Fenstergröße). Keine DB-/Filteränderung.
+            // Die Gewichtung berücksichtigt unterschiedliche Datenlängen der Spalten.
+            var columnFillWeights = new Dictionary<string, float>
+            {
+                { "Datum",          82f },
+                { "Artikelnummer",  98f },
+                { "Auftragsnummer", 132f },
+                { "DB31",           48f }, // AVO
+                { "DB27",           90f }, // Waschanlage
+                { "DB17",           94f }, // Waschpr. UCM
+                { "DB18",           88f }, // Einfahrt UCM
+                { "DB19",           83f }, // Start UCM
+                { "DB11",           88f }, // Ausfahrt UCM
+                { "DB14",          103f }, // Waschpr. Aceton
+                { "DB15",          100f }, // Einfahrt Aceton
+                { "DB16",           99f }, // Ausfahrt Aceton
+                { "DB22",           50f }, // KST
+                { "DB23",           66f }, // Vor.-Nr.
+                { "DB25",           46f }, // Stk.
+                { "DB26",           93f }, // Höhe Ausfahrt
+                { "UID",           127f }
+            };
+
+            foreach (DataGridViewColumn column in dGvRFID.Columns)
+            {
+                float weight;
+                column.FillWeight = columnFillWeights.TryGetValue(column.DataPropertyName, out weight)
+                    ? weight
+                    : 65f;
+                column.MinimumWidth = 35;
+            }
+
+            // Längere Spaltenüberschriften werden bei Bedarf zweizeilig angezeigt.
+            dGvRFID.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            dGvRFID.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
         // -----------------------------------------------------------------------------------------------------------------
@@ -205,7 +238,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
         private void TextFilter_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
-            e.Handled       = true;
+            e.Handled = true;
             e.SuppressKeyPress = true;
             ApplyCombinedFilter();
         }
@@ -277,7 +310,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             for (int i = 0; i < cListBoxWaschanlage.Items.Count; i++)
                 cListBoxWaschanlage.SetItemChecked(i, false);
 
-            dateTimePickerDatumAb.Value  = DateTime.Today.AddDays(-30);
+            dateTimePickerDatumAb.Value = DateTime.Today.AddDays(-30);
             dateTimePickerDatumBis.Value = DateTime.Now;
 
             LoadRFIDData();
@@ -318,11 +351,11 @@ namespace VerwaltungKST1127.Produktionsauswertung
             }
 
             lblEingeleseneWaschkoerbeVerguetung.Text = $"Waschträger Vergütung: {count127}";
-            lblEingeleseneWaschkoerbeKitterei.Text   = $"Waschträger Kitterei: {count126}";
-            lblEingeleseneWaschkoerbePlanoptik.Text  = $"Waschträger Planoptik: {count124}";
-            lblEingeleseneWaschkoerbeRundoptik.Text  = $"Waschträger Rundoptik: {count125}";
-            lblEingeleseneWaschkoerbeMontagen.Text   = $"Waschträger Montagen: {countMontage}";
-            lblEingelesenOhneZuordnung.Text          = $"Ohne KST: {countEmptyKST}";
+            lblEingeleseneWaschkoerbeKitterei.Text = $"Waschträger Kitterei: {count126}";
+            lblEingeleseneWaschkoerbePlanoptik.Text = $"Waschträger Planoptik: {count124}";
+            lblEingeleseneWaschkoerbeRundoptik.Text = $"Waschträger Rundoptik: {count125}";
+            lblEingeleseneWaschkoerbeMontagen.Text = $"Waschträger Montagen: {countMontage}";
+            lblEingelesenOhneZuordnung.Text = $"Ohne KST: {countEmptyKST}";
         }
 
         // -----------------------------------------------------------------------------------------------------------------
@@ -344,7 +377,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             sichtbareSpalten.Sort((a, b) => a.DisplayIndex.CompareTo(b.DisplayIndex));
 
             int spaltenAnzahl = sichtbareSpalten.Count;
-            int zeilenAnzahl  = _rfidView.Count;
+            int zeilenAnzahl = _rfidView.Count;
 
             string[] headers = new string[spaltenAnzahl];
             for (int c = 0; c < spaltenAnzahl; c++)
@@ -369,7 +402,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
             });
 
             Microsoft.Office.Interop.Excel.Application excelApp = null;
-            Workbook  workbook  = null;
+            Workbook workbook = null;
             Worksheet worksheet = null;
 
             try
@@ -377,20 +410,20 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 btnExportXlsx.Enabled = false;
                 Cursor = Cursors.WaitCursor;
 
-                excelApp         = new Microsoft.Office.Interop.Excel.Application();
+                excelApp = new Microsoft.Office.Interop.Excel.Application();
                 excelApp.Visible = false;
-                workbook         = excelApp.Workbooks.Add(Type.Missing);
-                worksheet        = (Worksheet)workbook.ActiveSheet;
-                worksheet.Name   = "RFID Waschanlagen";
+                workbook = excelApp.Workbooks.Add(Type.Missing);
+                worksheet = (Worksheet)workbook.ActiveSheet;
+                worksheet.Name = "RFID Waschanlagen";
 
                 // Header-Zeile formatieren (dunkles Blau / weisse Schrift).
                 for (int c = 0; c < spaltenAnzahl; c++)
                 {
                     var cell = (Microsoft.Office.Interop.Excel.Range)worksheet.Cells[1, c + 1];
-                    cell.Value              = headers[c];
-                    cell.Font.Bold          = true;
-                    cell.Font.Color         = ColorTranslator.ToOle(Color.White);
-                    cell.Interior.Color     = ColorTranslator.ToOle(Color.FromArgb(0x1F, 0x4E, 0x78));
+                    cell.Value = headers[c];
+                    cell.Font.Bold = true;
+                    cell.Font.Color = ColorTranslator.ToOle(Color.White);
+                    cell.Interior.Color = ColorTranslator.ToOle(Color.FromArgb(0x1F, 0x4E, 0x78));
                     cell.HorizontalAlignment = XlHAlign.xlHAlignCenter;
                     Marshal.ReleaseComObject(cell);
                 }
@@ -401,7 +434,7 @@ namespace VerwaltungKST1127.Produktionsauswertung
                 var headerRange = worksheet.Range[worksheet.Cells[1, 1], worksheet.Cells[1, spaltenAnzahl]];
                 headerRange.AutoFilter(1, Type.Missing, XlAutoFilterOperator.xlAnd, Type.Missing, true);
                 Marshal.ReleaseComObject(headerRange);
-                excelApp.ActiveWindow.SplitRow    = 1;
+                excelApp.ActiveWindow.SplitRow = 1;
                 excelApp.ActiveWindow.FreezePanes = true;
 
                 // Daten als Block schreiben – deutlich schneller als zellweise.
@@ -434,8 +467,8 @@ namespace VerwaltungKST1127.Produktionsauswertung
             finally
             {
                 if (worksheet != null) Marshal.ReleaseComObject(worksheet);
-                if (workbook  != null) Marshal.ReleaseComObject(workbook);
-                if (excelApp  != null) Marshal.ReleaseComObject(excelApp);
+                if (workbook != null) Marshal.ReleaseComObject(workbook);
+                if (excelApp != null) Marshal.ReleaseComObject(excelApp);
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 btnExportXlsx.Enabled = true;

@@ -10,6 +10,7 @@ using System.IO;                                             // Datei-Operatione
 using System.Threading.Tasks;                                // async/await, Task.Run, Task.WhenAll
 using System.Windows.Forms;                                  // Windows-Forms (Form, Button, ListBox, MessageBox ...)
 using System.Windows.Forms.DataVisualization.Charting;       // Diagramm-Steuerelement (Chart, Series ...)
+using VerwaltungKST1127.Kardex;
 using VerwaltungKST1127.Auftragsverwaltung;                  // Eigene Sub-Namespaces des Projekts:
 using VerwaltungKST1127.EingabeSerienartikelPrototyp;
 using VerwaltungKST1127.Farbauswertung;
@@ -42,6 +43,10 @@ namespace VerwaltungKST1127
 
         private const string ConnectionString =
             @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Verwaltung2022;Integrated Security=True;Encrypt=False";
+
+        // Verbindung zur Shuttle-Datenbank (für Ring-/Vorrichtungs-Stammdaten).
+        private readonly SqlConnection sqlConnectionShuttle = new SqlConnection(
+            @"Data Source=sqlvgt.swarovskioptik.at;Initial Catalog=SOA127_Shuttle;Integrated Security=True");
 
         // -----------------------------------------------------------------------------------------------------------------
         // Konstruktor: läuft beim "new Form_Start()" automatisch.
@@ -665,6 +670,14 @@ namespace VerwaltungKST1127
         {
             Form_DatenExportExcel form_DatenExportExcel = new Form_DatenExportExcel();
             form_DatenExportExcel.Show();
+        }
+
+        private void BtnRingSegmentVerwaltung_Click(object sender, EventArgs e)
+        {
+            Frm_Statuspflege form_Statuspflege =
+                new Frm_Statuspflege(sqlConnectionShuttle.ConnectionString);
+
+            form_Statuspflege.Show();
         }
 
         // -----------------------------------------------------------------------------------------------------------------

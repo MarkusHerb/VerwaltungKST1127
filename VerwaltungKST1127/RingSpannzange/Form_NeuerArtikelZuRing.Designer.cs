@@ -50,6 +50,8 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(46, 13);
             this.label1.TabIndex = 0;
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular);
             this.label1.Text = "Ring_ID";
             // 
             // lblID
@@ -59,6 +61,8 @@
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(38, 13);
             this.lblID.TabIndex = 1;
+            this.lblID.ForeColor = System.Drawing.Color.FromArgb(0, 120, 215);
+            this.lblID.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblID.Text = "RingId";
             // 
             // label2
@@ -68,6 +72,8 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(50, 13);
             this.label2.TabIndex = 2;
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular);
             this.label2.Text = "ArtikelNr.";
             // 
             // label3
@@ -77,6 +83,8 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(31, 13);
             this.label3.TabIndex = 3;
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular);
             this.label3.Text = "Seite";
             // 
             // label4
@@ -86,6 +94,8 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(34, 13);
             this.label4.TabIndex = 4;
+            this.label4.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular);
             this.label4.Text = "Belag";
             // 
             // label5
@@ -95,6 +105,8 @@
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(30, 13);
             this.label5.TabIndex = 5;
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular);
             this.label5.Text = "BBM";
             // 
             // label6
@@ -104,6 +116,8 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(61, 13);
             this.label6.TabIndex = 6;
+            this.label6.ForeColor = System.Drawing.Color.FromArgb(35, 50, 70);
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular);
             this.label6.Text = "Bemerkung";
             // 
             // txtBoxArtnr
@@ -147,15 +161,20 @@
             this.BtnSave.Name = "BtnSave";
             this.BtnSave.Size = new System.Drawing.Size(75, 23);
             this.BtnSave.TabIndex = 12;
+            this.BtnSave.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
+            this.BtnSave.ForeColor = System.Drawing.Color.White;
+            this.BtnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnSave.FlatAppearance.BorderSize = 0;
+            this.BtnSave.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnSave.Text = "Speichern";
-            this.BtnSave.UseVisualStyleBackColor = true;
+            this.BtnSave.UseVisualStyleBackColor = false;
             this.BtnSave.Click += new System.EventHandler(this.BtnSave_Click);
             // 
             // Form_NeuerArtikelZuRing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BackColor = System.Drawing.Color.FromArgb(244, 246, 249);
             this.ClientSize = new System.Drawing.Size(350, 152);
             this.Controls.Add(this.BtnSave);
             this.Controls.Add(this.txtBoxBemerkung);

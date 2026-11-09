@@ -30,6 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Materiallager));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.TextBoxArtikel = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.RichTextBoxBemerkung = new System.Windows.Forms.RichTextBox();
@@ -67,17 +72,19 @@
             // 
             // TextBoxArtikel
             // 
-            this.TextBoxArtikel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBoxArtikel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxArtikel.Location = new System.Drawing.Point(148, 37);
             this.TextBoxArtikel.Name = "TextBoxArtikel";
+            this.TextBoxArtikel.BackColor = System.Drawing.Color.White;
+            this.TextBoxArtikel.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.TextBoxArtikel.Size = new System.Drawing.Size(383, 20);
             this.TextBoxArtikel.TabIndex = 58;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.ForeColor = System.Drawing.Color.Black;
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.label6.Location = new System.Drawing.Point(12, 39);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(60, 18);
@@ -86,9 +93,11 @@
             // 
             // RichTextBoxBemerkung
             // 
-            this.RichTextBoxBemerkung.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RichTextBoxBemerkung.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.RichTextBoxBemerkung.Location = new System.Drawing.Point(148, 123);
             this.RichTextBoxBemerkung.Name = "RichTextBoxBemerkung";
+            this.RichTextBoxBemerkung.BackColor = System.Drawing.Color.White;
+            this.RichTextBoxBemerkung.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.RichTextBoxBemerkung.Size = new System.Drawing.Size(383, 63);
             this.RichTextBoxBemerkung.TabIndex = 64;
             this.RichTextBoxBemerkung.Text = "";
@@ -96,8 +105,8 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.Color.Black;
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.label5.Location = new System.Drawing.Point(244, 94);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(64, 18);
@@ -106,58 +115,69 @@
             // 
             // TextBoxEinheit2
             // 
-            this.TextBoxEinheit2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBoxEinheit2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxEinheit2.Location = new System.Drawing.Point(314, 95);
             this.TextBoxEinheit2.Name = "TextBoxEinheit2";
+            this.TextBoxEinheit2.BackColor = System.Drawing.Color.White;
+            this.TextBoxEinheit2.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.TextBoxEinheit2.Size = new System.Drawing.Size(80, 20);
             this.TextBoxEinheit2.TabIndex = 63;
             // 
             // TextBoxEinheit1
             // 
-            this.TextBoxEinheit1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBoxEinheit1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxEinheit1.Location = new System.Drawing.Point(314, 65);
             this.TextBoxEinheit1.Name = "TextBoxEinheit1";
+            this.TextBoxEinheit1.BackColor = System.Drawing.Color.White;
+            this.TextBoxEinheit1.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.TextBoxEinheit1.Size = new System.Drawing.Size(80, 20);
             this.TextBoxEinheit1.TabIndex = 60;
             // 
             // TextBoxMindestbestand
             // 
-            this.TextBoxMindestbestand.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBoxMindestbestand.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxMindestbestand.Location = new System.Drawing.Point(149, 94);
             this.TextBoxMindestbestand.Name = "TextBoxMindestbestand";
+            this.TextBoxMindestbestand.BackColor = System.Drawing.Color.White;
+            this.TextBoxMindestbestand.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.TextBoxMindestbestand.Size = new System.Drawing.Size(80, 20);
             this.TextBoxMindestbestand.TabIndex = 61;
             // 
             // TextBoxLagerstand
             // 
-            this.TextBoxLagerstand.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBoxLagerstand.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxLagerstand.Location = new System.Drawing.Point(148, 65);
             this.TextBoxLagerstand.Name = "TextBoxLagerstand";
+            this.TextBoxLagerstand.BackColor = System.Drawing.Color.White;
+            this.TextBoxLagerstand.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.TextBoxLagerstand.Size = new System.Drawing.Size(81, 20);
             this.TextBoxLagerstand.TabIndex = 59;
             // 
             // TextBoxKategorie
             // 
-            this.TextBoxKategorie.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBoxKategorie.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxKategorie.Location = new System.Drawing.Point(314, 8);
             this.TextBoxKategorie.Name = "TextBoxKategorie";
+            this.TextBoxKategorie.BackColor = System.Drawing.Color.White;
+            this.TextBoxKategorie.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.TextBoxKategorie.Size = new System.Drawing.Size(217, 20);
             this.TextBoxKategorie.TabIndex = 57;
             // 
             // TextBoxId
             // 
-            this.TextBoxId.BackColor = System.Drawing.Color.White;
-            this.TextBoxId.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TextBoxId.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.TextBoxId.Location = new System.Drawing.Point(148, 10);
             this.TextBoxId.Name = "TextBoxId";
+            this.TextBoxId.BackColor = System.Drawing.Color.White;
+            this.TextBoxId.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.TextBoxId.Size = new System.Drawing.Size(35, 20);
             this.TextBoxId.TabIndex = 56;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.ForeColor = System.Drawing.Color.Black;
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.label7.Location = new System.Drawing.Point(12, 123);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(98, 18);
@@ -167,8 +187,8 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.ForeColor = System.Drawing.Color.Black;
+            this.label8.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.label8.Location = new System.Drawing.Point(244, 67);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(64, 18);
@@ -178,8 +198,8 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.Color.Black;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.label4.Location = new System.Drawing.Point(12, 94);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(131, 18);
@@ -189,8 +209,8 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.Black;
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.label3.Location = new System.Drawing.Point(12, 67);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 18);
@@ -200,8 +220,8 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.Color.Black;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.label2.Location = new System.Drawing.Point(223, 10);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(85, 18);
@@ -211,8 +231,8 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(29, 18);
@@ -221,11 +241,13 @@
             // 
             // BtnHinzufuegen
             // 
-            this.BtnHinzufuegen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.BtnHinzufuegen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BtnHinzufuegen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnHinzufuegen.Location = new System.Drawing.Point(811, 8);
             this.BtnHinzufuegen.Name = "BtnHinzufuegen";
+            this.BtnHinzufuegen.BackColor = System.Drawing.Color.FromArgb(255, 190, 0);
+            this.BtnHinzufuegen.ForeColor = System.Drawing.Color.Black;
+            this.BtnHinzufuegen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnHinzufuegen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnHinzufuegen.FlatAppearance.BorderSize = 0;
             this.BtnHinzufuegen.Size = new System.Drawing.Size(131, 49);
             this.BtnHinzufuegen.TabIndex = 75;
             this.BtnHinzufuegen.Text = "Material Hinzufügen";
@@ -234,11 +256,13 @@
             // 
             // BtnAendern
             // 
-            this.BtnAendern.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.BtnAendern.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BtnAendern.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnAendern.Location = new System.Drawing.Point(537, 63);
             this.BtnAendern.Name = "BtnAendern";
+            this.BtnAendern.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
+            this.BtnAendern.ForeColor = System.Drawing.Color.White;
+            this.BtnAendern.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnAendern.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnAendern.FlatAppearance.BorderSize = 0;
             this.BtnAendern.Size = new System.Drawing.Size(131, 49);
             this.BtnAendern.TabIndex = 76;
             this.BtnAendern.Text = "Material Anpassen";
@@ -247,11 +271,13 @@
             // 
             // BtnAustragen
             // 
-            this.BtnAustragen.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.BtnAustragen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BtnAustragen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnAustragen.Location = new System.Drawing.Point(537, 8);
             this.BtnAustragen.Name = "BtnAustragen";
+            this.BtnAustragen.BackColor = System.Drawing.Color.FromArgb(31, 55, 100);
+            this.BtnAustragen.ForeColor = System.Drawing.Color.White;
+            this.BtnAustragen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnAustragen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnAustragen.FlatAppearance.BorderSize = 0;
             this.BtnAustragen.Size = new System.Drawing.Size(131, 49);
             this.BtnAustragen.TabIndex = 77;
             this.BtnAustragen.Text = "Material Austragen";
@@ -260,11 +286,13 @@
             // 
             // BtnSpeichern
             // 
-            this.BtnSpeichern.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.BtnSpeichern.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BtnSpeichern.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnSpeichern.Location = new System.Drawing.Point(811, 63);
             this.BtnSpeichern.Name = "BtnSpeichern";
+            this.BtnSpeichern.BackColor = System.Drawing.Color.FromArgb(31, 55, 100);
+            this.BtnSpeichern.ForeColor = System.Drawing.Color.White;
+            this.BtnSpeichern.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnSpeichern.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnSpeichern.FlatAppearance.BorderSize = 0;
             this.BtnSpeichern.Size = new System.Drawing.Size(131, 49);
             this.BtnSpeichern.TabIndex = 78;
             this.BtnSpeichern.Text = "Speichern";
@@ -273,11 +301,13 @@
             // 
             // BtnLoeschen
             // 
-            this.BtnLoeschen.BackColor = System.Drawing.Color.IndianRed;
-            this.BtnLoeschen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BtnLoeschen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnLoeschen.Location = new System.Drawing.Point(674, 8);
             this.BtnLoeschen.Name = "BtnLoeschen";
+            this.BtnLoeschen.BackColor = System.Drawing.Color.FromArgb(255, 152, 0);
+            this.BtnLoeschen.ForeColor = System.Drawing.Color.Black;
+            this.BtnLoeschen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnLoeschen.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnLoeschen.FlatAppearance.BorderSize = 0;
             this.BtnLoeschen.Size = new System.Drawing.Size(131, 49);
             this.BtnLoeschen.TabIndex = 79;
             this.BtnLoeschen.Text = "Material Löschen";
@@ -298,15 +328,33 @@
             // 
             this.DgvMateriallager.AllowUserToAddRows = false;
             this.DgvMateriallager.AllowUserToDeleteRows = false;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(239, 241, 244);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(217, 231, 249);
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
+            this.DgvMateriallager.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
+            this.DgvMateriallager.BackgroundColor = System.Drawing.Color.White;
+            this.DgvMateriallager.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DgvMateriallager.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(31, 55, 100);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(31, 55, 100);
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DgvMateriallager.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.DgvMateriallager.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.GrayText;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.ControlLightLight;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(217, 231, 249);
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
             dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.DgvMateriallager.DefaultCellStyle = dataGridViewCellStyle5;
+            this.DgvMateriallager.EnableHeadersVisualStyles = false;
+            this.DgvMateriallager.GridColor = System.Drawing.Color.FromArgb(216, 223, 232);
             this.DgvMateriallager.Location = new System.Drawing.Point(12, 204);
             this.DgvMateriallager.MultiSelect = false;
             this.DgvMateriallager.Name = "DgvMateriallager";
@@ -330,11 +378,13 @@
             // 
             // BtnInventur
             // 
-            this.BtnInventur.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.BtnInventur.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BtnInventur.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnInventur.Location = new System.Drawing.Point(674, 63);
             this.BtnInventur.Name = "BtnInventur";
+            this.BtnInventur.BackColor = System.Drawing.Color.FromArgb(224, 232, 244);
+            this.BtnInventur.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
+            this.BtnInventur.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnInventur.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnInventur.FlatAppearance.BorderSize = 0;
             this.BtnInventur.Size = new System.Drawing.Size(131, 49);
             this.BtnInventur.TabIndex = 83;
             this.BtnInventur.Text = "Inventurliste";
@@ -343,10 +393,13 @@
             // 
             // BtnInfoMateriallager
             // 
-            this.BtnInfoMateriallager.BackColor = System.Drawing.Color.DarkGray;
-            this.BtnInfoMateriallager.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.BtnInfoMateriallager.Location = new System.Drawing.Point(849, 149);
             this.BtnInfoMateriallager.Name = "BtnInfoMateriallager";
+            this.BtnInfoMateriallager.BackColor = System.Drawing.Color.FromArgb(225, 230, 237);
+            this.BtnInfoMateriallager.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
+            this.BtnInfoMateriallager.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BtnInfoMateriallager.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnInfoMateriallager.FlatAppearance.BorderSize = 0;
             this.BtnInfoMateriallager.Size = new System.Drawing.Size(93, 37);
             this.BtnInfoMateriallager.TabIndex = 84;
             this.BtnInfoMateriallager.Text = "Information";
@@ -356,6 +409,28 @@
             // DgvBestellRadar
             // 
             this.DgvBestellRadar.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(239, 241, 244);
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(217, 231, 249);
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
+            this.DgvBestellRadar.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.DgvBestellRadar.BackgroundColor = System.Drawing.Color.White;
+            this.DgvBestellRadar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.DgvBestellRadar.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(31, 55, 100);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(31, 55, 100);
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.DgvBestellRadar.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(217, 231, 249);
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(27, 42, 66);
+            this.DgvBestellRadar.DefaultCellStyle = dataGridViewCellStyle6;
+            this.DgvBestellRadar.EnableHeadersVisualStyles = false;
+            this.DgvBestellRadar.GridColor = System.Drawing.Color.FromArgb(216, 223, 232);
             this.DgvBestellRadar.Location = new System.Drawing.Point(1274, 94);
             this.DgvBestellRadar.Name = "DgvBestellRadar";
             this.DgvBestellRadar.Size = new System.Drawing.Size(329, 630);
@@ -367,6 +442,7 @@
             // lblKritisch
             // 
             this.lblKritisch.AutoSize = true;
+            this.lblKritisch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblKritisch.Location = new System.Drawing.Point(1271, 11);
             this.lblKritisch.Name = "lblKritisch";
             this.lblKritisch.Size = new System.Drawing.Size(35, 13);
@@ -376,6 +452,7 @@
             // lblBeobachten
             // 
             this.lblBeobachten.AutoSize = true;
+            this.lblBeobachten.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBeobachten.Location = new System.Drawing.Point(1271, 37);
             this.lblBeobachten.Name = "lblBeobachten";
             this.lblBeobachten.Size = new System.Drawing.Size(35, 13);
@@ -385,6 +462,7 @@
             // lblOk
             // 
             this.lblOk.AutoSize = true;
+            this.lblOk.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblOk.Location = new System.Drawing.Point(1271, 65);
             this.lblOk.Name = "lblOk";
             this.lblOk.Size = new System.Drawing.Size(35, 13);
@@ -395,8 +473,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(1612, 736);
+            this.BackColor = System.Drawing.Color.FromArgb(245, 247, 250);
             this.Controls.Add(this.lblOk);
             this.Controls.Add(this.lblBeobachten);
             this.Controls.Add(this.lblKritisch);

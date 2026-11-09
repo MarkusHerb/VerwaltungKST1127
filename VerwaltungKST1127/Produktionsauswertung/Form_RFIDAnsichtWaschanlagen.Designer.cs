@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.TimerDatumUhrzeit = new System.Windows.Forms.Timer(this.components);
@@ -419,6 +422,197 @@
             this.Name = "Form_RFIDAnsichtWaschanlagen";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Ausgelesene RFID-Chips";
+            // =================================================================================================
+            // DESIGN NACH REFERENZBILD – ausschließlich Darstellung.
+            // Keine Änderungen an Namen, Events, Datenbindung, Timer, Abfragen, Filtern oder Export.
+            // =================================================================================================
+            // Farbpalette: heller Hintergrund #F5F6F8, Tabellenkopf #203764, Akzent #0078D7,
+            // abwechselnde Tabellenzeilen #FFFFFF / #F2F2F2, Auswahl #DCEBFF,
+            // Warn-/Aktionsfarben #FFC107 und #FF9800.
+            this.BackColor = System.Drawing.Color.FromArgb(245, 246, 248);
+
+            // Titel und Uhrzeit – wie im Vorbild kompakt und links ausgerichtet.
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(24, 32, 44);
+            this.label1.Location = new System.Drawing.Point(14, 12);
+            this.lblDateTime.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
+            this.lblDateTime.ForeColor = System.Drawing.Color.FromArgb(80, 89, 104);
+            this.lblDateTime.Location = new System.Drawing.Point(17, 49);
+
+            // Zwei dezente Trennlinien für die drei oberen Arbeitsbereiche.
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(216, 221, 228);
+            this.panel1.Location = new System.Drawing.Point(340, 17);
+            this.panel1.Size = new System.Drawing.Size(1, 116);
+            this.panel2.BackColor = System.Drawing.Color.FromArgb(216, 221, 228);
+            this.panel2.Location = new System.Drawing.Point(1138, 17);
+            this.panel2.Size = new System.Drawing.Size(1, 116);
+            this.panel2.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+
+            // Links: gelber Filter-Button, orangefarbener Export-Button, flache Optik wie im Referenzbild.
+            this.btnLoescheFilter.BackColor = System.Drawing.Color.FromArgb(255, 193, 7);
+            this.btnLoescheFilter.ForeColor = System.Drawing.Color.Black;
+            this.btnLoescheFilter.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnLoescheFilter.Location = new System.Drawing.Point(14, 84);
+            this.btnLoescheFilter.Size = new System.Drawing.Size(201, 46);
+            this.btnLoescheFilter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLoescheFilter.FlatAppearance.BorderSize = 0;
+            this.btnLoescheFilter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(245, 181, 0);
+            this.btnExportXlsx.BackColor = System.Drawing.Color.FromArgb(255, 152, 0);
+            this.btnExportXlsx.ForeColor = System.Drawing.Color.White;
+            this.btnExportXlsx.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnExportXlsx.Location = new System.Drawing.Point(224, 84);
+            this.btnExportXlsx.Size = new System.Drawing.Size(103, 46);
+            this.btnExportXlsx.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportXlsx.FlatAppearance.BorderSize = 0;
+            this.btnExportXlsx.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(235, 133, 0);
+
+            // Datumseingrenzung im mittleren linken Bereich.
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.label3.Location = new System.Drawing.Point(357, 23);
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular);
+            this.label4.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.label4.Location = new System.Drawing.Point(357, 57);
+            this.dateTimePickerDatumAb.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dateTimePickerDatumAb.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerDatumAb.Location = new System.Drawing.Point(456, 20);
+            this.dateTimePickerDatumAb.Size = new System.Drawing.Size(182, 23);
+            this.dateTimePickerDatumBis.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dateTimePickerDatumBis.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerDatumBis.Location = new System.Drawing.Point(456, 54);
+            this.dateTimePickerDatumBis.Size = new System.Drawing.Size(182, 23);
+            this.label9.Font = new System.Drawing.Font("Segoe UI", 7.5F, System.Drawing.FontStyle.Regular);
+            this.label9.ForeColor = System.Drawing.Color.FromArgb(153, 82, 9);
+            this.label9.Location = new System.Drawing.Point(357, 88);
+            this.cListBoxWaschanlage.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cListBoxWaschanlage.BackColor = System.Drawing.Color.White;
+            this.cListBoxWaschanlage.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.cListBoxWaschanlage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.cListBoxWaschanlage.Location = new System.Drawing.Point(564, 89);
+            this.cListBoxWaschanlage.Size = new System.Drawing.Size(84, 38);
+
+            // Freitextfilter: alle ursprünglichen Steuerelemente und Eingabe-Ereignisse bleiben erhalten.
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.label2.Location = new System.Drawing.Point(685, 22);
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.label5.Location = new System.Drawing.Point(685, 48);
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label7.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.label7.Location = new System.Drawing.Point(685, 75);
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label6.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.label6.Location = new System.Drawing.Point(685, 104);
+
+            this.txtBoxAuftragsnummer.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtBoxAuftragsnummer.BackColor = System.Drawing.Color.White;
+            this.txtBoxAuftragsnummer.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.txtBoxAuftragsnummer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBoxAuftragsnummer.Location = new System.Drawing.Point(900, 19);
+            this.txtBoxAuftragsnummer.Size = new System.Drawing.Size(217, 23);
+            this.txtBoxArtikelnummer.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtBoxArtikelnummer.BackColor = System.Drawing.Color.White;
+            this.txtBoxArtikelnummer.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.txtBoxArtikelnummer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBoxArtikelnummer.Location = new System.Drawing.Point(900, 45);
+            this.txtBoxArtikelnummer.Size = new System.Drawing.Size(217, 23);
+            this.txtBoxUID.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtBoxUID.BackColor = System.Drawing.Color.White;
+            this.txtBoxUID.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.txtBoxUID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBoxUID.Location = new System.Drawing.Point(900, 101);
+            this.txtBoxUID.Size = new System.Drawing.Size(217, 23);
+
+            this.label10.Font = new System.Drawing.Font("Segoe UI", 7.5F);
+            this.label10.ForeColor = System.Drawing.Color.FromArgb(80, 89, 104);
+            this.label10.Location = new System.Drawing.Point(894, 76);
+            this.txtBoxWaschprogramm.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtBoxWaschprogramm.BackColor = System.Drawing.Color.White;
+            this.txtBoxWaschprogramm.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.txtBoxWaschprogramm.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBoxWaschprogramm.Location = new System.Drawing.Point(928, 72);
+            this.txtBoxWaschprogramm.Size = new System.Drawing.Size(68, 23);
+            this.label11.Font = new System.Drawing.Font("Segoe UI", 7.5F);
+            this.label11.ForeColor = System.Drawing.Color.FromArgb(80, 89, 104);
+            this.label11.Location = new System.Drawing.Point(1004, 76);
+            this.txtBoxWaschprogrammAceton.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtBoxWaschprogrammAceton.BackColor = System.Drawing.Color.White;
+            this.txtBoxWaschprogrammAceton.ForeColor = System.Drawing.Color.FromArgb(20, 25, 35);
+            this.txtBoxWaschprogrammAceton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBoxWaschprogrammAceton.Location = new System.Drawing.Point(1052, 72);
+            this.txtBoxWaschprogrammAceton.Size = new System.Drawing.Size(65, 23);
+            this.label8.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular);
+            this.label8.ForeColor = System.Drawing.Color.FromArgb(86, 95, 108);
+            this.label8.Location = new System.Drawing.Point(900, 126);
+
+            // Zähler rechts: eine gut lesbare, kompakte vertikale Auswertung.
+            this.lblEingeleseneWaschkoerbe.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
+            this.lblEingeleseneWaschkoerbe.ForeColor = System.Drawing.Color.FromArgb(0, 120, 215);
+            this.lblEingeleseneWaschkoerbe.Location = new System.Drawing.Point(1153, 18);
+            this.lblEingeleseneWaschkoerbe.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblEingeleseneWaschkoerbeVerguetung.Location = new System.Drawing.Point(1155, 46);
+            this.lblEingeleseneWaschkoerbeRundoptik.Location = new System.Drawing.Point(1155, 62);
+            this.lblEingeleseneWaschkoerbePlanoptik.Location = new System.Drawing.Point(1155, 78);
+            this.lblEingeleseneWaschkoerbeKitterei.Location = new System.Drawing.Point(1155, 94);
+            this.lblEingeleseneWaschkoerbeMontagen.Location = new System.Drawing.Point(1155, 110);
+            this.lblEingelesenOhneZuordnung.Location = new System.Drawing.Point(1155, 126);
+            this.lblEingeleseneWaschkoerbeVerguetung.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular);
+            this.lblEingeleseneWaschkoerbeVerguetung.ForeColor = System.Drawing.Color.FromArgb(32, 44, 61);
+            this.lblEingeleseneWaschkoerbeVerguetung.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblEingeleseneWaschkoerbeRundoptik.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular);
+            this.lblEingeleseneWaschkoerbeRundoptik.ForeColor = System.Drawing.Color.FromArgb(32, 44, 61);
+            this.lblEingeleseneWaschkoerbeRundoptik.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblEingeleseneWaschkoerbePlanoptik.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular);
+            this.lblEingeleseneWaschkoerbePlanoptik.ForeColor = System.Drawing.Color.FromArgb(32, 44, 61);
+            this.lblEingeleseneWaschkoerbePlanoptik.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblEingeleseneWaschkoerbeKitterei.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular);
+            this.lblEingeleseneWaschkoerbeKitterei.ForeColor = System.Drawing.Color.FromArgb(32, 44, 61);
+            this.lblEingeleseneWaschkoerbeKitterei.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblEingeleseneWaschkoerbeMontagen.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular);
+            this.lblEingeleseneWaschkoerbeMontagen.ForeColor = System.Drawing.Color.FromArgb(32, 44, 61);
+            this.lblEingeleseneWaschkoerbeMontagen.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblEingelesenOhneZuordnung.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Regular);
+            this.lblEingelesenOhneZuordnung.ForeColor = System.Drawing.Color.FromArgb(32, 44, 61);
+            this.lblEingelesenOhneZuordnung.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            this.lblEingelesenOhneZuordnung.ForeColor = System.Drawing.Color.FromArgb(190, 62, 46);
+
+            // Haupttabelle – blaue Überschriften, dezente Linien und Zebra-Streifen wie in der Vorlage.
+            // Spaltenerzeugung, Datensortierung, Spaltenbreitenberechnung und Datenbindung nicht anfassen.
+            this.dGvRFID.Location = new System.Drawing.Point(12, 153);
+            this.dGvRFID.Size = new System.Drawing.Size(1508, 629);
+            this.dGvRFID.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom |
+                                    System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.dGvRFID.BackgroundColor = System.Drawing.Color.White;
+            this.dGvRFID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.dGvRFID.GridColor = System.Drawing.Color.FromArgb(230, 230, 230);
+            this.dGvRFID.EnableHeadersVisualStyles = false;
+            this.dGvRFID.RowHeadersVisible = false;
+            this.dGvRFID.RowTemplate.Height = 25;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(32, 55, 100);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(32, 55, 100);
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.dGvRFID.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(220, 235, 255);
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 8.5F);
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.dGvRFID.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(242, 242, 242);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(220, 235, 255);
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 8.5F);
+            dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.dGvRFID.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            // =================================================================================================
             ((System.ComponentModel.ISupportInitialize)(this.dGvRFID)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
